@@ -27,9 +27,14 @@ The maps and resource packs that it updates will be in the `saves` and `resource
 
 E.M.U. uses a series of command line-like actions which are used at various stages in the map updating process. Not all of them will show right away, but will slowly be shown as you go when they become relevant. This keeps the clutter down and helps you to keep track of what stage you're currently on.
 
+
+### Administrative actions
+
 To begin, run `easy_map_updater.py`, configure the current Minecraft version of your map in `options.json`, then reload the options with `reset`.
 
-Run `find` to scan the map for any important information that E.M.U. needs to know, for instance if there is a resource pack inside, what version the map is on, whether there are legacy functions in the `data` folder, etc.
+- `reset`: Reloads options from file and resets the action list.
+- `all`: Shows all actions.
+- `find`: Scans the map for any important information that E.M.U. needs to know, for instance if there is a resource pack inside, what version the map is on, whether there are legacy functions in the `data` folder, etc. Run this before proceeding.
 
 
 ### Pre-original world actions
