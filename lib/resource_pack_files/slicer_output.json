@@ -1,0 +1,617 @@
+{
+    "minecraft": {
+        "textures": {
+            "gui": {
+                "advancements": {
+                    "tabs.png": [
+                        {"path": "./sprites/advancements/tab_above_left_selected.png", "slice": [0, 32, 28, 32, 256, 256]},
+                        {"path": "./sprites/advancements/tab_above_middle_selected.png", "slice": [28, 32, 28, 32, 256, 256]},
+                        {"path": "./sprites/advancements/tab_above_right_selected.png", "slice": [56, 32, 28, 32, 256, 256]},
+                        {"path": "./sprites/advancements/tab_above_left.png", "slice": [0, 0, 28, 32, 256, 256]},
+                        {"path": "./sprites/advancements/tab_above_middle.png", "slice": [28, 0, 28, 32, 256, 256]},
+                        {"path": "./sprites/advancements/tab_above_right.png", "slice": [56, 0, 28, 32, 256, 256]},
+                        {"path": "./sprites/advancements/tab_below_left_selected.png", "slice": [84, 32, 28, 32, 256, 256]},
+                        {"path": "./sprites/advancements/tab_below_middle_selected.png", "slice": [112, 32, 28, 32, 256, 256]},
+                        {"path": "./sprites/advancements/tab_below_right_selected.png", "slice": [140, 32, 28, 32, 256, 256]},
+                        {"path": "./sprites/advancements/tab_below_left.png", "slice": [84, 0, 28, 32, 256, 256]},
+                        {"path": "./sprites/advancements/tab_below_middle.png", "slice": [112, 0, 28, 32, 256, 256]},
+                        {"path": "./sprites/advancements/tab_below_right.png", "slice": [140, 0, 28, 32, 256, 256]},
+                        {"path": "./sprites/advancements/tab_left_top_selected.png", "slice": [0, 92, 32, 28, 256, 256]},
+                        {"path": "./sprites/advancements/tab_left_middle_selected.png", "slice": [32, 92, 32, 28, 256, 256]},
+                        {"path": "./sprites/advancements/tab_left_bottom_selected.png", "slice": [64, 92, 32, 28, 256, 256]},
+                        {"path": "./sprites/advancements/tab_left_top.png", "slice": [0, 64, 32, 28, 256, 256]},
+                        {"path": "./sprites/advancements/tab_left_middle.png", "slice": [32, 64, 32, 28, 256, 256]},
+                        {"path": "./sprites/advancements/tab_left_bottom.png", "slice": [64, 64, 32, 28, 256, 256]},
+                        {"path": "./sprites/advancements/tab_right_top_selected.png", "slice": [96, 92, 32, 28, 256, 256]},
+                        {"path": "./sprites/advancements/tab_right_middle_selected.png", "slice": [128, 92, 32, 28, 256, 256]},
+                        {"path": "./sprites/advancements/tab_right_bottom_selected.png", "slice": [160, 92, 32, 28, 256, 256]},
+                        {"path": "./sprites/advancements/tab_right_top.png", "slice": [96, 64, 32, 28, 256, 256]},
+                        {"path": "./sprites/advancements/tab_right_middle.png", "slice": [128, 64, 32, 28, 256, 256]},
+                        {"path": "./sprites/advancements/tab_right_bottom.png", "slice": [160, 64, 32, 28, 256, 256]}
+                    ],
+                    "widgets.png": [
+                        {"path": "./sprites/advancements/title_box.png", "slice": [0, 52, 200, 26, 256, 256], "metadata": {"gui": {"scaling": {"type": "nine_slice", "width": 200, "height": 26, "border": 10}}}},
+                        {"path": "./sprites/advancements/box_obtained.png", "slice": [0, 0, 200, 26, 256, 256]},
+                        {"path": "./sprites/advancements/task_frame_obtained.png", "slice": [0, 128, 26, 26, 256, 256]},
+                        {"path": "./sprites/advancements/challenge_frame_obtained.png", "slice": [26, 128, 26, 26, 256, 256]},
+                        {"path": "./sprites/advancements/goal_frame_obtained.png", "slice": [52, 128, 26, 26, 256, 256]},
+                        {"path": "./sprites/advancements/box_unobtained.png", "slice": [0, 26, 200, 26, 256, 256]},
+                        {"path": "./sprites/advancements/task_frame_unobtained.png", "slice": [0, 154, 26, 26, 256, 256]},
+                        {"path": "./sprites/advancements/challenge_frame_unobtained.png", "slice": [26, 154, 26, 26, 256, 256]},
+                        {"path": "./sprites/advancements/goal_frame_unobtained.png", "slice": [52, 154, 26, 26, 256, 256]}
+                    ]
+                },
+                "bars.png": [
+                    {"path": "sprites/boss_bar/pink_background.png", "slice": [0, 0, 182, 5, 256, 256]},
+                    {"path": "sprites/boss_bar/blue_background.png", "slice": [0, 10, 182, 5, 256, 256]},
+                    {"path": "sprites/boss_bar/red_background.png", "slice": [0, 20, 182, 5, 256, 256]},
+                    {"path": "sprites/boss_bar/green_background.png", "slice": [0, 30, 182, 5, 256, 256]},
+                    {"path": "sprites/boss_bar/yellow_background.png", "slice": [0, 40, 182, 5, 256, 256]},
+                    {"path": "sprites/boss_bar/purple_background.png", "slice": [0, 50, 182, 5, 256, 256]},
+                    {"path": "sprites/boss_bar/white_background.png", "slice": [0, 60, 182, 5, 256, 256]},
+                    {"path": "sprites/boss_bar/pink_progress.png", "slice": [0, 5, 182, 5, 256, 256]},
+                    {"path": "sprites/boss_bar/blue_progress.png", "slice": [0, 15, 182, 5, 256, 256]},
+                    {"path": "sprites/boss_bar/red_progress.png", "slice": [0, 25, 182, 5, 256, 256]},
+                    {"path": "sprites/boss_bar/green_progress.png", "slice": [0, 35, 182, 5, 256, 256]},
+                    {"path": "sprites/boss_bar/yellow_progress.png", "slice": [0, 45, 182, 5, 256, 256]},
+                    {"path": "sprites/boss_bar/purple_progress.png", "slice": [0, 55, 182, 5, 256, 256]},
+                    {"path": "sprites/boss_bar/white_progress.png", "slice": [0, 65, 182, 5, 256, 256]},
+                    {"path": "sprites/boss_bar/notched_6_background.png", "slice": [0, 80, 182, 5, 256, 256]},
+                    {"path": "sprites/boss_bar/notched_10_background.png", "slice": [0, 90, 182, 5, 256, 256]},
+                    {"path": "sprites/boss_bar/notched_12_background.png", "slice": [0, 100, 182, 5, 256, 256]},
+                    {"path": "sprites/boss_bar/notched_20_background.png", "slice": [0, 110, 182, 5, 256, 256]},
+                    {"path": "sprites/boss_bar/notched_6_progress.png", "slice": [0, 85, 182, 5, 256, 256]},
+                    {"path": "sprites/boss_bar/notched_10_progress.png", "slice": [0, 95, 182, 5, 256, 256]},
+                    {"path": "sprites/boss_bar/notched_12_progress.png", "slice": [0, 105, 182, 5, 256, 256]},
+                    {"path": "sprites/boss_bar/notched_20_progress.png", "slice": [0, 115, 182, 5, 256, 256]}
+                ],
+                "book.png": [
+                    {"path": "sprites/widget/page_forward_highlighted.png", "slice": [23, 192, 23, 13, 256, 256]},
+                    {"path": "sprites/widget/page_forward.png", "slice": [0, 192, 23, 13, 256, 256]},
+                    {"path": "sprites/widget/page_backward_highlighted.png", "slice": [23, 205, 23, 13, 256, 256]},
+                    {"path": "sprites/widget/page_backward.png", "slice": [0, 205, 23, 13, 256, 256]},
+                    {"path": "book.png", "clip": [20, 1, 146, 180, 256, 256]}
+                ],
+                "chat_tags.png": [
+                    {"path": "sprites/icon/chat_modified.png", "slice": [0, 0, 9, 9, 32, 32]}
+                ],
+                "checkbox.png": [
+                    {"path": "sprites/widget/checkbox_selected_highlighted.png", "slice": [20, 20, 20, 20, 64, 64]},
+                    {"path": "sprites/widget/checkbox_selected.png", "slice": [0, 20, 20, 20, 64, 64]},
+                    {"path": "sprites/widget/checkbox_highlighted.png", "slice": [20, 0, 20, 20, 64, 64]},
+                    {"path": "sprites/widget/checkbox.png", "slice": [0, 0, 20, 20, 64, 64]}
+                ],
+                "checkmark.png": [
+                    {"path": "sprites/icon/checkmark.png", "slice": [0, 0, 9, 8, 9, 8]}
+                ],
+                "container": {
+                    "anvil.png": [
+                        {"path": "./sprites/container/anvil/text_field.png", "slice": [0, 166, 110, 16, 256, 256]},
+                        {"path": "./sprites/container/anvil/text_field_disabled.png", "slice": [0, 182, 110, 16, 256, 256]},
+                        {"path": "./sprites/container/anvil/error.png", "slice": [176, 0, 28, 21, 256, 256]},
+                        {"path": "anvil.png", "clip": [0, 0, 176, 166, 256, 256]}
+                    ],
+                    "beacon.png": [
+                        {"path": "./sprites/container/beacon/button_disabled.png", "slice": [44, 219, 22, 22, 256, 256]},
+                        {"path": "./sprites/container/beacon/button_selected.png", "slice": [22, 219, 22, 22, 256, 256]},
+                        {"path": "./sprites/container/beacon/button_highlighted.png", "slice": [66, 219, 22, 22, 256, 256]},
+                        {"path": "./sprites/container/beacon/button.png", "slice": [0, 219, 22, 22, 256, 256]},
+                        {"path": "./sprites/container/beacon/confirm.png", "slice": [90, 220, 18, 18, 256, 256]},
+                        {"path": "./sprites/container/beacon/cancel.png", "slice": [112, 220, 18, 18, 256, 256]},
+                        {"path": "beacon.png", "clip": [0, 0, 230, 219, 256, 256]}
+                    ],
+                    "blast_furnace.png": [
+                        {"path": "./sprites/container/blast_furnace/lit_progress.png", "slice": [176, 0, 14, 14, 256, 256]},
+                        {"path": "./sprites/container/blast_furnace/burn_progress.png", "slice": [176, 14, 24, 16, 256, 256]},
+                        {"path": "blast_furnace.png", "clip": [0, 0, 176, 166, 256, 256]}
+                    ],
+                    "brewing_stand.png": [
+                        {"path": "./sprites/container/brewing_stand/fuel_length.png", "slice": [176, 29, 18, 4, 256, 256]},
+                        {"path": "./sprites/container/brewing_stand/brew_progress.png", "slice": [176, 0, 9, 28, 256, 256]},
+                        {"path": "./sprites/container/brewing_stand/bubbles.png", "slice": [185, 0, 12, 29, 256, 256]},
+                        {"path": "brewing_stand.png", "clip": [0, 0, 176, 166, 256, 256]}
+                    ],
+                    "bundle.png": [
+                        {"path": "./sprites/container/bundle/blocked_slot.png", "slice": [0, 40, 18, 20, 128, 128]},
+                        {"path": "./sprites/container/bundle/slot.png", "slice": [0, 0, 18, 20, 128, 128]}
+                    ],
+                    "bundle_background.png": [
+                        {"path": "./sprites/container/bundle/background.png", "slice": [0, 0, 32, 32, 256, 256], "metadata": {"gui": {"scaling": {"type": "nine_slice", "width": 32, "height": 32, "border": 4}}}}
+                    ],
+                    "cartography_table.png": [
+                        {"path": "./sprites/container/cartography_table/error.png", "slice": [226, 132, 28, 21, 256, 256]},
+                        {"path": "./sprites/container/cartography_table/scaled_map.png", "slice": [176, 66, 66, 66, 256, 256]},
+                        {"path": "./sprites/container/cartography_table/duplicated_map.png", "slice": [176, 132, 50, 66, 256, 256]},
+                        {"path": "./sprites/container/cartography_table/map.png", "slice": [176, 0, 66, 66, 256, 256]},
+                        {"path": "./sprites/container/cartography_table/locked.png", "slice": [52, 214, 10, 14, 256, 256]},
+                        {"path": "cartography_table.png", "clip": [0, 0, 176, 166, 256, 256]}
+                    ],
+                    "crafting_table.png": [
+                        {"path": "crafting_table.png", "clip": [0, 0, 176, 166, 256, 256]}
+                    ],
+                    "creative_inventory": {
+                        "tabs.png": [
+                            {"path": "././sprites/container/creative_inventory/scroller.png", "slice": [232, 0, 12, 15, 256, 256]},
+                            {"path": "././sprites/container/creative_inventory/scroller_disabled.png", "slice": [244, 0, 12, 15, 256, 256]},
+                            {"path": "././sprites/container/creative_inventory/tab_top_unselected_1.png", "slice": [0, 0, 26, 32, 256, 256]},
+                            {"path": "././sprites/container/creative_inventory/tab_top_unselected_2.png", "slice": [26, 0, 26, 32, 256, 256]},
+                            {"path": "././sprites/container/creative_inventory/tab_top_unselected_3.png", "slice": [52, 0, 26, 32, 256, 256]},
+                            {"path": "././sprites/container/creative_inventory/tab_top_unselected_4.png", "slice": [78, 0, 26, 32, 256, 256]},
+                            {"path": "././sprites/container/creative_inventory/tab_top_unselected_5.png", "slice": [104, 0, 26, 32, 256, 256]},
+                            {"path": "././sprites/container/creative_inventory/tab_top_unselected_6.png", "slice": [130, 0, 26, 32, 256, 256]},
+                            {"path": "././sprites/container/creative_inventory/tab_top_unselected_7.png", "slice": [156, 0, 26, 32, 256, 256]},
+                            {"path": "././sprites/container/creative_inventory/tab_top_selected_1.png", "slice": [0, 32, 26, 32, 256, 256]},
+                            {"path": "././sprites/container/creative_inventory/tab_top_selected_2.png", "slice": [26, 32, 26, 32, 256, 256]},
+                            {"path": "././sprites/container/creative_inventory/tab_top_selected_3.png", "slice": [52, 32, 26, 32, 256, 256]},
+                            {"path": "././sprites/container/creative_inventory/tab_top_selected_4.png", "slice": [78, 32, 26, 32, 256, 256]},
+                            {"path": "././sprites/container/creative_inventory/tab_top_selected_5.png", "slice": [104, 32, 26, 32, 256, 256]},
+                            {"path": "././sprites/container/creative_inventory/tab_top_selected_6.png", "slice": [130, 32, 26, 32, 256, 256]},
+                            {"path": "././sprites/container/creative_inventory/tab_top_selected_7.png", "slice": [156, 32, 26, 32, 256, 256]},
+                            {"path": "././sprites/container/creative_inventory/tab_bottom_unselected_1.png", "slice": [0, 64, 26, 32, 256, 256]},
+                            {"path": "././sprites/container/creative_inventory/tab_bottom_unselected_2.png", "slice": [26, 64, 26, 32, 256, 256]},
+                            {"path": "././sprites/container/creative_inventory/tab_bottom_unselected_3.png", "slice": [52, 64, 26, 32, 256, 256]},
+                            {"path": "././sprites/container/creative_inventory/tab_bottom_unselected_4.png", "slice": [78, 64, 26, 32, 256, 256]},
+                            {"path": "././sprites/container/creative_inventory/tab_bottom_unselected_5.png", "slice": [104, 64, 26, 32, 256, 256]},
+                            {"path": "././sprites/container/creative_inventory/tab_bottom_unselected_6.png", "slice": [130, 64, 26, 32, 256, 256]},
+                            {"path": "././sprites/container/creative_inventory/tab_bottom_unselected_7.png", "slice": [156, 64, 26, 32, 256, 256]},
+                            {"path": "././sprites/container/creative_inventory/tab_bottom_selected_1.png", "slice": [0, 96, 26, 32, 256, 256]},
+                            {"path": "././sprites/container/creative_inventory/tab_bottom_selected_2.png", "slice": [26, 96, 26, 32, 256, 256]},
+                            {"path": "././sprites/container/creative_inventory/tab_bottom_selected_3.png", "slice": [52, 96, 26, 32, 256, 256]},
+                            {"path": "././sprites/container/creative_inventory/tab_bottom_selected_4.png", "slice": [78, 96, 26, 32, 256, 256]},
+                            {"path": "././sprites/container/creative_inventory/tab_bottom_selected_5.png", "slice": [104, 96, 26, 32, 256, 256]},
+                            {"path": "././sprites/container/creative_inventory/tab_bottom_selected_6.png", "slice": [130, 96, 26, 32, 256, 256]},
+                            {"path": "././sprites/container/creative_inventory/tab_bottom_selected_7.png", "slice": [156, 96, 26, 32, 256, 256]}
+                        ]
+                    },
+                    "dispenser.png": [
+                        {"path": "dispenser.png", "clip": [0, 0, 176, 166, 256, 256]}
+                    ],
+                    "enchanting_table.png": [
+                        {"path": "./sprites/container/enchanting_table/level_1.png", "slice": [0, 223, 16, 16, 256, 256]},
+                        {"path": "./sprites/container/enchanting_table/level_2.png", "slice": [16, 223, 16, 16, 256, 256]},
+                        {"path": "./sprites/container/enchanting_table/level_3.png", "slice": [32, 223, 16, 16, 256, 256]},
+                        {"path": "./sprites/container/enchanting_table/level_1_disabled.png", "slice": [0, 239, 16, 16, 256, 256]},
+                        {"path": "./sprites/container/enchanting_table/level_2_disabled.png", "slice": [16, 239, 16, 16, 256, 256]},
+                        {"path": "./sprites/container/enchanting_table/level_3_disabled.png", "slice": [32, 239, 16, 16, 256, 256]},
+                        {"path": "./sprites/container/enchanting_table/enchantment_slot_disabled.png", "slice": [0, 185, 108, 19, 256, 256]},
+                        {"path": "./sprites/container/enchanting_table/enchantment_slot_highlighted.png", "slice": [0, 204, 108, 19, 256, 256]},
+                        {"path": "./sprites/container/enchanting_table/enchantment_slot.png", "slice": [0, 166, 108, 19, 256, 256]},
+                        {"path": "enchanting_table.png", "clip": [0, 0, 176, 166, 256, 256]}
+                    ],
+                    "furnace.png": [
+                        {"path": "./sprites/container/furnace/lit_progress.png", "slice": [176, 0, 14, 14, 256, 256]},
+                        {"path": "./sprites/container/furnace/burn_progress.png", "slice": [176, 14, 24, 16, 256, 256]},
+                        {"path": "furnace.png", "clip": [0, 0, 176, 166, 256, 256]}
+                    ],
+                    "gamemode_switcher.png": [
+                        {"path": "./sprites/gamemode_switcher/slot.png", "slice": [0, 75, 26, 26, 128, 128]},
+                        {"path": "./sprites/gamemode_switcher/selection.png", "slice": [26, 75, 26, 26, 128, 128]},
+                        {"path": "gamemode_switcher.png", "clip": [0, 0, 125, 75, 128, 128]}
+                    ],
+                    "grindstone.png": [
+                        {"path": "./sprites/container/grindstone/error.png", "slice": [176, 0, 28, 21, 256, 256]},
+                        {"path": "grindstone.png", "clip": [0, 0, 176, 166, 256, 256]}
+                    ],
+                    "hopper.png": [
+                        {"path": "hopper.png", "clip": [0, 0, 176, 133, 256, 256]}
+                    ],
+                    "horse.png": [
+                        {"path": "./sprites/container/horse/chest_slots.png", "slice": [0, 166, 90, 54, 256, 256]},
+                        {"path": "./sprites/container/horse/saddle_slot.png", "slice": [18, 220, 18, 18, 256, 256]},
+                        {"path": "./sprites/container/horse/llama_armor_slot.png", "slice": [36, 220, 18, 18, 256, 256]},
+                        {"path": "./sprites/container/horse/armor_slot.png", "slice": [0, 220, 18, 18, 256, 256]},
+                        {"path": "horse.png", "clip": [0, 0, 176, 166, 256, 256]}
+                    ],
+                    "inventory.png": [
+                        {"path": "./sprites/hud/effect_background_ambient.png", "slice": [165, 166, 24, 24, 256, 256]},
+                        {"path": "./sprites/hud/effect_background.png", "slice": [141, 166, 24, 24, 256, 256]},
+                        {"path": "./sprites/container/inventory/effect_background_large.png", "slice": [0, 166, 120, 32, 256, 256]},
+                        {"path": "./sprites/container/inventory/effect_background_small.png", "slice": [0, 198, 32, 32, 256, 256]},
+                        {"path": "inventory.png", "clip": [0, 0, 176, 166, 256, 256]}
+                    ],
+                    "loom.png": [
+                        {"path": "./sprites/container/loom/banner_slot.png", "slice": [176, 0, 16, 16, 256, 256]},
+                        {"path": "./sprites/container/loom/dye_slot.png", "slice": [192, 0, 16, 16, 256, 256]},
+                        {"path": "./sprites/container/loom/pattern_slot.png", "slice": [208, 0, 16, 16, 256, 256]},
+                        {"path": "./sprites/container/loom/scroller.png", "slice": [232, 0, 12, 15, 256, 256]},
+                        {"path": "./sprites/container/loom/scroller_disabled.png", "slice": [244, 0, 12, 15, 256, 256]},
+                        {"path": "./sprites/container/loom/pattern_selected.png", "slice": [0, 180, 14, 14, 256, 256]},
+                        {"path": "./sprites/container/loom/pattern_highlighted.png", "slice": [0, 194, 14, 14, 256, 256]},
+                        {"path": "./sprites/container/loom/pattern.png", "slice": [0, 166, 14, 14, 256, 256]},
+                        {"path": "loom.png", "clip": [0, 0, 176, 166, 256, 256]}
+                    ],
+                    "shulker_box.png": [
+                        {"path": "shulker_box.png", "clip": [0, 0, 176, 166, 256, 256]}
+                    ],
+                    "smithing.png": [
+                        {"path": "./sprites/container/smithing/error.png", "slice": [176, 0, 28, 21, 256, 256]},
+                        {"path": "smithing.png", "clip": [0, 0, 176, 166, 256, 256]}
+                    ],
+                    "smoker.png": [
+                        {"path": "./sprites/container/smoker/lit_progress.png", "slice": [176, 0, 14, 14, 256, 256]},
+                        {"path": "./sprites/container/smoker/burn_progress.png", "slice": [176, 14, 24, 16, 256, 256]},
+                        {"path": "smoker.png", "clip": [0, 0, 176, 166, 256, 256]}
+                    ],
+                    "stats_icons.png": [
+                        {"path": "./sprites/container/slot.png", "slice": [0, 0, 18, 18, 128, 128]},
+                        {"path": "./sprites/statistics/block_mined.png", "slice": [54, 18, 18, 18, 128, 128]},
+                        {"path": "./sprites/statistics/item_broken.png", "slice": [72, 18, 18, 18, 128, 128]},
+                        {"path": "./sprites/statistics/item_crafted.png", "slice": [18, 18, 18, 18, 128, 128]},
+                        {"path": "./sprites/statistics/item_used.png", "slice": [36, 18, 18, 18, 128, 128]},
+                        {"path": "./sprites/statistics/item_picked_up.png", "slice": [90, 18, 18, 18, 128, 128]},
+                        {"path": "./sprites/statistics/item_dropped.png", "slice": [108, 18, 18, 18, 128, 128]},
+                        {"path": "./sprites/statistics/header.png", "slice": [0, 18, 18, 18, 128, 128]},
+                        {"path": "./sprites/statistics/sort_up.png", "slice": [36, 0, 18, 18, 128, 128]},
+                        {"path": "./sprites/statistics/sort_down.png", "slice": [18, 0, 18, 18, 128, 128]}
+                    ],
+                    "stonecutter.png": [
+                        {"path": "./sprites/container/stonecutter/scroller.png", "slice": [176, 0, 12, 15, 256, 256]},
+                        {"path": "./sprites/container/stonecutter/scroller_disabled.png", "slice": [188, 0, 12, 15, 256, 256]},
+                        {"path": "./sprites/container/stonecutter/recipe_selected.png", "slice": [0, 184, 16, 18, 256, 256]},
+                        {"path": "./sprites/container/stonecutter/recipe_highlighted.png", "slice": [0, 202, 16, 18, 256, 256]},
+                        {"path": "./sprites/container/stonecutter/recipe.png", "slice": [0, 166, 16, 18, 256, 256]},
+                        {"path": "stonecutter.png", "clip": [0, 0, 176, 166, 256, 256]}
+                    ],
+                    "villager.png": [
+                        {"path": "villager.png", "clip": [0, 0, 276, 166, 512, 256]},
+                        {"path": "villager.png", "clip": [0, 0, 276, 166, 512, 256]}
+                    ],
+                    "villager2.png": [
+                        {"path": "./sprites/container/villager/out_of_stock.png", "slice": [311, 0, 28, 21, 512, 256]},
+                        {"path": "./sprites/container/villager/experience_bar_background.png", "slice": [0, 186, 102, 5, 512, 256]},
+                        {"path": "./sprites/container/villager/experience_bar_current.png", "slice": [0, 191, 102, 5, 512, 256]},
+                        {"path": "./sprites/container/villager/experience_bar_result.png", "slice": [0, 181, 102, 5, 512, 256]},
+                        {"path": "./sprites/container/villager/scroller.png", "slice": [0, 199, 6, 27, 512, 256]},
+                        {"path": "./sprites/container/villager/scroller_disabled.png", "slice": [6, 199, 6, 27, 512, 256]},
+                        {"path": "./sprites/container/villager/trade_arrow_out_of_stock.png", "slice": [25, 171, 10, 9, 512, 256]},
+                        {"path": "./sprites/container/villager/trade_arrow.png", "slice": [15, 171, 10, 9, 512, 256]},
+                        {"path": "./sprites/container/villager/discount_strikethrough.png", "slice": [0, 176, 9, 2, 512, 256]}
+                    ]
+                },
+                "icons.png": [
+                    {"path": "sprites/icon/ping_unknown.png", "slice": [0, 216, 10, 8, 256, 256]},
+                    {"path": "sprites/icon/ping_5.png", "slice": [0, 176, 10, 8, 256, 256]},
+                    {"path": "sprites/icon/ping_4.png", "slice": [0, 184, 10, 8, 256, 256]},
+                    {"path": "sprites/icon/ping_3.png", "slice": [0, 192, 10, 8, 256, 256]},
+                    {"path": "sprites/icon/ping_2.png", "slice": [0, 200, 10, 8, 256, 256]},
+                    {"path": "sprites/icon/ping_1.png", "slice": [0, 208, 10, 8, 256, 256]},
+                    {"path": "sprites/hud/heart/container_blinking.png", "slice": [25, 0, 9, 9, 256, 256]},
+                    {"path": "sprites/hud/heart/container.png", "slice": [16, 0, 9, 9, 256, 256]},
+                    {"path": "sprites/hud/heart/full_blinking.png", "slice": [70, 0, 9, 9, 256, 256]},
+                    {"path": "sprites/hud/heart/half_blinking.png", "slice": [79, 0, 9, 9, 256, 256]},
+                    {"path": "sprites/hud/heart/absorbing_full_blinking.png", "slice": [160, 0, 9, 9, 256, 256]},
+                    {"path": "sprites/hud/heart/full.png", "slice": [52, 0, 9, 9, 256, 256]},
+                    {"path": "sprites/hud/heart/absorbing_half_blinking.png", "slice": [169, 0, 9, 9, 256, 256]},
+                    {"path": "sprites/hud/heart/half.png", "slice": [61, 0, 9, 9, 256, 256]},
+                    {"path": "sprites/hud/crosshair.png", "slice": [0, 0, 15, 15, 256, 256]},
+                    {"path": "sprites/hud/crosshair_attack_indicator_full.png", "slice": [68, 94, 16, 16, 256, 256]},
+                    {"path": "sprites/hud/crosshair_attack_indicator_background.png", "slice": [36, 94, 16, 4, 256, 256]},
+                    {"path": "sprites/hud/crosshair_attack_indicator_progress.png", "slice": [52, 94, 16, 4, 256, 256]},
+                    {"path": "sprites/hud/hotbar_attack_indicator_background.png", "slice": [0, 94, 18, 18, 256, 256]},
+                    {"path": "sprites/hud/hotbar_attack_indicator_progress.png", "slice": [18, 94, 18, 18, 256, 256]},
+                    {"path": "sprites/hud/jump_bar_background.png", "slice": [0, 84, 182, 5, 256, 256]},
+                    {"path": "sprites/hud/jump_bar_cooldown.png", "slice": [0, 74, 182, 5, 256, 256]},
+                    {"path": "sprites/hud/jump_bar_progress.png", "slice": [0, 89, 182, 5, 256, 256]},
+                    {"path": "sprites/hud/experience_bar_background.png", "slice": [0, 64, 182, 5, 256, 256]},
+                    {"path": "sprites/hud/experience_bar_progress.png", "slice": [0, 69, 182, 5, 256, 256]},
+                    {"path": "sprites/hud/armor_full.png", "slice": [34, 9, 9, 9, 256, 256]},
+                    {"path": "sprites/hud/armor_half.png", "slice": [25, 9, 9, 9, 256, 256]},
+                    {"path": "sprites/hud/armor_empty.png", "slice": [16, 9, 9, 9, 256, 256]},
+                    {"path": "sprites/hud/food_empty_hunger.png", "slice": [133, 27, 9, 9, 256, 256]},
+                    {"path": "sprites/hud/food_half_hunger.png", "slice": [88, 27, 9, 9, 256, 256]},
+                    {"path": "sprites/hud/food_full_hunger.png", "slice": [97, 27, 9, 9, 256, 256]},
+                    {"path": "sprites/hud/food_empty.png", "slice": [16, 27, 9, 9, 256, 256]},
+                    {"path": "sprites/hud/food_half.png", "slice": [52, 27, 9, 9, 256, 256]},
+                    {"path": "sprites/hud/food_full.png", "slice": [61, 27, 9, 9, 256, 256]},
+                    {"path": "sprites/hud/air.png", "slice": [16, 18, 9, 9, 256, 256]},
+                    {"path": "sprites/hud/air_bursting.png", "slice": [25, 18, 9, 9, 256, 256]},
+                    {"path": "sprites/hud/heart/container_hardcore.png", "slice": [16, 45, 9, 9, 256, 256]},
+                    {"path": "sprites/hud/heart/container_hardcore_blinking.png", "slice": [25, 45, 9, 9, 256, 256]},
+                    {"path": "sprites/hud/heart/hardcore_full.png", "slice": [52, 45, 9, 9, 256, 256]},
+                    {"path": "sprites/hud/heart/hardcore_full_blinking.png", "slice": [70, 45, 9, 9, 256, 256]},
+                    {"path": "sprites/hud/heart/hardcore_half.png", "slice": [61, 45, 9, 9, 256, 256]},
+                    {"path": "sprites/hud/heart/hardcore_half_blinking.png", "slice": [79, 45, 9, 9, 256, 256]},
+                    {"path": "sprites/hud/heart/poisoned_full.png", "slice": [88, 0, 9, 9, 256, 256]},
+                    {"path": "sprites/hud/heart/poisoned_full_blinking.png", "slice": [106, 0, 9, 9, 256, 256]},
+                    {"path": "sprites/hud/heart/poisoned_half.png", "slice": [97, 0, 9, 9, 256, 256]},
+                    {"path": "sprites/hud/heart/poisoned_half_blinking.png", "slice": [115, 0, 9, 9, 256, 256]},
+                    {"path": "sprites/hud/heart/poisoned_hardcore_full.png", "slice": [88, 45, 9, 9, 256, 256]},
+                    {"path": "sprites/hud/heart/poisoned_hardcore_full_blinking.png", "slice": [106, 45, 9, 9, 256, 256]},
+                    {"path": "sprites/hud/heart/poisoned_hardcore_half.png", "slice": [97, 45, 9, 9, 256, 256]},
+                    {"path": "sprites/hud/heart/poisoned_hardcore_half_blinking.png", "slice": [115, 45, 9, 9, 256, 256]},
+                    {"path": "sprites/hud/heart/withered_full.png", "slice": [124, 0, 9, 9, 256, 256]},
+                    {"path": "sprites/hud/heart/withered_full_blinking.png", "slice": [142, 0, 9, 9, 256, 256]},
+                    {"path": "sprites/hud/heart/withered_half.png", "slice": [133, 0, 9, 9, 256, 256]},
+                    {"path": "sprites/hud/heart/withered_half_blinking.png", "slice": [151, 0, 9, 9, 256, 256]},
+                    {"path": "sprites/hud/heart/withered_hardcore_full.png", "slice": [124, 45, 9, 9, 256, 256]},
+                    {"path": "sprites/hud/heart/withered_hardcore_full_blinking.png", "slice": [142, 45, 9, 9, 256, 256]},
+                    {"path": "sprites/hud/heart/withered_hardcore_half.png", "slice": [133, 45, 9, 9, 256, 256]},
+                    {"path": "sprites/hud/heart/withered_hardcore_half_blinking.png", "slice": [151, 45, 9, 9, 256, 256]},
+                    {"path": "sprites/hud/heart/absorbing_full.png", "slice": [160, 0, 9, 9, 256, 256]},
+                    {"path": "sprites/hud/heart/absorbing_half.png", "slice": [169, 0, 9, 9, 256, 256]},
+                    {"path": "sprites/hud/heart/absorbing_hardcore_full.png", "slice": [160, 45, 9, 9, 256, 256]},
+                    {"path": "sprites/hud/heart/absorbing_hardcore_full_blinking.png", "slice": [160, 45, 9, 9, 256, 256]},
+                    {"path": "sprites/hud/heart/absorbing_hardcore_half.png", "slice": [169, 45, 9, 9, 256, 256]},
+                    {"path": "sprites/hud/heart/absorbing_hardcore_half_blinking.png", "slice": [169, 45, 9, 9, 256, 256]},
+                    {"path": "sprites/hud/heart/frozen_full.png", "slice": [178, 0, 9, 9, 256, 256]},
+                    {"path": "sprites/hud/heart/frozen_full_blinking.png", "slice": [178, 0, 9, 9, 256, 256]},
+                    {"path": "sprites/hud/heart/frozen_half.png", "slice": [187, 0, 9, 9, 256, 256]},
+                    {"path": "sprites/hud/heart/frozen_half_blinking.png", "slice": [187, 0, 9, 9, 256, 256]},
+                    {"path": "sprites/hud/heart/frozen_hardcore_full.png", "slice": [178, 45, 9, 9, 256, 256]},
+                    {"path": "sprites/hud/heart/frozen_hardcore_full_blinking.png", "slice": [178, 45, 9, 9, 256, 256]},
+                    {"path": "sprites/hud/heart/frozen_hardcore_half.png", "slice": [187, 45, 9, 9, 256, 256]},
+                    {"path": "sprites/hud/heart/frozen_hardcore_half_blinking.png", "slice": [187, 45, 9, 9, 256, 256]},
+                    {"path": "sprites/hud/heart/vehicle_container.png", "slice": [52, 9, 9, 9, 256, 256]},
+                    {"path": "sprites/hud/heart/vehicle_full.png", "slice": [88, 9, 9, 9, 256, 256]},
+                    {"path": "sprites/hud/heart/vehicle_half.png", "slice": [97, 9, 9, 9, 256, 256]},
+                    {"path": "sprites/server_list/incompatible.png", "slice": [0, 216, 10, 8, 256, 256]},
+                    {"path": "sprites/server_list/unreachable.png", "slice": [0, 216, 10, 8, 256, 256]},
+                    {"path": "sprites/server_list/ping_5.png", "slice": [0, 176, 10, 8, 256, 256]},
+                    {"path": "sprites/server_list/ping_4.png", "slice": [0, 184, 10, 8, 256, 256]},
+                    {"path": "sprites/server_list/ping_3.png", "slice": [0, 192, 10, 8, 256, 256]},
+                    {"path": "sprites/server_list/ping_2.png", "slice": [0, 200, 10, 8, 256, 256]},
+                    {"path": "sprites/server_list/ping_1.png", "slice": [0, 208, 10, 8, 256, 256]},
+                    {"path": "sprites/server_list/pinging_1.png", "slice": [10, 176, 10, 8, 256, 256]},
+                    {"path": "sprites/server_list/pinging_2.png", "slice": [10, 184, 10, 8, 256, 256]},
+                    {"path": "sprites/server_list/pinging_3.png", "slice": [10, 192, 10, 8, 256, 256]},
+                    {"path": "sprites/server_list/pinging_4.png", "slice": [10, 200, 10, 8, 256, 256]},
+                    {"path": "sprites/server_list/pinging_5.png", "slice": [10, 208, 10, 8, 256, 256]}
+                ],
+                "info_icon.png": [
+                    {"path": "sprites/icon/info.png", "slice": [0, 0, 20, 20, 20, 20]}
+                ],
+                "recipe_book.png": [
+                    {"path": "sprites/recipe_book/furnace_filter_enabled.png", "slice": [180, 182, 26, 16, 256, 256]},
+                    {"path": "sprites/recipe_book/furnace_filter_disabled.png", "slice": [152, 182, 26, 16, 256, 256]},
+                    {"path": "sprites/recipe_book/furnace_filter_enabled_highlighted.png", "slice": [180, 200, 26, 16, 256, 256]},
+                    {"path": "sprites/recipe_book/furnace_filter_disabled_highlighted.png", "slice": [152, 200, 26, 16, 256, 256]},
+                    {"path": "sprites/recipe_book/overlay_recipe.png", "slice": [82, 208, 32, 32, 256, 256], "metadata": {"gui": {"scaling": {"type": "nine_slice", "width": 32, "height": 32, "border": 4}}}},
+                    {"path": "sprites/recipe_book/furnace_overlay_highlighted.png", "slice": [152, 156, 24, 24, 256, 256]},
+                    {"path": "sprites/recipe_book/furnace_overlay.png", "slice": [152, 130, 24, 24, 256, 256]},
+                    {"path": "sprites/recipe_book/crafting_overlay_highlighted.png", "slice": [152, 104, 24, 24, 256, 256]},
+                    {"path": "sprites/recipe_book/crafting_overlay.png", "slice": [152, 78, 24, 24, 256, 256]},
+                    {"path": "sprites/recipe_book/furnace_overlay_disabled_highlighted.png", "slice": [178, 156, 24, 24, 256, 256]},
+                    {"path": "sprites/recipe_book/furnace_overlay_disabled.png", "slice": [178, 130, 24, 24, 256, 256]},
+                    {"path": "sprites/recipe_book/crafting_overlay_disabled_highlighted.png", "slice": [178, 104, 24, 24, 256, 256]},
+                    {"path": "sprites/recipe_book/crafting_overlay_disabled.png", "slice": [178, 78, 24, 24, 256, 256]},
+                    {"path": "sprites/recipe_book/filter_enabled.png", "slice": [180, 41, 26, 16, 256, 256]},
+                    {"path": "sprites/recipe_book/filter_disabled.png", "slice": [152, 41, 26, 16, 256, 256]},
+                    {"path": "sprites/recipe_book/filter_enabled_highlighted.png", "slice": [180, 59, 26, 16, 256, 256]},
+                    {"path": "sprites/recipe_book/filter_disabled_highlighted.png", "slice": [152, 59, 26, 16, 256, 256]},
+                    {"path": "sprites/recipe_book/page_forward.png", "slice": [1, 208, 12, 17, 256, 256]},
+                    {"path": "sprites/recipe_book/page_forward_highlighted.png", "slice": [1, 226, 12, 17, 256, 256]},
+                    {"path": "sprites/recipe_book/page_backward.png", "slice": [14, 208, 12, 17, 256, 256]},
+                    {"path": "sprites/recipe_book/page_backward_highlighted.png", "slice": [14, 226, 12, 17, 256, 256]},
+                    {"path": "sprites/recipe_book/tab.png", "slice": [153, 2, 35, 27, 256, 256]},
+                    {"path": "sprites/recipe_book/tab_selected.png", "slice": [188, 2, 35, 27, 256, 256]},
+                    {"path": "sprites/recipe_book/slot_many_craftable.png", "slice": [29, 231, 25, 25, 256, 256]},
+                    {"path": "sprites/recipe_book/slot_craftable.png", "slice": [29, 206, 25, 25, 256, 256]},
+                    {"path": "sprites/recipe_book/slot_many_uncraftable.png", "slice": [54, 231, 25, 25, 256, 256]},
+                    {"path": "sprites/recipe_book/slot_uncraftable.png", "slice": [54, 206, 25, 25, 256, 256]},
+                    {"path": "recipe_book.png", "clip": [0, 0, 149, 168, 256, 256]}
+                ],
+                "recipe_button.png": [
+                    {"path": "sprites/recipe_book/button.png", "slice": [0, 0, 20, 18, 256, 256]},
+                    {"path": "sprites/recipe_book/button_highlighted.png", "slice": [0, 19, 20, 18, 256, 256]}
+                ],
+                "report_button.png": [
+                    {"path": "sprites/social_interactions/report_button.png", "slice": [0, 0, 20, 20, 64, 64]},
+                    {"path": "sprites/social_interactions/report_button_disabled.png", "slice": [0, 40, 20, 20, 64, 64]},
+                    {"path": "sprites/social_interactions/report_button_highlighted.png", "slice": [0, 20, 20, 20, 64, 64]}
+                ],
+                "resource_packs.png": [
+                    {"path": "sprites/transferable_list/select_highlighted.png", "slice": [0, 32, 32, 32, 256, 256]},
+                    {"path": "sprites/transferable_list/select.png", "slice": [0, 0, 32, 32, 256, 256]},
+                    {"path": "sprites/transferable_list/unselect_highlighted.png", "slice": [32, 32, 32, 32, 256, 256]},
+                    {"path": "sprites/transferable_list/unselect.png", "slice": [32, 0, 32, 32, 256, 256]},
+                    {"path": "sprites/transferable_list/move_up_highlighted.png", "slice": [96, 32, 32, 32, 256, 256]},
+                    {"path": "sprites/transferable_list/move_up.png", "slice": [96, 0, 32, 32, 256, 256]},
+                    {"path": "sprites/transferable_list/move_down_highlighted.png", "slice": [64, 32, 32, 32, 256, 256]},
+                    {"path": "sprites/transferable_list/move_down.png", "slice": [64, 0, 32, 32, 256, 256]}
+                ],
+                "server_selection.png": [
+                    {"path": "sprites/server_list/join_highlighted.png", "slice": [0, 32, 32, 32, 256, 256]},
+                    {"path": "sprites/server_list/join.png", "slice": [0, 0, 32, 32, 256, 256]},
+                    {"path": "sprites/server_list/move_up_highlighted.png", "slice": [96, 32, 32, 32, 256, 256]},
+                    {"path": "sprites/server_list/move_up.png", "slice": [96, 0, 32, 32, 256, 256]},
+                    {"path": "sprites/server_list/move_down_highlighted.png", "slice": [64, 32, 32, 32, 256, 256]},
+                    {"path": "sprites/server_list/move_down.png", "slice": [64, 0, 32, 32, 256, 256]}
+                ],
+                "slider.png": [
+                    {"path": "sprites/widget/slider_highlighted.png", "slice": [0, 20, 200, 20, 256, 256], "metadata": {"gui": {"scaling": {"type": "nine_slice", "width": 200, "height": 20, "border": {"left": 20, "top": 4, "right": 20, "bottom": 4}}}}},
+                    {"path": "sprites/widget/slider.png", "slice": [0, 0, 200, 20, 256, 256], "metadata": {"gui": {"scaling": {"type": "nine_slice", "width": 200, "height": 20, "border": {"left": 20, "top": 4, "right": 20, "bottom": 4}}}}},
+                    {"path": "sprites/widget/slider_handle_highlighted.png", "slice": [0, 60, 200, 20, 256, 256], "metadata": {"gui": {"scaling": {"type": "nine_slice", "width": 200, "height": 20, "border": {"left": 20, "top": 4, "right": 20, "bottom": 4}}}}},
+                    {"path": "sprites/widget/slider_handle.png", "slice": [0, 40, 200, 20, 256, 256], "metadata": {"gui": {"scaling": {"type": "nine_slice", "width": 200, "height": 20, "border": {"left": 20, "top": 4, "right": 20, "bottom": 4}}}}}
+                ],
+                "social_interactions.png": [
+                    {"path": "sprites/social_interactions/mute_button.png", "slice": [0, 38, 20, 20, 256, 256]},
+                    {"path": "sprites/social_interactions/mute_button_highlighted.png", "slice": [0, 58, 20, 20, 256, 256]},
+                    {"path": "sprites/social_interactions/unmute_button.png", "slice": [20, 38, 20, 20, 256, 256]},
+                    {"path": "sprites/social_interactions/unmute_button_highlighted.png", "slice": [20, 58, 20, 20, 256, 256]},
+                    {"path": "sprites/social_interactions/background.png", "slice": [1, 1, 236, 34, 256, 256], "metadata": {"gui": {"scaling": {"type": "nine_slice", "width": 236, "height": 34, "border": 8}}}},
+                    {"path": "sprites/icon/search.png", "slice": [243, 1, 12, 12, 256, 256]}
+                ],
+                "spectator_widgets.png": [
+                    {"path": "sprites/spectator/teleport_to_player.png", "slice": [0, 0, 16, 16, 256, 256]},
+                    {"path": "sprites/spectator/teleport_to_team.png", "slice": [16, 0, 16, 16, 256, 256]},
+                    {"path": "sprites/spectator/close.png", "slice": [128, 0, 16, 16, 256, 256]},
+                    {"path": "sprites/spectator/scroll_left.png", "slice": [144, 0, 16, 16, 256, 256]},
+                    {"path": "sprites/spectator/scroll_right.png", "slice": [160, 0, 16, 16, 256, 256]}
+                ],
+                "sprites": {
+                    "accessibility.png": [
+                        {"path": "icon/accessibility.png", "slice": [0, 0, 15, 15, 15, 15]}
+                    ],
+                    "language.png": [
+                        {"path": "icon/language.png", "slice": [0, 0, 15, 15, 15, 15]}
+                    ]
+                },
+                "tab_button.png": [
+                    {"path": "sprites/widget/tab_selected.png", "slice": [0, 0, 130, 24, 256, 256], "metadata": {"gui": {"scaling": {"type": "nine_slice", "width": 130, "height": 24, "border": {"left": 2, "top": 2, "right": 2, "bottom": 0}}}}},
+                    {"path": "sprites/widget/tab.png", "slice": [0, 48, 130, 24, 256, 256], "metadata": {"gui": {"scaling": {"type": "nine_slice", "width": 130, "height": 24, "border": {"left": 2, "top": 2, "right": 2, "bottom": 0}}}}},
+                    {"path": "sprites/widget/tab_selected_highlighted.png", "slice": [0, 24, 130, 24, 256, 256], "metadata": {"gui": {"scaling": {"type": "nine_slice", "width": 130, "height": 24, "border": {"left": 2, "top": 2, "right": 2, "bottom": 0}}}}},
+                    {"path": "sprites/widget/tab_highlighted.png", "slice": [0, 72, 130, 24, 256, 256], "metadata": {"gui": {"scaling": {"type": "nine_slice", "width": 130, "height": 24, "border": {"left": 2, "top": 2, "right": 2, "bottom": 0}}}}}
+                ],
+                "toasts.png": [
+                    {"path": "sprites/toast/advancement.png", "slice": [0, 0, 160, 32, 256, 256]},
+                    {"path": "sprites/toast/recipe.png", "slice": [0, 32, 160, 32, 256, 256]},
+                    {"path": "sprites/toast/system.png", "slice": [0, 64, 160, 32, 256, 256]},
+                    {"path": "sprites/toast/tutorial.png", "slice": [0, 96, 160, 32, 256, 256]},
+                    {"path": "sprites/toast/movement_keys.png", "slice": [176, 0, 20, 20, 256, 256]},
+                    {"path": "sprites/toast/mouse.png", "slice": [196, 0, 20, 20, 256, 256]},
+                    {"path": "sprites/toast/tree.png", "slice": [216, 0, 20, 20, 256, 256]},
+                    {"path": "sprites/toast/recipe_book.png", "slice": [176, 20, 20, 20, 256, 256]},
+                    {"path": "sprites/toast/wooden_planks.png", "slice": [196, 20, 20, 20, 256, 256]},
+                    {"path": "sprites/toast/social_interactions.png", "slice": [216, 20, 20, 20, 256, 256]},
+                    {"path": "sprites/toast/right_click.png", "slice": [236, 20, 20, 20, 256, 256]}
+                ],
+                "unseen_notification.png": [
+                    {"path": "sprites/icon/unseen_notification.png", "slice": [0, 0, 10, 10, 10, 10]}
+                ],
+                "widgets.png": [
+                    {"path": "sprites/widget/button.png", "slice": [0, 66, 200, 20, 256, 256], "metadata": {"gui": {"scaling": {"type": "nine_slice", "width": 200, "height": 20, "border": {"left": 20, "top": 4, "right": 20, "bottom": 4}}}}},
+                    {"path": "sprites/widget/button_disabled.png", "slice": [0, 46, 200, 20, 256, 256], "metadata": {"gui": {"scaling": {"type": "nine_slice", "width": 200, "height": 20, "border": {"left": 20, "top": 4, "right": 20, "bottom": 4}}}}},
+                    {"path": "sprites/widget/button_highlighted.png", "slice": [0, 86, 200, 20, 256, 256], "metadata": {"gui": {"scaling": {"type": "nine_slice", "width": 200, "height": 20, "border": {"left": 20, "top": 4, "right": 20, "bottom": 4}}}}},
+                    {"path": "sprites/widget/locked_button.png", "slice": [0, 146, 20, 20, 256, 256]},
+                    {"path": "sprites/widget/locked_button_highlighted.png", "slice": [0, 166, 20, 20, 256, 256]},
+                    {"path": "sprites/widget/locked_button_disabled.png", "slice": [0, 186, 20, 20, 256, 256]},
+                    {"path": "sprites/widget/unlocked_button.png", "slice": [20, 146, 20, 20, 256, 256]},
+                    {"path": "sprites/widget/unlocked_button_highlighted.png", "slice": [20, 166, 20, 20, 256, 256]},
+                    {"path": "sprites/widget/unlocked_button_disabled.png", "slice": [20, 186, 20, 20, 256, 256]},
+                    {"path": "sprites/hud/hotbar.png", "slice": [0, 0, 182, 22, 256, 256]},
+                    {"path": "sprites/hud/hotbar_selection.png", "slice": [0, 22, 24, 23, 256, 256]},
+                    {"path": "sprites/hud/hotbar_offhand_left.png", "slice": [24, 22, 29, 24, 256, 256]},
+                    {"path": "sprites/hud/hotbar_offhand_right.png", "slice": [53, 22, 29, 24, 256, 256]},
+                    {"path": "sprites/icon/draft_report.png", "slice": [182, 24, 15, 15, 256, 256]}
+                ],
+                "world_selection.png": [
+                    {"path": "sprites/world_list/error_highlighted.png", "slice": [96, 32, 32, 32, 256, 256]},
+                    {"path": "sprites/world_list/error.png", "slice": [96, 0, 32, 32, 256, 256]},
+                    {"path": "sprites/world_list/marked_join_highlighted.png", "slice": [32, 32, 32, 32, 256, 256]},
+                    {"path": "sprites/world_list/marked_join.png", "slice": [32, 0, 32, 32, 256, 256]},
+                    {"path": "sprites/world_list/warning_highlighted.png", "slice": [64, 32, 32, 32, 256, 256]},
+                    {"path": "sprites/world_list/warning.png", "slice": [64, 0, 32, 32, 256, 256]},
+                    {"path": "sprites/world_list/join_highlighted.png", "slice": [0, 32, 32, 32, 256, 256]},
+                    {"path": "sprites/world_list/join.png", "slice": [0, 0, 32, 32, 256, 256]}
+                ]
+            }
+        }
+    },
+    "realms": {
+        "textures": {
+            "gui": {
+                "realms": {
+                    "accept_icon.png": [
+                        {"path": "././././minecraft/textures/gui/sprites/pending_invite/accept_highlighted.png", "slice": [19, 0, 18, 18, 37, 18]},
+                        {"path": "././././minecraft/textures/gui/sprites/pending_invite/accept.png", "slice": [0, 0, 18, 18, 37, 18]}
+                    ],
+                    "adventure.png": [
+                        "././././minecraft/textures/gui/realms/adventure.png"
+                    ],
+                    "cross_icon.png": [
+                        {"path": "././././minecraft/textures/gui/sprites/widget/cross_button_highlighted.png", "slice": [0, 14, 14, 14, 14, 28]},
+                        {"path": "././././minecraft/textures/gui/sprites/widget/cross_button.png", "slice": [0, 0, 14, 14, 14, 28]}
+                    ],
+                    "cross_player_icon.png": [
+                        {"path": "././././minecraft/textures/gui/sprites/player_list/remove_player.png", "slice": [0, 0, 8, 7, 8, 14]},
+                        {"path": "././././minecraft/textures/gui/sprites/player_list/remove_player_highlighted.png", "slice": [0, 7, 8, 7, 8, 14]}
+                    ],
+                    "darken.png": [
+                        "././././minecraft/textures/gui/realms/darken.png"
+                    ],
+                    "empty_frame.png": [
+                        "././././minecraft/textures/gui/realms/empty_frame.png"
+                    ],
+                    "experience.png": [
+                        "././././minecraft/textures/gui/realms/experience.png"
+                    ],
+                    "expired_icon.png": [
+                        {"path": "././././minecraft/textures/gui/sprites/realm_status/expired.png", "slice": [0, 0, 10, 28, 10, 28]}
+                    ],
+                    "inspiration.png": [
+                        "././././minecraft/textures/gui/realms/inspiration.png"
+                    ],
+                    "invitation_icons.png": [
+                        {"path": "././././minecraft/textures/gui/sprites/notification/1.png", "slice": [0, 0, 8, 8, 48, 16]},
+                        {"path": "././././minecraft/textures/gui/sprites/notification/2.png", "slice": [8, 0, 8, 8, 48, 16]},
+                        {"path": "././././minecraft/textures/gui/sprites/notification/3.png", "slice": [16, 0, 8, 8, 48, 16]},
+                        {"path": "././././minecraft/textures/gui/sprites/notification/4.png", "slice": [24, 0, 8, 8, 48, 16]},
+                        {"path": "././././minecraft/textures/gui/sprites/notification/5.png", "slice": [32, 0, 8, 8, 48, 16]},
+                        {"path": "././././minecraft/textures/gui/sprites/notification/more.png", "slice": [40, 0, 8, 8, 48, 16]}
+                    ],
+                    "invite_icon.png": [
+                        {"path": "././././minecraft/textures/gui/sprites/icon/invite.png", "slice": [0, 0, 18, 15, 18, 30]},
+                        {"path": "././././minecraft/textures/gui/sprites/icon/invite_highlighted.png", "slice": [0, 15, 18, 15, 18, 30]}
+                    ],
+                    "link_icons.png": [
+                        {"path": "././././minecraft/textures/gui/sprites/icon/link_highlighted.png", "slice": [15, 0, 15, 15, 30, 15]},
+                        {"path": "././././minecraft/textures/gui/sprites/icon/link.png", "slice": [0, 0, 15, 15, 30, 15]}
+                    ],
+                    "new_world.png": [
+                        "././././minecraft/textures/gui/realms/new_world.png"
+                    ],
+                    "news_icon.png": [
+                        {"path": "././././minecraft/textures/gui/sprites/widget/news_button_highlighted.png", "slice": [20, 0, 20, 20, 40, 20]},
+                        {"path": "././././minecraft/textures/gui/sprites/widget/news_button.png", "slice": [0, 0, 20, 20, 40, 20]}
+                    ],
+                    "news_notification_mainscreen.png": [
+                        {"path": "././././minecraft/textures/gui/sprites/icon/news.png", "slice": [0, 0, 40, 40, 40, 40]}
+                    ],
+                    "off_icon.png": [
+                        {"path": "././././minecraft/textures/gui/sprites/realm_status/closed.png", "slice": [0, 0, 10, 28, 10, 28]}
+                    ],
+                    "on_icon.png": [
+                        {"path": "././././minecraft/textures/gui/sprites/realm_status/open.png", "slice": [0, 0, 10, 28, 10, 28]}
+                    ],
+                    "op_icon.png": [
+                        {"path": "././././minecraft/textures/gui/sprites/player_list/remove_operator.png", "slice": [0, 0, 8, 7, 8, 14]},
+                        {"path": "././././minecraft/textures/gui/sprites/player_list/remove_operator_highlighted.png", "slice": [0, 7, 8, 7, 8, 14]}
+                    ],
+                    "plus_icon.png": [
+                        {"path": "././././minecraft/textures/gui/sprites/backup/changes.png", "slice": [0, 0, 9, 9, 9, 18]},
+                        {"path": "././././minecraft/textures/gui/sprites/backup/changes_highlighted.png", "slice": [0, 9, 9, 9, 9, 18]}
+                    ],
+                    "popup.png": [
+                        "././././minecraft/textures/gui/realms/popup.png"
+                    ],
+                    "reject_icon.png": [
+                        {"path": "././././minecraft/textures/gui/sprites/pending_invite/reject_highlighted.png", "slice": [19, 0, 18, 18, 37, 18]},
+                        {"path": "././././minecraft/textures/gui/sprites/pending_invite/reject.png", "slice": [0, 0, 18, 18, 37, 18]}
+                    ],
+                    "restore_icon.png": [
+                        {"path": "././././minecraft/textures/gui/sprites/backup/restore.png", "slice": [0, 0, 17, 10, 17, 20]},
+                        {"path": "././././minecraft/textures/gui/sprites/backup/restore_highlighted.png", "slice": [0, 10, 17, 10, 17, 20]}
+                    ],
+                    "slot_frame.png": [
+                        {"path": "././././minecraft/textures/gui/sprites/widget/slot_frame.png", "slice": [0, 0, 80, 80, 80, 80]}
+                    ],
+                    "survival_spawn.png": [
+                        "././././minecraft/textures/gui/realms/survival_spawn.png"
+                    ],
+                    "trailer_icons.png": [
+                        {"path": "././././minecraft/textures/gui/sprites/icon/video_link_highlighted.png", "slice": [15, 0, 15, 15, 30, 15]},
+                        {"path": "././././minecraft/textures/gui/sprites/icon/video_link.png", "slice": [0, 0, 15, 15, 30, 15]}
+                    ],
+                    "trial_icon.png": [
+                        {"path": "././././minecraft/textures/gui/sprites/icon/trial_available.png", "slice": [0, 0, 8, 16, 8, 16], "metadata": {"animation": {"frametime": 20}}}
+                    ],
+                    "upload.png": [
+                        "././././minecraft/textures/gui/realms/upload.png"
+                    ],
+                    "user_icon.png": [
+                        {"path": "././././minecraft/textures/gui/sprites/player_list/make_operator.png", "slice": [0, 0, 8, 7, 8, 14]},
+                        {"path": "././././minecraft/textures/gui/sprites/player_list/make_operator_highlighted.png", "slice": [0, 7, 8, 7, 8, 14]}
+                    ],
+                    "world_icon.png": [
+                        {"path": "././././minecraft/textures/gui/sprites/icon/new_realm.png", "slice": [0, 0, 40, 20, 40, 20]}
+                    ]
+                },
+                "title": {
+                    "realms.png": [
+                        "././././minecraft/textures/gui/title/realms.png"
+                    ]
+                }
+            }
+        }
+    }
+}

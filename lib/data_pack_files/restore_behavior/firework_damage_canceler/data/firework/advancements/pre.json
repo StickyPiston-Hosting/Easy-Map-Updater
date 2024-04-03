@@ -1,0 +1,16 @@
+{
+    "criteria": {
+        "damage": {
+            "trigger": "minecraft:player_hurt_entity",
+            "conditions": {
+                "entity": {
+                    "type": "minecraft:bat",
+                    "nbt": "{Tags:[\"firework.entity.pre\"]}"
+                }
+            }
+        }
+    },
+    "rewards": {
+        "function": "firework:cancel/pre"
+    }
+}

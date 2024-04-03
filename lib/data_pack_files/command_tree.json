@@ -1,0 +1,1547 @@
+{
+    "index": 0,
+    "branches": {
+        "advancement": {
+            "index": 3,
+            "branches": {
+                "everything": {
+                    "mapping": ["carry", "carry", "target_selector", "carry"]
+                },
+                "from": {
+                    "mapping": ["carry", "carry", "target_selector", "carry", "advancement"]
+                },
+                "only": {
+                    "mapping": ["carry", "carry", "target_selector", "carry", "advancement", "advancement_criteria"]
+                },
+                "through": "only",
+                "until": "only"
+            }
+        },
+        "attribute": {
+            "index": 3,
+            "branches": {
+                "base": {
+                    "index": 4,
+                    "branches": {
+                        "get": {
+                            "mapping": ["carry", "target_selector_single", "attribute", "carry", "carry"]
+                        },
+                        "set": {
+                            "mapping": ["carry", "target_selector_single", "attribute", "carry", "carry", "carry"]
+                        }
+                    }
+                },
+                "get": {
+                    "mapping": ["carry", "target_selector_single", "attribute", "carry"]
+                },
+                "modifier": {
+                    "index": 4,
+                    "branches": {
+                        "add": {
+                            "mapping": ["carry", "target_selector_single", "attribute", "carry", "carry", "carry", "carry", "carry", "carry"]
+                        },
+                        "remove": {
+                            "mapping": ["carry", "target_selector_single", "attribute", "carry", "carry", "carry"]
+                        },
+                        "value": {
+                            "mapping": ["carry", "target_selector_single", "attribute", "carry", "carry", "carry", "carry", "carry"]
+                        }
+                    }
+                }
+            }
+        },
+        "blockdata": {
+            "mapping": ["carry", "carry", "carry", "coordinate", "coordinate", "coordinate", "block_nbt"],
+            "legend": ["data", "merge", "block", 1, 2, 3, 4]
+        },
+        "bossbar": {
+            "index": 1,
+            "branches": {
+                "add": {
+                    "mapping": ["carry", "carry", "carry", "json_text_component"]
+                },
+                "get": {
+                    "mapping": ["carry", "carry", "carry", "carry"]
+                },
+                "list": {
+                    "mapping": ["carry", "carry"]
+                },
+                "remove": {
+                    "mapping": ["carry", "carry", "carry"]
+                },
+                "set": {
+                    "index": 3,
+                    "branches": {
+                        "color": {
+                            "mapping": ["carry", "carry", "carry", "carry", "carry"]
+                        },
+                        "max": "color",
+                        "name": {
+                            "mapping": ["carry", "carry", "carry", "carry", "json_text_component"]
+                        },
+                        "players": {
+                            "mapping": ["carry", "carry", "carry", "carry", "target_selector"]
+                        },
+                        "style": "color",
+                        "value": "color",
+                        "visible": "color"
+                    }
+                }
+            }
+        },
+        "clear": [
+            {
+                "version": {"max": 1202},
+                "mapping": ["carry", "target_selector", "item", "carry"],
+                "legend": [0, 1, {"id": 2, "data_value": 3, "nbt": 5, "read": true}, 4]
+            },
+            {
+                "version": {"min": 1300},
+                "mapping": ["carry", "target_selector", "item", "carry"]
+            }
+        ],
+        "clone": [
+            {
+                "version": {"max": 1202},
+                "index": 10,
+                "branches": {
+                    "filtered": {
+                        "mapping": ["carry", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "carry", "block", "carry"],
+                        "legend": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, {"id": 12, "data_value": 13, "read": true}, 11]
+                    }
+                },
+                "else": {
+                    "mapping": ["carry", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "carry", "carry"]
+                }
+            },
+            {
+                "version": {"min": 1300},
+                "index": 1,
+                "branches": {
+                    "from": {
+                        "index": 9,
+                        "branches": {
+                            "to": {
+                                "index": 14,
+                                "branches": {
+                                    "filtered": {
+                                        "mapping": ["carry", "carry", "dimension", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "carry", "dimension", "coordinate", "coordinate", "coordinate", "carry", "block", "carry"]
+                                    }
+                                },
+                                "else": {
+                                    "mapping": ["carry", "carry", "dimension", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "carry", "dimension", "coordinate", "coordinate", "coordinate", "carry", "carry"]
+                                }
+                            }
+                        },
+                        "else": {
+                            "index": 12,
+                            "branches": {
+                                "filtered": {
+                                    "mapping": ["carry", "carry", "dimension", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "carry", "block", "carry"]
+                                }
+                            },
+                            "else": {
+                                "mapping": ["carry", "carry", "dimension", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "carry", "carry"]
+                            }
+                        }
+                    }
+                },
+                "else": {
+                    "index": 10,
+                    "branches": {
+                        "filtered": {
+                            "mapping": ["carry", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "carry", "block", "carry"]
+                        }
+                    },
+                    "else": {
+                        "mapping": ["carry", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "carry", "carry"]
+                    }
+                }
+            }
+        ],
+        "damage": {
+            "index": 4,
+            "branches": {
+                "at": {
+                    "mapping": ["carry", "target_selector_single", "carry", "carry", "carry", "coordinate", "coordinate", "coordinate"]
+                },
+                "by": {
+                    "mapping": ["carry", "target_selector_single", "carry", "carry", "carry", "target_selector_single", "carry", "target_selector_single"]
+                }
+            },
+            "else": {
+                "mapping": ["carry", "target_selector_single", "carry", "carry"]
+            }
+        },
+        "data": {
+            "index": 1,
+            "branches": {
+                "get": {
+                    "index": 2,
+                    "branches": {
+                        "block": {
+                            "mapping": ["carry", "carry", "carry", "coordinate", "coordinate", "coordinate", "block_nbt_path", "carry"]
+                        },
+                        "entity": {
+                            "mapping": ["carry", "carry", "carry", "target_selector_single", "entity_nbt_path", "carry"]
+                        },
+                        "storage": {
+                            "mapping": ["carry", "carry", "carry", "carry", "nbt_path", "carry"]
+                        }
+                    }
+                },
+                "merge": {
+                    "index": 2,
+                    "branches": {
+                        "block": {
+                            "mapping": ["carry", "carry", "carry", "coordinate", "coordinate", "coordinate", "block_nbt"]
+                        },
+                        "entity": {
+                            "mapping": ["carry", "carry", "carry", "target_selector_single", "entity_nbt"]
+                        },
+                        "storage": {
+                            "mapping": ["carry", "carry", "carry", "carry", "nbt"]
+                        }
+                    }
+                },
+                "modify": {
+                    "index": 2,
+                    "branches": {
+                        "block": {
+                            "index": 7,
+                            "branches": {
+                                "insert": {
+                                    "index": 9,
+                                    "branches": {
+                                        "from": {
+                                            "index": 10,
+                                            "branches": {
+                                                "block": {
+                                                    "mapping": ["carry", "carry", "carry", "coordinate", "coordinate", "coordinate", "block_nbt_path", "carry", "carry", "carry", "carry", "coordinate", "coordinate", "coordinate", "block_nbt_path"]
+                                                },
+                                                "entity": {
+                                                    "mapping": ["carry", "carry", "carry", "coordinate", "coordinate", "coordinate", "block_nbt_path", "carry", "carry", "carry", "carry", "target_selector_single", "entity_nbt_path"]
+                                                },
+                                                "storage": {
+                                                    "mapping": ["carry", "carry", "carry", "coordinate", "coordinate", "coordinate", "block_nbt_path", "carry", "carry", "carry", "carry", "carry", "nbt_path"]
+                                                }
+                                            }
+                                        },
+                                        "value": {
+                                            "mapping": ["carry", "carry", "carry", "coordinate", "coordinate", "coordinate", "block_nbt_path", "carry", "carry", "carry", "block_nbt_from_path"],
+                                            "legend": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, {"nbt": 10, "path": 6, "mode": 7}]
+                                        }
+                                    }
+                                }
+                            },
+                            "else": {
+                                "index": 8,
+                                "branches": {
+                                    "from": {
+                                        "index": 9,
+                                        "branches": {
+                                            "block": {
+                                                "mapping": ["carry", "carry", "carry", "coordinate", "coordinate", "coordinate", "block_nbt_path", "carry", "carry", "carry", "coordinate", "coordinate", "coordinate", "block_nbt_path"]
+                                            },
+                                            "entity": {
+                                                "mapping": ["carry", "carry", "carry", "coordinate", "coordinate", "coordinate", "block_nbt_path", "carry", "carry", "carry", "target_selector_single", "entity_nbt_path"]
+                                            },
+                                            "storage": {
+                                                "mapping": ["carry", "carry", "carry", "coordinate", "coordinate", "coordinate", "block_nbt_path", "carry", "carry", "carry", "carry", "nbt_path"]
+                                            }
+                                        }
+                                    },
+                                    "value": {
+                                        "mapping": ["carry", "carry", "carry", "coordinate", "coordinate", "coordinate", "block_nbt_path", "carry", "carry", "block_nbt_from_path"],
+                                        "legend": [0, 1, 2, 3, 4, 5, 6, 7, 8, {"nbt": 9, "path": 6, "mode": 7}]
+                                    }
+                                }
+                            }
+                        },
+                        "entity": {
+                            "index": 5,
+                            "branches": {
+                                "insert": {
+                                    "index": 7,
+                                    "branches": {
+                                        "from": {
+                                            "index": 8,
+                                            "branches": {
+                                                "block": {
+                                                    "mapping": ["carry", "carry", "carry", "target_selector_single", "entity_nbt_path", "carry", "carry", "carry", "carry", "coordinate", "coordinate", "coordinate", "block_nbt_path"]
+                                                },
+                                                "entity": {
+                                                    "mapping": ["carry", "carry", "carry", "target_selector_single", "entity_nbt_path", "carry", "carry", "carry", "carry", "target_selector_single", "entity_nbt_path"]
+                                                },
+                                                "storage": {
+                                                    "mapping": ["carry", "carry", "carry", "target_selector_single", "entity_nbt_path", "carry", "carry", "carry", "carry", "carry", "nbt_path"]
+                                                }
+                                            }
+                                        },
+                                        "value": {
+                                            "mapping": ["carry", "carry", "carry", "target_selector_single", "entity_nbt_path", "carry", "carry", "carry", "entity_nbt_from_path"],
+                                            "legend": [0, 1, 2, 3, 4, 5, 6, 7, {"nbt": 8, "path": 4, "mode": 5}]
+                                        }
+                                    }
+                                }
+                            },
+                            "else": {
+                                "index": 6,
+                                "branches": {
+                                    "from": {
+                                        "index": 7,
+                                        "branches": {
+                                            "block": {
+                                                "mapping": ["carry", "carry", "carry", "target_selector_single", "entity_nbt_path", "carry", "carry", "carry", "coordinate", "coordinate", "coordinate", "block_nbt_path"]
+                                            },
+                                            "entity": {
+                                                "mapping": ["carry", "carry", "carry", "target_selector_single", "entity_nbt_path", "carry", "carry", "carry", "target_selector_single", "entity_nbt_path"]
+                                            },
+                                            "storage": {
+                                                "mapping": ["carry", "carry", "carry", "target_selector_single", "entity_nbt_path", "carry", "carry", "carry", "carry", "nbt_path"]
+                                            }
+                                        }
+                                    },
+                                    "value": {
+                                        "mapping": ["carry", "carry", "carry", "target_selector_single", "entity_nbt_path", "carry", "carry", "entity_nbt_from_path"],
+                                        "legend": [0, 1, 2, 3, 4, 5, 6, {"nbt": 7, "path": 4, "mode": 5}]
+                                    }
+                                }
+                            }
+                        },
+                        "storage": {
+                            "index": 5,
+                            "branches": {
+                                "insert": {
+                                    "index": 7,
+                                    "branches": {
+                                        "from": {
+                                            "index": 8,
+                                            "branches": {
+                                                "block": {
+                                                    "mapping": ["carry", "carry", "carry", "carry", "nbt_path", "carry", "carry", "carry", "carry", "coordinate", "coordinate", "coordinate", "block_nbt_path"]
+                                                },
+                                                "entity": {
+                                                    "mapping": ["carry", "carry", "carry", "carry", "nbt_path", "carry", "carry", "carry", "carry", "target_selector_single", "entity_nbt_path"]
+                                                },
+                                                "storage": {
+                                                    "mapping": ["carry", "carry", "carry", "carry", "nbt_path", "carry", "carry", "carry", "carry", "carry", "nbt_path"]
+                                                }
+                                            }
+                                        },
+                                        "value": {
+                                            "mapping": ["carry", "carry", "carry", "carry", "nbt_path", "carry", "carry", "carry", "nbt"]
+                                        }
+                                    }
+                                }
+                            },
+                            "else": {
+                                "index": 6,
+                                "branches": {
+                                    "from": {
+                                        "index": 7,
+                                        "branches": {
+                                            "block": {
+                                                "mapping": ["carry", "carry", "carry", "carry", "nbt_path", "carry", "carry", "carry", "coordinate", "coordinate", "coordinate", "block_nbt_path"]
+                                            },
+                                            "entity": {
+                                                "mapping": ["carry", "carry", "carry", "carry", "nbt_path", "carry", "carry", "carry", "target_selector_single", "entity_nbt_path"]
+                                            },
+                                            "storage": {
+                                                "mapping": ["carry", "carry", "carry", "carry", "nbt_path", "carry", "carry", "carry", "carry", "nbt_path"]
+                                            }
+                                        }
+                                    },
+                                    "value": {
+                                        "mapping": ["carry", "carry", "carry", "carry", "nbt_path", "carry", "carry", "nbt"]
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "remove": {
+                    "index": 2,
+                    "branches": {
+                        "block": {
+                            "mapping": ["carry", "carry", "carry", "coordinate", "coordinate", "coordinate", "block_nbt_path"]
+                        },
+                        "entity": {
+                            "mapping": ["carry", "carry", "carry", "target_selector_single", "entity_nbt_path"]
+                        },
+                        "storage": {
+                            "mapping": ["carry", "carry", "carry", "carry", "nbt_path"]
+                        }
+                    }
+                }
+            }
+        },
+        "datapack": {
+            "index": 1,
+            "branches": {
+                "disable": {
+                    "mapping": ["carry", "carry", "carry"]
+                },
+                "enable": {
+                    "index": 3,
+                    "branches": {
+                        "after": {
+                            "mapping": ["carry", "carry", "carry", "carry", "carry"]
+                        },
+                        "before": "after",
+                        "first": {
+                            "mapping": ["carry", "carry", "carry", "carry"]
+                        },
+                        "last": "first"
+                    },
+                    "else": {
+                        "mapping": ["carry", "carry", "carry"]
+                    }
+                },
+                "list": {
+                    "mapping": ["carry", "carry", "carry"]
+                }
+            }
+        },
+        "defaultgamemode": {
+            "mapping": ["carry", "gamemode"]
+        },
+        "difficulty": {
+            "mapping": ["carry", "difficulty"]
+        },
+        "effect": [
+            {
+                "version": {"max": 1202},
+                "index": 2,
+                "branches": {
+                    "clear": {
+                        "mapping": ["carry", "carry", "target_selector"],
+                        "legend": [0, 2, 1]
+                    }
+                },
+                "else": {
+                    "mapping": ["carry", "carry", "target_selector", "effect", "effect_time", "carry", "carry"],
+                    "legend": [0, "give", 1, 2, 3, 4, 5]
+                }
+            },
+            {
+                "version": {"min": 1300},
+                "index": 1,
+                "branches": {
+                    "clear": {
+                        "mapping": ["carry", "carry", "target_selector", "effect"]
+                    },
+                    "give": {
+                        "mapping": ["carry", "carry", "target_selector", "effect", "effect_time", "carry", "carry"]
+                    }
+                }
+            }
+        ],
+        "enchant": {
+            "mapping": ["carry", "target_selector", "enchantment", "carry"]
+        },
+        "entitydata": {
+            "mapping": ["carry", "carry", "target_selector", "carry", "carry", "carry", "carry", "carry", "entity_nbt"],
+            "legend": ["execute", "as", 1, "run", "data", "merge", "entity", "@s", 2]
+        },
+        "execute": [
+            {
+                "version": {"max": 1202},
+                "index": 5,
+                "branches": {
+                    "detect": {
+                        "mapping": ["carry", "carry", "target_selector", "carry", "carry", "carry", "coordinate", "coordinate", "coordinate", "carry", "carry", "coordinate", "coordinate", "coordinate", "block", "carry", "command"],
+                        "legend": ["execute", "as", 1, "at", "@s", "positioned", 2, 3, 4, "if", "block", 6, 7, 8, {"id": 9, "data_value": 10, "read": true}, "run", {"argument": {"min": 11}}]
+                    }
+                },
+                "else": {
+                    "mapping": ["carry", "carry", "target_selector", "carry", "carry", "carry", "coordinate", "coordinate", "coordinate", "carry", "command"],
+                    "legend": ["execute", "as", 1, "at", "@s", "positioned", 2, 3, 4, "run", {"argument": {"min": 5}}]
+                }
+            },
+            {
+                "version": {"min": 1300},
+                "index": 1,
+                "branches": {
+                    "align": {
+                        "mapping": ["carry", "carry", "carry", "carry", "command"],
+                        "legend": [0, 1, 2, "run", {"argument": {"min": 3}, "execute": true}]
+                    },
+                    "anchored": {
+                        "mapping": ["carry", "carry", "carry", "carry", "command"],
+                        "legend": [0, 1, 2, "run", {"argument": {"min": 3}, "execute": true}]
+                    },
+                    "as": {
+                        "mapping": ["carry", "carry", "target_selector", "carry", "command"],
+                        "legend": [0, 1, 2, "run", {"argument": {"min": 3}, "execute": true}]
+                    },
+                    "at": "as",
+                    "facing": {
+                        "index": 2,
+                        "branches": {
+                            "entity": {
+                                "mapping": ["carry", "carry", "carry", "target_selector", "carry", "carry", "command"],
+                                "legend": [0, 1, 2, 3, 4, "run", {"argument": {"min": 5}, "execute": true}]
+                            }
+                        },
+                        "else": {
+                            "mapping": ["carry", "carry", "coordinate", "coordinate", "coordinate", "carry", "command"],
+                            "legend": [0, 1, 2, 3, 4, "run", {"argument": {"min": 5}, "execute": true}]
+                        }
+                    },
+                    "if": {
+                        "index": 2,
+                        "branches": {
+                            "biome": {
+                                "mapping": ["carry", "carry", "carry", "coordinate", "coordinate", "coordinate", "biome", "carry", "command"],
+                                "legend": [0, 1, 2, 3, 4, 5, 6, "run", {"argument": {"min": 7}, "execute": true}]
+                            },
+                            "block": {
+                                "mapping": ["carry", "carry", "carry", "coordinate", "coordinate", "coordinate", "block", "carry", "command"],
+                                "legend": [0, 1, 2, 3, 4, 5, {"id": 6, "read": true}, "run", {"argument": {"min": 7}, "execute": true}]
+                            },
+                            "blocks": {
+                                "mapping": ["carry", "carry", "carry", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "carry", "carry", "command"],
+                                "legend": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, "run", {"argument": {"min": 13}, "execute": true}]
+                            },
+                            "data": {
+                                "index": 3,
+                                "branches": {
+                                    "block": {
+                                        "mapping": ["carry", "carry", "carry", "carry", "coordinate", "coordinate", "coordinate", "block_nbt_path", "carry", "command"],
+                                        "legend": [0, 1, 2, 3, 4, 5, 6, 7, "run", {"argument": {"min": 8}, "execute": true}]
+                                    },
+                                    "entity": {
+                                        "mapping": ["carry", "carry", "carry", "carry", "target_selector_single", "entity_nbt_path", "carry", "command"],
+                                        "legend": [0, 1, 2, 3, 4, 5, "run", {"argument": {"min": 6}, "execute": true}]
+                                    },
+                                    "storage": {
+                                        "mapping": ["carry", "carry", "carry", "carry", "carry", "nbt_path", "carry", "command"],
+                                        "legend": [0, 1, 2, 3, 4, 5, "run", {"argument": {"min": 6}, "execute": true}]
+                                    }
+                                }
+                            },
+                            "dimension": {
+                                "mapping": ["carry", "carry", "carry", "dimension", "carry", "command"],
+                                "legend": [0, 1, 2, 3, "run", {"argument": {"min": 4}, "execute": true}]
+                            },
+                            "entity": {
+                                "mapping": ["carry", "carry", "carry", "target_selector", "carry", "command"],
+                                "legend": [0, 1, 2, 3, "run", {"argument": {"min": 4}, "execute": true}]
+                            },
+                            "loaded": {
+                                "mapping": ["carry", "carry", "carry", "coordinate", "coordinate", "coordinate", "carry", "command"],
+                                "legend": [0, 1, 2, 3, 4, 5, "run", {"argument": {"min": 6}, "execute": true}]
+                            },
+                            "predicate": {
+                                "mapping": ["carry", "carry", "carry", "predicate", "carry", "command"],
+                                "legend": [0, 1, 2, 3, "run", {"argument": {"min": 4}, "execute": true}]
+                            },
+                            "score": {
+                                "index": 5,
+                                "branches": {
+                                    "matches": {
+                                        "mapping": ["carry", "carry", "carry", "target_selector", "carry", "carry", "carry", "carry", "command"],
+                                        "legend": [0, 1, 2, 3, 4, 5, 6, "run", {"argument": {"min": 7}, "execute": true}]
+                                    }
+                                },
+                                "else": {
+                                    "mapping": ["carry", "carry", "carry", "target_selector", "carry", "carry", "target_selector", "carry", "carry", "command"],
+                                    "legend": [0, 1, 2, 3, 4, 5, 6, 7, "run", {"argument": {"min": 8}, "execute": true}]
+                                }
+                            }
+                        }
+                    },
+                    "in": {
+                        "mapping": ["carry", "carry", "dimension", "carry", "command"],
+                        "legend": [0, 1, 2, "run", {"argument": {"min": 3}, "execute": true}]
+                    },
+                    "on": {
+                        "mapping": ["carry", "carry", "carry", "carry", "command"],
+                        "legend": [0, 1, 2, "run", {"argument": {"min": 3}, "execute": true}]
+                    },
+                    "positioned": {
+                        "index": 2,
+                        "branches": {
+                            "as": {
+                                "mapping": ["carry", "carry", "carry", "target_selector", "carry", "command"],
+                                "legend": [0, 1, 2, 3, "run", {"argument": {"min": 4}, "execute": true}]
+                            },
+                            "over": {
+                                "mapping": ["carry", "carry", "carry", "carry", "carry", "command"],
+                                "legend": [0, 1, 2, 3, "run", {"argument": {"min": 4}, "execute": true}]
+                            }
+                        },
+                        "else": {
+                            "mapping": ["carry", "carry", "coordinate", "coordinate", "coordinate", "carry", "command"],
+                            "legend": [0, 1, 2, 3, 4, "run", {"argument": {"min": 5}, "execute": true}]
+                        }
+                    },
+                    "rotated": {
+                        "index": 2,
+                        "branches": {
+                            "as": {
+                                "mapping": ["carry", "carry", "carry", "target_selector", "carry", "command"],
+                                "legend": [0, 1, 2, 3, "run", {"argument": {"min": 4}, "execute": true}]
+                            }
+                        },
+                        "else": {
+                            "mapping": ["carry", "carry", "coordinate", "coordinate", "carry", "command"],
+                            "legend": [0, 1, 2, 3, "run", {"argument": {"min": 4}, "execute": true}]
+                        }
+                    },
+                    "run": {
+                        "mapping": ["command"],
+                        "legend": [{"argument": {"min": 2}}]
+                    },
+                    "store": {
+                        "index": 3,
+                        "branches": {
+                            "block": {
+                                "mapping": ["carry", "carry", "carry", "carry", "coordinate", "coordinate", "coordinate", "block_nbt_path", "carry", "carry", "carry", "command"],
+                                "legend": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, "run", {"argument": {"min": 10}, "execute": true}]
+                            },
+                            "bossbar": {
+                                "mapping": ["carry", "carry", "carry", "carry", "carry", "carry", "carry", "command"],
+                                "legend": [0, 1, 2, 3, 4, 5, "run", {"argument": {"min": 6}, "execute": true}]
+                            },
+                            "entity": {
+                                "mapping": ["carry", "carry", "carry", "carry", "target_selector_single", "entity_nbt_path", "carry", "carry", "carry", "command"],
+                                "legend": [0, 1, 2, 3, 4, 5, 6, 7, "run", {"argument": {"min": 8}, "execute": true}]
+                            },
+                            "score": {
+                                "mapping": ["carry", "carry", "carry", "carry", "target_selector", "carry", "carry", "command"],
+                                "legend": [0, 1, 2, 3, 4, 5, "run", {"argument": {"min": 6}, "execute": true}]
+                            },
+                            "storage": {
+                                "mapping": ["carry", "carry", "carry", "carry", "carry", "nbt_path", "carry", "carry", "carry", "command"],
+                                "legend": [0, 1, 2, 3, 4, 5, 6, 7, "run", {"argument": {"min": 8}, "execute": true}]
+                            }
+                        }
+                    },
+                    "summon": {
+                        "mapping": ["carry", "carry", "entity", "carry", "command"],
+                        "legend": [0, 1, 2, "run", {"argument": {"min": 3}, "execute": true}]
+                    },
+                    "unless": "if"
+                }
+            }
+        ],
+        "experience": [
+            {
+                "version": {"max": 1202},
+                "mapping": ["carry", "carry", "target_selector", "experience_value", "experience_type"],
+                "legend": ["experience", "add", 2, 1, 1]
+            },
+            {
+                "version": {"min": 1300},
+                "index": 1,
+                "branches": {
+                    "add": {
+                    "mapping": ["carry", "carry", "target_selector", "carry", "carry"]
+                    },
+                    "set": "add",
+                    "query": {
+                    "mapping": ["carry", "carry", "target_selector", "carry"]
+                    }
+                }
+            }
+        ],
+        "fill": [
+            {
+                "version": {"max": 1202},
+                "index": 9,
+                "branches": {
+                    "replace": [
+                        {
+                            "is_nbt": 10,
+                            "mapping": ["carry", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "block", "fill_mode"],
+                            "legend": [0, 1, 2, 3, 4, 5, 6, {"id": 7, "data_value": 8, "nbt": 10}, 9]
+                        },
+                        {
+                            "mapping": ["carry", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "block", "fill_mode", "block"],
+                            "legend": [0, 1, 2, 3, 4, 5, 6, {"id": 7, "data_value": 8}, 9, {"id": 10, "data_value": 11, "read": true}]
+                        }
+                    ]
+                },
+                "else": {
+                    "mapping": ["carry", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "block", "fill_mode"],
+                    "legend": [0, 1, 2, 3, 4, 5, 6, {"id": 7, "data_value": 8, "nbt": 10}, 9]
+                }
+            },
+            {
+                "version": {"min": 1300},
+                "index": 8,
+                "branches": {
+                    "replace": {
+                        "mapping": ["carry", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "block", "fill_mode", "block"]
+                    }
+                },
+                "else": {
+                    "mapping": ["carry", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "block", "fill_mode"]
+                }
+            }
+        ],
+        "forceload": {
+            "index": 1,
+            "branches": {
+                "add": {
+                    "mapping": ["carry", "carry", "coordinate", "coordinate", "coordinate", "coordinate"]
+                },
+                "query": {
+                    "mapping": ["carry", "carry", "coordinate", "coordinate"]
+                },
+                "remove": {
+                    "index": 2,
+                    "branches": {
+                        "all": {
+                            "mapping": ["carry", "carry", "carry"]
+                        }
+                    },
+                    "else": {
+                        "mapping": ["carry", "carry", "coordinate", "coordinate", "coordinate", "coordinate"]
+                    }
+                }
+            }
+        },
+        "function": [
+            {
+                "version": {"max": 1202},
+                "array": [
+                    {
+                        "length": {"max": 2},
+                        "mapping": ["carry", "function"]
+                    },
+                    {
+                        "length": {"min": 3},
+                        "mapping": ["carry", "carry", "carry", "target_selector", "carry", "carry", "function"],
+                        "legend": ["execute", 2, "entity", 3, "run", 0, 1]
+                    }
+                ]
+            },
+            {
+                "version": {"min": 1300},
+                "mapping": ["carry", "function"]
+            }
+        ],
+        "gamemode": {
+            "mapping": ["carry", "gamemode", "target_selector"]
+        },
+        "gamerule": {
+            "mapping": ["carry", "gamerule", "carry"]
+        },
+        "give": {
+            "mapping": ["carry", "target_selector", "item", "carry"],
+            "legend_array": [
+                { "version": {"max": 1202}, "legend": [0, 1, {"id": 2, "data_value": 4, "nbt": 5}, 3] }
+            ]
+        },
+        "item": {
+            "index": 1,
+            "branches": {
+                "modify": {
+                    "index": 2,
+                    "branches": {
+                        "block": {
+                            "mapping": ["carry", "carry", "carry", "coordinate", "coordinate", "coordinate", "slot", "carry"]
+                        },
+                        "entity": {
+                            "mapping": ["carry", "carry", "carry", "target_selector", "slot", "carry"]
+                        }
+                    }
+                },
+                "replace": {
+                    "index": 2,
+                    "branches": {
+                        "block": {
+                            "index": 7,
+                            "branches": {
+                                "from": {
+                                    "index": 8,
+                                    "branches": {
+                                        "block": {
+                                            "mapping": ["carry", "carry", "carry", "coordinate", "coordinate", "coordinate", "slot", "carry", "carry", "coordinate", "coordinate", "coordinate", "slot"]
+                                        },
+                                        "entity": {
+                                            "mapping": ["carry", "carry", "carry", "coordinate", "coordinate", "coordinate", "slot", "carry", "carry", "target_selector_single", "slot"]
+                                        }
+                                    }
+                                },
+                                "with": {
+                                    "mapping": ["carry", "carry", "carry", "coordinate", "coordinate", "coordinate", "slot", "carry", "item", "carry"]
+                                }
+                            }
+                        },
+                        "entity": {
+                            "index": 5,
+                            "branches": {
+                                "from": {
+                                    "index": 6,
+                                    "branches": {
+                                        "block": {
+                                            "mapping": ["carry", "carry", "carry", "target_selector", "slot", "carry", "carry", "coordinate", "coordinate", "coordinate", "slot"]
+                                        },
+                                        "entity": {
+                                            "mapping": ["carry", "carry", "carry", "target_selector", "slot", "carry", "carry", "target_selector_single", "slot"]
+                                        }
+                                    }
+                                },
+                                "with": {
+                                    "mapping": ["carry", "carry", "carry", "target_selector", "slot", "carry", "item", "carry"]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "kill": {
+            "mapping": ["carry", "target_selector"],
+            "defaults": {
+                "1": "@s"
+            }
+        },
+        "loot": {
+            "index": 1,
+            "branches": {
+                "give": {
+                    "index": 3,
+                    "branches": {
+                        "fish": {
+                            "index": 8,
+                            "branches": {
+                                "mainhand": {
+                                    "mapping": ["carry", "carry", "target_selector", "carry", "loot_table", "coordinate", "coordinate", "coordinate", "carry"]
+                                },
+                                "offhand": "mainhand"
+                            },
+                            "else": {
+                                "mapping": ["carry", "carry", "target_selector", "carry", "loot_table", "coordinate", "coordinate", "coordinate", "item"]
+                            }
+                        },
+                        "kill": {
+                            "mapping": ["carry", "carry", "target_selector", "carry", "target_selector_single"]
+                        },
+                        "loot": {
+                            "mapping": ["carry", "carry", "target_selector", "carry", "loot_table"]
+                        },
+                        "mine": {
+                            "index": 7,
+                            "branches": {
+                                "mainhand": {
+                                    "mapping": ["carry", "carry", "target_selector", "carry", "coordinate", "coordinate", "coordinate", "carry"]
+                                },
+                                "offhand": "mainhand"
+                            },
+                            "else": {
+                                "mapping": ["carry", "carry", "target_selector", "carry", "coordinate", "coordinate", "coordinate", "item"]
+                            }
+                        }
+                    }
+                },
+                "insert": {
+                    "index": 5,
+                    "branches": {
+                        "fish": {
+                            "index": 10,
+                            "branches": {
+                                "mainhand": {
+                                    "mapping": ["carry", "carry", "coordinate", "coordinate", "coordinate", "carry", "loot_table", "coordinate", "coordinate", "coordinate", "carry"]
+                                },
+                                "offhand": "mainhand"
+                            },
+                            "else": {
+                                "mapping": ["carry", "carry", "coordinate", "coordinate", "coordinate", "carry", "loot_table", "coordinate", "coordinate", "coordinate", "item"]
+                            }
+                        },
+                        "kill": {
+                            "mapping": ["carry", "carry", "coordinate", "coordinate", "coordinate", "carry", "target_selector_single"]
+                        },
+                        "loot": {
+                            "mapping": ["carry", "carry", "coordinate", "coordinate", "coordinate", "carry", "loot_table"]
+                        },
+                        "mine": {
+                            "index": 9,
+                            "branches": {
+                                "mainhand": {
+                                    "mapping": ["carry", "carry", "coordinate", "coordinate", "coordinate", "carry", "coordinate", "coordinate", "coordinate", "carry"]
+                                },
+                                "offhand": "mainhand"
+                            },
+                            "else": {
+                                "mapping": ["carry", "carry", "coordinate", "coordinate", "coordinate", "carry", "coordinate", "coordinate", "coordinate", "item"]
+                            }
+                        }
+                    }
+                },
+                "replace": {
+                    "index": 2,
+                    "branches": {
+                        "block": {
+                            "index": 7,
+                            "branches": {
+                                "fish": {
+                                    "index": 12,
+                                    "branches": {
+                                        "mainhand": {
+                                            "mapping": ["carry", "carry", "carry", "coordinate", "coordinate", "coordinate", "slot", "carry", "loot_table", "coordinate", "coordinate", "coordinate", "carry"]
+                                        },
+                                        "offhand": "mainhand"
+                                    },
+                                    "else": {
+                                        "mapping": ["carry", "carry", "carry", "coordinate", "coordinate", "coordinate", "slot", "carry", "loot_table", "coordinate", "coordinate", "coordinate", "item"]
+                                    }
+                                },
+                                "kill": {
+                                    "mapping": ["carry", "carry", "carry", "coordinate", "coordinate", "coordinate", "slot", "carry", "target_selector_single"]
+                                },
+                                "loot": {
+                                    "mapping": ["carry", "carry", "carry", "coordinate", "coordinate", "coordinate", "slot", "carry", "loot_table"]
+                                },
+                                "mine": {
+                                    "index": 11,
+                                    "branches": {
+                                        "mainhand": {
+                                            "mapping": ["carry", "carry", "carry", "coordinate", "coordinate", "coordinate", "slot", "carry", "coordinate", "coordinate", "coordinate", "carry"]
+                                        },
+                                        "offhand": "mainhand"
+                                    },
+                                    "else": {
+                                        "mapping": ["carry", "carry", "carry", "coordinate", "coordinate", "coordinate", "slot", "carry", "coordinate", "coordinate", "coordinate", "item"]
+                                    }
+                                }
+                            },
+                            "else": {
+                                "index": 8,
+                                "branches": {
+                                    "fish": {
+                                        "index": 13,
+                                        "branches": {
+                                            "mainhand": {
+                                                "mapping": ["carry", "carry", "carry", "coordinate", "coordinate", "coordinate", "slot", "carry", "carry", "loot_table", "coordinate", "coordinate", "coordinate", "carry"]
+                                            },
+                                            "offhand": "mainhand"
+                                        },
+                                        "else": {
+                                            "mapping": ["carry", "carry", "carry", "coordinate", "coordinate", "coordinate", "slot", "carry", "carry", "loot_table", "coordinate", "coordinate", "coordinate", "item"]
+                                        }
+                                    },
+                                    "kill": {
+                                        "mapping": ["carry", "carry", "carry", "coordinate", "coordinate", "coordinate", "slot", "carry", "carry", "target_selector_single"]
+                                    },
+                                    "loot": {
+                                        "mapping": ["carry", "carry", "carry", "coordinate", "coordinate", "coordinate", "slot", "carry", "carry", "loot_table"]
+                                    },
+                                    "mine": {
+                                        "index": 12,
+                                        "branches": {
+                                            "mainhand": {
+                                                "mapping": ["carry", "carry", "carry", "coordinate", "coordinate", "coordinate", "slot", "carry", "carry", "coordinate", "coordinate", "coordinate", "carry"]
+                                            },
+                                            "offhand": "mainhand"
+                                        },
+                                        "else": {
+                                            "mapping": ["carry", "carry", "carry", "coordinate", "coordinate", "coordinate", "slot", "carry", "carry", "coordinate", "coordinate", "coordinate", "item"]
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "entity": {
+                            "index": 5,
+                            "branches": {
+                                "fish": {
+                                    "index": 10,
+                                    "branches": {
+                                        "mainhand": {
+                                            "mapping": ["carry", "carry", "carry", "target_selector", "slot", "carry", "loot_table", "coordinate", "coordinate", "coordinate", "carry"]
+                                        },
+                                        "offhand": "mainhand"
+                                    },
+                                    "else": {
+                                        "mapping": ["carry", "carry", "carry", "target_selector", "slot", "carry", "loot_table", "coordinate", "coordinate", "coordinate", "item"]
+                                    }
+                                },
+                                "kill": {
+                                    "mapping": ["carry", "carry", "carry", "target_selector", "slot", "carry", "target_selector_single"]
+                                },
+                                "loot": {
+                                    "mapping": ["carry", "carry", "carry", "target_selector", "slot", "carry", "loot_table"]
+                                },
+                                "mine": {
+                                    "index": 9,
+                                    "branches": {
+                                        "mainhand": {
+                                            "mapping": ["carry", "carry", "carry", "target_selector", "slot", "carry", "coordinate", "coordinate", "coordinate", "carry"]
+                                        },
+                                        "offhand": "mainhand"
+                                    },
+                                    "else": {
+                                        "mapping": ["carry", "carry", "carry", "target_selector", "slot", "carry", "coordinate", "coordinate", "coordinate", "item"]
+                                    }
+                                }
+                            },
+                            "else": {
+                                "index": 6,
+                                "branches": {
+                                    "fish": {
+                                        "index": 11,
+                                        "branches": {
+                                            "mainhand": {
+                                                "mapping": ["carry", "carry", "carry", "target_selector", "slot", "carry", "carry", "loot_table", "coordinate", "coordinate", "coordinate", "carry"]
+                                            },
+                                            "offhand": "mainhand"
+                                        },
+                                        "else": {
+                                            "mapping": ["carry", "carry", "carry", "target_selector", "slot", "carry", "carry", "loot_table", "coordinate", "coordinate", "coordinate", "item"]
+                                        }
+                                    },
+                                    "kill": {
+                                        "mapping": ["carry", "carry", "carry", "target_selector", "slot", "carry", "carry", "target_selector_single"]
+                                    },
+                                    "loot": {
+                                        "mapping": ["carry", "carry", "carry", "target_selector", "slot", "carry", "carry", "loot_table"]
+                                    },
+                                    "mine": {
+                                        "index": 10,
+                                        "branches": {
+                                            "mainhand": {
+                                                "mapping": ["carry", "carry", "carry", "target_selector", "slot", "carry", "carry", "coordinate", "coordinate", "coordinate", "carry"]
+                                            },
+                                            "offhand": "mainhand"
+                                        },
+                                        "else": {
+                                            "mapping": ["carry", "carry", "carry", "target_selector", "slot", "carry", "carry", "coordinate", "coordinate", "coordinate", "item"]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "spawn": "insert"
+            }
+        },
+        "me": {
+            "mapping": ["carry", "say_text"],
+            "legend": [0, {"say_text": {"min": 1}}]
+        },
+        "particle": [
+            {
+                "version": {"max": 809},
+                "index": 1,
+                "branches": {
+                    "blockcrack_**": {
+                        "mapping": ["carry", "particle", "block", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "carry", "carry", "particle_mode"],
+                        "legend": [0, 1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+                    },
+                    "blockdust_**": "blockcrack_**",
+                    "iconcrack_**": {
+                        "mapping": ["carry", "particle", "item", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "carry", "carry", "particle_mode"],
+                        "legend": [0, 1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+                    }
+                },
+                "else": {
+                    "mapping": ["carry", "particle", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "carry", "carry", "particle_mode"]
+                }
+            },
+            {
+                "version": {"min": 900, "max": 1202},
+                "index": 1,
+                "branches": {
+                    "blockcrack": {
+                        "mapping": ["carry", "particle", "block", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "carry", "carry", "particle_mode", "target_selector"],
+                        "legend": [0, 1, 12, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+                    },
+                    "blockdust": "blockcrack",
+                    "iconcrack": {
+                        "mapping": ["carry", "particle", "item", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "carry", "carry", "particle_mode", "target_selector"],
+                        "legend": [0, 1, 12, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+                    }
+                },
+                "else": {
+                    "mapping": ["carry", "particle", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "carry", "carry", "particle_mode", "target_selector"]
+                }
+            },
+            {
+                "version": {"min": 1300},
+                "index": 1,
+                "branches": {
+                    "block": {
+                        "mapping": ["carry", "particle", "block", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "carry", "carry", "particle_mode", "target_selector"]
+                    },
+                    "block_marker": "block",
+                    "dust": {
+                        "mapping": ["carry", "particle", "carry", "carry", "carry", "carry", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "carry", "carry", "particle_mode", "target_selector"]
+                    },
+                    "dust_color_transition": {
+                        "mapping": ["carry", "particle", "carry", "carry", "carry", "carry", "carry", "carry", "carry", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "carry", "carry", "particle_mode", "target_selector"]
+                    },
+                    "falling_dust": "block",
+                    "item": {
+                        "mapping": ["carry", "particle", "item", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "carry", "carry", "particle_mode", "target_selector"]
+                    },
+                    "sculk_charge": {
+                        "mapping": ["carry", "particle", "carry", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "carry", "carry", "particle_mode", "target_selector"]
+                    },
+                    "shriek": {
+                        "mapping": ["carry", "particle", "carry", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "carry", "carry", "particle_mode", "target_selector"]
+                    },
+                    "vibration": {
+                        "mapping": ["carry", "particle", "carry", "carry", "carry", "carry", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "carry", "carry", "particle_mode", "target_selector"]
+                    },
+
+                    "minecraft:block": "block",
+                    "minecraft:block_marker": "block",
+                    "minecraft:dust": "dust",
+                    "minecraft:dust_color_transition": "dust_color_transition",
+                    "minecraft:falling_dust": "block",
+                    "minecraft:item": "item",
+                    "minecraft:sculk_charge": "sculk_charge",
+                    "minecraft:shriek": "shriek",
+                    "minecraft:vibration": "vibration"
+                },
+                "else": {
+                    "mapping": ["carry", "particle", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "carry", "carry", "particle_mode", "target_selector"]
+                }
+            }
+        ],
+        "place": {
+            "index": 1,
+            "branches": {
+                "feature": {
+                    "mapping": ["carry", "carry", "carry", "coordinate", "coordinate", "coordinate"]
+                },
+                "jigsaw": {
+                    "mapping": ["carry", "carry", "carry", "carry", "carry", "coordinate", "coordinate", "coordinate"]
+                },
+                "structure": {
+                    "mapping": ["carry", "carry", "carry", "coordinate", "coordinate", "coordinate"]
+                },
+                "template": {
+                    "mapping": ["carry", "carry", "carry", "coordinate", "coordinate", "coordinate", "carry", "carry", "carry", "carry"]
+                }
+            }
+        },
+        "playsound": [
+            {
+                "version": {"max": 809},
+                "mapping": ["carry", "sound_event", "carry", "target_selector", "carry", "carry", "carry", "carry", "carry", "carry"],
+                "legend": [0, 1, "master", 2, 3, 4, 5, 6, 7, 8]
+            },
+            {
+                "version": {"min": 900},
+                "mapping": ["carry", "sound_event", "carry", "target_selector", "carry", "carry", "carry", "carry", "carry", "carry"]
+            }
+        ],
+        "recipe": {
+            "index": 3,
+            "branches": {
+                "*": {
+                    "mapping": ["carry", "carry", "target_selector", "carry"]
+                }
+            },
+            "else": {
+                "mapping": ["carry", "carry", "target_selector", "recipe"]
+            }
+        },
+        "replaceitem": {
+            "index": 1,
+            "branches": {
+                "block": {
+                    "mapping": ["carry", "carry", "carry", "coordinate", "coordinate", "coordinate", "slot", "carry", "item", "carry"],
+                    "legend": ["item", "replace", 1, 2, 3, 4, 5, "with", {"id": 6, "data_value": 8, "nbt": 9}, 7]
+                },
+                "entity": {
+                    "mapping": ["carry", "carry", "carry", "target_selector", "slot", "carry", "item", "carry"],
+                    "legend": ["item", "replace", 1, 2, 3, "with", {"id": 4, "data_value": 6, "nbt": 7}, 5]
+                }
+            }
+        },
+        "return": {
+            "mapping": ["carry", "carry"]
+        },
+        "ride": {
+            "mapping": ["carry", "target_selector_single", "carry", "target_selector_single"]
+        },
+        "say": {
+            "mapping": ["carry", "say_text"],
+            "legend": [0, {"say_text": {"min": 1}}]
+        },
+        "schedule": {
+            "index": 1,
+            "branches": {
+                "clear": {
+                    "mapping": ["carry", "carry", "function"]
+                },
+                "function": {
+                    "mapping": ["carry", "carry", "function", "carry", "carry"]
+                }
+            }
+        },
+        "scoreboard": {
+            "index": 1,
+            "branches": {
+                "objectives": {
+                    "index": 2,
+                    "branches": {
+                        "add": {
+                            "mapping": ["carry", "carry", "carry", "carry", "scoreboard_objective_criteria", "json_text_component_merge"],
+                            "legend": [0, 1, 2, 3, {"name": 3, "criteria": 4}, {"json_text_component": {"min": 5}}]
+                        },
+                        "list": {
+                            "mapping": ["carry", "carry", "carry", "carry"]
+                        },
+                        "modify": {
+                            "index": 4,
+                            "branches": {
+                                "displayautoupdate": {
+                                    "mapping": ["carry", "carry", "carry", "carry", "carry", "carry"]
+                                },
+                                "displayname": {
+                                    "mapping": ["carry", "carry", "carry", "carry", "carry", "json_text_component_merge"],
+                                    "legend": [0, 1, 2, 3, 4, {"json_text_component": {"min": 5}}]
+                                },
+                                "numberformat": {
+                                    "index": 5,
+                                    "branches": {
+                                        "blank": {
+                                            "mapping": ["carry", "carry", "carry", "carry", "carry", "carry"]
+                                        },
+                                        "fixed": {
+                                            "mapping": ["carry", "carry", "carry", "carry", "carry", "carry", "json_text_component"]
+                                        },
+                                        "styled": "fixed"
+                                    },
+                                    "else": {
+                                        "mapping": ["carry", "carry", "carry", "carry", "carry"]
+                                    }
+                                },
+                                "rendertype": {
+                                    "mapping": ["carry", "carry", "carry", "carry", "carry", "carry"]
+                                }
+                            }
+                        },
+                        "remove": {
+                            "mapping": ["carry", "carry", "carry", "carry"]
+                        },
+                        "setdisplay": {
+                            "mapping": ["carry", "carry", "carry", "scoreboard_objective_display_slot", "carry"]
+                        }
+                    }
+                },
+                "players": {
+                    "index": 2,
+                    "branches": {
+                        "add": {
+                            "mapping": ["carry", "carry", "carry", "target_selector", "carry", "carry"],
+                            "legend_array": [
+                                { "max": 12, "legend": [0, 1, 2, {"selector": 3, "nbt": 6}, 4, 5] }
+                            ]
+                        },
+                        "display": {
+                            "index": 3,
+                            "branches": {
+                                "name": {
+                                    "mapping": ["carry", "carry", "carry", "carry", "target_selector", "carry", "json_text_component"]
+                                },
+                                "numberformat": {
+                                    "index": 6,
+                                    "branches": {
+                                        "blank": {
+                                            "mapping": ["carry", "carry", "carry", "carry", "target_selector", "carry", "carry"]
+                                        },
+                                        "fixed": {
+                                            "mapping": ["carry", "carry", "carry", "carry", "target_selector", "carry", "carry", "json_text_component"]
+                                        },
+                                        "styled": "fixed"
+                                    },
+                                    "else": {
+                                        "mapping": ["carry", "carry", "carry", "carry", "target_selector", "carry"]
+                                    }
+                                }
+                            }
+                        },
+                        "get": {
+                            "mapping": ["carry", "carry", "carry", "target_selector_single", "carry"]
+                        },
+                        "operation": {
+                            "mapping": ["carry", "carry", "carry", "target_selector", "carry", "carry", "target_selector", "carry"]
+                        },
+                        "remove": "add",
+                        "set": "add",
+                        "tag": {
+                            "mapping": ["carry", "target_selector", "carry", "carry"],
+                            "legend": [2, {"selector": 3, "nbt": 6}, 4, 5]
+                        },
+                        "test": {
+                            "mapping": ["carry", "carry", "carry", "target_selector", "carry", "carry", "scoreboard_range"],
+                            "legend": ["execute", "if", "score", 3, 4, "matches", {"lower": 5, "upper": 6}]
+                        }
+                    },
+                    "else": "add"
+                },
+                "teams": {
+                    "index": 2,
+                    "branches": {
+                        "add": {
+                            "mapping": ["carry", "carry", "carry", "json_text_component"],
+                            "legend": ["team", 2, 3, 4]
+                        },
+                        "join": {
+                            "mapping": ["carry", "carry", "carry", "target_selector_list"],
+                            "legend": ["team", 2, 3, {"selector": {"min": 4}}],
+                            "split_to_function": 3
+                        },
+                        "leave": {
+                            "mapping": ["carry", "carry", "target_selector"],
+                            "legend": ["team", 2, 3]
+                        },
+                        "option": {
+                            "mapping": ["carry", "carry", "carry", "team_setting", "carry"],
+                            "legend": ["team", "modify", 3, 4, 5]
+                        }
+                    },
+                    "else": "add"
+                }
+            }
+        },
+        "setblock": [
+            {
+                "version": {"max": 1202},
+                "mapping": ["carry", "coordinate", "coordinate", "coordinate", "block", "setblock_mode"],
+                "legend": [0, 1, 2, 3, {"id": 4, "data_value": 5, "nbt": 7}, 6]
+            },
+            {
+                "version": {"min": 1300},
+                "mapping": ["carry", "coordinate", "coordinate", "coordinate", "block", "setblock_mode"]
+            }
+        ],
+        "setworldspawn": {
+            "mapping": ["carry", "coordinate", "coordinate", "coordinate", "coordinate"]
+        },
+        "spawnpoint": {
+            "mapping": ["carry", "target_selector", "int_coordinate", "int_coordinate", "int_coordinate", "coordinate"]
+        },
+        "spectate": {
+            "mapping": ["carry", "target_selector_single", "target_selector_single"]
+        },
+        "spreadplayers": {
+            "index": 5,
+            "branches": {
+                "under": {
+                    "mapping": ["carry", "coordinate", "coordinate", "carry", "carry", "carry", "coordinate", "carry", "target_selector"]
+                }
+            },
+            "else": {
+                "mapping": ["carry", "coordinate", "coordinate", "carry", "carry", "carry", "target_selector"]
+            }
+        },
+        "stats": {
+            "mapping": ["carry", "carry", "say_text"],
+            "legend": ["tell", "Nobody", {"say_text": {"min": 0}}]
+        },
+        "stopsound": {
+            "mapping": ["carry", "target_selector", "carry", "sound_event"]
+        },
+        "summon": {
+            "mapping": ["carry", "entity", "coordinate", "coordinate", "coordinate", "entity_nbt"],
+            "legend": [0, {"id": 1, "nbt": 5}, 2, 3, 4, {"nbt": 5, "object_id": 1}]
+        },
+        "tag": {
+            "mapping": ["carry", "target_selector", "carry", "carry"]
+        },
+        "team": {
+            "index": 1,
+            "branches": {
+                "add": {
+                    "mapping": ["carry", "carry", "carry", "json_text_component"]
+                },
+                "join": {
+                    "mapping": ["carry", "carry", "carry", "target_selector"]
+                },
+                "leave": {
+                    "mapping": ["carry", "carry", "target_selector"]
+                },
+                "modify": {
+                    "mapping": ["carry", "carry", "carry", "team_setting", "carry"]
+                }
+            },
+            "else": "add"
+        },
+        "teleport": [
+            {
+                "length": {"max": 2},
+                "mapping": ["carry", "target_selector"]
+            },
+            {
+                "length": 3,
+                "mapping": ["carry", "target_selector", "target_selector_single"]
+            },
+            {
+                "length": 4,
+                "mapping": ["carry", "coordinate", "coordinate", "coordinate"]
+            },
+            {
+                "length": 5,
+                "mapping": ["carry", "target_selector", "coordinate", "coordinate", "coordinate"]
+            },
+            {
+                "length": {"min": 6},
+                "index": 5,
+                "branches": {
+                    "facing": {
+                        "index": 6,
+                        "branches": {
+                            "entity": {
+                                "mapping": ["carry", "target_selector", "coordinate", "coordinate", "coordinate", "carry", "carry", "target_selector_single", "carry"]
+                            }
+                        },
+                        "else": {
+                            "mapping": ["carry", "target_selector", "coordinate", "coordinate", "coordinate", "carry", "coordinate", "coordinate", "coordinate"]
+                        }
+                    }
+                },
+                "else": {
+                    "mapping": ["carry", "target_selector", "coordinate", "coordinate", "coordinate", "yaw", "pitch"],
+                    "legend": [0, 1, 2, 3, 4, {"yaw": 5, "pitch": 6}, 6]
+                }
+            }
+        ],
+        "tell": {
+            "mapping": ["carry", "join_text"],
+            "legend": [0, {"join_text": {"min": 1}}]
+        },
+        "tellraw": {
+            "mapping": ["carry", "target_selector", "json_text_component"]
+        },
+        "testfor": {
+            "mapping": ["carry", "carry", "carry", "target_selector"],
+            "legend": ["execute", "if", "entity", {"selector": 1, "nbt": 2}]
+        },
+        "testforblock": {
+            "mapping": ["carry", "carry", "carry", "coordinate", "coordinate", "coordinate", "block"],
+            "legend": ["execute", "if", "block", 1, 2, 3, {"id": 4, "data_value": 5, "nbt": 6, "read": true}]
+        },
+        "testforblocks": {
+            "mapping": ["carry", "carry", "carry", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "carry"],
+            "legend": ["execute", "if", "blocks", 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        },
+        "time": {
+            "mapping": ["carry", "carry", "carry"]
+        },
+        "title": {
+            "index": 2,
+            "branches": {
+                "title": {
+                    "mapping": ["carry", "target_selector", "carry", "json_text_component"]
+                },
+                "times": {
+                    "mapping": ["carry", "target_selector", "carry", "carry", "carry", "carry"]
+                },
+                "clear": {
+                    "mapping": ["carry", "target_selector", "carry"]
+                },
+                "subtitle": "title",
+                "actionbar": "title",
+                "reset": "clear"
+            }
+        },
+        "tp": [
+            {
+                "version": {"max": 1202},
+                "array": [
+                    {
+                        "length": {"max": 2},
+                        "mapping": ["carry", "target_selector"],
+                        "legend": ["teleport", 1]
+                    },
+                    {
+                        "length": 3,
+                        "mapping": ["carry", "carry", "target_selector", "carry", "carry", "carry", "target_selector_single"],
+                        "legend": ["execute", "as", 1, "run", "teleport", "@s", 2]
+                    },
+                    {
+                        "length": 4,
+                        "mapping": ["carry", "carry", "carry", "carry", "carry", "coordinate", "coordinate", "coordinate"],
+                        "legend": ["execute", "at", "@s", "run", "teleport", 1, 2, 3]
+                    },
+                    {
+                        "length": {"min": 5},
+                        "mapping": ["carry", "carry", "target_selector", "carry", "carry", "carry", "carry", "carry", "coordinate", "coordinate", "coordinate", "yaw", "pitch"],
+                        "legend": ["execute", "as", 1, "at", "@s", "run", "teleport", "@s", 2, 3, 4, {"yaw": 5, "pitch": 6}, 6]
+                    }
+                ]
+            },
+            {
+                "version": {"min": 1300},
+                "array": [
+                    {
+                        "length": {"max": 2},
+                        "mapping": ["carry", "target_selector"]
+                    },
+                    {
+                        "length": 3,
+                        "mapping": ["carry", "target_selector", "target_selector_single"]
+                    },
+                    {
+                        "length": 4,
+                        "mapping": ["carry", "coordinate", "coordinate", "coordinate"]
+                    },
+                    {
+                        "length": 5,
+                        "mapping": ["carry", "target_selector", "coordinate", "coordinate", "coordinate"]
+                    },
+                    {
+                        "length": {"min": 6},
+                        "index": 5,
+                        "branches": {
+                            "facing": {
+                                "index": 6,
+                                "branches": {
+                                    "entity": {
+                                        "mapping": ["carry", "target_selector", "coordinate", "coordinate", "coordinate", "carry", "carry", "target_selector_single", "carry"]
+                                    }
+                                },
+                                "else": {
+                                    "mapping": ["carry", "target_selector", "coordinate", "coordinate", "coordinate", "carry", "coordinate", "coordinate", "coordinate"]
+                                }
+                            }
+                        },
+                        "else": {
+                            "mapping": ["carry", "target_selector", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate"]
+                        }
+                    }
+                ]
+            }
+        ],
+        "trigger": {
+            "mapping": ["carry", "carry", "carry", "carry"]
+        },
+        "weather": {
+            "mapping": ["carry", "carry", "carry"]
+        },
+        "worldborder": {
+            "index": 1,
+            "branches": {
+                "add": {
+                    "mapping": ["carry", "carry", "world_border_diameter", "carry"]
+                },
+                "center": {
+                    "mapping": ["carry", "carry", "world_border_coordinate", "world_border_coordinate"]
+                },
+                "damage": {
+                    "mapping": ["carry", "carry", "carry", "carry"]
+                },
+                "get": {
+                    "mapping": ["carry", "carry"]
+                },
+                "set": "add",
+                "warning": {
+                    "mapping": ["carry", "carry", "carry", "carry"]
+                }
+            }
+        },
+        "xp": "experience"
+    }
+}

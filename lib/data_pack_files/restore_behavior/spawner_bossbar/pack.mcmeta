@@ -1,0 +1,6 @@
+{
+    "pack": {
+        "pack_format": 26,
+        "description": "Simulates old behavior of boss mob spawners displaying the bossbar before the boss actually spawns."
+    }
+}

@@ -1,0 +1,20 @@
+To-Do List.txt
+sound_event_extractor.py
+debug_world_extractor.py
+object_fetcher.py
+blocks.txt
+log.txt
+backup
+command_chain.mcfunction
+commands_original.mcfunction
+commands.mcfunction
+session.json
+options.json
+player_names.json
+lib/__pycache__
+lib/data_pack_files/__pycache__
+lib/data_pack_files/admin_controls/__pycache__
+lib/data_pack_files/command_helper/__pycache__
+lib/data_pack_files/restore_behavior/__pycache__
+lib/resource_pack_files/__pycache__
+lib/region_files/__pycache__

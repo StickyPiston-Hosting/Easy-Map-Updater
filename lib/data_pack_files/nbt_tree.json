@@ -1,0 +1,457 @@
+{
+    "sources": {
+        "arbitrary": {
+            "tags": {}
+        },
+        "attribute": {
+            "tags": {
+                "Base": { "data_type": "double" },
+                "Modifiers": { "list": { "source": "attribute_modifier" } },
+                "Name": {
+                    "data_type": "string",
+                    "argument_type": "attribute"
+                }
+            }
+        },
+        "attribute_modifier": {
+            "tags": {
+                "Amount": { "data_type": "double" },
+                "AttributeName": {
+                    "data_type": "string",
+                    "argument_type": "attribute"
+                },
+                "Name": {
+                    "data_type": "string",
+                    "argument_type": "attribute"
+                },
+                "Operation": { "data_type": "int" },
+                "UUIDLeast": {
+                    "remove": true,
+                    "edge_case": {
+                        "case": "uuid_long",
+                        "least": "UUIDLeast",
+                        "most": "UUIDMost",
+                        "output": "UUID"
+                    },
+                    "path": {
+                        "rename": ["UUID[3]"]
+                    }
+                },
+                "UUIDMost": {
+                    "remove": true,
+                    "edge_case": {
+                        "case": "uuid_long",
+                        "least": "UUIDLeast",
+                        "most": "UUIDMost",
+                        "output": "UUID"
+                    },
+                    "path": {
+                        "rename": ["UUID[1]"]
+                    }
+                }
+            },
+            "necessary_tags": {
+                "UUID": {
+                    "generator": "uuid"
+                }
+            }
+        },
+        "block": {
+            "tags": {
+                "back_text": {
+                    "tags": {
+                        "messages": {
+                            "list": {
+                                "data_type": "string",
+                                "argument_type": "json_text_component"
+                            }
+                        }
+                    }
+                },
+                "Base": {
+                    "edge_case": "banner_base"
+                },
+                "Color": {
+                    "remove": true,
+                    "edge_case": "sign_text",
+                    "path": {
+                        "rename": ["front_text", "color"]
+                    }
+                },
+                "Command": {
+                    "data_type": "string",
+                    "argument_type": "command_string"
+                },
+                "CommandStats": { "source": "command_stats" },
+                "CustomName": {
+                    "data_type": "string",
+                    "argument_type": "json_text_component_mangled"
+                },
+                "EntityId": {
+                    "remove": true,
+                    "edge_case": "entity_id"
+                },
+                "front_text": {
+                    "tags": {
+                        "messages": {
+                            "list": {
+                                "data_type": "string",
+                                "argument_type": "json_text_component"
+                            }
+                        }
+                    }
+                },
+                "GlowingText": {
+                    "remove": true,
+                    "edge_case": "sign_text",
+                    "path": {
+                        "rename": ["front_text", "has_glowing_text"]
+                    }
+                },
+                "is_waxed": { "data_type": "byte" },
+                "Items": { "list": { "source": "item" } },
+                "Owner": {
+                    "rename": "SkullOwner",
+                    "source": "skull_owner"
+                },
+                "Patterns": {
+                    "list": {
+                        "tags": {
+                            "Color": {
+                                "data_type": "int",
+                                "argument_type": "banner_color"
+                            }
+                        }
+                    }
+                },
+                "Primary": {
+                    "rename": "primary_effect",
+                    "data_type": "string",
+                    "argument_type": "effect"
+                },
+                "Secondary": {
+                    "rename": "secondary_effect",
+                    "data_type": "string",
+                    "argument_type": "effect"
+                },
+                "SkullOwner": { "source": "skull_owner" },
+                "SpawnData": { "edge_case": "spawn_data" },
+                "SpawnPotentials": {
+                    "list": {
+                        "tags": {
+                            "data": {
+                                "tags": {
+                                    "entity": {
+                                        "source": "entity"
+                                    }
+                                }
+                            },
+                            "Entity": {
+                                "remove": true,
+                                "edge_case": "spawn_potential_entity"
+                            },
+                            "Type": {
+                                "remove": true,
+                                "edge_case": "old_spawn_potential_entity"
+                            },
+                            "weight": { "data_type": "int" },
+                            "Weight": {
+                                "rename": "weight",
+                                "data_type": "int"
+                            }
+                        }
+                    }
+                },
+                "Text1": {
+                    "remove": true,
+                    "edge_case": "sign_text",
+                    "path": {
+                        "rename": ["front_text", "messages[0]"]
+                    }
+                },
+                "Text2": {
+                    "remove": true,
+                    "edge_case": "sign_text",
+                    "path": {
+                        "rename": ["front_text", "messages[1]"]
+                    }
+                },
+                "Text3": {
+                    "remove": true,
+                    "edge_case": "sign_text",
+                    "path": {
+                        "rename": ["front_text", "messages[2]"]
+                    }
+                },
+                "Text4": {
+                    "remove": true,
+                    "edge_case": "sign_text",
+                    "path": {
+                        "rename": ["front_text", "messages[3]"]
+                    }
+                }
+            }
+        },
+        "command_stats": {
+            "tags": {
+                "AffectedBlocksName": { "data_type": "string", "argument_type": "target_selector" },
+                "AffectedEntitiesName": { "data_type": "string", "argument_type": "target_selector" },
+                "AffectedItemsName": { "data_type": "string", "argument_type": "target_selector" },
+                "QueryResultName": { "data_type": "string", "argument_type": "target_selector" },
+                "SuccessCountName": { "data_type": "string", "argument_type": "target_selector" }
+            }
+        },
+        "effect": {
+            "tags": {
+                "Ambient": { "rename": "ambient", "data_type": "byte" },
+                "Amplifier": { "rename": "amplifier", "data_type": "byte" },
+                "Duration": { "rename": "duration", "data_type": "int" },
+                "HiddenEffect": { "rename": "hidden_effect", "source": "effect" },
+                "Id": {
+                    "rename": "id",
+                    "data_type": "string",
+                    "argument_type": "effect"
+                },
+                "ShowIcon": { "rename": "show_icon", "data_type": "byte" },
+                "ShowParticles": { "rename": "show_particles", "data_type": "byte" }
+            }
+        },
+        "enchantment": {
+            "tags": {
+                "id": {
+                    "data_type": "string",
+                    "argument_type": "enchantment"
+                },
+                "lvl": { "data_type": "short" }
+            }
+        },
+        "entity": {
+            "tags": {
+                "ActiveEffects": {
+                    "rename": "active_effects",
+                    "list": { "source": "effect" }
+                },
+                "ArmorItems": { "list": { "source": "item" } },
+                "Attributes": { "list": { "source": "attribute" } },
+                "Block": {
+                    "remove": true,
+                    "edge_case": "block_entity"
+                },
+                "BlockState": { "edge_case": "block_entity" },
+                "block_state": { "edge_case": "block_entity" },
+                "Command": {
+                    "data_type": "string",
+                    "argument_type": "command_string"
+                },
+                "CommandStats": { "source": "command_stats" },
+                "CustomName": {
+                    "data_type": "string",
+                    "argument_type": "json_text_component_mangled"
+                },
+                "CustomNameVisible": { "data_type": "byte" },
+                "CustomPotionEffects": {
+                    "rename": "custom_potion_effects",
+                    "list": { "source": "effect" }
+                },
+                "DropItem": { "data_type": "byte" },
+                "EffectId": {
+                    "remove": true,
+                    "edge_case": "mooshroom_stew"
+                },
+                "EffectDuration": {
+                    "remove": true,
+                    "edge_case": "mooshroom_stew"
+                },
+                "Effects": {
+                    "rename": "effects",
+                    "list": { "source": "effect" }
+                },
+                "Equipment": {
+                    "remove": true,
+                    "edge_case": "equipment"
+                },
+                "Facing": {
+                    "data_type": "int",
+                    "argument_type": "hangable_facing"
+                },
+                "FallHurtAmount": { "data_type": "float" },
+                "FallHurtMax": { "data_type": "int" },
+                "FireworksItem": { "source": "item" },
+                "Fuse": { "edge_case": "fuse" },
+                "HandItems": { "list": { "source": "item" } },
+                "HurtEntities": { "data_type": "byte" },
+                "id": {
+                    "data_type": "string",
+                    "argument_type": "entity"
+                },
+                "Inventory": { "list": { "source": "item" } },
+                "Invisible": { "data_type": "byte" },
+                "Invulnerable": { "data_type": "byte" },
+                "item": { "source": "item" },
+                "Item": { "source": "item" },
+                "Life": { "data_type": "int" },
+                "LifeTime": { "data_type": "int" },
+                "Marker": { "data_type": "byte" },
+                "Motion": { "list": { "data_type": "double" } },
+                "NoAI": { "data_type": "byte" },
+                "NoBasePlate": { "data_type": "byte" },
+                "NoGravity": { "data_type": "byte" },
+                "Passengers": { "list": { "source": "entity" } },
+                "PersistenceRequired": { "data_type": "byte" },
+                "Pos": { "list": { "data_type": "double" } },
+                "Pose": {
+                    "tags": {
+                        "Body": { "list": { "data_type": "float" } },
+                        "Head": { "list": { "data_type": "float" } },
+                        "LeftArm": { "list": { "data_type": "float" } },
+                        "LeftLeg": { "list": { "data_type": "float" } },
+                        "RightArm": { "list": { "data_type": "float" } },
+                        "RightLeg": { "list": { "data_type": "float" } }
+                    }
+                },
+                "Rotation": { "list": { "data_type": "float" } },
+                "SelectedItem": { "source": "item" },
+                "ShotAtAngle": { "data_type": "byte" },
+                "ShowArms": { "data_type": "byte" },
+                "Silent": { "data_type": "byte" },
+                "Small": { "data_type": "byte" },
+                "text": {
+                    "data_type": "string",
+                    "argument_type": "json_text_component"
+                },
+                "TileEntityData": {
+                    "path": {
+                        "source": "block"
+                    }
+                },
+                "Time": { "data_type": "int" },
+                "UUIDLeast": {
+                    "remove": true,
+                    "edge_case": {
+                        "case": "uuid_long",
+                        "least": "UUIDLeast",
+                        "most": "UUIDMost",
+                        "output": "UUID"
+                    },
+                    "path": {
+                        "rename": ["UUID[3]"]
+                    }
+                },
+                "UUIDMost": {
+                    "remove": true,
+                    "edge_case": {
+                        "case": "uuid_long",
+                        "least": "UUIDLeast",
+                        "most": "UUIDMost",
+                        "output": "UUID"
+                    },
+                    "path": {
+                        "rename": ["UUID[1]"]
+                    }
+                }
+            },
+            "necessary_tags": {
+                "Item": {
+                    "generator": "item_entity",
+                    "conditions": {
+                        "id": "minecraft:item"
+                    }
+                }
+            }
+        },
+        "item": {
+            "edge_case": "item",
+            "tags": {
+                "id": {
+                    "data_type": "string",
+                    "argument_type": "item"
+                },
+                "Count": { "data_type": "byte" },
+                "tag": { "source": "item_tag" }
+            }
+        },
+        "item_tag": {
+            "tags": {
+                "AttributeModifiers": { "list": { "source": "attribute_modifier" } },
+                "BlockEntityTag": { "source": "block" },
+                "CanPlaceOn": { "edge_case": "can_place_on" },
+                "CanDestroy": { "edge_case": "can_place_on" },
+                "ChargedProjectiles": { "list": { "source": "item" } },
+                "CustomPotionEffects": {
+                    "rename": "custom_potion_effects",
+                    "list": { "source": "effect" }
+                },
+                "display": {
+                    "tags": {
+                        "Name": {
+                            "data_type": "string",
+                            "argument_type": "json_text_component"
+                        },
+                        "Lore": {
+                            "list": {
+                                "data_type": "string",
+                                "argument_type": "json_text_component"
+                            }
+                        }
+                    }
+                },
+                "Effects": {
+                    "rename": "effects",
+                    "list": {
+                        "source": "stew_effect"
+                    }
+                },
+                "ench": {
+                    "rename": "Enchantments",
+                    "list": {
+                        "source": "enchantment"
+                    }
+                },
+                "Enchantments": { "list": { "source": "enchantment" } },
+                "EntityTag": { "source": "entity" },
+                "Fireworks": {
+                    "tags": {
+                        "Explosions": {
+                            "list": {
+                                "tags": {
+                                    "Colors": { "data_type": "int_array" },
+                                    "FadeColors": { "data_type": "int_array" },
+                                    "Flicker": { "data_type": "byte" },
+                                    "Trail": { "data_type": "byte" },
+                                    "Type": { "data_type": "byte" }
+                                }
+                            }
+                        },
+                        "Flight": { "data_type": "byte" }
+                    }
+                },
+                "pages": {
+                    "list": {
+                        "data_type": "string",
+                        "argument_type": "json_text_component"
+                    }
+                },
+                "Unbreakable": { "data_type": "byte" }
+            }
+        },
+        "skull_owner": {
+            "tags": {
+                "Id": {
+                    "data_type": "string",
+                    "output_data_type": "int_array",
+                    "argument_type": "uuid_from_string"
+                }
+            }
+        },
+        "stew_effect": {
+            "tags": {
+                "EffectId": {
+                    "rename": "id",
+                    "data_type": "string",
+                    "argument_type": "effect"
+                },
+                "EffectDuration": { "rename": "duration", "data_type": "int" }
+            }
+        }
+    }
+}

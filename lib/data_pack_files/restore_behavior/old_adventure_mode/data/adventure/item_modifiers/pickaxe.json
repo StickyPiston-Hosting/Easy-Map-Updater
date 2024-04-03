@@ -1,0 +1,4 @@
+{
+    "function": "minecraft:set_nbt",
+    "tag": "{adventure:1b,HideFlags:24,CanDestroy:[\"#minecraft:mineable/pickaxe\",\"#adventure:mineable/universal\"]}"
+}

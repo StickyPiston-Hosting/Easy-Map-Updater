@@ -1,0 +1,15 @@
+{
+    "criteria": {
+        "requirement": {
+            "trigger": "minecraft:inventory_changed"
+        }
+    },
+    "requirements": [
+        [
+            "requirement"
+        ]
+    ],
+    "rewards": {
+        "function": "adventure:inventory_changed"
+    }
+}
