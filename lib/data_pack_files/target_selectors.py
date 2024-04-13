@@ -195,20 +195,28 @@ def pack_arguments(in_arguments: dict[str, str | dict | list], nested: bool = Fa
         return ""
     return ",".join(out_arguments)
 
-def pack_argument(argument_type: str, value: str | dict | list) -> str:
+def pack_argument(argument_type: str, value: str | dict | list[str]) -> str:
     if isinstance(value, dict):
         return f'{argument_type}={{{pack_arguments(value, True)}}}'
 
     if isinstance(value, list):
-        entry: str
         out_arguments: list[str] = []
-        positive_found = False
+        positive_arguments: list[str] = []
+        negative_arguments: list[str] = []
+
         for entry in value:
-            if positive_found and argument_type in ["gamemode", "name", "nbt", "team", "type"] and len(entry) > 0 and entry[0] != "!":
-                continue
-            if len(entry) > 0 and entry[0] != "!":
-                positive_found = True
-            out_arguments.append(f'{argument_type}={entry}')
+            if len(entry) > 0 and entry[0] == "!":
+                negative_arguments.append(entry)
+            else:
+                positive_arguments.append(entry)
+
+        for array in (
+            positive_arguments[:1 if argument_type in ["gamemode", "name", "team", "type"] else len(positive_arguments)],
+            negative_arguments
+        ):
+            for entry in array:
+                out_arguments.append(f'{argument_type}={entry}')
+
         return ",".join(out_arguments)
 
     return f'{argument_type}={value}'
