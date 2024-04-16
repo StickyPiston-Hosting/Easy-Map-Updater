@@ -124,12 +124,19 @@
                         }
                     }
                 },
+                "primary_effect": {
+                    "data_type": "string",
+                    "argument_type": "effect"
+                },
                 "Primary": {
                     "rename": "primary_effect",
                     "data_type": "string",
                     "argument_type": "effect"
                 },
-                "Secondary": {
+                "secondary_effect": {
+                    "data_type": "string",
+                    "argument_type": "effect"
+                },"Secondary": {
                     "rename": "secondary_effect",
                     "data_type": "string",
                     "argument_type": "effect"
@@ -203,16 +210,26 @@
         },
         "effect": {
             "tags": {
+                "ambient": { "data_type": "byte" },
                 "Ambient": { "rename": "ambient", "data_type": "byte" },
+                "amplifier": { "data_type": "byte" },
                 "Amplifier": { "rename": "amplifier", "data_type": "byte" },
+                "duration": { "data_type": "int" },
                 "Duration": { "rename": "duration", "data_type": "int" },
+                "hidden_effect": { "source": "effect" },
                 "HiddenEffect": { "rename": "hidden_effect", "source": "effect" },
+                "id": {
+                    "data_type": "string",
+                    "argument_type": "effect"
+                },
                 "Id": {
                     "rename": "id",
                     "data_type": "string",
                     "argument_type": "effect"
                 },
+                "show_icon": { "data_type": "byte" },
                 "ShowIcon": { "rename": "show_icon", "data_type": "byte" },
+                "show_particles": { "data_type": "byte" },
                 "ShowParticles": { "rename": "show_particles", "data_type": "byte" }
             }
         },
@@ -227,6 +244,7 @@
         },
         "entity": {
             "tags": {
+                "active_effects": { "list": { "source": "effect" } },
                 "ActiveEffects": {
                     "rename": "active_effects",
                     "list": { "source": "effect" }
@@ -249,6 +267,7 @@
                     "argument_type": "json_text_component_mangled"
                 },
                 "CustomNameVisible": { "data_type": "byte" },
+                "custom_potion_effects": { "list": { "source": "effect" } },
                 "CustomPotionEffects": {
                     "rename": "custom_potion_effects",
                     "list": { "source": "effect" }
@@ -262,6 +281,7 @@
                     "remove": true,
                     "edge_case": "mooshroom_stew"
                 },
+                "effects": { "list": { "source": "effect" } },
                 "Effects": {
                     "rename": "effects",
                     "list": { "source": "effect" }
@@ -366,7 +386,11 @@
                     "data_type": "string",
                     "argument_type": "item"
                 },
-                "Count": { "data_type": "byte" },
+                "count": { "data_type": "byte" },
+                "Count": {
+                    "rename": "count",
+                    "data_type": "byte"
+                },
                 "tag": { "source": "item_tag" }
             }
         },
@@ -377,6 +401,7 @@
                 "CanPlaceOn": { "edge_case": "can_place_on" },
                 "CanDestroy": { "edge_case": "can_place_on" },
                 "ChargedProjectiles": { "list": { "source": "item" } },
+                "custom_potion_effects": { "list": { "source": "effect" } },
                 "CustomPotionEffects": {
                     "rename": "custom_potion_effects",
                     "list": { "source": "effect" }
@@ -395,17 +420,14 @@
                         }
                     }
                 },
+                "effects": { "list": { "source": "stew_effect" } },
                 "Effects": {
                     "rename": "effects",
-                    "list": {
-                        "source": "stew_effect"
-                    }
+                    "list": { "source": "stew_effect" }
                 },
                 "ench": {
                     "rename": "Enchantments",
-                    "list": {
-                        "source": "enchantment"
-                    }
+                    "list": { "source": "enchantment" }
                 },
                 "Enchantments": { "list": { "source": "enchantment" } },
                 "EntityTag": { "source": "entity" },
@@ -445,11 +467,16 @@
         },
         "stew_effect": {
             "tags": {
+                "id": {
+                    "data_type": "string",
+                    "argument_type": "effect"
+                },
                 "EffectId": {
                     "rename": "id",
                     "data_type": "string",
                     "argument_type": "effect"
                 },
+                "duration": { "data_type": "int" },
                 "EffectDuration": { "rename": "duration", "data_type": "int" }
             }
         }

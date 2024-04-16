@@ -1,12 +1,13 @@
 # Import things
 
 from lib.log import log
+from lib.data_pack_files import arguments
 from lib.data_pack_files import nbt_tags
 from lib.data_pack_files import miscellaneous
-from lib.data_pack_files import ids
 from lib.data_pack_files import entities
 from lib.data_pack_files import numeric_ids
 from lib.data_pack_files import tables
+from lib.data_pack_files import item_component
 from lib import defaults
 
 
@@ -26,6 +27,7 @@ def update_from_command(item: str | dict[str, str], version: int, issues: list[d
 
     # Initialize parameters
     item_id = "minecraft:air"
+    components = ""
     data_value = -1
     nbt = ""
     read = False
@@ -46,8 +48,15 @@ def update_from_command(item: str | dict[str, str], version: int, issues: list[d
 
     # Assign NBT if present in ID
     if "{" in item_id:
-        nbt = item_id[item_id.find("{"):]
-        item_id = item_id[:item_id.find("{")]
+        tokens = arguments.parse(item_id, "", True)
+        if tokens[-1][0] == "{":
+            nbt = item_id[-len(tokens[-1]):]
+            item_id = item_id[:-len(tokens[-1])]
+
+    # Assign components if present in ID
+    if "[" in item_id:
+        components = item_id[item_id.find("["):]
+        item_id = item_id[:item_id.find("[")]
 
     # Remove iconcrack
     if "iconcrack_" in item_id and item_id[:10] == "iconcrack_":
@@ -57,6 +66,7 @@ def update_from_command(item: str | dict[str, str], version: int, issues: list[d
     new_item: dict[str, str | int | dict | bool | None] = update(
         {
             "id": item_id,
+            "components": item_component.unpack(components),
             "data_value": data_value,
             "nbt": nbt_tags.unpack(nbt),
             "read": read
@@ -65,8 +75,8 @@ def update_from_command(item: str | dict[str, str], version: int, issues: list[d
     )
 
     # Return item
-    if new_item["nbt"]:
-        return new_item["id"] + nbt_tags.pack(new_item["nbt"])
+    if new_item["components"]:
+        return new_item["id"] + item_component.pack(new_item["components"])
     return new_item["id"]
 
 
@@ -78,6 +88,7 @@ def update_from_nbt(item: dict[str, str | dict | nbt_tags.TypeNumeric], version:
 
     # Initialize parameters
     item_id = None
+    components = None
     data_value = -1
     nbt = None
     count = -1
@@ -87,10 +98,14 @@ def update_from_nbt(item: dict[str, str | dict | nbt_tags.TypeNumeric], version:
     # Extract arguments
     if "id" in item:
         item_id: str | nbt_tags.TypeNumeric = item["id"]
+    if "components" in item:
+        components: dict = item["components"]
     if "Damage" in item:
         data_value = int(item["Damage"].value)
     if "tag" in item:
         nbt: dict = item["tag"]
+    if "count" in item:
+        count = int(item["count"].value)
     if "Count" in item:
         count = int(item["Count"].value)
     if "Slot" in item:
@@ -100,6 +115,7 @@ def update_from_nbt(item: dict[str, str | dict | nbt_tags.TypeNumeric], version:
     new_item: dict[str, str | int | dict] = update(
         {
             "id": item_id,
+            "components": components,
             "data_value": data_value,
             "nbt": nbt,
             "read": read
@@ -111,10 +127,10 @@ def update_from_nbt(item: dict[str, str | dict | nbt_tags.TypeNumeric], version:
     export_item: dict[str, str | int | dict] = {}
     if "id" in new_item and new_item["id"] != None:
         export_item["id"] = new_item["id"]
-    if "nbt" in new_item and new_item["nbt"] != None:
-        export_item["tag"] = new_item["nbt"]
+    if "components" in new_item and new_item["components"] != None:
+        export_item["components"] = new_item["components"]
     if count >= 0:
-        export_item["Count"] = nbt_tags.TypeByte(count)
+        export_item["count"] = nbt_tags.TypeByte(count)
     if slot != None:
         export_item["Slot"] = nbt_tags.TypeByte(slot)
     
@@ -129,13 +145,14 @@ def update(item: dict[str, str | int | dict | bool | None], version: int, issues
 
     # Extract arguments
     item_id: str | nbt_tags.TypeNumeric | None = item["id"]
+    components: dict | None = item["components"]
     data_value: int = item["data_value"]
     nbt: dict | None = item["nbt"]
     read: bool = item["read"]
 
     # Convert item ID
     if item_id != None:
-        item_id = update_item_id(item_id, data_value, nbt, read, issues)
+        item_id = update_item_id(item_id, components, data_value, nbt, read, issues)
 
     # Modify item ID if a spawn egg and the "Riding" tag is present
     old_item_id = item_id
@@ -145,11 +162,15 @@ def update(item: dict[str, str | int | dict | bool | None], version: int, issues
     # Update NBT
     nbt = nbt_tags.direct_update(nbt, pack_version, issues, "item_tag", old_item_id)
 
+    # Extract components out of NBT
+    if nbt:
+        components = item_component.extract(item_id, components, nbt)
+
     # Apply damage to items with durability
     if item_id in tables.ITEMS_WITH_DURABILITY and (data_value >= 1 or (data_value == 0 and read)):
-        if nbt == None or nbt == "":
-            nbt = {}
-        nbt["Damage"] = nbt_tags.TypeInt(data_value)
+        if components == None or components == "":
+            components = {}
+        components["minecraft:damage"] = nbt_tags.TypeInt(data_value)
 
     # Apply pre-1.8 adventure mode fixes
     if pack_version <= 710 and defaults.FIXES["old_adventure_mode_items"] and not read:
@@ -157,12 +178,12 @@ def update(item: dict[str, str | int | dict | bool | None], version: int, issues
 
     return {
         "id": item_id,
-        "nbt": nbt
+        "components": components
     }
 
 
 
-def update_item_id(item_id: str | nbt_tags.TypeNumeric, data_value: int, nbt: dict, read: bool, issues: list[dict[str, str]]) -> str:
+def update_item_id(item_id: str | nbt_tags.TypeNumeric, components: dict, data_value: int, nbt: dict, read: bool, issues: list[dict[str, str]]) -> str:
     # Convert if a numeric
     if not isinstance(item_id, str):
         item_id, data_value = numeric_ids.update_block_item(int(item_id.value), data_value)

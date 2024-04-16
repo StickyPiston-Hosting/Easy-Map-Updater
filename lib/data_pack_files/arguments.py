@@ -6,13 +6,14 @@ def parse(string: str, separator: str, allow_single_quotes: bool) -> list[str]:
         return parse_with_quotes(string, separator, allow_single_quotes, "")
     if allow_single_quotes and "'" in string:
         return parse_with_quotes(string, separator, allow_single_quotes, "")
+    if separator == "":
+        return parse_with_quotes(string, separator, allow_single_quotes, "")
     return parse_without_quotes(string, separator)
 
 def parse_with_quotes(string: str, separator: str, allow_single_quotes: bool, spare_separator: str = "") -> list[str]:
     # Initialize variables
     arguments: list[str] = []
     argument = ""
-    prev_char = ""
     bracket_count = 0
     in_string = False
     char_escaped = False
@@ -20,10 +21,6 @@ def parse_with_quotes(string: str, separator: str, allow_single_quotes: bool, sp
 
     # Iterate through string
     for char in string:
-        # Push previous character
-        prev_char_test = prev_char
-        prev_char = char
-
         # Manage end separator
         if char == spare_separator and bracket_count == 0 and not in_string:
             if argument:
@@ -68,8 +65,14 @@ def parse_with_quotes(string: str, separator: str, allow_single_quotes: bool, sp
             in_string = True
             string_type = "double"
 
+        # Add argument if separator is empty string
+        if separator == "" and bracket_count == 0 and not in_string:
+            arguments.append(argument)
+            argument = ""
+
     # Append last argument to arguments
-    arguments.append(argument)
+    if argument:
+        arguments.append(argument)
     return arguments
 
 def parse_without_quotes(string: str, separator: str) -> list[str]:
