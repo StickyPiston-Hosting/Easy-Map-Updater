@@ -386,10 +386,10 @@
                     "data_type": "string",
                     "argument_type": "item"
                 },
-                "count": { "data_type": "byte" },
+                "count": { "data_type": "int" },
                 "Count": {
                     "rename": "count",
-                    "data_type": "byte"
+                    "data_type": "int"
                 },
                 "tag": { "source": "item_tag" }
             }

@@ -162,9 +162,13 @@ def update(item: dict[str, str | int | dict | bool | None], version: int, issues
     # Update NBT
     nbt = nbt_tags.direct_update(nbt, pack_version, issues, "item_tag", old_item_id)
 
+    # Conform component format
+    if components:
+        components = item_component.conform(components)
+
     # Extract components out of NBT
     if nbt:
-        components = item_component.extract(item_id, components, nbt)
+        components = item_component.extract(item_id, components, nbt, version)
 
     # Apply damage to items with durability
     if item_id in tables.ITEMS_WITH_DURABILITY and (data_value >= 1 or (data_value == 0 and read)):

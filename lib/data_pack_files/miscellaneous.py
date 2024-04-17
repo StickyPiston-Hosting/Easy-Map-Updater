@@ -46,6 +46,55 @@ def banner_color(color: nbt_tags.TypeInt, version: int, issues: list[dict[str, s
         return nbt_tags.TypeInt(15 - color.value)
     return color
 
+def banner_pattern(pattern: str, version: int) -> str:
+    if version <= 2004:
+        id_array = {
+            "b":    "minecraft:base",
+            "bs":   "minecraft:stripe_bottom",
+            "ts":   "minecraft:stripe_top",
+            "ls":   "minecraft:stripe_left",
+            "rs":   "minecraft:stripe_right",
+            "cs":   "minecraft:stripe_center",
+            "ms":   "minecraft:stripe_middle",
+            "drs":  "minecraft:stripe_downright",
+            "dls":  "minecraft:stripe_downleft",
+            "ss":   "minecraft:small_stripes",
+            "cr":   "minecraft:cross",
+            "sc":   "minecraft:straight_cross",
+            "ld":   "minecraft:diagonal_left",
+            "rud":  "minecraft:diagonal_right",
+            "lud":  "minecraft:diagonal_up_left",
+            "rd":   "minecraft:diagonal_up_right",
+            "vh":   "minecraft:half_vertical",
+            "vhr":  "minecraft:half_vertical_right",
+            "hh":   "minecraft:half_horizontal",
+            "hhb":  "minecraft:half_horizontal_bottom",
+            "bl":   "minecraft:square_bottom_left",
+            "br":   "minecraft:square_bottom_right",
+            "tl":   "minecraft:square_top_left",
+            "tr":   "minecraft:square_top_right",
+            "bt":   "minecraft:triangle_bottom",
+            "tt":   "minecraft:triangle_top",
+            "bts":  "minecraft:triangles_bottom",
+            "tts":  "minecraft:triangles_top",
+            "mc":   "minecraft:circle",
+            "mr":   "minecraft:rhombus",
+            "bo":   "minecraft:border",
+            "cbo":  "minecraft:curly_border",
+            "bri":  "minecraft:bricks",
+            "gra":  "minecraft:gradient",
+            "gru":  "minecraft:gradient_up",
+            "cre":  "minecraft:creeper",
+            "sku":  "minecraft:skull",
+            "flo":  "minecraft:flower",
+            "moj":  "minecraft:mojang",
+            "glb":  "minecraft:globe",
+            "pig":  "minecraft:piglin",
+        }
+        if pattern in id_array:
+            return id_array[pattern]
+    return pattern
+
 def color(index: int) -> str:
     return [
         "white",
