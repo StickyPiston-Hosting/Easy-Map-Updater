@@ -1,3 +1,8 @@
+# Easy Map Updater
+# Copyright (C) 2024  Jesse Spicer, and StickyPiston Hosting
+
+
+
 # Import things
 
 from lib.data_pack_files import command_block_helper

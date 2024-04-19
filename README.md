@@ -151,8 +151,9 @@ After the map has been updated and finalized, these actions will help package it
 - `clean`: Deletes the working copies of your world and resource pack, and all the generated duplicates of them.
 
 
-### Exit action
+### Miscellaneous actions
 
+- `license`: Shows the software license snippet.
 - `exit`: Exits the program.
 
 

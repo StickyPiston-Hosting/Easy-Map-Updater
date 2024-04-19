@@ -1,3 +1,8 @@
+# Easy Map Updater
+# Copyright (C) 2024  Jesse Spicer, and StickyPiston Hosting
+
+
+
 # Set default variables
 
 PACK_VERSION = 2004
