@@ -1,3 +1,8 @@
+# Easy Map Updater
+# Copyright (C) 2024  Jesse Spicer, and StickyPiston Hosting
+
+
+
 # Assign tables
 
 ATTRIBUTE_IDS = {

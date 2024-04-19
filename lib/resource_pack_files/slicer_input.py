@@ -1,3 +1,8 @@
+# Easy Map Updater
+# Copyright (C) 2024  Jesse Spicer, and StickyPiston Hosting
+
+
+
 DATA = [
 ("input", "assets/minecraft/textures/gui/chat_tags.png",
     ("assets/minecraft/textures/gui/sprites/icon/chat_modified.png", (0, 0, 9, 9, 32, 32))

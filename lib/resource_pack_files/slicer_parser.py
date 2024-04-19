@@ -1,3 +1,8 @@
+# Easy Map Updater
+# Copyright (C) 2024  Jesse Spicer, and StickyPiston Hosting
+
+
+
 import json
 from pathlib import Path
 from slicer_input import DATA

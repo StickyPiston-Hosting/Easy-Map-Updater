@@ -1,3 +1,8 @@
+# Easy Map Updater
+# Copyright (C) 2024  Jesse Spicer, and StickyPiston Hosting
+
+
+
 from nbt import nbt as NBT
 from nbt import region
 from pathlib import Path

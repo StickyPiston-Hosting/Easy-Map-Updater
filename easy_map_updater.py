@@ -1,3 +1,24 @@
+# Easy Map Updater
+# Copyright (C) 2024  Jesse Spicer, and StickyPiston Hosting
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+# Modifications and additions to world saves made by this program are
+# not covered by this license and instead fall under the MIT license.
+
+
+
 # Check that correct Python version is running
 
 import sys
@@ -108,6 +129,8 @@ class Action(Enum):
     ADMIN_KICKBACK = "admin.kickback"
 
     CLEAN = "clean"
+
+    LICENSE = "license"
     EXIT = "exit"
 
     DEBUG_CMD = "debug.cmd"
@@ -127,6 +150,11 @@ actions: dict[str, dict[str, str]]
 # Define functions
 
 def program():
+    # Show title
+    log("")
+    log("Easy Map Updater")
+    log("- By Dominexis, and StickyPiston Hosting")
+
     # Extract input
     load_session()
     save_session()
@@ -204,7 +232,7 @@ def list_options():
 def list_actions():
     log("Actions:")
     for action in actions:
-        if action == Action.EXIT.value:
+        if action == Action.LICENSE.value:
             log("")
         if actions[action]["show"]:
             log(f" {action}) {' '*max(21-len(action), 0)}{actions[action]['name']}")
@@ -276,6 +304,7 @@ def action_reset():
         Action.RP_EXPORT.value:             { "show": False, "function": action_export_resource_pack, "name": "Export resource pack to world" },
         Action.CLEAN.value:                 { "show": False, "function": action_clean_up, "name": "Clean up files (remove worlds and resource pack)" },
 
+        Action.LICENSE.value:               { "show": True,  "function": action_license, "name": "Show software license" },
         Action.EXIT.value:                  { "show": True,  "function": action_exit, "name": "Exit program" },
 
         Action.DEBUG_CMD.value:             { "show": True,  "function": action_update_single_command, "name": "Update single command (for testing)" },
@@ -766,6 +795,17 @@ def action_clean_up(): # Needs confirmation
     log("All clean!")
 
     action_reset()
+
+def action_license():
+    log("""
+Easy Map Updater  Copyright (C) 2024  Jesse Spicer, and StickyPiston Hosting
+This program comes with ABSOLUTELY NO WARRANTY.
+This is free software, and you are welcome to redistribute it
+under the GNU GPLv3 license.
+        
+Modifications and additions to world saves made by this program are
+not covered by this license and instead fall under the MIT license.
+""")
 
 def action_exit():
     log("Exiting...")

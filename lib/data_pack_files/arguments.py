@@ -1,3 +1,8 @@
+# Easy Map Updater
+# Copyright (C) 2024  Jesse Spicer, and StickyPiston Hosting
+
+
+
 # Define functions
 
 def parse(string: str, separator: str, allow_single_quotes: bool) -> list[str]:
