@@ -56,7 +56,7 @@ def update(string: str, version: int, issues: list[dict[str, str]], mangled: boo
     if isinstance(unpacked_component, str):
         updated_component = update_string(unpacked_component)
     else:
-        updated_component = update_component(unpacked_component, issues)
+        updated_component = update_component(unpacked_component, version, issues)
 
     # Pack based on mangling rule
     if mangled:
@@ -151,7 +151,10 @@ def update_string(string: str) -> list[dict[str, str | bool]] | str:
     # Return JSON text component
     return components
 
-def update_component(component: list | dict[str, str | dict] | str, issues: list[dict[str, str]]) -> list | dict[str, str | dict] | str:
+def update_component(component: list | dict[str, str | dict] | str, version: int, issues: list[dict[str, str]]) -> list | dict[str, str | dict] | str:
+    global pack_version
+    pack_version = version
+
     if isinstance(component, list):
         return update_list(component, issues)
     if isinstance(component, dict):
@@ -163,7 +166,7 @@ def update_component(component: list | dict[str, str | dict] | str, issues: list
 def update_list(component: list, issues: list[dict[str, str]]) -> list:
     # Iterate through list
     for i in range(len(component)):
-        component[i] = update_component(component[i], issues)
+        component[i] = update_component(component[i], pack_version, issues)
     if len(component) == 0:
         return {"type":"text","text":""}
     return component
@@ -185,7 +188,7 @@ def update_compound(component: dict[str, str | dict] | str, issues: list[dict[st
         if key == "selector":
             component[key] = target_selectors.update(component[key], pack_version, issues, False)
         if key in ["extra", "separator", "with"]:
-            component[key] = update_component(component[key], issues)
+            component[key] = update_component(component[key], pack_version, issues)
         if key == "hoverEvent":
             component[key] = update_hover_event(component[key], issues)
         if key == "nbt":
@@ -223,9 +226,9 @@ def update_hover_event(component: dict[str, str], issues: list[dict[str, str]]) 
 
     if component["action"] == "show_text":
         if "contents" not in component:
-            component["contents"] = update_component(component["value"], issues)
+            component["contents"] = update_component(component["value"], pack_version, issues)
         else:
-            component["contents"] = update_component(component["contents"], issues)
+            component["contents"] = update_component(component["contents"], pack_version, issues)
 
     if component["action"] == "show_item":
         if "contents" not in component:
@@ -258,7 +261,7 @@ def update_hover_event(component: dict[str, str], issues: list[dict[str, str]]) 
             print('WARNING: "show_entity" not handled without "contents"')
         else:
             if "name" in component["contents"]:
-                component["contents"]["name"] = update_component(component["contents"]["name"], issues)
+                component["contents"]["name"] = update_component(component["contents"]["name"], pack_version, issues)
             if "type" in component["contents"]:
                 component["contents"]["type"] = entities.update(component["contents"]["type"], pack_version, issues)
 
