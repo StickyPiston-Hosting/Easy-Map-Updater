@@ -5,10 +5,10 @@
 
 # Import things
 
-import json
 import shutil
 from pathlib import Path
 from lib import finalize
+from lib import option_manager
 from lib.log import log
 from lib.data_pack_files import command_block_helper
 from lib.data_pack_files import nbt_tags
@@ -26,10 +26,7 @@ MINECRAFT_PATH = EASY_MAP_UPDATER_PATH.parent
 # Define functions
 
 def cancel_damage(command: list[str]) -> str:
-    file_path = EASY_MAP_UPDATER_PATH / "options.json"
-    with file_path.open("r", encoding="utf-8") as file:
-        contents: dict[str, str] = json.load(file)
-    world = MINECRAFT_PATH / "saves" / contents["map_name"]
+    world = MINECRAFT_PATH / "saves" / option_manager.get_map_name()
     data_pack_path = world / "datapacks" / "firework_damage_canceler.zip"
     data_pack_path.parent.mkdir(exist_ok=True, parents=True)
     if not data_pack_path.exists():

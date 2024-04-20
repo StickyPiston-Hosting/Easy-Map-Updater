@@ -30,11 +30,11 @@ E.M.U. uses a series of command line-like actions which are used at various stag
 
 ### Administrative actions
 
-To begin, run `easy_map_updater.py`, configure the current Minecraft version of your map in `options.json`, then reload the options with `reset`.
+To begin, run `easy_map_updater.py`, then run the `find` action.
 
-- `reset`: Reloads options from file and resets the action list.
+- `reset`: Resets the action list.
 - `all`: Shows all actions.
-- `find`: Scans the map for any important information that E.M.U. needs to know, for instance if there is a resource pack inside, what version the map is on, whether there are legacy functions in the `data` folder, etc. Run this before proceeding.
+- `find`: Scans the map for any important information that E.M.U. needs to know, for instance if there is a resource pack inside, what version the map is on, whether there are legacy functions in the `data` folder, etc.
 
 
 ### Pre-original world actions

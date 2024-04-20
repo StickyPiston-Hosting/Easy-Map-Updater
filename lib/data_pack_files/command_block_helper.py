@@ -10,6 +10,7 @@ import hashlib
 from pathlib import Path
 from lib.log import log
 from lib import defaults
+from lib import option_manager
 
 
 
@@ -29,10 +30,7 @@ def create_function(commands: str) -> str:
         log("Command block helper data pack was modified")
 
     # Prepare data pack path
-    file_path = EASY_MAP_UPDATER_PATH / "options.json"
-    with file_path.open("r", encoding="utf-8") as file:
-        contents: dict[str, str] = json.load(file)
-    data_pack_path = MINECRAFT_PATH / "saves" / contents["map_name"] / "datapacks" / "command_block_helper"
+    data_pack_path = MINECRAFT_PATH / "saves" / option_manager.get_map_name() / "datapacks" / "command_block_helper"
     data_pack_path.mkdir(exist_ok=True, parents=True)
 
     # Prepare pack.mcmeta
