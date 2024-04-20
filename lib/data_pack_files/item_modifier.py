@@ -39,15 +39,18 @@ def update(file_path: Path, og_file_path: Path, version: int):
     # Write to new location
     file_path.parent.mkdir(parents=True, exist_ok=True)
     with file_path.open("w", encoding="utf-8", newline="\n") as file:
-        json.dump(item_modifier(contents), file, indent=4)
+        json.dump(item_modifier(contents, version), file, indent=4)
 
 
 
-def item_modifier(contents: dict[str, dict[str, str]] | list, object_id: str = "") -> dict[str, dict[str, str]] | list:
+def item_modifier(contents: dict[str, dict[str, str]] | list, version: int, object_id: str = "") -> dict[str, dict[str, str]] | list:
+    global pack_version
+    pack_version = version
+
     # Handle lists
     if isinstance(contents, list):
         for i in range(len(contents)):
-            contents[i] = item_modifier(contents[i], object_id)
+            contents[i] = item_modifier(contents[i], version, object_id)
         return contents
 
     # Process different functions
@@ -75,13 +78,13 @@ def item_modifier(contents: dict[str, dict[str, str]] | list, object_id: str = "
             }
             if source in id_array:
                 source = id_array[source]
-            operation["source"] = nbt_paths.update(operation["source"], pack_version, [], source)
-            operation["target"] = nbt_paths.update(operation["target"], pack_version, [], "item_tag")
+            operation["source"] = nbt_paths.update(operation["source"], version, [], source)
+            operation["target"] = nbt_paths.update(operation["target"], version, [], "item_tag")
 
     if function_id == "minecraft:set_contents":
         if "entries" in contents:
             for entry in contents["entries"]:
-                loot_table.update_entry(entry)
+                loot_table.update_entry(entry, version)
         if "type" not in contents:
             if object_id:
                 contents["type"] = object_id
@@ -93,18 +96,18 @@ def item_modifier(contents: dict[str, dict[str, str]] | list, object_id: str = "
 
     if function_id == "minecraft:set_lore":
         for i in range(len(contents["lore"])):
-            contents["lore"][i] = json_text_component.update_component(contents["lore"][i], [])
+            contents["lore"][i] = json_text_component.update_component(contents["lore"][i], version, [])
 
     if function_id == "minecraft:set_name":
-        contents["name"] = json_text_component.update_component(contents["name"], [])
+        contents["name"] = json_text_component.update_component(contents["name"], version, [])
 
     if function_id == "minecraft:set_nbt":
-        contents["tag"] = nbt_tags.update(contents["tag"], pack_version, [], "item_tag")
+        contents["tag"] = nbt_tags.update(contents["tag"], version, [], "item_tag")
 
 
 
     if "conditions" in contents:
         for i in range(len(contents["conditions"])):
-            contents["conditions"][i] = predicate.predicate(contents["conditions"][i])
+            contents["conditions"][i] = predicate.predicate(contents["conditions"][i], version)
 
     return contents

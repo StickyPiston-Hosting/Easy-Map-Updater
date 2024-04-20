@@ -945,7 +945,7 @@ def fix_scoreboard_dat(world: Path):
 
 def fix_maps(world: Path):
     folder_path = world / "data"
-    if not folder_path.exists:
+    if not folder_path.exists():
         return
     for file_path in folder_path.iterdir():
         if file_path.name.startswith("map_") and file_path.name.endswith(".dat"):

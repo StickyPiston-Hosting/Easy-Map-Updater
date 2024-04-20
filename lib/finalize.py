@@ -147,7 +147,9 @@ def clean_level_dat(world: Path):
 
     # Delete player
     if "Player" in file["Data"]:
-        del file["Data"]["Player"]
+        confirm = input("Do you wish to remove level.dat player data? (Y/N): ")
+        if confirm in ["Y", "y"]:
+            del file["Data"]["Player"]
 
     # Remove modded entries
     if "ServerBrands" in file["Data"]:
@@ -169,6 +171,8 @@ def get_player_names(world: Path):
     file_path = world / "data" / "scoreboard.dat"
     if not (file_path).exists():
         log("ERROR: scoreboard.dat does not exist!")
+        with (PROGRAM_PATH / "player_names.json").open("w", encoding="utf-8", newline="\n") as file:
+            file.write("{}")
         return
 
     # Get names

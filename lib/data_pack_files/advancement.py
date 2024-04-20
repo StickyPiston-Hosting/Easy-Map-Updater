@@ -10,6 +10,7 @@ from pathlib import Path
 from lib import defaults
 from lib import json_manager
 from lib.data_pack_files import predicate
+from lib.data_pack_files import miscellaneous
 
 
 
@@ -62,11 +63,46 @@ def advancement(contents: dict[str, dict[str, str]]) -> dict[str, dict[str, str]
 
 
 def update_criterion(criterion: dict[str, str | dict[str, str]]) -> dict[str, str | dict[str, str]]:
-    # Update player conditions
+
+    if "trigger" in criterion:
+        criterion["trigger"] = miscellaneous.namespace(criterion["trigger"])
+
+    # Update conditions
     if "conditions" in criterion:
-        if "player" in criterion["conditions"]:
-            if isinstance(criterion["conditions"]["player"], dict):
-                predicate.predicate_entity(criterion["conditions"]["player"])
-            elif isinstance(criterion["conditions"]["player"], list):
-                for player_predicate in criterion["conditions"]["player"]:
-                    predicate.predicate(player_predicate)
+
+        # Update all variations of the entity predicate
+        for key in ["bystander", "entity", "lightning", "player", "projectile", "source", "villager"]:
+            if key in criterion["conditions"]:
+                if isinstance(criterion["conditions"][key], dict):
+                    predicate.predicate_entity(criterion["conditions"][key], pack_version)
+                if isinstance(criterion["conditions"][key], list):
+                    for entity in criterion["conditions"][key]:
+                        predicate.predicate(entity, pack_version)
+
+
+        # Update damage objects
+
+        if "killing_blow" in criterion["conditions"]:
+            if "direct_entity" in criterion["conditions"]["killing_blow"]:
+                predicate.predicate_entity(criterion["conditions"]["killing_blow"]["direct_entity"], pack_version)
+            if "source_entity" in criterion["conditions"]["killing_blow"]:
+                predicate.predicate_entity(criterion["conditions"]["killing_blow"]["source_entity"], pack_version)
+
+        if "damage" in criterion["conditions"]:
+            if "source_entity" in criterion["conditions"]["damage"]:
+                predicate.predicate_entity(criterion["conditions"]["damage"]["source_entity"], pack_version)
+
+
+        # Update item predicates
+        if "item" in criterion["conditions"]:
+            if isinstance(criterion["conditions"]["item"], dict):
+                predicate.predicate_item(criterion["conditions"]["item"], pack_version)
+
+        if "items" in criterion["conditions"]:
+            if isinstance(criterion["conditions"]["items"], list):
+                for item in criterion["conditions"]["items"]:
+                    predicate.predicate_item(item, pack_version)
+
+        if "rod" in criterion["conditions"]:
+            if isinstance(criterion["conditions"]["rod"], dict):
+                predicate.predicate_item(criterion["conditions"]["rod"], pack_version)
