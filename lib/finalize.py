@@ -12,6 +12,7 @@ import requests
 import json
 from pathlib import Path
 from lib import defaults
+from lib import option_manager
 from lib import utils
 from lib.log import log
 
@@ -72,10 +73,18 @@ def find_characteristics(world: Path, resource_pack: Path) -> dict[str, bool]:
                 booleans["disabled_vanilla"] = True
 
     # List version of world
-    if "Data" in file and "Version" in file["Data"] and "Name" in file["Data"]["Version"]:
-        version = file["Data"]["Version"]["Name"]
+    if "Data" in file and "Version" in file["Data"] and "Name" in file["Data"]["Version"] and "Id" in file["Data"]["Version"]:
+        version_name: str = file["Data"]["Version"]["Name"].value
+        version_id: int = file["Data"]["Version"]["Id"].value
+        version = defaults.PACK_VERSION
+        for data_version in defaults.DATA_VERSIONS:
+            if version_id <= data_version:
+                version = defaults.DATA_VERSIONS[data_version]
+                break
     else:
-        version = "Unknown"
+        version_name = "Unknown"
+        version = 809
+    option_manager.set_version(version)
 
     # Check if there are stored functions
     if (world / "data" / "functions").exists():
@@ -105,7 +114,11 @@ def find_characteristics(world: Path, resource_pack: Path) -> dict[str, bool]:
                 log("Recipes in the 'minecraft' namespace were found, consider disabling them")
                 booleans["recipes"] = True
 
-    log(f'Version: {version}')
+    if version_name == "Unknown":
+        log("Version ID could not be found, assuming 1.8.9")
+        log("If your map is not on 1.8.9, please set manually in options.json")
+    else:
+        log(f'Version: {version_name} - {version}')
     log("Characteristics found")
     return booleans
 

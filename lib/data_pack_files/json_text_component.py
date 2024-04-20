@@ -5,7 +5,6 @@
 
 # Import things
 
-import json
 from pathlib import Path
 from lib import utils
 from lib.data_pack_files import command
@@ -16,6 +15,7 @@ from lib.data_pack_files import tables
 from lib.data_pack_files import entities
 from lib import json_manager
 from lib import defaults
+from lib import option_manager
 
 
 
@@ -342,10 +342,7 @@ def update_translate(component: dict[str, str | dict]):
 def retrieve_translation_keys():
     global translation_keys
 
-    file_path = EASY_MAP_UPDATER_PATH / "options.json"
-    with file_path.open("r", encoding="utf-8") as file:
-        contents: dict[str, str] = json.load(file)
-    resource_pack_path = MINECRAFT_PATH / "resourcepacks" / contents["resource_pack"] / "assets"
+    resource_pack_path = MINECRAFT_PATH / "resourcepacks" / option_manager.get_resource_pack() / "assets"
     if not resource_pack_path.exists():
         return
     

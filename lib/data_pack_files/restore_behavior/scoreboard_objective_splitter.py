@@ -10,6 +10,7 @@ import json
 from lib.log import log
 from lib import defaults
 from lib import finalize
+from lib import option_manager
 
 
 
@@ -25,10 +26,8 @@ PACK_FORMAT = defaults.DATA_PACK_FORMAT
 # Define functions
 
 def insert_objective(name: str, criteria: str, id_list: list[str]):
-    # Extract world name
-    with (EASY_MAP_UPDATER_PATH / "options.json").open("r", encoding="utf-8") as file:
-        options: dict[str, str] = json.load(file)
-    world = MINECRAFT_PATH / "saves" / options["map_name"]
+    # Get world path
+    world = MINECRAFT_PATH / "saves" / option_manager.get_map_name()
 
     if not world.exists():
         log("ERROR: World does not exist!")

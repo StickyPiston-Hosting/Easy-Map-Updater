@@ -43,7 +43,7 @@ from lib.log import log
 from lib import finalize
 from lib import data_pack
 from lib import resource_pack
-from lib import defaults
+from lib import option_manager
 from lib.data_pack_files import command
 from lib.data_pack_files import json_text_component
 from lib.data_pack_files import breakpoints
@@ -67,12 +67,6 @@ from lib.region_files import illegal_chunk
 
 PROGRAM_PATH = Path(__file__).parent
 MINECRAFT_PATH = PROGRAM_PATH.parent
-
-class Option(Enum):
-    MAP_NAME = "map_name"
-    RESOURCE_PACK = "resource_pack"
-    FANCY_NAME = "fancy_name"
-    VERSION = "version"
 
 class Action(Enum):
     RESET = "reset"
@@ -136,13 +130,6 @@ class Action(Enum):
     DEBUG_CMD = "debug.cmd"
     DEBUG_JSON = "debug.json"
 
-options: dict[str, str | int] = {
-    Option.MAP_NAME.value: "world",
-    Option.RESOURCE_PACK.value: "resources",
-    Option.FANCY_NAME.value: "Map",
-    Option.VERSION.value: defaults.PACK_VERSION
-}
-
 actions: dict[str, dict[str, str]]
 
 
@@ -197,35 +184,9 @@ def save_session():
     with session_path.open("w", encoding="utf-8", newline="\n") as file:
         json.dump(session, file, indent=4)
 
-def get_options():
-    global options
-    options_path = PROGRAM_PATH / "options.json"
-
-    if not options_path.exists():
-        with options_path.open("w", encoding="utf-8", newline="\n") as file:
-            json.dump(options, file, indent=4)
-    with options_path.open("r", encoding="utf-8") as file:
-        contents: dict[str, str | int] = json.load(file)
-
-    # Iterate through keys
-    for key in options:
-        if key not in contents:
-            continue
-        if isinstance(options[key], str):
-            if isinstance(contents[key], str):
-                options[key] = contents[key]
-                if contents[key] == "":
-                    options[key] = "blank"
-            else:
-                log(f"ERROR: {key} is not a string!")
-        if isinstance(options[key], int):
-            if isinstance(contents[key], int):
-                options[key] = contents[key]
-            else:
-                log(f"ERROR: {key} is not a number!")
-
 def list_options():
     log("Options:")
+    options = option_manager.get_options()
     for key in options:
         log(f"{key}: {options[key]}")
 
@@ -244,7 +205,7 @@ def list_actions():
 def action_reset():
     global actions
     actions = {
-        Action.RESET.value:                 { "show": True,  "function": action_reset, "name": "Reset actions and settings" },
+        Action.RESET.value:                 { "show": True,  "function": action_reset, "name": "Reset actions" },
         Action.ALL.value:                   { "show": True,  "function": action_show_all_actions, "name": "Show all actions" },
         Action.FIND.value:                  { "show": True,  "function": action_find_characteristics, "name": "Find characteristics of current world" },
 
@@ -310,7 +271,6 @@ def action_reset():
         Action.DEBUG_CMD.value:             { "show": True,  "function": action_update_single_command, "name": "Update single command (for testing)" },
         Action.DEBUG_JSON.value:            { "show": True,  "function": action_update_json_text_component, "name": "Update JSON text component (for testing)" }
     }
-    get_options()
     log("")
     list_options()
 
@@ -323,8 +283,8 @@ def action_show_all_actions():
 
 def action_find_characteristics():
     booleans = finalize.find_characteristics(
-        MINECRAFT_PATH / "saves" / options[Option.MAP_NAME.value],
-        MINECRAFT_PATH / "resourcepacks" / options[Option.RESOURCE_PACK.value]
+        MINECRAFT_PATH / "saves" / option_manager.get_map_name(),
+        MINECRAFT_PATH / "resourcepacks" / option_manager.get_resource_pack()
     )
 
     if not booleans["world"]:
@@ -352,8 +312,8 @@ def action_find_characteristics():
 
 def action_import_resource_pack(): # Needs confirmation
     resource_pack.import_pack(
-        MINECRAFT_PATH / "saves" / options[Option.MAP_NAME.value],
-        MINECRAFT_PATH / "resourcepacks" / options[Option.RESOURCE_PACK.value]
+        MINECRAFT_PATH / "saves" / option_manager.get_map_name(),
+        MINECRAFT_PATH / "resourcepacks" / option_manager.get_resource_pack()
     )
 
     global actions
@@ -363,42 +323,42 @@ def action_import_resource_pack(): # Needs confirmation
 
 def action_export_resource_pack(): # Needs confirmation
     resource_pack.export_pack(
-        MINECRAFT_PATH / "saves" / options[Option.MAP_NAME.value],
-        MINECRAFT_PATH / "resourcepacks" / options[Option.RESOURCE_PACK.value]
+        MINECRAFT_PATH / "saves" / option_manager.get_map_name(),
+        MINECRAFT_PATH / "resourcepacks" / option_manager.get_resource_pack()
     )
 
 def action_update_resource_pack():
     resource_pack.update(
-        MINECRAFT_PATH / "resourcepacks" / options[Option.RESOURCE_PACK.value],
-        options[Option.VERSION.value]
+        MINECRAFT_PATH / "resourcepacks" / option_manager.get_resource_pack(),
+        option_manager.get_version()
     )
 
 def action_fix_resource_pack():
     resource_pack.fix(
-        MINECRAFT_PATH / "resourcepacks" / options[Option.RESOURCE_PACK.value]
+        MINECRAFT_PATH / "resourcepacks" / option_manager.get_resource_pack()
     )
 
 def action_purge_vanilla_assets(): # Needs confirmation
     resource_pack.purge_vanilla_assets(
-        MINECRAFT_PATH / "resourcepacks" / options[Option.RESOURCE_PACK.value]
+        MINECRAFT_PATH / "resourcepacks" / option_manager.get_resource_pack()
     )
 
 
 
 def action_unzip_data_packs(): # Needs confirmation
     data_pack.unzip_packs(
-        MINECRAFT_PATH / "saves" / options[Option.MAP_NAME.value]
+        MINECRAFT_PATH / "saves" / option_manager.get_map_name()
     )
 
 def action_zip_data_packs(): # Needs confirmation
     data_pack.zip_packs(
-        MINECRAFT_PATH / "saves" / options[Option.MAP_NAME.value]
+        MINECRAFT_PATH / "saves" / option_manager.get_map_name()
     )
 
 def action_merge_data_packs(): # Needs confirmation
     data_pack.merge_packs(
-        MINECRAFT_PATH / "saves" / options[Option.MAP_NAME.value],
-        options[Option.FANCY_NAME.value]
+        MINECRAFT_PATH / "saves" / option_manager.get_map_name(),
+        option_manager.get_fancy_name()
     )
 
     global actions
@@ -406,85 +366,85 @@ def action_merge_data_packs(): # Needs confirmation
 
 def action_update_data_packs():
     data_pack.update(
-        MINECRAFT_PATH / "saves" / options[Option.MAP_NAME.value],
-        options[Option.VERSION.value]
+        MINECRAFT_PATH / "saves" / option_manager.get_map_name(),
+        option_manager.get_version()
     )
 
     global actions
-    if options[Option.VERSION.value] <= 1202:
+    if option_manager.get_version() <= 1202:
         actions[Action.DP_TAG.value]["show"] = True
 
 def action_tag_replacements():
     tag_replacements.create_pack(
-        MINECRAFT_PATH / "saves" / options[Option.MAP_NAME.value]
+        MINECRAFT_PATH / "saves" / option_manager.get_map_name()
     )
 
 def action_spawner_bossbar():
     spawner_bossbar.create_pack(
-        MINECRAFT_PATH / "saves" / options[Option.MAP_NAME.value]
+        MINECRAFT_PATH / "saves" / option_manager.get_map_name()
     )
 
 def action_area_effect_cloud_killer():
     area_effect_cloud_killer.create_pack(
-        MINECRAFT_PATH / "saves" / options[Option.MAP_NAME.value]
+        MINECRAFT_PATH / "saves" / option_manager.get_map_name()
     )
 
 def action_ore_fixer():
     ore_fixer.create_pack(
-        MINECRAFT_PATH / "saves" / options[Option.MAP_NAME.value]
+        MINECRAFT_PATH / "saves" / option_manager.get_map_name()
     )
 
 def action_unwaterloggable_leaves():
     unwaterloggable_leaves.create_pack(
-        MINECRAFT_PATH / "saves" / options[Option.MAP_NAME.value]
+        MINECRAFT_PATH / "saves" / option_manager.get_map_name()
     )
 
 def action_old_adventure_mode():
     old_adventure_mode.create_pack(
-        MINECRAFT_PATH / "saves" / options[Option.MAP_NAME.value]
+        MINECRAFT_PATH / "saves" / option_manager.get_map_name()
     )
 
 def action_firework_damage_canceler():
     firework_damage_canceler.create_pack(
-        MINECRAFT_PATH / "saves" / options[Option.MAP_NAME.value]
+        MINECRAFT_PATH / "saves" / option_manager.get_map_name()
     )
 
 def action_stored_functions(): # Needs confirmation
     data_pack.extract_stored_functions(
-        MINECRAFT_PATH / "saves" / options[Option.MAP_NAME.value],
-        MINECRAFT_PATH / "saves" / ( options[Option.MAP_NAME.value] + " - Original" )
+        MINECRAFT_PATH / "saves" / option_manager.get_map_name(),
+        MINECRAFT_PATH / "saves" / ( option_manager.get_map_name() + " - Original" )
     )
 
 def action_stored_advancements(): # Needs confirmation
     data_pack.extract_stored_advancements(
-        MINECRAFT_PATH / "saves" / options[Option.MAP_NAME.value]
+        MINECRAFT_PATH / "saves" / option_manager.get_map_name()
     )
 
 def action_disable_advancements(): # Needs confirmation
     data_pack.disable_advancements(
-        MINECRAFT_PATH / "saves" / options[Option.MAP_NAME.value]
+        MINECRAFT_PATH / "saves" / option_manager.get_map_name()
     )
 
 def action_disable_recipes(): # Needs confirmation
     data_pack.disable_recipes(
-        MINECRAFT_PATH / "saves" / options[Option.MAP_NAME.value]
+        MINECRAFT_PATH / "saves" / option_manager.get_map_name()
     )
 
 def action_fix_disabled_vanilla():
     data_pack.fix_disabled_vanilla(
-        MINECRAFT_PATH / "saves" / options[Option.MAP_NAME.value]
+        MINECRAFT_PATH / "saves" / option_manager.get_map_name()
     )
 
 def action_breakpoint(): # Needs confirmation
     breakpoints.apply_breakpoints(
-        MINECRAFT_PATH / "saves" / options[Option.MAP_NAME.value]
+        MINECRAFT_PATH / "saves" / option_manager.get_map_name()
     )
 
 
 
 def action_read_commands():
     command_blocks.read_commands(
-        MINECRAFT_PATH / "saves" / options[Option.MAP_NAME.value]
+        MINECRAFT_PATH / "saves" / option_manager.get_map_name()
     )
 
     global actions
@@ -496,21 +456,21 @@ def action_read_commands():
 
 def action_write_commands(): # Needs confirmation
     command_blocks.write_commands(
-        MINECRAFT_PATH / "saves" / options[Option.MAP_NAME.value]
+        MINECRAFT_PATH / "saves" / option_manager.get_map_name()
     )
 
 def action_update_commands():
     command_blocks.update_commands(
-        options[Option.VERSION.value]
+        option_manager.get_version()
     )
 
     global actions
     actions[Action.DP_TAG.value]["show"] = True
-    if options[Option.VERSION.value] <= 809:
+    if option_manager.get_version() <= 809:
         actions[Action.DP_FIREWORK.value]["show"] = True
 
 def action_clear_command_block_helper(): # Needs confirmation
-    data_pack_path: Path = MINECRAFT_PATH / "saves" / options[Option.MAP_NAME.value] / "datapacks" / "command_block_helper"
+    data_pack_path: Path = MINECRAFT_PATH / "saves" / option_manager.get_map_name() / "datapacks" / "command_block_helper"
     log(f'This action will delete: {data_pack_path.as_posix()}')
     confirm = input("Is this okay? (Y/N): ")
     if confirm not in ["Y", "y"]:
@@ -529,14 +489,14 @@ def action_clear_command_block_helper(): # Needs confirmation
 
 def action_extract_commands():
     command_blocks.extract_commands(
-        MINECRAFT_PATH / "saves" / options[Option.MAP_NAME.value]
+        MINECRAFT_PATH / "saves" / option_manager.get_map_name()
     )
 
 
 
 def action_get_player_names():
     finalize.get_player_names(
-        MINECRAFT_PATH / "saves" / options[Option.MAP_NAME.value]
+        MINECRAFT_PATH / "saves" / option_manager.get_map_name()
     )
 
     global actions
@@ -544,8 +504,8 @@ def action_get_player_names():
 
 def action_finalize_map(): # Needs confirmation
     finalize.finalize(
-        MINECRAFT_PATH / "saves" / options[Option.MAP_NAME.value],
-        MINECRAFT_PATH / "resourcepacks" / options[Option.RESOURCE_PACK.value]
+        MINECRAFT_PATH / "saves" / option_manager.get_map_name(),
+        MINECRAFT_PATH / "resourcepacks" / option_manager.get_resource_pack()
     )
 
     global actions
@@ -558,7 +518,7 @@ def action_finalize_map(): # Needs confirmation
 
 def action_log_data_packs():
     finalize.log_data_packs(
-        MINECRAFT_PATH / "saves" / options[Option.MAP_NAME.value]
+        MINECRAFT_PATH / "saves" / option_manager.get_map_name()
     )
 
     global actions
@@ -569,8 +529,8 @@ def action_log_data_packs():
 def action_prepare_original_copy_world(): # Needs confirmation
     log("Preparing original world copy")
     
-    world: Path = MINECRAFT_PATH / "saves" / options[Option.MAP_NAME.value]
-    og_world: Path = MINECRAFT_PATH / "saves" / ( options[Option.MAP_NAME.value] + " - Original" )
+    world: Path = MINECRAFT_PATH / "saves" / option_manager.get_map_name()
+    og_world: Path = MINECRAFT_PATH / "saves" / ( option_manager.get_map_name() + " - Original" )
 
     if og_world.exists():
         log(f'This action will overwrite: {og_world.as_posix()}')
@@ -596,8 +556,8 @@ def action_prepare_original_copy_world(): # Needs confirmation
 def action_prepare_original_play_copy(): # Needs confirmation
     log("Preparing original play world copy")
     
-    world: Path = MINECRAFT_PATH / "saves" / f'{options[Option.MAP_NAME.value]} - Original'
-    play_world: Path = MINECRAFT_PATH / "saves" / f'{options[Option.MAP_NAME.value]} - Original - Play'
+    world: Path = MINECRAFT_PATH / "saves" / f'{option_manager.get_map_name()} - Original'
+    play_world: Path = MINECRAFT_PATH / "saves" / f'{option_manager.get_map_name()} - Original - Play'
 
     if play_world.exists():
         log(f'This action will overwrite: {play_world.as_posix()}')
@@ -617,8 +577,8 @@ def action_prepare_original_play_copy(): # Needs confirmation
 def action_reload_from_original_world(): # Needs confirmation
     log("Reloading world from original")
     
-    world: Path = MINECRAFT_PATH / "saves" / options[Option.MAP_NAME.value]
-    og_world: Path = MINECRAFT_PATH / "saves" / f'{options[Option.MAP_NAME.value]} - Original'
+    world: Path = MINECRAFT_PATH / "saves" / option_manager.get_map_name()
+    og_world: Path = MINECRAFT_PATH / "saves" / f'{option_manager.get_map_name()} - Original'
 
     if world.exists():
         log(f'This action will overwrite: {world.as_posix()}')
@@ -644,8 +604,8 @@ def action_reload_from_original_world(): # Needs confirmation
 def action_prepare_play_copy(): # Needs confirmation
     log("Preparing play world copy")
     
-    world: Path = MINECRAFT_PATH / "saves" / options[Option.MAP_NAME.value]
-    play_world: Path = MINECRAFT_PATH / "saves" / f'{options[Option.MAP_NAME.value]} - Play'
+    world: Path = MINECRAFT_PATH / "saves" / option_manager.get_map_name()
+    play_world: Path = MINECRAFT_PATH / "saves" / f'{option_manager.get_map_name()} - Play'
 
     if play_world.exists():
         log(f'This action will overwrite: {play_world.as_posix()}')
@@ -668,8 +628,8 @@ def action_prepare_play_copy(): # Needs confirmation
 def action_prepare_original_copy_resource_pack(): # Needs confirmation
     log("Preparing original resource pack copy")
     
-    resource_pack: Path = MINECRAFT_PATH / "resourcepacks" / options[Option.RESOURCE_PACK.value]
-    og_resource_pack: Path = MINECRAFT_PATH / "resourcepacks" / f'{options[Option.RESOURCE_PACK.value]} - Original'
+    resource_pack: Path = MINECRAFT_PATH / "resourcepacks" / option_manager.get_resource_pack()
+    og_resource_pack: Path = MINECRAFT_PATH / "resourcepacks" / f'{option_manager.get_resource_pack()} - Original'
 
     if og_resource_pack.exists():
         log(f'This action will overwrite: {og_resource_pack.as_posix()}')
@@ -693,8 +653,8 @@ def action_prepare_original_copy_resource_pack(): # Needs confirmation
 def action_reload_from_original_resource_pack(): # Needs confirmation
     log("Reloading resource pack from original")
     
-    resource_pack: Path = MINECRAFT_PATH / "resourcepacks" / options[Option.RESOURCE_PACK.value]
-    og_resource_pack: Path = MINECRAFT_PATH / "resourcepacks" / f'{options[Option.RESOURCE_PACK.value]} - Original'
+    resource_pack: Path = MINECRAFT_PATH / "resourcepacks" / option_manager.get_resource_pack()
+    og_resource_pack: Path = MINECRAFT_PATH / "resourcepacks" / f'{option_manager.get_resource_pack()} - Original'
 
     if resource_pack.exists():
         log(f'This action will overwrite: {resource_pack.as_posix()}')
@@ -719,65 +679,65 @@ def action_optimize_world():
     global actions
     actions[Action.CMD_READ.value]["show"] = True
     actions[Action.FINAL_SCORE.value]["show"] = True
-    if options[Option.VERSION.value] <= 1605:
+    if option_manager.get_version() <= 1605:
         actions[Action.ENTITY_EXTRACT.value]["show"] = True
-    if options[Option.VERSION.value] <= 1502:
+    if option_manager.get_version() <= 1502:
         actions[Action.ILLEGAL_CHUNK.value]["show"] = True
-    if options[Option.VERSION.value] <= 1202 and options[Option.VERSION.value] >= 800:
+    if option_manager.get_version() <= 1202 and option_manager.get_version() >= 800:
         actions[Action.STATS_SCAN.value]["show"] = True
     actions[Action.WORLD_FIX.value]["show"] = True
 
 def action_entity_extract(): # Needs confirmation
     entity_extractor.extract(
-        MINECRAFT_PATH / "saves" / options[Option.MAP_NAME.value]
+        MINECRAFT_PATH / "saves" / option_manager.get_map_name()
     )
 
 def action_stats_scan():
     stats_scanner.scan(
-        MINECRAFT_PATH / "saves" / options[Option.MAP_NAME.value]
+        MINECRAFT_PATH / "saves" / option_manager.get_map_name()
     )
 
 def action_illegal_chunk():
     illegal_chunk.insert_chunk(
-        MINECRAFT_PATH / "saves" / options[Option.MAP_NAME.value]
+        MINECRAFT_PATH / "saves" / option_manager.get_map_name()
     )
 
 def action_fix_world(): # Needs confirmation
     booleans = fix_world.fix(
-        MINECRAFT_PATH / "saves" / options[Option.MAP_NAME.value],
-        MINECRAFT_PATH / "saves" / f'{options[Option.MAP_NAME.value]} - Original',
-        options[Option.VERSION.value]
+        MINECRAFT_PATH / "saves" / option_manager.get_map_name(),
+        MINECRAFT_PATH / "saves" / f'{option_manager.get_map_name()} - Original',
+        option_manager.get_version()
     )
 
     global actions
     if booleans["spawner_bossbar"]:
         actions[Action.DP_BOSSBAR.value]["show"] = True
-    if options[Option.VERSION.value] <= 710:
+    if option_manager.get_version() <= 710:
         actions[Action.DP_ADVENTURE.value]["show"] = True
-    if options[Option.VERSION.value] <= 809:
+    if option_manager.get_version() <= 809:
         actions[Action.DP_AEC_KILL.value]["show"] = True
-    if options[Option.VERSION.value] <= 1605:
+    if option_manager.get_version() <= 1605:
         actions[Action.DP_ORE_FIXER.value]["show"] = True
-    if options[Option.VERSION.value] <= 1802:
+    if option_manager.get_version() <= 1802:
         actions[Action.DP_WATER_LEAVES.value]["show"] = True
 
 
 
 def action_admin_kickback():
     admin_kickback.create_pack(
-        MINECRAFT_PATH / "saves" / options[Option.MAP_NAME.value]
+        MINECRAFT_PATH / "saves" / option_manager.get_map_name()
     )
 
 
 
 def action_clean_up(): # Needs confirmation
     paths: list[Path] = [
-        MINECRAFT_PATH / "saves" / options[Option.MAP_NAME.value],
-        MINECRAFT_PATH / "saves" / f'{options[Option.MAP_NAME.value]} - Original',
-        MINECRAFT_PATH / "saves" / f'{options[Option.MAP_NAME.value]} - Play',
-        MINECRAFT_PATH / "saves" / f'{options[Option.MAP_NAME.value]} - Original - Play',
-        MINECRAFT_PATH / "resourcepacks" / options[Option.RESOURCE_PACK.value],
-        MINECRAFT_PATH / "resourcepacks" / f'{options[Option.RESOURCE_PACK.value]} - Original'
+        MINECRAFT_PATH / "saves" / option_manager.get_map_name(),
+        MINECRAFT_PATH / "saves" / f'{option_manager.get_map_name()} - Original',
+        MINECRAFT_PATH / "saves" / f'{option_manager.get_map_name()} - Play',
+        MINECRAFT_PATH / "saves" / f'{option_manager.get_map_name()} - Original - Play',
+        MINECRAFT_PATH / "resourcepacks" / option_manager.get_resource_pack(),
+        MINECRAFT_PATH / "resourcepacks" / f'{option_manager.get_resource_pack()} - Original'
     ]
 
     log("This action will delete the following:")
@@ -818,13 +778,13 @@ def action_update_single_command():
     test_command = input("Command to update: ")
     log("")
     log(f'Old command: {test_command}')
-    log(f'New command: {command.update(test_command, options[Option.VERSION.value], "test_command")}')
+    log(f'New command: {command.update(test_command, option_manager.get_version(), "test_command")}')
 
 def action_update_json_text_component():
     test_component = input("JSON text component to update: ")
     log("")
     log(f'Old component: {test_component}')
-    log(f'New component: {json_text_component.update(test_component, options[Option.VERSION.value], [], False)}')
+    log(f'New component: {json_text_component.update(test_component, option_manager.get_version(), [], False)}')
 
 
     
