@@ -115,10 +115,26 @@ def find_characteristics(world: Path, resource_pack: Path) -> dict[str, bool]:
                 booleans["recipes"] = True
 
     if version_name == "Unknown":
-        log("Version ID could not be found, assuming 1.8.9")
-        log("If your map is not on 1.8.9, please set manually in options.json")
-    else:
-        log(f'Version: {version_name} - {version}')
+        while version_name == "Unknown":
+            version_input = input("Version ID not found, please enter world version: ")
+            parts = version_input.split(".")
+            if len(parts) < 2 or len(parts) > 3:
+                log("Invalid version!")
+                continue
+            if len(parts) == 2:
+                parts.append("0")
+            try:
+                if int(parts[0]) != 1 or int(parts[1]) >= 100 or int(parts[2]) >= 100:
+                    log("Invalid version!")
+                    continue
+                version = int(parts[1])*100 + int(parts[2])
+            except:
+                log("Invalid version!")
+                continue
+            version_name = version_input
+        option_manager.set_version(version)
+    log(f'Version: {version_name} - {version}')
+
     log("Characteristics found")
     return booleans
 
