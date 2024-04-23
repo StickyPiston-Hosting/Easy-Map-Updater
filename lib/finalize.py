@@ -180,6 +180,25 @@ def clean_level_dat(world: Path):
         if confirm in ["Y", "y"]:
             del file["Data"]["Player"]
 
+    # Apply default player data, using the world spawn point as the position
+    if "Player" not in file["Data"]:
+        file["Data"]["Player"] = NBT.TAG_Compound()
+        file["Data"]["Player"]["Pos"] = NBT.TAG_List(type=NBT.TAG_Double)
+        file["Data"]["Player"]["Pos"].append(NBT.TAG_Double(
+            float(file["Data"]["SpawnX"].value) + 0.5 if "SpawnX" in file["Data"] else 0.0
+        ))
+        file["Data"]["Player"]["Pos"].append(NBT.TAG_Double(
+            float(file["Data"]["SpawnY"].value) if "SpawnY" in file["Data"] else 0.0
+        ))
+        file["Data"]["Player"]["Pos"].append(NBT.TAG_Double(
+            float(file["Data"]["SpawnZ"].value) + 0.5 if "SpawnZ" in file["Data"] else 0.0
+        ))
+        file["Data"]["Player"]["Rotation"] = NBT.TAG_List(type=NBT.TAG_Float)
+        file["Data"]["Player"]["Rotation"].append(NBT.TAG_Float(
+            float(file["Data"]["SpawnAngle"].value) if "SpawnAngle" in file["Data"] else 0.0
+        ))
+        file["Data"]["Player"]["Rotation"].append(NBT.TAG_Float(0.0))
+
     # Remove modded entries
     if "ServerBrands" in file["Data"]:
         file["Data"]["ServerBrands"] = NBT.TAG_List(type=NBT.TAG_String)
