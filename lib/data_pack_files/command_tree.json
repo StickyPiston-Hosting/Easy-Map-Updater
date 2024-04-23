@@ -38,7 +38,7 @@
                     "index": 4,
                     "branches": {
                         "add": {
-                            "mapping": ["carry", "target_selector_single", "attribute", "carry", "carry", "carry", "carry", "carry", "carry"]
+                            "mapping": ["carry", "target_selector_single", "attribute", "carry", "carry", "carry", "carry", "carry", "attribute_modifier_operation"]
                         },
                         "remove": {
                             "mapping": ["carry", "target_selector_single", "attribute", "carry", "carry", "carry"]

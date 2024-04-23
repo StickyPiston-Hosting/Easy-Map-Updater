@@ -6,7 +6,7 @@
 # Assign tables
 
 ATTRIBUTE_IDS = {
-    "minecraft:horse.jumpStrength":          "minecraft:horse.jump_strength",
+    "minecraft:horse.jumpStrength":          "minecraft:generic.jump_strength",
     "minecraft:generic.armorToughness":      "minecraft:generic.armor_toughness",
     "minecraft:generic.attackDamage":        "minecraft:generic.attack_damage",
     "minecraft:generic.attackKnockback":     "minecraft:generic.attack_knockback",

@@ -513,6 +513,7 @@ def fix_helper_edge_case(argument_list: list[str], old_argument_list: list[str],
 ARGUMENT_FUNCTIONS: dict[str, tuple] = {
     "advancement": ( miscellaneous.advancement, None ),
     "attribute": ( miscellaneous.attribute, None ),
+    "attribute_modifier_operation": ( miscellaneous.attribute_modifier_operation, None ),
     "banner_color": ( miscellaneous.banner_color, None ),
     "block": ( blocks.update_from_command, None),
     "block_nbt": ( nbt_tags.update, "block" ),

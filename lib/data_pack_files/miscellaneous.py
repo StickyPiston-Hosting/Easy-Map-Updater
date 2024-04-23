@@ -40,11 +40,35 @@ def attribute(name: str, version: int, issues: list[dict[str, str]]) -> str:
 
     name = namespace(name)
 
+    # Attribute IDs changed in 1.16
     id_array = tables.ATTRIBUTE_IDS
     if name in id_array:
         name = id_array[name]
 
+    # Attribute IDs changed again in 1.20.5
+    id_array = {
+        "minecraft:horse.jump_strength": "minecraft:generic.jump_strength"
+    }
+    if name in id_array:
+        name = id_array[name]
+
     return name
+
+def attribute_modifier_operation(operation: str, version: int, issues: list[dict[str, str]]) -> str:
+    # Assign version
+    global pack_version
+    pack_version = version
+
+    # Attribute modifier operations were changed in 1.20.5
+    id_array = {
+        "add": "add_value",
+        "multiply_base": "add_multiplied_base",
+        "multiply": "add_multiplied_total"
+    }
+    if operation in id_array:
+        operation = id_array[operation]
+
+    return operation
 
 def banner_color(color: nbt_tags.TypeInt, version: int, issues: list[dict[str, str]]) -> nbt_tags.TypeInt:
     if version <= 1202:
