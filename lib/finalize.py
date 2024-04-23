@@ -37,8 +37,8 @@ def delete_file(file: Path):
 
 
 
-def find_characteristics(world: Path, resource_pack: Path) -> dict[str, bool]:
-    log("Finding characteristics of world")
+def scan_world(world: Path, resource_pack: Path) -> dict[str, bool]:
+    log("Scanning world")
 
     # Initialize booleans
     booleans = {
@@ -60,7 +60,7 @@ def find_characteristics(world: Path, resource_pack: Path) -> dict[str, bool]:
     
     # Check if there is a resource pack
     if (world / "resources.zip").exists():
-        log("'resources.zip' found, import it and find characteristics in world again")
+        log("'resources.zip' found, import it and scan world again")
         booleans["resource_pack"] = True
             
 
@@ -88,12 +88,12 @@ def find_characteristics(world: Path, resource_pack: Path) -> dict[str, bool]:
 
     # Check if there are stored functions
     if (world / "data" / "functions").exists():
-        log("Stored functions found, extract them and find characteristics in world again")
+        log("Stored functions found, extract them and scan world again")
         booleans["stored_functions"] = True
 
     # Check if there are stored advancements
     if (world / "data" / "advancements").exists():
-        log("Stored advancements found, extract them and find characteristics in world again")
+        log("Stored advancements found, extract them and scan world again")
         booleans["stored_advancements"] = True
 
     # Iterate through data packs
@@ -101,7 +101,7 @@ def find_characteristics(world: Path, resource_pack: Path) -> dict[str, bool]:
         for pack in (world / "datapacks").iterdir():
             # Check if there are any zipped data packs
             if not booleans["zipped_data_packs"] and pack.is_file() and pack.suffix == ".zip":
-                log("Zipped data packs found, unzip them and find characteristics in world again")
+                log("Zipped data packs found, unzip them and scan world again")
                 booleans["zipped_data_packs"] = True
 
             # Check if advancements are present in the minecraft namespace
@@ -135,12 +135,12 @@ def find_characteristics(world: Path, resource_pack: Path) -> dict[str, bool]:
         option_manager.set_version(version)
     log(f'Version: {version_name} - {version}')
 
-    log("Characteristics found")
+    log("World scanned")
     return booleans
 
 
 
-def finalize(world: Path, resource_pack: Path):
+def finalize(world: Path, resource_pack: Path, get_confirmation: bool):
     log("Finalizing world")
 
     # Throw error if the world doesn't exist
@@ -149,11 +149,12 @@ def finalize(world: Path, resource_pack: Path):
         return
 
     # Get confirmation
-    log(f'This action will change several files in: {world.as_posix()}')
-    confirm = input("Is this okay? (Y/N): ")
-    if confirm not in ["Y", "y"]:
-        log("Action canceled")
-        return
+    if get_confirmation:
+        log(f'This action will change several files in: {world.as_posix()}')
+        confirm = input("Is this okay? (Y/N): ")
+        if confirm not in ["Y", "y"]:
+            log("Action canceled")
+            return
 
     clean_level_dat(world)
     clean_scoreboard_dat(world)
@@ -176,6 +177,7 @@ def clean_level_dat(world: Path):
 
     # Delete player
     if "Player" in file["Data"]:
+        log("")
         confirm = input("Do you wish to remove level.dat player data? (Y/N): ")
         if confirm in ["Y", "y"]:
             del file["Data"]["Player"]
@@ -394,11 +396,20 @@ def delete_junk_files(world: Path):
     delete_file(world / "paper-world.yml")
     delete_file(world / "forcedchunks.dat")
     delete_file(world / "DIM1" / "forcedchunks.dat")
-    delete_file(world / "DIM1-" / "forcedchunks.dat")
+    delete_file(world / "DIM-1" / "forcedchunks.dat")
 
     for path in [(world / "DIM1"), (world / "DIM-1")]:
         if not (path / "region").exists() or not list((path / "region").iterdir()):
             delete_path(path)
+
+    for path in world.iterdir():
+        file_name = path.name
+        if (
+            file_name.startswith("level") and
+            file_name.endswith(".dat") and
+            file_name[5:-4].isnumeric()
+        ):
+            delete_file(path)
 
 def log_data_packs(world: Path):
     # Skip if datapacks don't exist

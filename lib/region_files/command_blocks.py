@@ -195,7 +195,7 @@ def read_commands_from_region(world: Path, file_path: Path, list_name: str) -> s
 
 
 
-def write_commands(world: Path):
+def write_commands(world: Path, get_confirmation: bool):
     log("Writing command block data")
 
     # Check for errors
@@ -207,11 +207,12 @@ def write_commands(world: Path):
         return
 
     # Get confirmation
-    log(f'This action will modify several region files in: {world.as_posix()}')
-    confirm = input("Is this okay? (Y/N): ")
-    if confirm not in ["Y", "y"]:
-        log("Action canceled")
-        return
+    if get_confirmation:
+        log(f'This action will modify several region files in: {world.as_posix()}')
+        confirm = input("Is this okay? (Y/N): ")
+        if confirm not in ["Y", "y"]:
+            log("Action canceled")
+            return
 
     # Extract commands from file
     with (PROGRAM_PATH / "commands.mcfunction").open("r", encoding="utf-8") as file:
