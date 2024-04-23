@@ -21,7 +21,7 @@ PROGRAM_PATH = Path(__file__).parent.parent.parent
 
 # Define functions
 
-def extract(world: Path):
+def extract(world: Path, get_confirmation: bool):
     log("Extracting entity data")
 
     # Check for errors
@@ -30,11 +30,12 @@ def extract(world: Path):
         return
 
     # Get confirmation
-    log(f'This action will modify several region files in: {world.as_posix()}')
-    confirm = input("Is this okay? (Y/N): ")
-    if confirm not in ["Y", "y"]:
-        log("Action canceled")
-        return
+    if get_confirmation:
+        log(f'This action will modify several region files in: {world.as_posix()}')
+        confirm = input("Is this okay? (Y/N): ")
+        if confirm not in ["Y", "y"]:
+            log("Action canceled")
+            return
     
     # Iterate through region files
     for path in [world, world / "DIM1", world / "DIM-1"]:

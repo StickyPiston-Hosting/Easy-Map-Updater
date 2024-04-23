@@ -201,7 +201,7 @@ def update_tags(folder: Path, og_folder: Path, tag_type: str):
 
 
 
-def extract_stored_functions(world: Path, og_world: Path):
+def extract_stored_functions(world: Path, og_world: Path, get_confirmation: bool):
     log("Extracting stored functions")
 
     # Check for errors
@@ -216,11 +216,12 @@ def extract_stored_functions(world: Path, og_world: Path):
         return
     
     # Get confirmation
-    log(f'This action will move: {(world / "data" / "functions").as_posix()}')
-    confirm = input("Is this okay? (Y/N): ")
-    if confirm not in ["Y", "y"]:
-        log("Action canceled")
-        return
+    if get_confirmation:
+        log(f'This action will move: {(world / "data" / "functions").as_posix()}')
+        confirm = input("Is this okay? (Y/N): ")
+        if confirm not in ["Y", "y"]:
+            log("Action canceled")
+            return
     
     data_pack = world / "datapacks" / "stored_functions"
     (data_pack / "data").mkdir(exist_ok=True, parents=True)
@@ -272,7 +273,7 @@ def extract_stored_functions(world: Path, og_world: Path):
 
 
 
-def extract_stored_advancements(world: Path):
+def extract_stored_advancements(world: Path, get_confirmation: bool):
     log("Extracting stored advancements")
 
     # Check for errors
@@ -284,11 +285,12 @@ def extract_stored_advancements(world: Path):
         return
     
     # Get confirmation
-    log(f'This action will move: {(world / "data" / "advancements").as_posix()}')
-    confirm = input("Is this okay? (Y/N): ")
-    if confirm not in ["Y", "y"]:
-        log("Action canceled")
-        return
+    if get_confirmation:
+        log(f'This action will move: {(world / "data" / "advancements").as_posix()}')
+        confirm = input("Is this okay? (Y/N): ")
+        if confirm not in ["Y", "y"]:
+            log("Action canceled")
+            return
     
     data_pack = world / "datapacks" / "stored_advancements"
     (data_pack / "data").mkdir(exist_ok=True, parents=True)
@@ -317,13 +319,13 @@ def extract_stored_advancements(world: Path):
 
 
 
-def disable_advancements(world: Path):
-    disable_folder(world, "advancements")
+def disable_advancements(world: Path, get_confirmation: bool):
+    disable_folder(world, "advancements", get_confirmation)
 
-def disable_recipes(world: Path):
-    disable_folder(world, "recipes")
+def disable_recipes(world: Path, get_confirmation: bool):
+    disable_folder(world, "recipes", get_confirmation)
 
-def disable_folder(world: Path, folder: str):
+def disable_folder(world: Path, folder: str, get_confirmation: bool):
     log(f"Disabling {folder}")
 
     # Check for errors
@@ -335,11 +337,12 @@ def disable_folder(world: Path, folder: str):
         return
 
     # Get confirmation
-    log(f'This action will delete certain folders in: {(world / "datapacks").as_posix()}')
-    confirm = input("Is this okay? (Y/N): ")
-    if confirm not in ["Y", "y"]:
-        log("Action canceled")
-        return
+    if get_confirmation:
+        log(f'This action will delete certain folders in: {(world / "datapacks").as_posix()}')
+        confirm = input("Is this okay? (Y/N): ")
+        if confirm not in ["Y", "y"]:
+            log("Action canceled")
+            return
 
     # Disable folder in the data packs
     for data_pack in (world / "datapacks").iterdir():
@@ -498,7 +501,7 @@ def fix_disabled_vanilla(world: Path):
 
 
 
-def unzip_packs(world: Path):
+def unzip_packs(world: Path, get_confirmation: bool):
     log("Unzipping data packs")
 
     # Cancel if the world doesn't exist
@@ -510,11 +513,12 @@ def unzip_packs(world: Path):
         return
 
     # Get confirmation
-    log(f'This action will remove all zipped files and unzip them in: {(world / "datapacks").as_posix()}')
-    confirm = input("Is this okay? (Y/N): ")
-    if confirm not in ["Y", "y"]:
-        log("Action canceled")
-        return
+    if get_confirmation:
+        log(f'This action will remove all zipped files and unzip them in: {(world / "datapacks").as_posix()}')
+        confirm = input("Is this okay? (Y/N): ")
+        if confirm not in ["Y", "y"]:
+            log("Action canceled")
+            return
 
     # Unzip the zipped data packs
     has_packs = False
@@ -544,7 +548,7 @@ def unzip_packs(world: Path):
 
     finalize.log_data_packs(world)
 
-def zip_packs(world: Path):
+def zip_packs(world: Path, get_confirmation: bool):
     log("Zipping data packs")
 
     # Cancel if the world doesn't exist
@@ -556,11 +560,12 @@ def zip_packs(world: Path):
         return
 
     # Get confirmation
-    log(f'This action will remove all folders and zip them up in: {(world / "datapacks").as_posix()}')
-    confirm = input("Is this okay? (Y/N): ")
-    if confirm not in ["Y", "y"]:
-        log("Action canceled")
-        return
+    if get_confirmation:
+        log(f'This action will remove all folders and zip them up in: {(world / "datapacks").as_posix()}')
+        confirm = input("Is this okay? (Y/N): ")
+        if confirm not in ["Y", "y"]:
+            log("Action canceled")
+            return
 
     # Zip the unzipped data packs
     has_packs = False

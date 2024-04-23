@@ -36,7 +36,7 @@ uuid_list: list[str] = []
 
 # Define functions
 
-def fix(world: Path, og_world: Path, version: int) -> dict[str, bool]:
+def fix(world: Path, og_world: Path, version: int, get_confirmation: bool) -> dict[str, bool]:
     log("Fixing world data")
 
     # Set pack version
@@ -52,11 +52,12 @@ def fix(world: Path, og_world: Path, version: int) -> dict[str, bool]:
         return
 
     # Get confirmation
-    log(f'This action will modify several region files in: {world.as_posix()}')
-    confirm = input("Is this okay? (Y/N): ")
-    if confirm not in ["Y", "y"]:
-        log("Action canceled")
-        return
+    if get_confirmation:
+        log(f'This action will modify several region files in: {world.as_posix()}')
+        confirm = input("Is this okay? (Y/N): ")
+        if confirm not in ["Y", "y"]:
+            log("Action canceled")
+            return
     
     # Get the time
     global TIME

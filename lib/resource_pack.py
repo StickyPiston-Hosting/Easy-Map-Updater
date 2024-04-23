@@ -229,7 +229,7 @@ def fix(pack: Path):
 
 
 
-def import_pack(world: Path, pack: Path):
+def import_pack(world: Path, pack: Path, get_confirmation: bool):
     log("Importing resource pack")
 
     # Cancel if the pack doesn't exist or if the destination folder already exists
@@ -245,18 +245,19 @@ def import_pack(world: Path, pack: Path):
         return
 
     # Get confirmation
-    log(f'This action will delete: {(world / "resources.zip").as_posix()}')
-    confirm = input("Is this okay? (Y/N): ")
-    if confirm not in ["Y", "y"]:
-        log("Action canceled")
-        return
+    if get_confirmation:
+        log(f'This action will delete: {(world / "resources.zip").as_posix()}')
+        confirm = input("Is this okay? (Y/N): ")
+        if confirm not in ["Y", "y"]:
+            log("Action canceled")
+            return
 
     # Unpack archive
     shutil.unpack_archive(file, pack, "zip")
     os.remove(file)
     log("Resource pack imported")
 
-def export_pack(world: Path, pack: Path):
+def export_pack(world: Path, pack: Path, get_confirmation: bool):
     log("Exporting resource pack")
 
     # Cancel if the pack doesn't exist
@@ -268,7 +269,7 @@ def export_pack(world: Path, pack: Path):
         return
 
     # Get confirmation
-    if (world / "resources.zip").exists():
+    if (world / "resources.zip").exists() and get_confirmation:
         log(f'This action will overwrite: {(world / "resources.zip").as_posix()}')
         confirm = input("Is this okay? (Y/N): ")
         if confirm not in ["Y", "y"]:

@@ -25,16 +25,34 @@ The maps and resource packs that it updates will be in the `saves` and `resource
 
 ## Updating your map
 
+To update your map, run `easy_map_updater.py`, then type `update` and hit enter. A few prompts will come up at various stages when user input is needed. Once it is done, you should have the following files:
+
+- `saves/world`: Your updated map.
+- `saves/world - Original`: Original copy of the map used as a reference.
+- `saves/world - Play`: Play copy of the map. Join this copy to playtest your map to make sure that the update was successful.
+- `resourcepacks/resources`: Your updated resource pack. The resource pack will also be zipped and inserted into the world as `resources.zip`.
+- `resourcepacks/resources - Original`: Original copy of the resource pack used as a reference.
+
+After you have confirmed the map to be fully-functioning with the play copy, you can distribute the main copy. To clean up all the files when you're done, you can use the `clean` action.
+
+If something went wrong in the update process, you can either run `update` again and reload from the original copy, or you can run the actions manually as described in the following section.
+
+
+## Running actions manually
+
+For maps that are older or more complex, generally you want to go through the actions manually.
+
 E.M.U. uses a series of command line-like actions which are used at various stages in the map updating process. Not all of them will show right away, but will slowly be shown as you go when they become relevant. This keeps the clutter down and helps you to keep track of what stage you're currently on.
 
 
 ### Administrative actions
 
-To begin, run `easy_map_updater.py`, then run the `find` action.
+Begin by running the `scan` action, which will scan your map to gather any information E.M.U. needs to proceed.
 
 - `reset`: Resets the action list.
 - `all`: Shows all actions.
-- `find`: Scans the map for any important information that E.M.U. needs to know, for instance if there is a resource pack inside, what version the map is on, whether there are legacy functions in the `data` folder, etc.
+- `update`: Updates your map automatically. It runs all systems in sequence, prompting you when information is needed.
+- `scan`: Scans the map for any important information that E.M.U. needs to know, for instance if there is a resource pack inside, what version the map is on, whether there are legacy functions in the `data` folder, etc.
 
 
 ### Pre-original world actions
