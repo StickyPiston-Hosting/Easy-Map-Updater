@@ -211,6 +211,12 @@ def clean_level_dat(world: Path):
     if "WasModded" in file["Data"]:
         file["Data"]["WasModded"] = NBT.TAG_Byte(0)
 
+    # Set spawn chunk radius gamerule, which was added in 1.20.5
+    version: int = option_manager.get_version()
+    if version <= 2004:
+        if "GameRules" in file["Data"]:
+            file["Data"]["GameRules"]["spawnChunkRadius"] = NBT.TAG_String("10")
+
     # Close file
     file.write_file(file_path)
 
