@@ -4482,7 +4482,7 @@ ENCHANTMENT_IDS = {
     19: "minecraft:knockback",
     20: "minecraft:fire_aspect",
     21: "minecraft:looting",
-    22: "minecraft:sweeping",
+    22: "minecraft:sweeping_edge",
     32: "minecraft:efficiency",
     33: "minecraft:silk_touch",
     34: "minecraft:unbreaking",

@@ -62,6 +62,13 @@ def enchantment(name: str | int | nbt_tags.TypeNumeric, version: int, issues: li
         else:
             name = "minecraft:protection"
 
+    # Update enchantment names for 1.20.5
+    id_array = {
+        "minecraft:sweeping": "minecraft:sweeping_edge"
+    }
+    if name in id_array:
+        name = id_array[name]
+
     return miscellaneous.namespace(name)
 
 def particle(particle: str, version: int, issues: list[dict[str, str]]) -> str:
