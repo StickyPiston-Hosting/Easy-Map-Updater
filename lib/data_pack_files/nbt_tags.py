@@ -377,7 +377,18 @@ def update_tags(parent: dict, nbt: dict, guide: dict, source: str, object_id: st
                 nbt[guide[key]["rename"]] = branch(nbt, nbt[key], guide[key], source, object_id, issues)
                 if key in nbt:
                     del nbt[key]
-            elif "remove" in guide[key] and guide[key]["remove"]:
+            elif (
+                "remove" in guide[key] and
+                (
+                    (isinstance(guide[key]["remove"], bool) and guide[key]["remove"]) or
+                    (isinstance(guide[key]["remove"], dict) and (
+                        "matches" in guide[key]["remove"] and (
+                            (isinstance(nbt[key], TypeNumeric) and nbt[key].value == guide[key]["remove"]["matches"]) or
+                            (isinstance(nbt[key], str) and nbt[key] == guide[key]["remove"]["matches"])
+                        )
+                    ))
+                )
+            ):
                 branch(nbt, nbt[key], guide[key], source, object_id, issues)
                 if key in nbt:
                     del nbt[key]
