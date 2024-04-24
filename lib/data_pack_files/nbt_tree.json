@@ -249,6 +249,15 @@
                     "rename": "active_effects",
                     "list": { "source": "effect" }
                 },
+                "armor": {
+                    "rename": "body_armor_item",
+                    "source": "item"
+                },
+                "ArmorDropChances": { "list": { "data_type": "float" } },
+                "ArmorItem": {
+                    "rename": "body_armor_item",
+                    "source": "item"
+                },
                 "ArmorItems": { "list": { "source": "item" } },
                 "Attributes": { "list": { "source": "attribute" } },
                 "Block": {
@@ -257,6 +266,8 @@
                 },
                 "BlockState": { "edge_case": "block_entity" },
                 "block_state": { "edge_case": "block_entity" },
+                "body_armor_drop_chance": { "data_type": "float" },
+                "body_armor_item": { "source": "item" },
                 "Command": {
                     "data_type": "string",
                     "argument_type": "command_string"
@@ -271,6 +282,10 @@
                 "CustomPotionEffects": {
                     "rename": "custom_potion_effects",
                     "list": { "source": "effect" }
+                },
+                "DecorItem": {
+                    "rename": "body_armor_item",
+                    "source": "item"
                 },
                 "DropItem": { "data_type": "byte" },
                 "EffectId": {
@@ -298,6 +313,7 @@
                 "FallHurtMax": { "data_type": "int" },
                 "FireworksItem": { "source": "item" },
                 "Fuse": { "edge_case": "fuse" },
+                "HandDropChances": { "list": { "data_type": "float" } },
                 "HandItems": { "list": { "source": "item" } },
                 "HurtEntities": { "data_type": "byte" },
                 "id": {

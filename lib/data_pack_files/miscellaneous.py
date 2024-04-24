@@ -332,6 +332,14 @@ def slot(name: str, version: int, issues: list[dict[str, str]]) -> str:
     # Remove slot. prefix
     if pack_version <= 1202 and len(name) > 5 and name[:5] == "slot.":
         name = name[5:]
+
+    # Change slot names for 1.20.5
+    id_array = {
+        "horse.armor": "armor.body"
+    }
+    if name in id_array:
+        name = id_array[name]
+
     return name
 
 def team_setting(name: str, version: int, issues: list[dict[str, str]]) -> str:
