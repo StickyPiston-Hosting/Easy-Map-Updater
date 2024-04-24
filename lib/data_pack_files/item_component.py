@@ -433,14 +433,7 @@ def extract(item_id: str, components: dict[str], nbt: dict[str], version: int) -
             components["minecraft:entity_data"] = {}
         entity_data = components["minecraft:entity_data"]
         if "id" not in entity_data and "id" not in nbt["EntityTag"]:
-            if item_id.endswith("_spawn_egg"):
-                entity_data["id"] = miscellaneous.namespace(item_id[:-10])
-            if item_id.endswith("_bucket"):
-                entity_data["id"] = miscellaneous.namespace(item_id[:-7])
-            elif miscellaneous.namespace(item_id) in [
-                "minecraft:armor_stand",
-            ]:
-                entity_data["id"] = miscellaneous.namespace(item_id)
+            entity_data["id"] = miscellaneous.entity_id_from_item(item_id)
         for key in nbt["EntityTag"].keys():
             entity_data[key] = nbt["EntityTag"][key]
         del nbt["EntityTag"]

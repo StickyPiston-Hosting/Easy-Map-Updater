@@ -359,7 +359,7 @@ def update_tags(parent: dict, nbt: dict, guide: dict, source: str, object_id: st
     if source == "entity" and "Riding" in nbt:
         no_upper_id = "id" not in nbt
         if no_upper_id and object_id != "":
-            if "_spawn_egg" in object_id:
+            if object_id.endswith("_spawn_egg"):
                 nbt["id"] = object_id[:-10]
             else:
                 nbt["id"] = object_id

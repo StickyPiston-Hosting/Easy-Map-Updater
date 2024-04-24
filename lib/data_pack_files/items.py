@@ -161,7 +161,7 @@ def update(item: dict[str, str | int | dict | bool | None], version: int, issues
 
     # Modify item ID if a spawn egg and the "Riding" tag is present
     old_item_id = item_id
-    if item_id != None and  "_spawn_egg" in item_id and nbt != None and "EntityTag" in nbt and "Riding" in nbt["EntityTag"]:
+    if item_id != None and item_id.endswith("_spawn_egg") and nbt != None and "EntityTag" in nbt and "Riding" in nbt["EntityTag"]:
         item_id = entities.update(extract_riding_id(nbt["EntityTag"]["Riding"]), pack_version, issues) + "_spawn_egg"
 
     # Update NBT

@@ -17,6 +17,7 @@ from lib.data_pack_files import items
 from lib.data_pack_files import json_text_component
 from lib.data_pack_files import ids
 from lib.data_pack_files import tables
+from lib.data_pack_files import miscellaneous
 from lib.data_pack_files.restore_behavior import spawner_bossbar
 from lib.data_pack_files.restore_behavior import spawner_position
 
@@ -520,7 +521,7 @@ def fix_entity_recursive_passenger(entity: NBT.TAG_Compound, is_from_spawner: bo
         if "Item" not in entity:
             entity["Item"] = NBT.TAG_Compound()
             entity["Item"]["id"] = NBT.TAG_String("minecraft:stone")
-            entity["Item"]["Count"] = NBT.TAG_Byte(1)
+            entity["Item"]["count"] = NBT.TAG_Byte(1)
 
         # TEMPORARY CODE
         # if "Pos" in entity and is_from_spawner:
@@ -595,11 +596,11 @@ def fix_entity_recursive_passenger(entity: NBT.TAG_Compound, is_from_spawner: bo
         # Fix 0 count items
         for tag in ["ArmorItems", "HandItems"]:
             for item in entity[tag]:
-                if "Count" in item:
-                    if item["Count"].value == 0:
-                        item["Count"].value = 1
+                if "count" in item:
+                    if item["count"].value == 0:
+                        item["count"].value = 1
                 elif "id" in item:
-                    item["Count"] = NBT.TAG_Byte(1)
+                    item["count"] = NBT.TAG_Byte(1)
 
 
     absorption_level = None
@@ -737,52 +738,49 @@ def fix_item(item: NBT.TAG_Compound, is_from_spawner: bool = False):
         return
 
     if not is_from_spawner:
-        if "tag" in item:
-            item_tag = item["tag"]
+        if "components" in item:
+            item_components = item["components"]
 
-            # Handle CanPlaceOn and CanDestroy
-            if pack_version <= 904:
-                for tag in ["CanPlaceOn", "CanDestroy"]:
-                    if tag in item_tag:
-                        fix_can_place_on(item_tag, tag)
+            # Handle can place on and can destroy
+            if pack_version <= 1202:
+                for component in ["minecraft:can_place_on", "minecraft:can_destroy"]:
+                    if component in item_components:
+                        fix_can_place_on(item_components, component)
 
-            # Handle display data
-            if "display" in item_tag:
-                if "Name" in item_tag["display"]:
-                    item_tag["display"]["Name"] = NBT.TAG_String(json_text_component.update(item_tag["display"]["Name"].value, pack_version, [], False))
-                if "Lore" in item_tag["display"]:
-                    lore = item_tag["display"]["Lore"]
-                    for i in range(len(lore)):
-                        lore[i] = NBT.TAG_String(json_text_component.update(lore[i].value, pack_version, [], False))
+            # Handle custom name
+            if "minecraft:custom_name" in item_components:
+                item_components["minecraft:custom_name"] = NBT.TAG_String(json_text_component.update(item_components["minecraft:custom_name"].value, pack_version, [], False))
 
-            # Handle book pages
-            if "pages" in item_tag:
-                pages: NBT.TAG_List = item_tag["pages"]
-                for i in range(len(pages)):
-                    pages[i] = NBT.TAG_String(json_text_component.update(pages[i].value, pack_version, [], False))
+            # Handle lore
+            if "minecraft:lore" in item_components:
+                lore = item_components["minecraft:lore"]
+                for i in range(len(lore)):
+                    lore[i] = NBT.TAG_String(json_text_component.update(lore[i].value, pack_version, [], False))
 
-            # Handle effects
-            for old_key, new_key in {
-                "CustomPotionEffects": "custom_potion_effects"
-            }.items():
-                if old_key in item_tag:
-                    item_tag[new_key] = NBT.TAG_List(NBT.TAG_Compound)
-                    for effect in item_tag[old_key]:
-                        item_tag[new_key].append(fix_effect(effect))
-                    del item_tag[old_key]
+            # Handle written book pages
+            if "minecraft:written_book_contents" in item_components:
+                if "pages" in item_components["minecraft:written_book_contents"]:
+                    pages: NBT.TAG_List = item_components["minecraft:written_book_contents"]["pages"]
+                    for i in range(len(pages)):
+                        pages[i] = NBT.TAG_String(json_text_component.update(pages[i].value, pack_version, [], False))
 
-            # Handle block entity tag
-            if "BlockEntityTag" in item_tag:
-                fix_block_entity(item_tag["BlockEntityTag"])
+            # Handle block entity data
+            if "minecraft:block_entity_data" in item_components:
+                fix_block_entity(item_components["minecraft:block_entity_data"])
+                if "id" not in item_components["minecraft:block_entity_data"]:
+                    item_components["minecraft:block_entity_data"]["id"] = item["id"]
 
-            # Handle entity tag
-            if "EntityTag" in item_tag:
-                fix_entity_recursive_passenger(item_tag["EntityTag"], False)
+            # Handle entity data
+            if "minecraft:entity_data" in item_components:
+                fix_entity_recursive_passenger(item_components["minecraft:entity_data"])
+                if "id" not in item_components["minecraft:entity_data"]:
+                    item_components["minecraft:entity_data"]["id"] = NBT.TAG_String(miscellaneous.entity_id_from_item(item["id"].value))
+
 
         # Handle old adventure mode
         if pack_version <= 710 and defaults.FIXES["old_adventure_mode_items"]:
             item_id = item["id"].value
-            insert_old_adventure_mode_tags(item, item_id)
+            insert_old_adventure_mode_components(item, item_id)
 
     else:
         item_nbt = nbt_tags.convert_from_lib_format(item)
@@ -795,35 +793,47 @@ def fix_item(item: NBT.TAG_Compound, is_from_spawner: bool = False):
 
 
 
-def fix_can_place_on(item_tag: NBT.TAG_Compound, tag: str):
+def fix_can_place_on(item_components: NBT.TAG_Compound, component: str):
     new_list: list[str] = []
-    block: NBT.TAG_String
-    for block in item_tag[tag]:
-        if block.value in tables.BLOCK_TAG_REPLACEMENT_KEYS:
-            new_list.append(tables.BLOCK_TAG_REPLACEMENT_KEYS[block.value])
+    block_compound: NBT.TAG_Compound
+    block: str
+    if "predicates" not in item_components[component]:
+        return
+    for block_compound in item_components[component]:
+        if (
+            "blocks" not in block_compound or
+            not isinstance(block_compound["blocks"], NBT.TAG_String)
+        ):
+            continue
+        block = block_compound["blocks"].value
+        if block in tables.BLOCK_TAG_REPLACEMENT_KEYS:
+            new_list.append(tables.BLOCK_TAG_REPLACEMENT_KEYS[block])
         else:
-            new_list.append(block.value)
+            new_list.append(block)
     new_list = utils.deduplicate_list(new_list)
-    item_tag[tag] = NBT.TAG_List(NBT.TAG_String)
+    item_components[component]["predicates"] = NBT.TAG_List(NBT.TAG_Compound)
     for entry in new_list:
-        item_tag[tag].append(NBT.TAG_String(entry))
+        new_entry = NBT.TAG_Compound()
+        new_entry["blocks"] = NBT.TAG_String(entry)
+        item_components[component]["predicates"].append(new_entry)
 
 
 
-def insert_old_adventure_mode_tags(item: NBT.TAG_Compound, item_id: str):
-    if "tag" not in item:
-        item["tag"] = NBT.TAG_Compound()
-    item_tag = item["tag"]
+def insert_old_adventure_mode_components(item: NBT.TAG_Compound, item_id: str):
+    if "components" not in item:
+        item["components"] = NBT.TAG_Compound()
+    item_components = item["components"]
 
-    item_tag["adventure"] = NBT.TAG_Byte(1)
-    item_tag["HideFlags"] = NBT.TAG_Int(24)
+    if "minecraft:custom_data" not in item_components:
+        item_components["minecraft:custom_data"] = NBT.TAG_Compound()
+    item_components["minecraft:custom_data"]["adventure"] = NBT.TAG_Byte(1)
+
+    can_place_on: list[str] = []
+    can_destroy: list[str] = []
 
     if item_id in tables.BLOCK_PLACEABLE:
-        item_tag["CanPlaceOn"] = NBT.TAG_List(NBT.TAG_String)
-        item_tag["CanPlaceOn"].tags = [NBT.TAG_String("#adventure:all")]
-
-        item_tag["CanDestroy"] = NBT.TAG_List(NBT.TAG_String)
-        item_tag["CanDestroy"].tags = [NBT.TAG_String("#adventure:mineable/universal")]
+        can_place_on = ["#adventure:all"]
+        can_destroy = ["#adventure:mineable/universal"]
 
     elif item_id in [
         "minecraft:wooden_pickaxe",
@@ -833,8 +843,7 @@ def insert_old_adventure_mode_tags(item: NBT.TAG_Compound, item_id: str):
         "minecraft:diamond_pickaxe",
         "minecraft:netherite_pickaxe"
     ]:
-        item_tag["CanDestroy"] = NBT.TAG_List(NBT.TAG_String)
-        item_tag["CanDestroy"].tags = [NBT.TAG_String("#minecraft:mineable/pickaxe"), NBT.TAG_String("#adventure:mineable/universal")]
+        can_destroy = ["#minecraft:mineable/pickaxe", "#adventure:mineable/universal"]
 
     elif item_id in [
         "minecraft:wooden_shovel",
@@ -844,8 +853,7 @@ def insert_old_adventure_mode_tags(item: NBT.TAG_Compound, item_id: str):
         "minecraft:diamond_shovel",
         "minecraft:netherite_shovel"
     ]:
-        item_tag["CanDestroy"] = NBT.TAG_List(NBT.TAG_String)
-        item_tag["CanDestroy"].tags = [NBT.TAG_String("#minecraft:mineable/shovel"), NBT.TAG_String("#adventure:mineable/universal")]
+        can_destroy = ["#minecraft:mineable/shovel", "#adventure:mineable/universal"]
 
     elif item_id in [
         "minecraft:wooden_axe",
@@ -855,8 +863,7 @@ def insert_old_adventure_mode_tags(item: NBT.TAG_Compound, item_id: str):
         "minecraft:diamond_axe",
         "minecraft:netherite_axe"
     ]:
-        item_tag["CanDestroy"] = NBT.TAG_List(NBT.TAG_String)
-        item_tag["CanDestroy"].tags = [NBT.TAG_String("#minecraft:mineable/axe"), NBT.TAG_String("#adventure:mineable/universal")]
+        can_destroy = ["#minecraft:mineable/axe", "#adventure:mineable/universal"]
 
     elif item_id in [
         "minecraft:wooden_hoe",
@@ -866,8 +873,7 @@ def insert_old_adventure_mode_tags(item: NBT.TAG_Compound, item_id: str):
         "minecraft:diamond_hoe",
         "minecraft:netherite_hoe" 
     ]:
-        item_tag["CanDestroy"] = NBT.TAG_List(NBT.TAG_String)
-        item_tag["CanDestroy"].tags = [NBT.TAG_String("#minecraft:mineable/hoe"), NBT.TAG_String("#adventure:mineable/universal")]
+        can_destroy = ["#minecraft:mineable/hoe", "#adventure:mineable/universal"]
 
     elif item_id in [
         "minecraft:wooden_sword",
@@ -877,16 +883,24 @@ def insert_old_adventure_mode_tags(item: NBT.TAG_Compound, item_id: str):
         "minecraft:diamond_sword",
         "minecraft:netherite_sword"
     ]:
-        item_tag["CanDestroy"] = NBT.TAG_List(NBT.TAG_String)
-        item_tag["CanDestroy"].tags = [NBT.TAG_String("#adventure:mineable/sword"), NBT.TAG_String("#adventure:mineable/universal")]
+        can_destroy = ["#adventure:mineable/sword", "#adventure:mineable/universal"]
 
     elif item_id == "minecraft:shears":
-        item_tag["CanDestroy"] = NBT.TAG_List(NBT.TAG_String)
-        item_tag["CanDestroy"].tags = [NBT.TAG_String("#adventure:mineable/shears"), NBT.TAG_String("#adventure:mineable/universal")]
+        can_destroy = ["#adventure:mineable/shears", "#adventure:mineable/universal"]
 
     else:
-        item_tag["CanDestroy"] = NBT.TAG_List(NBT.TAG_String)
-        item_tag["CanDestroy"].tags = [NBT.TAG_String("#adventure:mineable/universal")]
+        can_destroy = ["#adventure:mineable/universal"]
+
+
+    for blocks, component in [(can_place_on, "minecraft:can_place_on"), (can_destroy, "minecraft:can_destroy")]:
+        if blocks:
+            item_components[component] = NBT.TAG_Compound()
+            item_components[component]["predicates"] = NBT.TAG_List(type=NBT.TAG_Compound)
+            for block in blocks:
+                new_entry = NBT.TAG_Compound()
+                new_entry["blocks"] = NBT.TAG_String(block)
+                item_components[component]["predicates"].append(new_entry)
+            item_components[component]["show_in_tooltip"] = NBT.TAG_Byte(0)
 
 
 

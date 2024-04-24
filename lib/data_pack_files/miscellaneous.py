@@ -174,6 +174,17 @@ def effect_time(argument: str, version: int, issues: list[dict[str, str]]) -> st
         return "1"
     return argument
 
+def entity_id_from_item(item_id: str) -> str:
+    if item_id.endswith("_spawn_egg"):
+        return namespace(item_id[:-10])
+    if item_id.endswith("_bucket"):
+        return namespace(item_id[:-7])
+    elif namespace(item_id) in [
+        "minecraft:armor_stand",
+    ]:
+       return namespace(item_id)
+    return "minecraft:pig"
+
 def experience_type(value: str, version: int, issues: list[dict[str, str]]) -> str:
     if value[-1] in ["l", "L"]:
         return "levels"
