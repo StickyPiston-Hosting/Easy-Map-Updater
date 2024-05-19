@@ -135,7 +135,7 @@ def update_from_nbt(item: dict[str, str | dict | nbt_tags.TypeNumeric], version:
     if "components" in new_item and new_item["components"] != None:
         export_item["components"] = new_item["components"]
     if count >= 0:
-        export_item["count"] = nbt_tags.TypeByte(count)
+        export_item["count"] = nbt_tags.TypeInt(count)
     if slot != None:
         export_item["Slot"] = nbt_tags.TypeByte(slot)
     
