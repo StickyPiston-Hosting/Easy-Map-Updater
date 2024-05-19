@@ -653,8 +653,8 @@ def extract(item_id: str, components: dict[str], nbt: dict[str], version: int) -
                 profile["id"] = nbt_tags.TypeIntArray(skull_owner["Id"])
             if "Properties" in skull_owner:
                 if "properties" not in profile:
-                    profile["Properties"] = []
-                properties: list = profile["Properties"]
+                    profile["properties"] = []
+                properties: list = profile["properties"]
                 if "textures" in skull_owner["Properties"]:
                     textures: list[dict[str]] = skull_owner["Properties"]["textures"]
                     for texture in textures:
