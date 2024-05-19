@@ -94,21 +94,21 @@ def conform(components: dict[str]) -> dict[str]:
                     del levels[stored_enchantment]
         components["minecraft:stored_enchantments"] = stored_enchantments
 
-    if "minecraft:writable_book_contents" in components:
-        writable_book_contents = components["minecraft:writable_book_contents"]
-        if "pages" not in writable_book_contents:
-            writable_book_contents["pages"] = []
-        pages = writable_book_contents["pages"]
+    if "minecraft:writable_book_content" in components:
+        writable_book_content = components["minecraft:writable_book_content"]
+        if "pages" not in writable_book_content:
+            writable_book_content["pages"] = []
+        pages = writable_book_content["pages"]
         for index in range(len(pages)):
             page = pages[index]
             if isinstance(page, str):
                 pages[index] = {"raw": page}
 
-    if "minecraft:written_book_contents" in components:
-        written_book_contents = components["minecraft:written_book_contents"]
-        if "pages" not in written_book_contents:
-            written_book_contents["pages"] = []
-        pages = written_book_contents["pages"]
+    if "minecraft:written_book_content" in components:
+        written_book_content = components["minecraft:written_book_content"]
+        if "pages" not in written_book_content:
+            written_book_content["pages"] = []
+        pages = written_book_content["pages"]
         for index in range(len(pages)):
             page = pages[index]
             if isinstance(page, str):
@@ -154,10 +154,10 @@ def extract(item_id: str, components: dict[str], nbt: dict[str], version: int) -
         del nbt["AttributeModifiers"]
 
     if "author" in nbt:
-        if "minecraft:written_book_contents" not in components:
-            components["minecraft:written_book_contents"] = {}
-        written_book_contents = components["minecraft:written_book_contents"]
-        written_book_contents["author"] = nbt["author"]
+        if "minecraft:written_book_content" not in components:
+            components["minecraft:written_book_content"] = {}
+        written_book_content = components["minecraft:written_book_content"]
+        written_book_content["author"] = nbt["author"]
         del nbt["author"]
 
     if "BlockEntityTag" in nbt:
@@ -492,10 +492,10 @@ def extract(item_id: str, components: dict[str], nbt: dict[str], version: int) -
         del nbt["Fireworks"]
 
     if "generation" in nbt:
-        if "minecraft:written_book_contents" not in components:
-            components["minecraft:written_book_contents"] = {}
-        written_book_contents = components["minecraft:written_book_contents"]
-        written_book_contents["generation"] = nbt_tags.TypeInt(nbt["generation"])
+        if "minecraft:written_book_content" not in components:
+            components["minecraft:written_book_content"] = {}
+        written_book_content = components["minecraft:written_book_content"]
+        written_book_content["generation"] = nbt_tags.TypeInt(nbt["generation"])
         del nbt["generation"]
 
     if "Glowing" in nbt and item_id.endswith("_bucket"):
@@ -588,22 +588,22 @@ def extract(item_id: str, components: dict[str], nbt: dict[str], version: int) -
 
     if "pages" in nbt:
         if item_id == "minecraft:writable_book":
-            if "minecraft:writable_book_contents" not in components:
-                components["minecraft:writable_book_contents"] = {}
-            writable_book_contents = components["minecraft:writable_book_contents"]
-            if "pages" not in writable_book_contents:
-                writable_book_contents["pages"] = []
-            pages = writable_book_contents["pages"]
+            if "minecraft:writable_book_content" not in components:
+                components["minecraft:writable_book_content"] = {}
+            writable_book_content = components["minecraft:writable_book_content"]
+            if "pages" not in writable_book_content:
+                writable_book_content["pages"] = []
+            pages = writable_book_content["pages"]
             for page in nbt["pages"]:
                 pages.append({"raw": page})
 
         if item_id == "minecraft:written_book":
-            if "minecraft:written_book_contents" not in components:
-                components["minecraft:written_book_contents"] = {}
-            written_book_contents = components["minecraft:written_book_contents"]
-            if "pages" not in written_book_contents:
-                written_book_contents["pages"] = []
-            pages = written_book_contents["pages"]
+            if "minecraft:written_book_content" not in components:
+                components["minecraft:written_book_content"] = {}
+            written_book_content = components["minecraft:written_book_content"]
+            if "pages" not in written_book_content:
+                written_book_content["pages"] = []
+            pages = written_book_content["pages"]
             for page in nbt["pages"]:
                 pages.append({"raw": page})
 
@@ -627,10 +627,10 @@ def extract(item_id: str, components: dict[str], nbt: dict[str], version: int) -
         del nbt["RepairCost"]
 
     if "resolved" in nbt:
-        if "minecraft:written_book_contents" not in components:
-            components["minecraft:written_book_contents"] = {}
-        written_book_contents = components["minecraft:written_book_contents"]
-        written_book_contents["resolved"] = nbt_tags.TypeByte(nbt["resolved"])
+        if "minecraft:written_book_content" not in components:
+            components["minecraft:written_book_content"] = {}
+        written_book_content = components["minecraft:written_book_content"]
+        written_book_content["resolved"] = nbt_tags.TypeByte(nbt["resolved"])
         del nbt["resolved"]
 
     if "Silent" in nbt and item_id.endswith("_bucket"):
@@ -681,10 +681,10 @@ def extract(item_id: str, components: dict[str], nbt: dict[str], version: int) -
         del nbt["StoredEnchantments"]
 
     if "title" in nbt:
-        if "minecraft:written_book_contents" not in components:
-            components["minecraft:written_book_contents"] = {}
-        written_book_contents = components["minecraft:written_book_contents"]
-        written_book_contents["title"] = {"raw": nbt["title"]}
+        if "minecraft:written_book_content" not in components:
+            components["minecraft:written_book_content"] = {}
+        written_book_content = components["minecraft:written_book_content"]
+        written_book_content["title"] = {"raw": nbt["title"]}
         del nbt["title"]
 
     if "Trim" in nbt:
