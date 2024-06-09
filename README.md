@@ -12,7 +12,7 @@ The following modules are required:
 ```
 pip install nbt
 pip install requests
-pip install PIL
+pip install pillow
 ```
 
 
