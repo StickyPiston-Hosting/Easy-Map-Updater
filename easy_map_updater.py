@@ -41,6 +41,7 @@ import traceback
 from enum import Enum
 from pathlib import Path
 from lib.log import log
+from lib import defaults
 from lib import finalize
 from lib import data_pack
 from lib import resource_pack
@@ -131,6 +132,7 @@ class Action(Enum):
 
     DEBUG_CMD = "debug.cmd"
     DEBUG_JSON = "debug.json"
+    DEBUG = "debug"
 
 actions: dict[str, dict[str, str]]
 
@@ -277,7 +279,8 @@ def action_reset():
         Action.EXIT.value:                  { "show": True,  "function": action_exit, "name": "Exit program" },
 
         Action.DEBUG_CMD.value:             { "show": True,  "function": action_update_single_command, "name": "Update single command (for testing)" },
-        Action.DEBUG_JSON.value:            { "show": True,  "function": action_update_json_text_component, "name": "Update JSON text component (for testing)" }
+        Action.DEBUG_JSON.value:            { "show": True,  "function": action_update_json_text_component, "name": "Update JSON text component (for testing)" },
+        Action.DEBUG.value:                 { "show": False, "function": action_toggle_debug_mode, "name": "Toggle debug mode" },
     }
     print("")
     list_options()
@@ -937,9 +940,6 @@ def action_exit():
     log("Exiting...")
     exit()
 
-def action_debug_actions():
-    log("Debug actions!")
-
 def action_update_single_command():
     test_command = input("Command to update: ")
     log("")
@@ -951,6 +951,14 @@ def action_update_json_text_component():
     log("")
     log(f'Old component: {test_component}')
     log(f'New component: {json_text_component.update(test_component, option_manager.get_version(), [], False)}')
+
+def action_toggle_debug_mode():
+    if defaults.DEBUG_MODE:
+        defaults.DEBUG_MODE = False
+        log("Disabled debug mode")
+    else:
+        defaults.DEBUG_MODE = True
+        log("Enabled debug mode")
 
 
 

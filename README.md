@@ -179,6 +179,7 @@ After the map has been updated and finalized, these actions will help package it
 
 - `debug.cmd`: Updates a single command in the prompt for testing purposes.
 - `debug.json`: Updates a JSON text component in the prompt for testing purposes.
+- `debug`: Toggles debug mode for printing extra data during the update process.
 
 
 ## Contact and contribution
