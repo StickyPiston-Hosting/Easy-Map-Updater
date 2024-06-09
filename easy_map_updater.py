@@ -27,7 +27,7 @@ if not (
     or
     (sys.version_info[0] > 3)
 ):
-    print("\n\nERROR: Easy Map Updater requires Python 3.9 or newer!")
+    print("\nERROR: Easy Map Updater requires Python 3.9 or newer!")
     input()
     exit()
     
@@ -37,6 +37,7 @@ if not (
 
 import shutil
 import json
+import traceback
 from enum import Enum
 from pathlib import Path
 from lib.log import log
@@ -139,14 +140,14 @@ actions: dict[str, dict[str, str]]
 
 def program():
     # Show title
-    log("")
+    print("")
     log("Easy Map Updater")
     log("- By Dominexis, and StickyPiston Hosting")
 
     # Extract input
     load_session()
     save_session()
-    log("")
+    print("")
     list_actions()
 
     # Program loop
@@ -156,13 +157,17 @@ def program():
         if action not in actions:
             log("ERROR: Must be a valid action!")
             continue
-        log("")
+        print("")
 
         # Run action
         actions[action]["show"] = True
-        actions[action]["function"]()
+        try:
+            actions[action]["function"]()
+        except Exception:
+            print("")
+            log(f'ERROR:\n{traceback.format_exc()}', True)
 
-        log("")
+        print("")
         save_session()
         list_actions()
 
@@ -193,12 +198,12 @@ def list_options():
         log(f"{key}: {options[key]}")
 
 def list_actions():
-    log("Actions:")
+    print("Actions:")
     for action in actions:
         if action == Action.LICENSE.value:
-            log("")
+            print("")
         if actions[action]["show"]:
-            log(f" {action}) {' '*max(21-len(action), 0)}{actions[action]['name']}")
+            print(f" {action}) {' '*max(21-len(action), 0)}{actions[action]['name']}")
 
 
 
@@ -274,7 +279,7 @@ def action_reset():
         Action.DEBUG_CMD.value:             { "show": True,  "function": action_update_single_command, "name": "Update single command (for testing)" },
         Action.DEBUG_JSON.value:            { "show": True,  "function": action_update_json_text_component, "name": "Update JSON text component (for testing)" }
     }
-    log("")
+    print("")
     list_options()
 
 def action_show_all_actions():
@@ -948,5 +953,6 @@ def action_update_json_text_component():
     log(f'New component: {json_text_component.update(test_component, option_manager.get_version(), [], False)}')
 
 
-    
-program()
+
+if __name__ == "__main__":
+    program()

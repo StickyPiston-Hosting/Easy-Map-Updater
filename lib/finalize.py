@@ -177,7 +177,7 @@ def clean_level_dat(world: Path):
 
     # Delete player
     if "Player" in file["Data"]:
-        log("")
+        print("")
         confirm = input("Do you wish to remove level.dat player data? (Y/N): ")
         if confirm in ["Y", "y"]:
             del file["Data"]["Player"]

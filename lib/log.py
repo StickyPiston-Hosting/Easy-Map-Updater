@@ -6,6 +6,7 @@
 # Import things
 
 from pathlib import Path
+from datetime import datetime
 
 
 
@@ -23,11 +24,14 @@ def log(text: str | list, halt = False):
         text = "\n".join(text)
 
     # Add string to file
-    with (PROGRAM_PATH / "log.txt").open("a", encoding="utf-8", newline="\n") as file:
-        file.write("\n" + text)
+    logs_folder = PROGRAM_PATH / "logs"
+    logs_folder.mkdir(exist_ok=True, parents=True)
+    current_time = datetime.now()
+    with (logs_folder / current_time.strftime("%Y-%m-%d.log")).open("a", encoding="utf-8", newline="\n") as file:
+        file.write(f'{current_time.strftime("[%H:%M:%S]")} {text}\n')
 
     # Wait for input if halt is true
     if halt:
-        input(text)
+        input(f'{text}\nPress ENTER to continue')
     else:
         print(text)
