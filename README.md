@@ -12,7 +12,7 @@ The following modules are required:
 ```
 pip install nbt
 pip install requests
-pip install PIL
+pip install pillow
 ```
 
 
@@ -28,14 +28,14 @@ The maps and resource packs that it updates will be in the `saves` and `resource
 To update your map, run `easy_map_updater.py`, then type `update` and hit enter. A few prompts will come up at various stages when user input is needed. Once it is done, you should have the following files:
 
 - `saves/world`: Your updated map.
-- `saves/world - Original`: Original copy of the map used as a reference.
-- `saves/world - Play`: Play copy of the map. Join this copy to playtest your map to make sure that the update was successful.
+- `saves/world_original`: Original copy of the map used as a reference.
+- `saves/world_play`: Play copy of the map. Join this copy to playtest your map to make sure that the update was successful.
 - `resourcepacks/resources`: Your updated resource pack. The resource pack will also be zipped and inserted into the world as `resources.zip`.
-- `resourcepacks/resources - Original`: Original copy of the resource pack used as a reference.
+- `resourcepacks/resources_original`: Original copy of the resource pack used as a reference.
 
 After you have confirmed the map to be fully-functioning with the play copy, you can distribute the main copy. To clean up all the files when you're done, you can use the `clean` action.
 
-If something went wrong in the update process, you can either run `update` again and reload from the original copy, or you can run the actions manually as described in the following section.
+If something went wrong in the update process, you may have to manually edit a file in your map, then you can run `update` again and resume where the update process stopped. Be sure to send us the error traceback so we can fix the issue!
 
 
 ## Running actions manually
@@ -166,6 +166,7 @@ After the map has been updated and finalized, these actions will help package it
 
 - `dp.zip`: Zips all of the data packs to reduce file count and size.
 - `rp.export`: Zips the working copy of your resource pack and puts it into your world as `resources.zip`.
+- `rp.export_original`: Zips the original copy of your resource pack and puts it into your original world as `resources.zip`.
 - `clean`: Deletes the working copies of your world and resource pack, and all the generated duplicates of them.
 
 
@@ -179,6 +180,7 @@ After the map has been updated and finalized, these actions will help package it
 
 - `debug.cmd`: Updates a single command in the prompt for testing purposes.
 - `debug.json`: Updates a JSON text component in the prompt for testing purposes.
+- `debug`: Toggles debug mode for printing extra data during the update process.
 
 
 ## Contact and contribution
