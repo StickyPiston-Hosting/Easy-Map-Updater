@@ -83,6 +83,7 @@ class Action(Enum):
     RP_UPDATE = "rp.update"
     RP_FIX = "rp.fix"
     RP_EXPORT = "rp.export"
+    RP_EXPORT_ORIGINAL = "rp.export_original"
 
     DP_UNZIP = "dp.unzip"
     DP_ZIP = "dp.zip"
@@ -273,6 +274,7 @@ def action_reset():
 
         Action.DP_ZIP.value:                { "show": False, "function": action_zip_data_packs, "name": "Zip data packs" },
         Action.RP_EXPORT.value:             { "show": False, "function": action_export_resource_pack, "name": "Export resource pack to world" },
+        Action.RP_EXPORT_ORIGINAL.value:    { "show": False, "function": action_export_original_resource_pack, "name": "Export original resource pack to original world" },
         Action.CLEAN.value:                 { "show": False, "function": action_clean_up, "name": "Clean up files (remove worlds and resource pack)" },
 
         Action.LICENSE.value:               { "show": True,  "function": action_license, "name": "Show software license" },
@@ -312,7 +314,7 @@ def action_update(): # Needs confirmation
     
     # Reload world if original world exists
     if og_world.exists():
-        log("")
+        print("")
         confirm = input("Original copy of world found, do you wish to update from the original? (Y/N): ")
         if confirm in ["y", "Y"]:
             action_reload_from_original_world(False)
@@ -325,17 +327,17 @@ def action_update(): # Needs confirmation
     scan_again = False
     zipped_data_packs = False
     if scan_world_booleans["resource_pack"]:
-        action_import_resource_pack()
+        action_import_resource_pack(False)
         scan_again = True
     if scan_world_booleans ["zipped_data_packs"]:
-        action_unzip_data_packs()
+        action_unzip_data_packs(False)
         scan_again = True
         zipped_data_packs = True
     if scan_world_booleans ["stored_functions"]:
-        action_stored_functions()
+        action_stored_functions(False)
         scan_again = True
     if scan_world_booleans ["stored_advancements"]:
-        action_stored_advancements()
+        action_stored_advancements(False)
         scan_again = True
     if scan_again:
         scan_world_booleans = finalize.scan_world(
@@ -354,13 +356,13 @@ def action_update(): # Needs confirmation
     if scan_world_booleans["disabled_vanilla"]:
         action_fix_disabled_vanilla()
     if scan_world_booleans["advancements"]:
-        log("")
+        print("")
         log("Advancements in the 'minecraft' namespace were found, which may be used to disable advancements in older maps")
         confirm = input("Do you wish to disable them via pack.mcmeta filters instead? (Y/N): ")
         if confirm in ["y", "Y"]:
             action_disable_advancements(False)
     if scan_world_booleans["recipes"]:
-        log("")
+        print("")
         log("Recipes in the 'minecraft' namespace were found, which may be used to disable recipes in older maps")
         confirm = input("Do you wish to disable them via pack.mcmeta filters instead? (Y/N): ")
         if confirm in ["y", "Y"]:
@@ -369,7 +371,7 @@ def action_update(): # Needs confirmation
     action_update_data_packs(False)
 
     # Optimize world
-    log("")
+    print("")
     log("The world must now be optimized, boot up Minecraft and optimize the main copy of your world")
     while True:
         confirm = input("Confirm when it has been optimized (Y): ")
@@ -405,11 +407,14 @@ def action_update(): # Needs confirmation
         action_unwaterloggable_leaves()
 
     # Finalize map
-    log("")
-    confirm = input("Do you wish to remove player score data from your map? (Y/N): ")
+    print("")
+    if (world / "data" / "scoreboard.dat").exists():
+        confirm = input("Do you wish to remove player score data from your map? (Y/N): ")
+    else:
+        confirm = "n"
     if confirm in ["y", "Y"]:
         action_get_player_names()
-        log("")
+        print("")
         log("Player names have been logged in player_names.json")
         log("Go through the list and remove non-player names from the list (e.g. fakeplayer variable names)")
         while True:
@@ -424,11 +429,12 @@ def action_update(): # Needs confirmation
         action_zip_data_packs(False)
     if resource_pack.exists():
         action_export_resource_pack(False)
+        action_export_original_resource_pack(False)
     action_prepare_play_copy(False)
 
-    log("")
+    print("")
     log("Map updated")
-    log("Join the play copy of the world and playtest it")
+    log("Join the play copy of the world and playtest it", True)
 
     global actions
     actions[Action.CLEAN.value]["show"] = True
@@ -471,15 +477,23 @@ def action_import_resource_pack(manual: bool = True): # Needs confirmation
         manual
     )
 
-    global actions
-    actions[Action.RP_IMPORT.value]["show"] = manual
-    actions[Action.RP_ORIGINAL.value]["show"] = manual
-    actions[Action.RP_PURGE.value]["show"] = manual
+    if manual:
+        global actions
+        actions[Action.RP_IMPORT.value]["show"] = True
+        actions[Action.RP_ORIGINAL.value]["show"] = True
+        actions[Action.RP_PURGE.value]["show"] = True
 
 def action_export_resource_pack(manual: bool = True): # Needs confirmation
     resource_pack.export_pack(
         MINECRAFT_PATH / "saves" / option_manager.get_map_name(),
         MINECRAFT_PATH / "resourcepacks" / option_manager.get_resource_pack(),
+        manual
+    )
+
+def action_export_original_resource_pack(manual: bool = True): # Needs confirmation
+    resource_pack.export_pack(
+        MINECRAFT_PATH / "saves" / ( option_manager.get_map_name() + " - Original" ),
+        MINECRAFT_PATH / "resourcepacks" / ( option_manager.get_resource_pack() + " - Original" ),
         manual
     )
 
@@ -519,8 +533,9 @@ def action_merge_data_packs(manual: bool = True): # Needs confirmation
         option_manager.get_fancy_name()
     )
 
-    global actions
-    actions[Action.DP_MERGE.value]["show"] = manual
+    if manual:
+        global actions
+        actions[Action.DP_MERGE.value]["show"] = True
 
 def action_update_data_packs(manual: bool = True):
     data_pack.update(
@@ -528,9 +543,10 @@ def action_update_data_packs(manual: bool = True):
         option_manager.get_version()
     )
 
-    global actions
-    if option_manager.get_version() <= 1202:
-        actions[Action.DP_TAG.value]["show"] = manual
+    if manual:
+        global actions
+        if option_manager.get_version() <= 1202:
+            actions[Action.DP_TAG.value]["show"] = True
 
 def action_tag_replacements():
     tag_replacements.create_pack(
@@ -609,12 +625,13 @@ def action_read_commands(manual: bool = True):
         MINECRAFT_PATH / "saves" / option_manager.get_map_name()
     )
 
-    global actions
-    actions[Action.CMD_READ.value]["show"] = manual
-    actions[Action.CMD_WRITE.value]["show"] = manual
-    actions[Action.CMD_UPDATE.value]["show"] = manual
-    actions[Action.CMD_CLEAR.value]["show"] = manual
-    actions[Action.CMD_EXTRACT.value]["show"] = manual
+    if manual:
+        global actions
+        actions[Action.CMD_READ.value]["show"] = True
+        actions[Action.CMD_WRITE.value]["show"] = True
+        actions[Action.CMD_UPDATE.value]["show"] = True
+        actions[Action.CMD_CLEAR.value]["show"] = True
+        actions[Action.CMD_EXTRACT.value]["show"] = True
 
 def action_write_commands(manual: bool = True): # Needs confirmation
     command_blocks.write_commands(
@@ -627,11 +644,12 @@ def action_update_commands(manual: bool = True):
         option_manager.get_version()
     )
 
-    global actions
-    if option_manager.get_version() <= 1100:
-        actions[Action.DP_FIREWORK.value]["show"] = manual
-    if option_manager.get_version() <= 1202:
-        actions[Action.DP_TAG.value]["show"] = manual
+    if manual:
+        global actions
+        if option_manager.get_version() <= 1100:
+            actions[Action.DP_FIREWORK.value]["show"] = True
+        if option_manager.get_version() <= 1202:
+            actions[Action.DP_TAG.value]["show"] = True
 
 def action_clear_command_block_helper(): # Needs confirmation
     data_pack_path: Path = MINECRAFT_PATH / "saves" / option_manager.get_map_name() / "datapacks" / "command_block_helper"
@@ -663,8 +681,9 @@ def action_get_player_names(manual: bool = True):
         MINECRAFT_PATH / "saves" / option_manager.get_map_name()
     )
 
-    global actions
-    actions[Action.FINAL.value]["show"] = manual
+    if manual:
+        global actions
+        actions[Action.FINAL.value]["show"] = True
 
 def action_finalize_map(manual: bool = True): # Needs confirmation
     finalize.finalize(
@@ -673,13 +692,14 @@ def action_finalize_map(manual: bool = True): # Needs confirmation
         manual
     )
 
-    global actions
-    actions[Action.WORLD_PLAY.value]["show"] = manual
-    if actions[Action.DP_UNZIP.value]["show"]:
-        actions[Action.DP_ZIP.value]["show"] = manual
-    if actions[Action.RP_IMPORT.value]["show"]:
-        actions[Action.RP_EXPORT.value]["show"] = manual
-    actions[Action.CLEAN.value]["show"] = manual
+    if manual:
+        global actions
+        actions[Action.WORLD_PLAY.value]["show"] = True
+        if actions[Action.DP_UNZIP.value]["show"]:
+            actions[Action.DP_ZIP.value]["show"] = True
+        if actions[Action.RP_IMPORT.value]["show"]:
+            actions[Action.RP_EXPORT.value]["show"] = True
+        actions[Action.CLEAN.value]["show"] = True
 
 def action_log_data_packs():
     finalize.log_data_packs(
@@ -712,11 +732,12 @@ def action_prepare_original_copy_world(manual: bool = True): # Needs confirmatio
     shutil.copytree(world, og_world)
     log("Original world copy prepared")
 
-    global actions
-    actions[Action.WORLD_ORIGINAL_PLAY.value]["show"] = manual
-    actions[Action.WORLD_RELOAD.value]["show"] = manual
-    actions[Action.DP_UPDATE.value]["show"] = manual
-    actions[Action.OPTIMIZE.value]["show"] = manual
+    if manual:
+        global actions
+        actions[Action.WORLD_ORIGINAL_PLAY.value]["show"] = True
+        actions[Action.WORLD_RELOAD.value]["show"] = True
+        actions[Action.DP_UPDATE.value]["show"] = True
+        actions[Action.OPTIMIZE.value]["show"] = True
 
 def action_prepare_original_play_copy(): # Needs confirmation
     log("Preparing original play world copy")
@@ -760,11 +781,12 @@ def action_reload_from_original_world(manual: bool = True): # Needs confirmation
     shutil.copytree(og_world, world)
     log("World reloaded from original")
 
-    global actions
-    actions[Action.WORLD_ORIGINAL_PLAY.value]["show"] = manual
-    actions[Action.WORLD_RELOAD.value]["show"] = manual
-    actions[Action.DP_UPDATE.value]["show"] = manual
-    actions[Action.OPTIMIZE.value]["show"] = manual
+    if manual:
+        global actions
+        actions[Action.WORLD_ORIGINAL_PLAY.value]["show"] = True
+        actions[Action.WORLD_RELOAD.value]["show"] = True
+        actions[Action.DP_UPDATE.value]["show"] = True
+        actions[Action.OPTIMIZE.value]["show"] = True
 
 def action_prepare_play_copy(manual: bool = True): # Needs confirmation
     log("Preparing play world copy")
@@ -787,8 +809,9 @@ def action_prepare_play_copy(manual: bool = True): # Needs confirmation
     shutil.copytree(world, play_world)
     log("Play world copy prepared")
 
-    global actions
-    actions[Action.ADMIN_KICKBACK.value]["show"] = manual
+    if manual:
+        global actions
+        actions[Action.ADMIN_KICKBACK.value]["show"] = True
 
 def action_prepare_original_copy_resource_pack(manual: bool = True): # Needs confirmation
     log("Preparing original resource pack copy")
@@ -811,9 +834,10 @@ def action_prepare_original_copy_resource_pack(manual: bool = True): # Needs con
     shutil.copytree(resource_pack, og_resource_pack)
     log("Original resource pack copy prepared")
 
-    global actions
-    actions[Action.RP_UPDATE.value]["show"] = manual
-    actions[Action.RP_RELOAD.value]["show"] = manual
+    if manual:
+        global actions
+        actions[Action.RP_UPDATE.value]["show"] = True
+        actions[Action.RP_RELOAD.value]["show"] = True
 
 def action_reload_from_original_resource_pack(): # Needs confirmation
     log("Reloading resource pack from original")
@@ -876,17 +900,18 @@ def action_fix_world(manual: bool = True): # Needs confirmation
         manual
     )
 
-    global actions
-    if booleans["spawner_bossbar"]:
-        actions[Action.DP_BOSSBAR.value]["show"] = manual
-    if option_manager.get_version() <= 710:
-        actions[Action.DP_ADVENTURE.value]["show"] = manual
-    if option_manager.get_version() <= 809:
-        actions[Action.DP_AEC_KILL.value]["show"] = manual
-    if option_manager.get_version() <= 1605:
-        actions[Action.DP_ORE_FIXER.value]["show"] = manual
-    if option_manager.get_version() <= 1802:
-        actions[Action.DP_WATER_LEAVES.value]["show"] = manual
+    if manual:
+        global actions
+        if booleans["spawner_bossbar"]:
+            actions[Action.DP_BOSSBAR.value]["show"] = True
+        if option_manager.get_version() <= 710:
+            actions[Action.DP_ADVENTURE.value]["show"] = True
+        if option_manager.get_version() <= 809:
+            actions[Action.DP_AEC_KILL.value]["show"] = True
+        if option_manager.get_version() <= 1605:
+            actions[Action.DP_ORE_FIXER.value]["show"] = True
+        if option_manager.get_version() <= 1802:
+            actions[Action.DP_WATER_LEAVES.value]["show"] = True
 
     return booleans
 
@@ -942,13 +967,13 @@ def action_exit():
 
 def action_update_single_command():
     test_command = input("Command to update: ")
-    log("")
+    print("")
     log(f'Old command: {test_command}')
     log(f'New command: {command.update(test_command, option_manager.get_version(), "test_command")}')
 
 def action_update_json_text_component():
     test_component = input("JSON text component to update: ")
-    log("")
+    print("")
     log(f'Old component: {test_component}')
     log(f'New component: {json_text_component.update(test_component, option_manager.get_version(), [], False)}')
 

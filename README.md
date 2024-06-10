@@ -166,6 +166,7 @@ After the map has been updated and finalized, these actions will help package it
 
 - `dp.zip`: Zips all of the data packs to reduce file count and size.
 - `rp.export`: Zips the working copy of your resource pack and puts it into your world as `resources.zip`.
+- `rp.export_original`: Zips the original copy of your resource pack and puts it into your original world as `resources.zip`.
 - `clean`: Deletes the working copies of your world and resource pack, and all the generated duplicates of them.
 
 

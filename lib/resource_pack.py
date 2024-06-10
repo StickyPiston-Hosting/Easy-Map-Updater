@@ -240,9 +240,6 @@ def import_pack(world: Path, pack: Path, get_confirmation: bool):
     if not file.exists():
         log("ERROR: resources.zip does not exist!")
         return
-    if pack.exists():
-        log("ERROR: Destination resource pack already exists!")
-        return
 
     # Get confirmation
     if get_confirmation:
@@ -251,8 +248,17 @@ def import_pack(world: Path, pack: Path, get_confirmation: bool):
         if confirm not in ["Y", "y"]:
             log("Action canceled")
             return
+        
+        if pack.exists():
+            log(f'This action will overwrite: {pack.as_posix()}')
+            confirm = input("Is this okay? (Y/N): ")
+            if confirm not in ["Y", "y"]:
+                log("Action canceled")
+                return
 
     # Unpack archive
+    if pack.exists():
+        shutil.rmtree(pack)
     shutil.unpack_archive(file, pack, "zip")
     os.remove(file)
     log("Resource pack imported")

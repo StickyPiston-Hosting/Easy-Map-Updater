@@ -178,7 +178,7 @@ def clean_level_dat(world: Path):
     # Delete player
     if "Player" in file["Data"]:
         print("")
-        confirm = input("Do you wish to remove level.dat player data? (Y/N): ")
+        confirm = input("Do you wish to remove player data from level.dat? (Y/N): ")
         if confirm in ["Y", "y"]:
             del file["Data"]["Player"]
 
@@ -302,7 +302,7 @@ def clean_scoreboard_dat(world: Path):
 
     # Stop if scoreboard.dat does not exist
     file_path = world / "data" / "scoreboard.dat"
-    if not (file_path).exists():
+    if not file_path.exists():
         return
 
     # Get names
