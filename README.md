@@ -35,7 +35,7 @@ To update your map, run `easy_map_updater.py`, then type `update` and hit enter.
 
 After you have confirmed the map to be fully-functioning with the play copy, you can distribute the main copy. To clean up all the files when you're done, you can use the `clean` action.
 
-If something went wrong in the update process, you can either run `update` again and reload from the original copy, or you can run the actions manually as described in the following section.
+If something went wrong in the update process, you may have to manually edit a file in your map, then you can run `update` again and resume where the update process stopped. Be sure to send us the error traceback so we can fix the issue!
 
 
 ## Running actions manually

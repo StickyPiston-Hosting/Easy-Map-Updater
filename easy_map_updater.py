@@ -136,6 +136,10 @@ class Action(Enum):
     DEBUG = "debug"
 
 actions: dict[str, dict[str, str]]
+update_progress: dict[str, int | bool] = {
+    "stage": 0,
+    "zipped_data_packs": False,
+}
 
 
 
@@ -175,21 +179,34 @@ def program():
         list_actions()
 
 def load_session():
-    global actions
-    session_path = PROGRAM_PATH / "session.json"
     action_reset()
+    session_path = PROGRAM_PATH / "session.json"
     if not session_path.exists():
         return
     with session_path.open("r", encoding="utf-8") as file:
-        session: dict[str, bool] = json.load(file)
-    for action in session:
+        session: dict[str, dict[str, bool]] = json.load(file)
+    if "debug.cmd" in session:
+        session = {"actions": session}
+
+    if "actions" not in session:
+        session["actions"] = {}
+    for action in session["actions"]:
         if action in actions:
-            actions[action]["show"] = session[action]
+            actions[action]["show"] = session["actions"][action]
+
+    if "update_progress" in session:
+        global update_progress
+        update_progress = session["update_progress"]
+
+    
 
 def save_session():
-    session: dict[str, bool] = {}
+    session: dict[str, dict[str, bool]] = {
+        "actions": {},
+        "update_progress": update_progress
+    }
     for action in actions:
-        session[action] = actions[action]["show"]
+        session["actions"][action] = actions[action]["show"]
     session_path = PROGRAM_PATH / "session.json"
     with session_path.open("w", encoding="utf-8", newline="\n") as file:
         json.dump(session, file, indent=4)
@@ -308,129 +325,190 @@ def action_update(): # Needs confirmation
     # Get confirmation
     log(f'This action will update: {world.as_posix()}')
     confirm = input("Is this okay? (Y/N): ")
-    if confirm not in ["Y", "y"]:
+    if confirm not in ["y", "Y"]:
         log("Action canceled")
         return
     
+    # Get confirmation for starting in the middle
+    if update_progress["stage"] > 0:
+        confirm = input("The map was partially updated. Do you wish to resume where it last stopped? (Y/N): ")
+        if confirm not in ["y" ,"Y"]:
+            log("Starting update from beginning")
+            reset_update_progress()
+        else:
+            log("Resuming update")
+    
     # Reload world if original world exists
-    if og_world.exists():
-        print("")
-        confirm = input("Original copy of world found, do you wish to update from the original? (Y/N): ")
-        if confirm in ["y", "Y"]:
-            action_reload_from_original_world(False)
+    if update_progress["stage"] == 0:
+        if og_world.exists():
+            print("")
+            confirm = input("Original copy of world found, do you wish to update from the original? (Y/N): ")
+            if confirm in ["y", "Y"]:
+                action_reload_from_original_world(False)
+        next_update_progress_section()
 
     # Scan world
     scan_world_booleans = finalize.scan_world(
         world,
         resource_pack
     )
-    scan_again = False
-    zipped_data_packs = False
-    if scan_world_booleans["resource_pack"]:
-        action_import_resource_pack(False)
-        scan_again = True
-    if scan_world_booleans ["zipped_data_packs"]:
-        action_unzip_data_packs(False)
-        scan_again = True
-        zipped_data_packs = True
-    if scan_world_booleans ["stored_functions"]:
-        action_stored_functions(False)
-        scan_again = True
-    if scan_world_booleans ["stored_advancements"]:
-        action_stored_advancements(False)
-        scan_again = True
-    if scan_again:
-        scan_world_booleans = finalize.scan_world(
-            world,
-            resource_pack
-        )
+    if update_progress["stage"] == 100:
+        scan_again = False
+        update_progress["zipped_data_packs"] = False
+        if scan_world_booleans["resource_pack"]:
+            action_import_resource_pack(False)
+            scan_again = True
+        if scan_world_booleans["zipped_data_packs"]:
+            action_unzip_data_packs(False)
+            scan_again = True
+            update_progress["zipped_data_packs"] = True
+        if scan_world_booleans["stored_functions"]:
+            action_stored_functions(False)
+            scan_again = True
+        if scan_world_booleans["stored_advancements"]:
+            action_stored_advancements(False)
+            scan_again = True
+        if scan_again:
+            scan_world_booleans = finalize.scan_world(
+                world,
+                resource_pack
+            )
+        next_update_progress_section()
 
     version: int = option_manager.get_version()
 
     # Update resource pack
-    if resource_pack.exists():
-        action_prepare_original_copy_resource_pack(False)
-        action_update_resource_pack()
+    if update_progress["stage"] == 200:
+        if resource_pack.exists():
+            action_prepare_original_copy_resource_pack(False)
+            action_update_resource_pack()
+        next_update_progress_section()
 
     # Update data pack
-    if scan_world_booleans["disabled_vanilla"]:
-        action_fix_disabled_vanilla()
-    if scan_world_booleans["advancements"]:
-        print("")
-        log("Advancements in the 'minecraft' namespace were found, which may be used to disable advancements in older maps")
-        confirm = input("Do you wish to disable them via pack.mcmeta filters instead? (Y/N): ")
-        if confirm in ["y", "Y"]:
-            action_disable_advancements(False)
-    if scan_world_booleans["recipes"]:
-        print("")
-        log("Recipes in the 'minecraft' namespace were found, which may be used to disable recipes in older maps")
-        confirm = input("Do you wish to disable them via pack.mcmeta filters instead? (Y/N): ")
-        if confirm in ["y", "Y"]:
-            action_disable_recipes(False)
-    action_prepare_original_copy_world(False)
-    action_update_data_packs(False)
+    if update_progress["stage"] == 300:
+        if scan_world_booleans["disabled_vanilla"]:
+            action_fix_disabled_vanilla()
+        next_update_progress()
+    if update_progress["stage"] == 301:
+        if scan_world_booleans["advancements"]:
+            print("")
+            log("Advancements in the 'minecraft' namespace were found, which may be used to disable advancements in older maps")
+            confirm = input("Do you wish to disable them via pack.mcmeta filters instead? (Y/N): ")
+            if confirm in ["y", "Y"]:
+                action_disable_advancements(False)
+        if scan_world_booleans["recipes"]:
+            print("")
+            log("Recipes in the 'minecraft' namespace were found, which may be used to disable recipes in older maps")
+            confirm = input("Do you wish to disable them via pack.mcmeta filters instead? (Y/N): ")
+            if confirm in ["y", "Y"]:
+                action_disable_recipes(False)
+        next_update_progress()
+    if update_progress["stage"] == 302:
+        action_prepare_original_copy_world(False)
+        next_update_progress()
+    if update_progress["stage"] == 303:
+        action_update_data_packs(False)
+        next_update_progress_section()
 
     # Optimize world
-    print("")
-    log("The world must now be optimized, boot up Minecraft and optimize the main copy of your world")
-    while True:
-        confirm = input("Confirm when it has been optimized (Y): ")
-        if confirm in ["y", "Y"]:
-            break
-
-    # Fix world
-    if version <= 1605:
-        action_entity_extract(False)
-    fix_world_booleans = action_fix_world(False)
-
-    # Update command blocks
-    action_read_commands(False)
-    action_update_commands(False)
-    action_write_commands(False)
-
-    # Add various things to the world to restore old behavior
-    if fix_world_booleans["spawner_bossbar"]:
-        action_spawner_bossbar()
-    if version <= 710:
-        action_old_adventure_mode()
-    if version <= 809:
-        action_area_effect_cloud_killer()
-    if version <= 1100:
-        action_firework_damage_canceler()
-    if version <= 1202:
-        action_tag_replacements()
-    if version <= 1502:
-        action_illegal_chunk()
-    if version <= 1605:
-        action_ore_fixer()
-    if version <= 1802:
-        action_unwaterloggable_leaves()
-
-    # Finalize map
-    print("")
-    if (world / "data" / "scoreboard.dat").exists():
-        confirm = input("Do you wish to remove player score data from your map? (Y/N): ")
-    else:
-        confirm = "n"
-    if confirm in ["y", "Y"]:
-        action_get_player_names()
+    if update_progress["stage"] == 400:
         print("")
-        log("Player names have been logged in player_names.json")
-        log("Go through the list and remove non-player names from the list (e.g. fakeplayer variable names)")
+        log("The world must now be optimized, boot up Minecraft and optimize the main copy of your world")
         while True:
-            confirm = input("Confirm when the non-player names have been removed (Y): ")
+            confirm = input("Confirm when it has been optimized (Y): ")
             if confirm in ["y", "Y"]:
                 break
-    else:
-        with (PROGRAM_PATH / "player_names.json").open("w", encoding="utf-8", newline="\n") as file:
-            file.write("{}")
-    action_finalize_map(False)
-    if zipped_data_packs:
-        action_zip_data_packs(False)
-    if resource_pack.exists():
-        action_export_resource_pack(False)
-        action_export_original_resource_pack(False)
-    action_prepare_play_copy(False)
+        next_update_progress_section()
+
+    # Fix world
+    if update_progress["stage"] == 500:
+        if version <= 1605:
+            action_entity_extract(False)
+        next_update_progress()
+    if update_progress["stage"] == 501:
+        fix_world_booleans = action_fix_world(False)
+        next_update_progress_section()
+
+    # Update command blocks
+    if update_progress["stage"] == 600:
+        action_read_commands(False)
+        next_update_progress()
+    if update_progress["stage"] == 601:
+        action_update_commands(False)
+        next_update_progress()
+    if update_progress["stage"] == 602:
+        action_write_commands(False)
+        next_update_progress_section()
+
+    # Add various things to the world to restore old behavior
+    if update_progress["stage"] == 700:
+        if fix_world_booleans["spawner_bossbar"]:
+            action_spawner_bossbar()
+        next_update_progress()
+    if update_progress["stage"] == 701:
+        if version <= 710:
+            action_old_adventure_mode()
+        next_update_progress()
+    if update_progress["stage"] == 702:
+        if version <= 809:
+            action_area_effect_cloud_killer()
+        next_update_progress()
+    if update_progress["stage"] == 703:
+        if version <= 1100:
+            action_firework_damage_canceler()
+        next_update_progress()
+    if update_progress["stage"] == 704:
+        if version <= 1202:
+            action_tag_replacements()
+        next_update_progress()
+    if update_progress["stage"] == 705:
+        if version <= 1502:
+            action_illegal_chunk()
+        next_update_progress()
+    if update_progress["stage"] == 706:
+        if version <= 1605:
+            action_ore_fixer()
+        next_update_progress()
+    if update_progress["stage"] == 707:
+        if version <= 1802:
+            action_unwaterloggable_leaves()
+        next_update_progress_section()
+
+    # Finalize map
+    if update_progress["stage"] == 800:
+        print("")
+        if (world / "data" / "scoreboard.dat").exists():
+            confirm = input("Do you wish to remove player score data from your map? (Y/N): ")
+        else:
+            confirm = "n"
+        if confirm in ["y", "Y"]:
+            action_get_player_names()
+            print("")
+            log("Player names have been logged in player_names.json")
+            log("Go through the list and remove non-player names from the list (e.g. fakeplayer variable names)")
+            while True:
+                confirm = input("Confirm when the non-player names have been removed (Y): ")
+                if confirm in ["y", "Y"]:
+                    break
+        else:
+            with (PROGRAM_PATH / "player_names.json").open("w", encoding="utf-8", newline="\n") as file:
+                file.write("{}")
+        next_update_progress()
+    if update_progress["stage"] == 801:
+        action_finalize_map(False)
+        next_update_progress()
+    if update_progress["stage"] == 802:
+        if update_progress["zipped_data_packs"]:
+            action_zip_data_packs(False)
+        next_update_progress()
+    if update_progress["stage"] == 803:
+        if resource_pack.exists():
+            action_export_resource_pack(False)
+            action_export_original_resource_pack(False)
+        next_update_progress()
+    if update_progress["stage"] == 804:
+        action_prepare_play_copy(False)
+        next_update_progress_section()
 
     print("")
     log("Map updated")
@@ -438,6 +516,24 @@ def action_update(): # Needs confirmation
 
     global actions
     actions[Action.CLEAN.value]["show"] = True
+
+    reset_update_progress()
+
+def reset_update_progress():
+    global update_progress
+    update_progress = {
+        "stage": 0,
+        "zipped_data_packs": False,
+    }
+    save_session()
+
+def next_update_progress():
+    update_progress["stage"] += 1
+    save_session()
+
+def next_update_progress_section():
+    update_progress["stage"] = (update_progress["stage"] + 100)//100*100
+    save_session()
 
 
 
