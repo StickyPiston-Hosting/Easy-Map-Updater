@@ -522,6 +522,7 @@ ARGUMENT_FUNCTIONS: dict[str, tuple] = {
     "command": ( execute_command, None),
     "command_string": ( command_string, None ),
     "coordinate": ( miscellaneous.coordinate, None),
+    "coord_map_to_array": ( miscellaneous.coord_map_to_array, None ),
     "difficulty": ( miscellaneous.difficulty, None ),
     "dimension": ( miscellaneous.dimension, None ),
     "effect": ( ids.effect, None),

@@ -701,7 +701,7 @@ def retrieve(nbt, address: str):
         if address in nbt:
             return nbt[address]
         return
-    if address[0] == "[":
+    if address.startswith("["):
         i = int(address[1:address.find("]")])
         if i < len(nbt.value):
             return retrieve(nbt[i], address[address.find("]") + 1:])

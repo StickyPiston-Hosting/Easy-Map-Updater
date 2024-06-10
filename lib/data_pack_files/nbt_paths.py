@@ -37,10 +37,14 @@ def update(path: str, version: int, issues: list[dict[str, str]], source: str) -
         return nbt_tags.update(path, pack_version, issues, source)
 
     path_parts = arguments.parse_with_quotes("ROOT." + path, ".", True, "[")
+    if defaults.DEBUG_MODE:
+        log(str(path_parts))
     path_parts = get_source(path_parts, source, issues)
+    if defaults.DEBUG_MODE:
+        log(str(path_parts))
     output = ""
     for part in path_parts[1:]:
-        if not output or part[0] == "[":
+        if not output or part.startswith("["):
             output += part
         else:
             output += "." + part

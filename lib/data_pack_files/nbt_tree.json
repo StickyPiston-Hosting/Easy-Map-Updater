@@ -91,6 +91,32 @@
                     "remove": true,
                     "edge_case": "entity_id"
                 },
+                "ExitPortal": {
+                    "rename": "exit_portal",
+                    "data_type": "carry",
+                    "argument_type": "coord_map_to_array",
+                    "path": {
+                        "tags": {
+                            "X": { "rename": "[0]" },
+                            "Y": { "rename": "[1]" },
+                            "Z": { "rename": "[2]" }
+                        }
+                    }
+                },
+                "exit_portal": { "data_type": "int_array" },
+                "FlowerPos": {
+                    "rename": "flower_pos",
+                    "data_type": "carry",
+                    "argument_type": "coord_map_to_array",
+                    "path": {
+                        "tags": {
+                            "X": { "rename": "[0]" },
+                            "Y": { "rename": "[1]" },
+                            "Z": { "rename": "[2]" }
+                        }
+                    }
+                },
+                "flower_pos": { "data_type": "int_array" },
                 "front_text": {
                     "tags": {
                         "messages": {
@@ -260,6 +286,19 @@
                 },
                 "ArmorItems": { "list": { "source": "item" } },
                 "Attributes": { "list": { "source": "attribute" } },
+                "BeamTarget": {
+                    "rename": "beam_target",
+                    "data_type": "carry",
+                    "argument_type": "coord_map_to_array",
+                    "path": {
+                        "tags": {
+                            "X": { "rename": "[0]" },
+                            "Y": { "rename": "[1]" },
+                            "Z": { "rename": "[2]" }
+                        }
+                    }
+                },
+                "beam_target": { "data_type": "int_array" },
                 "Block": {
                     "remove": true,
                     "edge_case": "block_entity"
@@ -312,9 +351,35 @@
                 "FallHurtAmount": { "data_type": "float" },
                 "FallHurtMax": { "data_type": "int" },
                 "FireworksItem": { "source": "item" },
+                "FlowerPos": {
+                    "rename": "flower_pos",
+                    "data_type": "carry",
+                    "argument_type": "coord_map_to_array",
+                    "path": {
+                        "tags": {
+                            "X": { "rename": "[0]" },
+                            "Y": { "rename": "[1]" },
+                            "Z": { "rename": "[2]" }
+                        }
+                    }
+                },
+                "flower_pos": { "data_type": "int_array" },
                 "Fuse": { "edge_case": "fuse" },
                 "HandDropChances": { "list": { "data_type": "float" } },
                 "HandItems": { "list": { "source": "item" } },
+                "HivePos": {
+                    "rename": "hive_pos",
+                    "data_type": "carry",
+                    "argument_type": "coord_map_to_array",
+                    "path": {
+                        "tags": {
+                            "X": { "rename": "[0]" },
+                            "Y": { "rename": "[1]" },
+                            "Z": { "rename": "[2]" }
+                        }
+                    }
+                },
+                "hive_pos": { "data_type": "int_array" },
                 "HurtEntities": { "data_type": "byte" },
                 "id": {
                     "data_type": "string",
@@ -325,6 +390,19 @@
                 "Invulnerable": { "data_type": "byte" },
                 "item": { "source": "item" },
                 "Item": { "source": "item" },
+                "Leash": {
+                    "rename": "leash",
+                    "data_type": "carry",
+                    "argument_type": "coord_map_to_array",
+                    "path": {
+                        "tags": {
+                            "X": { "rename": "[0]" },
+                            "Y": { "rename": "[1]" },
+                            "Z": { "rename": "[2]" }
+                        }
+                    }
+                },
+                "leash": { "data_type": "int_array" },
                 "Life": { "data_type": "int" },
                 "LifeTime": { "data_type": "int" },
                 "Marker": { "data_type": "byte" },
@@ -333,6 +411,19 @@
                 "NoBasePlate": { "data_type": "byte" },
                 "NoGravity": { "data_type": "byte" },
                 "Passengers": { "list": { "source": "entity" } },
+                "PatrolTarget": {
+                    "rename": "patrol_target",
+                    "data_type": "carry",
+                    "argument_type": "coord_map_to_array",
+                    "path": {
+                        "tags": {
+                            "X": { "rename": "[0]" },
+                            "Y": { "rename": "[1]" },
+                            "Z": { "rename": "[2]" }
+                        }
+                    }
+                },
+                "patrol_target": { "data_type": "int_array" },
                 "PersistenceRequired": { "data_type": "byte" },
                 "Pos": { "list": { "data_type": "double" } },
                 "Pose": {
@@ -361,6 +452,19 @@
                     }
                 },
                 "Time": { "data_type": "int" },
+                "WanderTarget": {
+                    "rename": "wander_target",
+                    "data_type": "carry",
+                    "argument_type": "coord_map_to_array",
+                    "path": {
+                        "tags": {
+                            "X": { "rename": "[0]" },
+                            "Y": { "rename": "[1]" },
+                            "Z": { "rename": "[2]" }
+                        }
+                    }
+                },
+                "wander_target": { "data_type": "int_array" },
                 "UUIDLeast": {
                     "remove": true,
                     "edge_case": {

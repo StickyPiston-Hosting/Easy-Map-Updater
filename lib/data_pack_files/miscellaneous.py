@@ -147,6 +147,21 @@ def color(index: int) -> str:
 def coordinate(coord: str, version: int, issues: list[dict[str, str]]) -> str:
     return coord.replace("+", "")
 
+def coord_map_to_array(coordinates: dict[str, nbt_tags.TypeInt], version: int, issues: list[dict[str, str]]) -> nbt_tags.TypeIntArray:
+    new_coordinates = {
+        "X": nbt_tags.TypeInt(0),
+        "Y": nbt_tags.TypeInt(0),
+        "Z": nbt_tags.TypeInt(0),
+    }
+    for axis in ["X", "Y", "Z"]:
+        if axis in coordinates:
+            new_coordinates[axis] = coordinates[axis]
+    return nbt_tags.TypeIntArray([
+        new_coordinates["X"],
+        new_coordinates["Y"],
+        new_coordinates["Z"],
+    ])
+
 def difficulty(name: str, version: int, issues: list[dict[str, str]]) -> str:
     id_array = {
         "0": "peaceful",
