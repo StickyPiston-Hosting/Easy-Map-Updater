@@ -28,10 +28,10 @@ The maps and resource packs that it updates will be in the `saves` and `resource
 To update your map, run `easy_map_updater.py`, then type `update` and hit enter. A few prompts will come up at various stages when user input is needed. Once it is done, you should have the following files:
 
 - `saves/world`: Your updated map.
-- `saves/world - Original`: Original copy of the map used as a reference.
-- `saves/world - Play`: Play copy of the map. Join this copy to playtest your map to make sure that the update was successful.
+- `saves/world_original`: Original copy of the map used as a reference.
+- `saves/world_play`: Play copy of the map. Join this copy to playtest your map to make sure that the update was successful.
 - `resourcepacks/resources`: Your updated resource pack. The resource pack will also be zipped and inserted into the world as `resources.zip`.
-- `resourcepacks/resources - Original`: Original copy of the resource pack used as a reference.
+- `resourcepacks/resources_original`: Original copy of the resource pack used as a reference.
 
 After you have confirmed the map to be fully-functioning with the play copy, you can distribute the main copy. To clean up all the files when you're done, you can use the `clean` action.
 

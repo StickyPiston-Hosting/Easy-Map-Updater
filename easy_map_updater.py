@@ -299,7 +299,7 @@ def action_update(): # Needs confirmation
 
     # Make sure that world exists
     world: Path = MINECRAFT_PATH / "saves" / option_manager.get_map_name()
-    og_world: Path = MINECRAFT_PATH / "saves" / ( option_manager.get_map_name() + " - Original" )
+    og_world: Path = MINECRAFT_PATH / "saves" / f'{option_manager.get_map_name()}_original'
     resource_pack: Path = MINECRAFT_PATH / "resourcepacks" / option_manager.get_resource_pack()
     if not world.exists():
         log("ERROR: World does not exist!")
@@ -492,8 +492,8 @@ def action_export_resource_pack(manual: bool = True): # Needs confirmation
 
 def action_export_original_resource_pack(manual: bool = True): # Needs confirmation
     resource_pack.export_pack(
-        MINECRAFT_PATH / "saves" / ( option_manager.get_map_name() + " - Original" ),
-        MINECRAFT_PATH / "resourcepacks" / ( option_manager.get_resource_pack() + " - Original" ),
+        MINECRAFT_PATH / "saves" / f'{option_manager.get_map_name()}_original',
+        MINECRAFT_PATH / "resourcepacks" / f'{option_manager.get_resource_pack()}_original',
         manual
     )
 
@@ -586,7 +586,7 @@ def action_firework_damage_canceler():
 def action_stored_functions(manual: bool = True): # Needs confirmation
     data_pack.extract_stored_functions(
         MINECRAFT_PATH / "saves" / option_manager.get_map_name(),
-        MINECRAFT_PATH / "saves" / ( option_manager.get_map_name() + " - Original" ),
+        MINECRAFT_PATH / "saves" / f'{option_manager.get_map_name()}_original',
         manual
     )
 
@@ -715,7 +715,7 @@ def action_prepare_original_copy_world(manual: bool = True): # Needs confirmatio
     log("Preparing original world copy")
     
     world: Path = MINECRAFT_PATH / "saves" / option_manager.get_map_name()
-    og_world: Path = MINECRAFT_PATH / "saves" / ( option_manager.get_map_name() + " - Original" )
+    og_world: Path = MINECRAFT_PATH / "saves" / f'{option_manager.get_map_name()}_original'
 
     if og_world.exists() and manual:
         log(f'This action will overwrite: {og_world.as_posix()}')
@@ -742,8 +742,8 @@ def action_prepare_original_copy_world(manual: bool = True): # Needs confirmatio
 def action_prepare_original_play_copy(): # Needs confirmation
     log("Preparing original play world copy")
     
-    world: Path = MINECRAFT_PATH / "saves" / f'{option_manager.get_map_name()} - Original'
-    play_world: Path = MINECRAFT_PATH / "saves" / f'{option_manager.get_map_name()} - Original - Play'
+    world: Path = MINECRAFT_PATH / "saves" / f'{option_manager.get_map_name()}_original'
+    play_world: Path = MINECRAFT_PATH / "saves" / f'{option_manager.get_map_name()}_original_play'
 
     if play_world.exists():
         log(f'This action will overwrite: {play_world.as_posix()}')
@@ -764,7 +764,7 @@ def action_reload_from_original_world(manual: bool = True): # Needs confirmation
     log("Reloading world from original")
     
     world: Path = MINECRAFT_PATH / "saves" / option_manager.get_map_name()
-    og_world: Path = MINECRAFT_PATH / "saves" / f'{option_manager.get_map_name()} - Original'
+    og_world: Path = MINECRAFT_PATH / "saves" / f'{option_manager.get_map_name()}_original'
 
     if world.exists() and manual:
         log(f'This action will overwrite: {world.as_posix()}')
@@ -792,7 +792,7 @@ def action_prepare_play_copy(manual: bool = True): # Needs confirmation
     log("Preparing play world copy")
     
     world: Path = MINECRAFT_PATH / "saves" / option_manager.get_map_name()
-    play_world: Path = MINECRAFT_PATH / "saves" / f'{option_manager.get_map_name()} - Play'
+    play_world: Path = MINECRAFT_PATH / "saves" / f'{option_manager.get_map_name()}_play'
 
     if play_world.exists() and manual:
         log(f'This action will overwrite: {play_world.as_posix()}')
@@ -817,7 +817,7 @@ def action_prepare_original_copy_resource_pack(manual: bool = True): # Needs con
     log("Preparing original resource pack copy")
     
     resource_pack: Path = MINECRAFT_PATH / "resourcepacks" / option_manager.get_resource_pack()
-    og_resource_pack: Path = MINECRAFT_PATH / "resourcepacks" / f'{option_manager.get_resource_pack()} - Original'
+    og_resource_pack: Path = MINECRAFT_PATH / "resourcepacks" / f'{option_manager.get_resource_pack()}_original'
 
     if og_resource_pack.exists() and manual:
         log(f'This action will overwrite: {og_resource_pack.as_posix()}')
@@ -843,7 +843,7 @@ def action_reload_from_original_resource_pack(): # Needs confirmation
     log("Reloading resource pack from original")
     
     resource_pack: Path = MINECRAFT_PATH / "resourcepacks" / option_manager.get_resource_pack()
-    og_resource_pack: Path = MINECRAFT_PATH / "resourcepacks" / f'{option_manager.get_resource_pack()} - Original'
+    og_resource_pack: Path = MINECRAFT_PATH / "resourcepacks" / f'{option_manager.get_resource_pack()}_original'
 
     if resource_pack.exists():
         log(f'This action will overwrite: {resource_pack.as_posix()}')
@@ -895,7 +895,7 @@ def action_illegal_chunk():
 def action_fix_world(manual: bool = True): # Needs confirmation
     booleans = fix_world.fix(
         MINECRAFT_PATH / "saves" / option_manager.get_map_name(),
-        MINECRAFT_PATH / "saves" / f'{option_manager.get_map_name()} - Original',
+        MINECRAFT_PATH / "saves" / f'{option_manager.get_map_name()}_original',
         option_manager.get_version(),
         manual
     )
@@ -927,11 +927,11 @@ def action_admin_kickback():
 def action_clean_up(): # Needs confirmation
     paths: list[Path] = [
         MINECRAFT_PATH / "saves" / option_manager.get_map_name(),
-        MINECRAFT_PATH / "saves" / f'{option_manager.get_map_name()} - Original',
-        MINECRAFT_PATH / "saves" / f'{option_manager.get_map_name()} - Play',
-        MINECRAFT_PATH / "saves" / f'{option_manager.get_map_name()} - Original - Play',
+        MINECRAFT_PATH / "saves" / f'{option_manager.get_map_name()}_original',
+        MINECRAFT_PATH / "saves" / f'{option_manager.get_map_name()}_play',
+        MINECRAFT_PATH / "saves" / f'{option_manager.get_map_name()}_original_play',
         MINECRAFT_PATH / "resourcepacks" / option_manager.get_resource_pack(),
-        MINECRAFT_PATH / "resourcepacks" / f'{option_manager.get_resource_pack()} - Original'
+        MINECRAFT_PATH / "resourcepacks" / f'{option_manager.get_resource_pack()}_original'
     ]
 
     log("This action will delete the following:")

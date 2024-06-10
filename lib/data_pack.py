@@ -38,7 +38,7 @@ def update(world: Path, version: int):
     log("Updating data packs")
 
     # Set original path
-    og_world = world.parent / f'{world.name} - Original'
+    og_world = world.parent / f'{world.name}_original'
 
     # Set pack version
     global pack_version

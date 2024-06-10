@@ -40,7 +40,7 @@ def update(pack: Path, version: int):
     global pack_version
     pack_version = version
 
-    og_pack = pack.parent / f'{pack.name} - Original'
+    og_pack = pack.parent / f'{pack.name}_original'
 
     # Check for errors
     if not og_pack.exists():
