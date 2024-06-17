@@ -38,7 +38,7 @@ def add_effect(command: list[str]) -> str:
 
     return command_helper.create_function(
         f'{" ".join(command)}\n'
-        f'execute as {command[2]} if entity @s[type=minecraft:player,predicate=effect:{effect}] run function effect:{effect}/apply\n'
+        f'execute as {command[2]} if entity @s[type=minecraft:player,predicate=effect:{effect}] run function effect:{effect}/check\n'
         f'return 1'
     )
 
