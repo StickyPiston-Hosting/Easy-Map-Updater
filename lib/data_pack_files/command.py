@@ -27,6 +27,7 @@ from lib.data_pack_files.command_helper import falling_block_handler
 from lib.data_pack_files.command_helper import sign_merge_handler
 from lib.data_pack_files.command_helper import safe_nbt_interpret
 from lib.data_pack_files.restore_behavior import firework_damage_canceler
+from lib.data_pack_files.restore_behavior import effect_overflow
 from lib.region_files import illegal_chunk
 from lib import defaults
 from lib import utils
@@ -361,6 +362,28 @@ def fix_helper_edge_case(argument_list: list[str], old_argument_list: list[str],
         argument_list[4].split("{")[0].split("[")[0] == "minecraft:comparator"
     ):
         return block_update_mitigator.handle_comparator_setblock(argument_list)
+    
+    # Fix pre-1.20.5 bugs
+    if pack_version <= 2004:
+        # Fix pre-1.20.5 handling of effects
+        if argument_list[0] == "effect":
+            if (
+                len(argument_list) >= 4 and
+                argument_list[1] == "give" and
+                argument_list[3] in effect_overflow.SPECIAL_EFFECTS
+            ):
+                return effect_overflow.add_effect(argument_list)
+            if (
+                len(argument_list) >= 2 and
+                argument_list[1] == "clear"
+            ):
+                if (
+                    len(argument_list) >= 4 and
+                    argument_list[3] in effect_overflow.SPECIAL_EFFECTS
+                ):
+                    return effect_overflow.remove_effect(argument_list)
+                if len(argument_list) <= 3:
+                    return effect_overflow.remove_all_effects(argument_list)
     
     # Fix pre-1.20 bugs
     if pack_version <= 1904:

@@ -57,6 +57,7 @@ from lib.data_pack_files.restore_behavior import area_effect_cloud_killer
 from lib.data_pack_files.restore_behavior import firework_damage_canceler
 from lib.data_pack_files.restore_behavior import unwaterloggable_leaves
 from lib.data_pack_files.restore_behavior import old_adventure_mode
+from lib.data_pack_files.restore_behavior import effect_overflow
 from lib.data_pack_files.admin_controls import admin_kickback
 from lib.region_files import command_blocks
 from lib.region_files import entity_extractor
@@ -103,6 +104,7 @@ class Action(Enum):
     DP_ORE_FIXER = "dp.ore"
     DP_WATER_LEAVES = "dp.water_leaves"
     DP_ADVENTURE = "dp.adventure"
+    DP_EFFECT = "dp.effect"
     DP_BREAK = "dp.break"
 
     WORLD_ORIGINAL = "world.original"
@@ -274,6 +276,7 @@ def action_reset():
         Action.DP_ORE_FIXER.value:          { "show": False, "function": action_ore_fixer, "name": "Create ore fixer data pack" },
         Action.DP_WATER_LEAVES.value:       { "show": False, "function": action_unwaterloggable_leaves, "name": "Create unwaterloggable leaves data pack" },
         Action.DP_ADVENTURE.value:          { "show": False, "function": action_old_adventure_mode, "name": "Create old adventure mode data pack" },
+        Action.DP_EFFECT.value:             { "show": False, "function": action_effect_overflow, "name": "Create effect overflow data pack" },
 
         Action.CMD_READ.value:              { "show": False, "function": action_read_commands, "name": "Read command block data" },
         Action.CMD_UPDATE.value:            { "show": False, "function": action_update_commands, "name": "Update command block data" },
@@ -683,6 +686,11 @@ def action_firework_damage_canceler():
         MINECRAFT_PATH / "saves" / option_manager.get_map_name()
     )
 
+def action_effect_overflow():
+    effect_overflow.create_pack(
+        MINECRAFT_PATH / "saves" / option_manager.get_map_name()
+    )
+
 def action_stored_functions(manual: bool = True): # Needs confirmation
     data_pack.extract_stored_functions(
         MINECRAFT_PATH / "saves" / option_manager.get_map_name(),
@@ -1012,6 +1020,8 @@ def action_fix_world(manual: bool = True): # Needs confirmation
             actions[Action.DP_ORE_FIXER.value]["show"] = True
         if option_manager.get_version() <= 1802:
             actions[Action.DP_WATER_LEAVES.value]["show"] = True
+        if option_manager.get_version() <= 2004:
+            actions[Action.DP_EFFECT.value]["show"] = True
 
     return booleans
 

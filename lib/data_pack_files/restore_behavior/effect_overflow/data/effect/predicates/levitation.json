@@ -1,0 +1,13 @@
+{
+    "condition": "minecraft:entity_properties",
+    "entity": "this",
+    "predicate": {
+        "effects": {
+            "minecraft:levitation": {
+                "amplifier": {
+                    "min": 128
+                }
+            }
+        }
+    }
+}
