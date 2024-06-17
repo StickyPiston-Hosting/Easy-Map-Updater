@@ -27,10 +27,10 @@ MINECRAFT_PATH = EASY_MAP_UPDATER_PATH.parent
 
 def create_function(commands: str) -> str:
     if defaults.DEBUG_MODE:
-        log("Command block helper data pack was modified")
+        log("Command helper data pack was modified")
 
     # Prepare data pack path
-    data_pack_path = MINECRAFT_PATH / "saves" / option_manager.get_map_name() / "datapacks" / "command_block_helper"
+    data_pack_path = MINECRAFT_PATH / "saves" / option_manager.get_map_name() / "datapacks" / "command_helper"
     data_pack_path.mkdir(exist_ok=True, parents=True)
 
     # Prepare pack.mcmeta
@@ -39,7 +39,7 @@ def create_function(commands: str) -> str:
             {
             	"pack": {
             		"pack_format": PACK_FORMAT,
-            		"description": "Adds functions which are useful for emulating old command block behavior."
+            		"description": "Adds functions which are useful for emulating old command behavior."
             	}
             },
             file,
@@ -95,4 +95,4 @@ def create_function(commands: str) -> str:
     with function_path.open("w", encoding="utf-8", newline="\n") as file:
         file.write(commands)
 
-    return f"function help:{function_name}COMMAND_BLOCK_HELPER"
+    return f"function help:{function_name}COMMAND_HELPER"

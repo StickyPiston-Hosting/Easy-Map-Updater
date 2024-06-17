@@ -5,7 +5,7 @@
 
 # Import things
 
-from lib.data_pack_files import command_block_helper
+from lib.data_pack_files import command_helper
 from lib.data_pack_files import nbt_tags
 from lib import utils
 
@@ -26,7 +26,7 @@ def handle_merge(command: list[str], block_nbt: dict, old_block_nbt: dict) -> st
         return " ".join(command)
     if len(new_commands) == 1:
         return new_commands[0]
-    return command_block_helper.create_function(
+    return command_helper.create_function(
         "\n".join(new_commands) +
         "\nreturn 1"
     )

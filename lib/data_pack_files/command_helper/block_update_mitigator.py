@@ -6,7 +6,7 @@
 # Import things
 
 from lib.data_pack_files import arguments
-from lib.data_pack_files import command_block_helper
+from lib.data_pack_files import command_helper
 
 
 
@@ -36,7 +36,7 @@ def handle_comparator_setblock(command: list[str]) -> str:
         offset = "~ ~ ~-1"
 
     if states["powered"] == "false":
-        return command_block_helper.create_function(
+        return command_helper.create_function(
             f'execute positioned {command[1]} {command[2]} {command[3]} positioned {offset} if block ~ ~ ~ minecraft:command_block run data merge block ~ ~ ~ {{SuccessCount:0}}\n'
             f'execute positioned {command[1]} {command[2]} {command[3]} positioned {offset} if block ~ ~ ~ minecraft:chain_command_block run data merge block ~ ~ ~ {{SuccessCount:0}}\n'
             f'execute positioned {command[1]} {command[2]} {command[3]} positioned {offset} if block ~ ~ ~ minecraft:repeating_command_block run data merge block ~ ~ ~ {{SuccessCount:0}}\n'
@@ -50,7 +50,7 @@ def handle_comparator_setblock(command: list[str]) -> str:
 
 
 def handle_clean_clone(command: list[str]) -> str:
-    return command_block_helper.create_function(
+    return command_helper.create_function(
         f'execute store result score #do_tile_drops help.value run gamerule doTileDrops\n'
         f'gamerule doTileDrops false\n'
         f'execute store success score #success help.value run {" ".join(command)}\n'

@@ -5,7 +5,7 @@
 
 # Import things
 
-from lib.data_pack_files import command_block_helper
+from lib.data_pack_files import command_helper
 
 
 
@@ -27,7 +27,7 @@ def handle_interpret(command: list[str], issues: list[dict[str, str]]) -> str:
             f'execute if data storage help:data {{safe_nbt_interpret:{{v{index}:"[]"}}}} run data modify storage help:data safe_nbt_interpret.v{index} set value \'{{"type":"text","text":""}}\'\n'
         )
 
-    return command_block_helper.create_function(
+    return command_helper.create_function(
         "\n".join(commands) + "\n" +
         f'return run {" ".join(command)}'
     )

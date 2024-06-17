@@ -5,7 +5,7 @@
 
 # Import things
 
-from lib.data_pack_files import command_block_helper
+from lib.data_pack_files import command_helper
 from lib.data_pack_files import blocks
 
 
@@ -25,7 +25,7 @@ def handle_doors(command: list[str]) -> str:
     offset = "1" if half == "lower" else "-1"
     block_states["half"] = "upper" if half == "lower" else "lower"
 
-    return command_block_helper.create_function(
+    return command_helper.create_function(
         f'execute store result score #boolean help.value if block {command[1]} {command[2]} {command[3]} {block_id}[half={half}]\n'
 
         f'execute if score #boolean help.value matches 1 positioned {command[1]} {command[2]} {command[3]} run fill ~ ~ ~ ~ ~{offset} ~ minecraft:air\n'

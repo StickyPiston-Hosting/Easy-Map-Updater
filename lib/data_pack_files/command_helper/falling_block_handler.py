@@ -5,7 +5,7 @@
 
 # Import things
 
-from lib.data_pack_files import command_block_helper
+from lib.data_pack_files import command_helper
 
 
 
@@ -13,7 +13,7 @@ from lib.data_pack_files import command_block_helper
 
 def handle_time_0(command: list[str], entity_nbt: dict) -> str:
     block_id = get_block_id(entity_nbt)
-    return command_block_helper.create_function(
+    return command_helper.create_function(
         f'execute store success score #success help.value if block ~ ~ ~ {block_id} run {" ".join(command)}\n'
         f'execute if block ~ ~ ~ {block_id} run setblock ~ ~ ~ minecraft:air\n'
         f'execute if score #success help.value matches 0 run return 0\n'
@@ -22,7 +22,7 @@ def handle_time_0(command: list[str], entity_nbt: dict) -> str:
 
 def handle_non_time_0(command: list[str], entity_nbt: dict) -> str:
     block_id = get_block_id(entity_nbt)
-    return command_block_helper.create_function(
+    return command_helper.create_function(
         f'execute store success score #success help.value run {" ".join(command)}\n'
         f'execute if block ~ ~ ~ {block_id} run setblock ~ ~ ~ minecraft:air\n'
         f'execute if score #success help.value matches 0 run return 0\n'
