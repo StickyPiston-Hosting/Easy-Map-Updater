@@ -8,6 +8,7 @@
 from nbt import nbt as NBT
 import random
 random.seed()
+from lib.log import log
 
 
 
@@ -189,3 +190,29 @@ def deduplicate_list(array: list) -> list:
         if entry not in output_array:
             output_array.append(entry)
     return output_array
+
+
+
+def get_version_from_user(message: str, skippable: bool) -> tuple[str, int]:
+    while True:
+        version_input = input(message)
+        if skippable and not version_input:
+            return version_input, 0
+        parts = version_input.split(".")
+        if len(parts) < 2 or len(parts) > 3:
+            log("Invalid version!")
+            continue
+        if len(parts) == 2:
+            parts.append("0")
+        try:
+            if int(parts[0]) != 1 or int(parts[1]) >= 100 or int(parts[2]) >= 100:
+                log("Invalid version!")
+                continue
+            version = int(parts[1])*100 + int(parts[2])
+        except:
+            log("Invalid version!")
+            continue
+        return version_input, version
+
+def get_version_string(version: int) -> str:
+    return f'1.{version//100%100}.{version%100}'
