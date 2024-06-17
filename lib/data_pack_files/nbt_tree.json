@@ -34,7 +34,7 @@
                         "output": "UUID"
                     },
                     "path": {
-                        "rename": ["UUID[3]"]
+                        "rename": ["UUID", "[3]"]
                     }
                 },
                 "UUIDMost": {
@@ -46,7 +46,7 @@
                         "output": "UUID"
                     },
                     "path": {
-                        "rename": ["UUID[1]"]
+                        "rename": ["UUID", "[1]"]
                     }
                 }
             },
@@ -199,28 +199,28 @@
                     "remove": true,
                     "edge_case": "sign_text",
                     "path": {
-                        "rename": ["front_text", "messages[0]"]
+                        "rename": ["front_text", "messages", "[0]"]
                     }
                 },
                 "Text2": {
                     "remove": true,
                     "edge_case": "sign_text",
                     "path": {
-                        "rename": ["front_text", "messages[1]"]
+                        "rename": ["front_text", "messages", "[1]"]
                     }
                 },
                 "Text3": {
                     "remove": true,
                     "edge_case": "sign_text",
                     "path": {
-                        "rename": ["front_text", "messages[2]"]
+                        "rename": ["front_text", "messages", "[2]"]
                     }
                 },
                 "Text4": {
                     "remove": true,
                     "edge_case": "sign_text",
                     "path": {
-                        "rename": ["front_text", "messages[3]"]
+                        "rename": ["front_text", "messages", "[3]"]
                     }
                 }
             }
@@ -329,11 +329,17 @@
                 "DropItem": { "data_type": "byte" },
                 "EffectId": {
                     "remove": true,
-                    "edge_case": "mooshroom_stew"
+                    "edge_case": "mooshroom_stew",
+                    "path": {
+                        "rename": ["stew_effects", "[0]", "id"]
+                    }
                 },
                 "EffectDuration": {
                     "remove": true,
-                    "edge_case": "mooshroom_stew"
+                    "edge_case": "mooshroom_stew",
+                    "path": {
+                        "rename": ["stew_effects", "[0]", "duration"]
+                    }
                 },
                 "effects": { "list": { "source": "effect" } },
                 "Effects": {
@@ -474,7 +480,7 @@
                         "output": "UUID"
                     },
                     "path": {
-                        "rename": ["UUID[3]"]
+                        "rename": ["UUID", "[3]"]
                     }
                 },
                 "UUIDMost": {
@@ -486,7 +492,7 @@
                         "output": "UUID"
                     },
                     "path": {
-                        "rename": ["UUID[1]"]
+                        "rename": ["UUID", "[1]"]
                     }
                 }
             },

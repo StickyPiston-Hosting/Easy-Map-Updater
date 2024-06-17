@@ -157,9 +157,9 @@ def coord_map_to_array(coordinates: dict[str, nbt_tags.TypeInt], version: int, i
         if axis in coordinates:
             new_coordinates[axis] = coordinates[axis]
     return nbt_tags.TypeIntArray([
-        new_coordinates["X"],
-        new_coordinates["Y"],
-        new_coordinates["Z"],
+        nbt_tags.TypeInt(new_coordinates["X"].value),
+        nbt_tags.TypeInt(new_coordinates["Y"].value),
+        nbt_tags.TypeInt(new_coordinates["Z"].value),
     ])
 
 def difficulty(name: str, version: int, issues: list[dict[str, str]]) -> str:

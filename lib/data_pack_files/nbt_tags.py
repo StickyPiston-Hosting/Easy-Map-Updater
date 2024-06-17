@@ -9,7 +9,7 @@ import json
 from nbt import nbt as NBT
 from pathlib import Path
 from lib.log import log
-from lib.data_pack_files import tables
+from lib.data_pack_files import nbt_paths
 from lib import defaults
 from lib import utils
 
@@ -458,7 +458,7 @@ def update_data(parent: dict, nbt, guide: dict, source: str, object: str, issues
     if "parameters" in guide:
         parameters = {}
         for key in guide["parameters"]:
-            obj = retrieve(parent, guide["parameters"][key])
+            obj = nbt_paths.extract_nbt_from_path(parent, nbt_paths.unpack(guide["parameters"][key]))
             if obj != None:
                 parameters[key] = obj
         return apply_data_type(command.update_argument(parameters, argument_type), output_data_type)
@@ -689,26 +689,6 @@ def edge_case_uuid_long(parent: dict, case: dict[str, str]):
         TypeInt(utils.int_range(least // 4294967296)),
         TypeInt(utils.int_range(least %  4294967296))
     ])
-
-
-def retrieve(nbt, address: str):
-    # Return current object if address is blank
-    if address == "":
-        return nbt
-    
-    # Return object based on index
-    if "." not in address and "[" not in address:
-        if address in nbt:
-            return nbt[address]
-        return
-    if address.startswith("["):
-        i = int(address[1:address.find("]")])
-        if i < len(nbt.value):
-            return retrieve(nbt[i], address[address.find("]") + 1:])
-        return
-    i = address[:address.find(".")]
-    if i in nbt:
-        return retrieve(nbt[i], address[address.find(".") + 1:])
     
 
 
