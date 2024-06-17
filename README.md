@@ -172,6 +172,7 @@ After the map has been updated and finalized, these actions will help package it
 
 ### Miscellaneous actions
 
+- `version`: Opens a prompt to edit the source version to update from.
 - `license`: Shows the software license snippet.
 - `exit`: Exits the program.
 

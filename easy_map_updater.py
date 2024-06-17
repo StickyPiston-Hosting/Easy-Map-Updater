@@ -42,6 +42,7 @@ from enum import Enum
 from pathlib import Path
 from lib.log import log
 from lib import defaults
+from lib import utils
 from lib import finalize
 from lib import data_pack
 from lib import resource_pack
@@ -128,6 +129,7 @@ class Action(Enum):
 
     CLEAN = "clean"
 
+    VERSION = "version"
     LICENSE = "license"
     EXIT = "exit"
 
@@ -151,9 +153,13 @@ def program():
     log("Easy Map Updater")
     log("- By Dominexis, and StickyPiston Hosting")
 
-    # Extract input
+    # Initialize variables
+    option_manager.get_options()
+    action_reset()
     load_session()
     save_session()
+    print("")
+    print_version()
     print("")
     list_actions()
 
@@ -179,7 +185,6 @@ def program():
         list_actions()
 
 def load_session():
-    action_reset()
     session_path = PROGRAM_PATH / "session.json"
     if not session_path.exists():
         return
@@ -220,7 +225,7 @@ def list_options():
 def list_actions():
     print("Actions:")
     for action in actions:
-        if action == Action.LICENSE.value:
+        if action == Action.VERSION.value:
             print("")
         if actions[action]["show"]:
             print(f" {action}) {' '*max(21-len(action), 0)}{actions[action]['name']}")
@@ -294,6 +299,7 @@ def action_reset():
         Action.RP_EXPORT_ORIGINAL.value:    { "show": False, "function": action_export_original_resource_pack, "name": "Export original resource pack to original world" },
         Action.CLEAN.value:                 { "show": False, "function": action_clean_up, "name": "Clean up files (remove worlds and resource pack)" },
 
+        Action.VERSION.value:               { "show": True,  "function": action_set_version, "name": "Edit source version" },
         Action.LICENSE.value:               { "show": True,  "function": action_license, "name": "Show software license" },
         Action.EXIT.value:                  { "show": True,  "function": action_exit, "name": "Exit program" },
 
@@ -301,8 +307,6 @@ def action_reset():
         Action.DEBUG_JSON.value:            { "show": True,  "function": action_update_json_text_component, "name": "Update JSON text component (for testing)" },
         Action.DEBUG.value:                 { "show": False, "function": action_toggle_debug_mode, "name": "Toggle debug mode" },
     }
-    print("")
-    list_options()
 
 def action_show_all_actions():
     global actions
@@ -1045,6 +1049,21 @@ def action_clean_up(): # Needs confirmation
     log("All clean!")
 
     action_reset()
+
+
+
+def action_set_version():
+    print_version()
+    version_name, version = utils.get_version_from_user("Enter source version (leave blank to cancel): ", True)
+    if not version_name:
+        return
+    option_manager.set_version(version)
+    print_version()
+
+def print_version():
+    log(f'Source: {utils.get_version_string(option_manager.get_version())}, Target: {utils.get_version_string(defaults.PACK_VERSION)}')
+
+
 
 def action_license():
     log("""
