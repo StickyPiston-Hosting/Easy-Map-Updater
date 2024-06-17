@@ -73,11 +73,11 @@ def command(line: str) -> str:
 
     # Convert command
     command = parsed_command(arguments.parse(line, " ", pack_version >= 1400), True)
-    if command.endswith("COMMAND_BLOCK_HELPER"):
+    if command.endswith("COMMAND_HELPER"):
         if namespaced_id == "commands.mcfunction":
-            command = f'execute store result block ~ ~ ~ SuccessCount int 1 run {command[:-20]}'
+            command = f'execute store result block ~ ~ ~ SuccessCount int 1 run {command[:-14]}'
         else:
-            command = command[:-20]
+            command = command[:-14]
 
     # Remove as @s
     segments = command.split(" as @s")

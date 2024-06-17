@@ -10,7 +10,7 @@ from pathlib import Path
 from lib import finalize
 from lib import option_manager
 from lib.log import log
-from lib.data_pack_files import command_block_helper
+from lib.data_pack_files import command_helper
 from lib.data_pack_files import nbt_tags
 
 
@@ -44,7 +44,7 @@ def cancel_damage(command: list[str]) -> str:
     if len(command) >= 5:
         position = " ".join(command[2:5])
 
-    return command_block_helper.create_function(
+    return command_helper.create_function(
         f'scoreboard players set #wait_time firework.value {min(wait_time, 60)}\n'
         f'execute positioned {position} run function firework:spawn/pre\n'
         f'execute store success score #success help.value run {" ".join(command)}\n'

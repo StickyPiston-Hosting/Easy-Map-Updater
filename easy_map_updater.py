@@ -278,7 +278,7 @@ def action_reset():
         Action.CMD_READ.value:              { "show": False, "function": action_read_commands, "name": "Read command block data" },
         Action.CMD_UPDATE.value:            { "show": False, "function": action_update_commands, "name": "Update command block data" },
         Action.CMD_WRITE.value:             { "show": False, "function": action_write_commands, "name": "Write command block data" },
-        Action.CMD_CLEAR.value:             { "show": False, "function": action_clear_command_block_helper, "name": "Clear command block helper" },
+        Action.CMD_CLEAR.value:             { "show": False, "function": action_clear_command_helper, "name": "Clear command helper" },
         Action.CMD_EXTRACT.value:           { "show": False, "function": action_extract_commands, "name": "Extract commands from a command block chain" },
 
         Action.DP_TAG.value:                { "show": False, "function": action_tag_replacements, "name": "Create tag replacements data pack" },
@@ -751,23 +751,23 @@ def action_update_commands(manual: bool = True):
         if option_manager.get_version() <= 1202:
             actions[Action.DP_TAG.value]["show"] = True
 
-def action_clear_command_block_helper(): # Needs confirmation
-    data_pack_path: Path = MINECRAFT_PATH / "saves" / option_manager.get_map_name() / "datapacks" / "command_block_helper"
+def action_clear_command_helper(): # Needs confirmation
+    data_pack_path: Path = MINECRAFT_PATH / "saves" / option_manager.get_map_name() / "datapacks" / "command_helper"
     log(f'This action will delete: {data_pack_path.as_posix()}')
     confirm = input("Is this okay? (Y/N): ")
     if confirm not in ["Y", "y"]:
         log("Action canceled")
         return
 
-    log("Clearing command block helper")
+    log("Clearing command helper")
 
     if not data_pack_path.exists():
-        log("ERROR: Command block helper does not exist!")
+        log("ERROR: Command helper does not exist!")
         return
     
     shutil.rmtree(data_pack_path)
 
-    log("Command block helper cleared")
+    log("Command helper cleared")
 
 def action_extract_commands():
     command_blocks.extract_commands(

@@ -84,7 +84,7 @@ After the above actions are sorted, certain actions need to be run to prepare yo
 - `world.original.play`: This will create a play copy of your original world in the event that you need to test it.
 - `world.reload`: This will overwrite the working copy of your world with the original copy.
 
-- `dp.update`: Updates all of the data packs in the working copy of your world to the latest version, using the original as a source. This may create a data pack called `command_block_helper` which contains functions that replace certain complex commands which require multiple commands to replicate.
+- `dp.update`: Updates all of the data packs in the working copy of your world to the latest version, using the original as a source. This may create a data pack called `command_helper` which contains functions that replace certain complex commands which require multiple commands to replicate.
 
 
 ### World optimization
@@ -127,9 +127,9 @@ Certain old features require entire data packs to be created to properly replica
 ### Command block actions
 
 - `cmd.read`: Reads all the command block, command block minecart, and sign data in your world and puts the data into `commands.mcfunction` and `commands_original.mcfunction`. This is where the command block data is updated from. They are put into text files first to allow manual edits to the data.
-- `cmd.update`: Updates the commands in `commands.mcfunction` using `commands_original.mcfunction` as an unchanging reference. This may create a data pack called `command_block_helper` which contains functions that replace certain complex commands which require multiple commands to replicate.
+- `cmd.update`: Updates the commands in `commands.mcfunction` using `commands_original.mcfunction` as an unchanging reference. This may create a data pack called `command_helper` which contains functions that replace certain complex commands which require multiple commands to replicate.
 - `cmd.write`: Writes the contents of `commands.mcfunction` back into your world.
-- `cmd.clear`: Deletes the `command_block_helper` data pack in case changes were made to the source commands.
+- `cmd.clear`: Deletes the `command_helper` data pack in case changes were made to the source commands.
 - `cmd.extract`: Extracts commands from a specified command block chain in your world and writes them into `command_chain.mcfunction`.
 
 
