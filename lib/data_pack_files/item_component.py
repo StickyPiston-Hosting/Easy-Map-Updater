@@ -291,7 +291,7 @@ def extract(item_id: str, components: dict[str], nbt: dict[str], version: int) -
                 predicates.append({"blocks": block})
             else:
                 predicates[0]["blocks"].append(block)
-        can_break["predicates"].extend(predicates)
+        can_place_on["predicates"].extend(predicates)
         del nbt["CanPlaceOn"]
 
     if "Charged" in nbt:
