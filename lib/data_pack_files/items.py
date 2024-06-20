@@ -5,6 +5,7 @@
 
 # Import things
 
+from typing import TypedDict
 from lib.log import log
 from lib.data_pack_files import nbt_tags
 from lib.data_pack_files import miscellaneous
@@ -127,7 +128,17 @@ def update_from_nbt(item: dict[str, str | dict | nbt_tags.TypeNumeric], version:
 
 
 
-def update(item: dict[str, str | int | dict | bool | None], version: int, issues: list[dict[str, str]]) -> str:
+class ItemInput(TypedDict):
+    id: str | nbt_tags.TypeNumeric | None
+    data_value: int
+    nbt: dict | None
+    read: bool
+
+class ItemOutput(TypedDict):
+    id: str | None
+    nbt: dict | None
+
+def update(item: ItemInput, version: int, issues: list[dict[str, str]]) -> ItemOutput:
     # Assign version
     global pack_version
     pack_version = version

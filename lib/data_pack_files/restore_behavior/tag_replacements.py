@@ -6,6 +6,7 @@
 # Import things
 
 import json
+from typing import cast
 from pathlib import Path
 from lib.log import log
 from lib import defaults
@@ -77,7 +78,7 @@ def create_pack(world: Path):
         first_block = block_data[list(block_data.keys())[0]]
         # Initialize stored properties list for comparison, only properties which are the same for all blocks will be kept
         if "Properties" in first_block:
-            block_properties: dict[str, str] = first_block["Properties"].copy()
+            block_properties: dict[str, str] = cast(dict[str, str], first_block["Properties"]).copy()
         else:
             block_properties = {}
         # Iterate through data values
@@ -86,13 +87,13 @@ def create_pack(world: Path):
                 continue
             block_variant = block_data[data_value]
             # Get block ID and add it to the list
-            block_id: str = block_variant["Name"]
+            block_id: str = cast(str, block_variant["Name"])
             if block_id not in block_ids:
                 block_ids.append(block_id)
             # Remove properties which do not appear in the current variant
             if "Properties" in block_variant:
                 for block_property in list(block_properties.keys()):
-                    if block_property not in block_variant["Properties"] or block_properties[block_property] != block_variant["Properties"][block_property]:
+                    if block_property not in block_variant["Properties"] or block_properties[block_property] != cast(dict[str, str], block_variant["Properties"])[block_property]:
                         del block_properties[block_property]
             else:
                 block_properties = {}

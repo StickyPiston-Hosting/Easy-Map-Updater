@@ -6,6 +6,7 @@
 # Import things
 
 import json
+from typing import Any
 from pathlib import Path
 from lib.log import log
 from lib import defaults
@@ -20,7 +21,7 @@ pack_version = defaults.PACK_VERSION
 
 PROGRAM_PATH = Path(__file__).parent
 with (PROGRAM_PATH / "nbt_tree.json").open("r", encoding="utf-8") as file:
-    NBT_TREE: dict[str, dict[str, str]] = json.load(file)
+    NBT_TREE: dict[str, Any] = json.load(file)
 
 
 

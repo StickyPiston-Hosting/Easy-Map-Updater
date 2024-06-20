@@ -23,6 +23,7 @@ def handle_motion_modification(command: list[str]) -> str:
 def handle_teleport(command: list[str]) -> str:
     # Compute selector and index
     length = len(command)
+    selector_index = -1
     if command[0] == "execute":
         if command[1] == "as":
             selector_index = 2

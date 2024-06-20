@@ -6,6 +6,7 @@
 # Import things
 
 import math
+from typing import cast, Any
 from lib.log import log
 from lib import defaults
 from lib import utils
@@ -282,18 +283,18 @@ def world_border_coordinate(coordinate: str, version: int, issues: list[dict[str
     if coordinate.startswith("~") or coordinate.startswith("^"):
         return coordinate
     if "." in coordinate:
-        coordinate = float(coordinate)
+        numeric_coordinate = float(coordinate)
     else:
-        coordinate = int(coordinate)
-    return str(min(max(coordinate, -29999984), 29999984))
+        numeric_coordinate = int(coordinate)
+    return str(min(max(numeric_coordinate, -29999984), 29999984))
 
 def world_border_diameter(diameter: str, version: int, issues: list[dict[str, str]]) -> str:
     if "." in diameter:
-        diameter = float(diameter)
+        numeric_diameter = float(diameter)
     else:
-        diameter = int(diameter)
-    new_diameter = min(diameter, 59999968)
-    if new_diameter != diameter:
+        numeric_diameter = int(diameter)
+    new_diameter = min(numeric_diameter, 59999968)
+    if new_diameter != numeric_diameter:
         log("WARNING: World border diameter clamped, check if it is used in a time manager")
     return str(new_diameter)
 

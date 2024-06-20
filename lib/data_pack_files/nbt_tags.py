@@ -50,30 +50,36 @@ class TypeByte(TypeNumeric):
         self.suffix = "b"
 
 class TypeShort(TypeNumeric):
+    value: int
     def __init__(self, value):
         TypeNumeric.__init__(self, value, "int")
         self.suffix = "s"
 
 class TypeInt(TypeNumeric):
+    value: int
     def __init__(self, value):
         TypeNumeric.__init__(self, value, "int")
 
 class TypeLong(TypeNumeric):
+    value: int
     def __init__(self, value):
         TypeNumeric.__init__(self, value, "int")
         self.suffix = "L"
 
 class TypeFloat(TypeNumeric):
+    value: float
     def __init__(self, value):
         TypeNumeric.__init__(self, value, "float")
         self.suffix = "f"
 
 class TypeDouble(TypeNumeric):
+    value: float
     def __init__(self, value):
         TypeNumeric.__init__(self, value, "float")
         self.suffix = "d"
 
 class TypeDecimal(TypeNumeric):
+    value: float
     def __init__(self, value):
         TypeNumeric.__init__(self, value, "float")
 

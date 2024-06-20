@@ -5,6 +5,7 @@
 
 # Import things
 
+from typing import cast
 from lib.log import log
 from lib.data_pack_files import nbt_tags
 from lib.data_pack_files import miscellaneous
@@ -30,20 +31,18 @@ def effect(name: int | str | nbt_tags.TypeNumeric, version: int, issues: list[di
     pack_version = version
 
     if isinstance(name, nbt_tags.TypeNumeric):
-        id_array = tables.EFFECT_IDS
-        if int(name.value) in id_array:
-            return id_array[int(name.value)]
+        name = int(name.value)
+
+    if isinstance(name, str) and name.isnumeric():
+        name = int(name)
         
     if isinstance(name, int):
         id_array = tables.EFFECT_IDS
         if name in id_array:
-            return id_array[name]
-
-    if name.isnumeric():
-        id_array = tables.EFFECT_IDS
-        if int(name) in id_array:
-            return id_array[int(name)]
-
+            name = id_array[name]
+        else:
+            name = "minecraft:speed"
+    
     return miscellaneous.namespace(name)
 
 def enchantment(name: str | int | nbt_tags.TypeNumeric, version: int, issues: list[dict[str, str]]) -> str:
@@ -51,7 +50,7 @@ def enchantment(name: str | int | nbt_tags.TypeNumeric, version: int, issues: li
     pack_version = version
 
     # Convert if a numeric
-    if not isinstance(name, str) and not isinstance(name, int):
+    if isinstance(name, nbt_tags.TypeNumeric):
         name = int(name.value)
 
     # Convert if a number
@@ -116,7 +115,7 @@ def scoreboard_objective_criteria(objective: dict[str, str], version: int, issue
                 return block_stats[stat] + block_id[10:]
             
             elif stat in item_stats:
-                item_id = items.update({"id": object_id, "data_value": -1, "nbt": {}, "read": True}, pack_version, issues)["id"]
+                item_id = cast(str, items.update({"id": object_id, "data_value": -1, "nbt": {}, "read": True}, pack_version, issues)["id"])
                 if item_id in tables.ITEM_TAG_REPLACEMENTS:
                     scoreboard_objective_splitter.insert_objective(name, item_stats[stat], tables.ITEM_TAG_REPLACEMENTS[item_id])
                     return "dummy"

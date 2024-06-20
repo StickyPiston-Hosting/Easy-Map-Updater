@@ -38,6 +38,7 @@ if not (
 import shutil
 import json
 import traceback
+from typing import TypedDict, Callable
 from enum import Enum
 from pathlib import Path
 from lib.log import log
@@ -137,7 +138,12 @@ class Action(Enum):
     DEBUG_JSON = "debug.json"
     DEBUG = "debug"
 
-actions: dict[str, dict[str, str]]
+class ActionDefinition(TypedDict):
+    show: bool
+    function: Callable
+    name: str
+
+actions: dict[str, ActionDefinition]
 update_progress: dict[str, int | bool] = {
     "stage": 0,
     "zipped_data_packs": False,
@@ -189,7 +195,7 @@ def load_session():
     if not session_path.exists():
         return
     with session_path.open("r", encoding="utf-8") as file:
-        session: dict[str, dict[str, bool]] = json.load(file)
+        session = json.load(file)
     if "debug.cmd" in session:
         session = {"actions": session}
 
@@ -206,7 +212,7 @@ def load_session():
     
 
 def save_session():
-    session: dict[str, dict[str, bool]] = {
+    session: dict[str, dict[str, int | bool]] = {
         "actions": {},
         "update_progress": update_progress
     }
@@ -431,6 +437,7 @@ def action_update(): # Needs confirmation
         next_update_progress()
     if update_progress["stage"] == 501:
         fix_world_booleans = action_fix_world(False)
+        update_progress["spawner_bossbar"] = fix_world_booleans["spawner_bossbar"]
         next_update_progress_section()
 
     # Update command blocks
@@ -446,7 +453,7 @@ def action_update(): # Needs confirmation
 
     # Add various things to the world to restore old behavior
     if update_progress["stage"] == 700:
-        if fix_world_booleans["spawner_bossbar"]:
+        if update_progress["spawner_bossbar"]:
             action_spawner_bossbar()
         next_update_progress()
     if update_progress["stage"] == 701:
@@ -528,6 +535,7 @@ def reset_update_progress():
     update_progress = {
         "stage": 0,
         "zipped_data_packs": False,
+        "spawner_bossbar": False,
     }
     save_session()
 

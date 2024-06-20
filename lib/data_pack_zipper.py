@@ -49,7 +49,7 @@ def program():
 
             # Zip data pack
             print(f'Zipping {data_pack_path.name}')
-            shutil.make_archive(data_pack_path, "zip", data_pack_path)
+            shutil.make_archive(data_pack_path.as_posix(), "zip", data_pack_path)
 
     print("Data packs zipped")
 

@@ -6,6 +6,7 @@
 # Import things
 
 import json
+from typing import Any
 from pathlib import Path
 from lib import utils
 from lib.log import log
@@ -34,7 +35,7 @@ def merge(a, b):
 
 
 
-def merge_compound(a: dict[str], b: dict[str]) -> dict[str]:
+def merge_compound(a: dict[str, Any], b: dict[str, Any]) -> dict[str, Any]:
     # Iterate through keys
     for key in b:
         # If the key does not exist in a, write it
@@ -66,7 +67,7 @@ def safe_load(file_path: Path) -> tuple[dict, bool]:
     
 
 
-def unpack(string: str) -> bool | int | float | str | list | dict:
+def unpack(string: str) -> bool | int | float | str | list | dict | None:
     # Return if blank
     string = string.strip()
     if string == "":
@@ -136,13 +137,13 @@ def unpack_list(string: str) -> list:
 
 
 
-def pack(json_object: bool | int | float | str | list | dict) -> str:
+def pack(json_object: bool | int | float | str | list | dict | None) -> str:
     # Pack based on type
     if isinstance(json_object, dict):
         return pack_compound(json_object)
     if isinstance(json_object, list):
         return pack_list(json_object)
-    if type(json_object).__name__ == "str":
+    if isinstance(json_object, str):
         return utils.pack_string(json_object, force_double=True)
     if type(json_object).__name__ == "bool":
         if json_object:
@@ -160,7 +161,7 @@ def pack_list(json_object: list) -> str:
 
     return f'[{",".join(out_list)}]'
 
-def pack_compound(json_object: dict[str]) -> str:
+def pack_compound(json_object: dict[str, Any]) -> str:
     # Prepare tag list
     tags: list[str] = []
 

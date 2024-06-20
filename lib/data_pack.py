@@ -576,7 +576,7 @@ def zip_packs(world: Path, get_confirmation: bool):
 
         # Zip folder
         log(f"Zipping {folder.name}")
-        shutil.make_archive(folder, "zip", folder)
+        shutil.make_archive(folder.as_posix(), "zip", folder)
         shutil.rmtree(folder)
         has_packs = True
 

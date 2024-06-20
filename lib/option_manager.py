@@ -6,6 +6,7 @@
 # Import things
 
 import json
+from typing import TypedDict
 from enum import Enum
 from pathlib import Path
 from lib import defaults
@@ -23,11 +24,17 @@ class Option(Enum):
     FANCY_NAME = "fancy_name"
     VERSION = "version"
 
+class Options(TypedDict):
+    map_name: str
+    resource_pack: str
+    fancy_name: str
+    version: int
+
 
 
 # Define functions
 
-def get_default_options() -> dict[str, str | int]:
+def get_default_options() -> Options:
     return {
         Option.MAP_NAME.value: "world",
         Option.RESOURCE_PACK.value: "resources",
@@ -35,14 +42,14 @@ def get_default_options() -> dict[str, str | int]:
         Option.VERSION.value: defaults.PACK_VERSION
     }
 
-def set_options(options: dict[str, str | int]):
+def set_options(options: Options):
     with OPTIONS_PATH.open("w", encoding="utf-8", newline="\n") as file:
         json.dump(options, file, indent=4)
 
 def get_options():
     if OPTIONS_PATH.exists():
         with OPTIONS_PATH.open("r", encoding="utf-8") as file:
-            options: dict[str, str | int] = json.load(file)
+            options: Options = json.load(file)
     else:
         options = get_default_options()
         set_options(options)
