@@ -1081,16 +1081,24 @@ def action_exit():
     exit()
 
 def action_update_single_command():
-    test_command = input("Command to update: ")
-    print("")
-    log(f'Old command: {test_command}')
-    log(f'New command: {command.update(test_command, option_manager.get_version(), "test_command")}')
+    while True:
+        test_command = input("Command to update (leave blank to cancel): ")
+        if not test_command:
+            break
+        print("")
+        log(f'Old command: {test_command}')
+        log(f'New command: {command.update(test_command, option_manager.get_version(), "test_command")}')
+        print("")
 
 def action_update_json_text_component():
-    test_component = input("JSON text component to update: ")
-    print("")
-    log(f'Old component: {test_component}')
-    log(f'New component: {json_text_component.update(test_component, option_manager.get_version(), [], False)}')
+    while True:
+        test_component = input("JSON text component to update (leave blank to cancel): ")
+        if not test_component:
+            break
+        print("")
+        log(f'Old component: {test_component}')
+        log(f'New component: {json_text_component.update(test_component, option_manager.get_version(), [], False)}')
+        print("")
 
 def action_toggle_debug_mode():
     if defaults.DEBUG_MODE:
