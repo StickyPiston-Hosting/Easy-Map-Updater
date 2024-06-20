@@ -417,11 +417,11 @@ def action_update(): # Needs confirmation
     # Optimize world
     if update_progress["stage"] == 400:
         print("")
-        log("The world must now be optimized, boot up Minecraft and optimize the main copy of your world")
-        while True:
-            confirm = input("Confirm when it has been optimized (Y): ")
-            if confirm in ["y", "Y"]:
-                break
+        log(f'The world must now be optimized, boot up Minecraft {utils.get_version_string(defaults.PACK_VERSION)} and optimize the main copy of your world')
+        confirm = input("Confirm when it has been optimized, decline to cancel (Y/N): ")
+        if confirm not in ["y", "Y"]:
+            log("Updated canceled")
+            return
         next_update_progress_section()
 
     # Fix world
@@ -490,10 +490,10 @@ def action_update(): # Needs confirmation
             print("")
             log("Player names have been logged in player_names.json")
             log("Go through the list and remove non-player names from the list (e.g. fakeplayer variable names)")
-            while True:
-                confirm = input("Confirm when the non-player names have been removed (Y): ")
-                if confirm in ["y", "Y"]:
-                    break
+            confirm = input("Confirm when the non-player names have been removed, declined to cancel (Y/N): ")
+            if confirm not in ["y", "Y"]:
+                with (PROGRAM_PATH / "player_names.json").open("w", encoding="utf-8", newline="\n") as file:
+                    file.write("{}")
         else:
             with (PROGRAM_PATH / "player_names.json").open("w", encoding="utf-8", newline="\n") as file:
                 file.write("{}")
