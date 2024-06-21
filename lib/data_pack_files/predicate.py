@@ -7,6 +7,7 @@
 
 import json
 from pathlib import Path
+from typing import cast, Any
 from lib import defaults
 from lib import json_manager
 from lib.data_pack_files import blocks
@@ -40,14 +41,14 @@ def update(file_path: Path, og_file_path: Path, version: int):
 
 
 
-def predicate(contents: dict[str, dict[str, str]] | list[dict], version: int) -> dict[str, dict[str, str]]:
+def predicate(contents: dict[str, Any] | list[dict], version: int) -> dict[str, Any] | list[dict]:
     global pack_version
     pack_version = version
 
     # If predicate is a list, feed it through a loop instead
     if isinstance(contents, list):
         for i in range(len(contents)):
-            contents[i] = predicate(contents[i], version)
+            contents[i] = cast(dict, predicate(contents[i], version))
         return contents
 
 
@@ -73,21 +74,21 @@ def predicate(contents: dict[str, dict[str, str]] | list[dict], version: int) ->
             contents["terms"][i] = predicate(contents["terms"][i], version)
 
     elif condition == "minecraft:block_state_property":
-        block_data = {"BlockState": {"Name": contents["block"]}}
+        block_data = cast(blocks.BlockInputFromNBT, {"BlockState": {"Name": contents["block"]}})
         if "properties" in contents["block"]:
             block_data["BlockState"]["Properties"] = {}
             for block_property in contents["block"]["properties"]:
                 value = contents["block"]["properties"][block_property]
                 if isinstance(value, str):
                     block_data["BlockState"]["Properties"][block_property] = value
-        block_data = blocks.update_from_nbt(block_data, version)
+        block_data = blocks.update_from_nbt(block_data, version, [])
         if "Name" in block_data:
             contents["block"] = block_data["Name"]
         if "Properties" in block_data:
             if "properties" not in contents["block"]:
-                contents["block"]["properties"] = {}
+                cast(dict, contents["block"])["properties"] = {}
             for block_property in block_data["Properties"]:
-                contents["block"]["properties"] = block_data["Properties"][block_property]
+                cast(dict, contents["block"])["properties"] = block_data["Properties"][block_property]
 
     elif condition == "minecraft:damage_source_properties":
         contents["predicate"] = predicate_damage_type(contents["predicate"], version)

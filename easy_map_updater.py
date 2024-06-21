@@ -38,6 +38,7 @@ if not (
 import shutil
 import json
 import traceback
+from typing import TypedDict, Callable
 from enum import Enum
 from pathlib import Path
 from lib.log import log
@@ -139,7 +140,12 @@ class Action(Enum):
     DEBUG_JSON = "debug.json"
     DEBUG = "debug"
 
-actions: dict[str, dict[str, str]]
+class ActionDefinition(TypedDict):
+    show: bool
+    function: Callable
+    name: str
+
+actions: dict[str, ActionDefinition]
 update_progress: dict[str, int | bool] = {
     "stage": 0,
     "zipped_data_packs": False,
@@ -191,7 +197,7 @@ def load_session():
     if not session_path.exists():
         return
     with session_path.open("r", encoding="utf-8") as file:
-        session: dict[str, dict[str, bool]] = json.load(file)
+        session = json.load(file)
     if "debug.cmd" in session:
         session = {"actions": session}
 
@@ -208,7 +214,7 @@ def load_session():
     
 
 def save_session():
-    session: dict[str, dict[str, bool]] = {
+    session: dict[str, dict[str, int | bool]] = {
         "actions": {},
         "update_progress": update_progress
     }
@@ -420,11 +426,11 @@ def action_update(): # Needs confirmation
     # Optimize world
     if update_progress["stage"] == 400:
         print("")
-        log("The world must now be optimized, boot up Minecraft and optimize the main copy of your world")
-        while True:
-            confirm = input("Confirm when it has been optimized (Y): ")
-            if confirm in ["y", "Y"]:
-                break
+        log(f'The world must now be optimized, boot up Minecraft {utils.get_version_string(defaults.PACK_VERSION)} and optimize the main copy of your world')
+        confirm = input("Confirm when it has been optimized, decline to cancel (Y/N): ")
+        if confirm not in ["y", "Y"]:
+            log("Updated canceled")
+            return
         next_update_progress_section()
 
     # Fix world
@@ -434,6 +440,7 @@ def action_update(): # Needs confirmation
         next_update_progress()
     if update_progress["stage"] == 501:
         fix_world_booleans = action_fix_world(False)
+        update_progress["spawner_bossbar"] = fix_world_booleans["spawner_bossbar"]
         next_update_progress_section()
 
     # Update command blocks
@@ -449,7 +456,7 @@ def action_update(): # Needs confirmation
 
     # Add various things to the world to restore old behavior
     if update_progress["stage"] == 700:
-        if fix_world_booleans["spawner_bossbar"]:
+        if update_progress["spawner_bossbar"]:
             action_spawner_bossbar()
         next_update_progress()
     if update_progress["stage"] == 701:
@@ -493,10 +500,10 @@ def action_update(): # Needs confirmation
             print("")
             log("Player names have been logged in player_names.json")
             log("Go through the list and remove non-player names from the list (e.g. fakeplayer variable names)")
-            while True:
-                confirm = input("Confirm when the non-player names have been removed (Y): ")
-                if confirm in ["y", "Y"]:
-                    break
+            confirm = input("Confirm when the non-player names have been removed, declined to cancel (Y/N): ")
+            if confirm not in ["y", "Y"]:
+                with (PROGRAM_PATH / "player_names.json").open("w", encoding="utf-8", newline="\n") as file:
+                    file.write("{}")
         else:
             with (PROGRAM_PATH / "player_names.json").open("w", encoding="utf-8", newline="\n") as file:
                 file.write("{}")
@@ -531,6 +538,7 @@ def reset_update_progress():
     update_progress = {
         "stage": 0,
         "zipped_data_packs": False,
+        "spawner_bossbar": False,
     }
     save_session()
 
@@ -1091,16 +1099,24 @@ def action_exit():
     exit()
 
 def action_update_single_command():
-    test_command = input("Command to update: ")
-    print("")
-    log(f'Old command: {test_command}')
-    log(f'New command: {command.update(test_command, option_manager.get_version(), "test_command")}')
+    while True:
+        test_command = input("Command to update (leave blank to cancel): ")
+        if not test_command:
+            break
+        print("")
+        log(f'Old command: {test_command}')
+        log(f'New command: {command.update(test_command, option_manager.get_version(), "test_command")}')
+        print("")
 
 def action_update_json_text_component():
-    test_component = input("JSON text component to update: ")
-    print("")
-    log(f'Old component: {test_component}')
-    log(f'New component: {json_text_component.update(test_component, option_manager.get_version(), [], False)}')
+    while True:
+        test_component = input("JSON text component to update (leave blank to cancel): ")
+        if not test_component:
+            break
+        print("")
+        log(f'Old component: {test_component}')
+        log(f'New component: {json_text_component.update(test_component, option_manager.get_version(), [], False)}')
+        print("")
 
 def action_toggle_debug_mode():
     if defaults.DEBUG_MODE:

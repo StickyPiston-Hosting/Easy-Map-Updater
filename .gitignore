@@ -7,6 +7,7 @@ __pycache__
 /session.json
 /options.json
 /player_names.json
+/.venv
 /sound_event_extractor.py
 /debug_world_extractor.py
 /object_fetcher.py

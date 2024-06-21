@@ -5,6 +5,7 @@
 
 # Import things
 
+from typing import cast
 from lib.log import log
 from lib.data_pack_files import nbt_tags
 from lib.data_pack_files import miscellaneous
@@ -25,33 +26,31 @@ pack_version = defaults.PACK_VERSION
 
 # Define functions
 
-def effect(name: int | str | nbt_tags.TypeNumeric, version: int, issues: list[dict[str, str]]) -> str:
+def effect(name: int | str | nbt_tags.TypeNumeric, version: int, issues: list[dict[str, str | int]]) -> str:
     global pack_version
     pack_version = version
 
     if isinstance(name, nbt_tags.TypeNumeric):
-        id_array = tables.EFFECT_IDS
-        if int(name.value) in id_array:
-            return id_array[int(name.value)]
+        name = int(name.value)
+
+    if isinstance(name, str) and name.isnumeric():
+        name = int(name)
         
     if isinstance(name, int):
         id_array = tables.EFFECT_IDS
         if name in id_array:
-            return id_array[name]
-
-    if name.isnumeric():
-        id_array = tables.EFFECT_IDS
-        if int(name) in id_array:
-            return id_array[int(name)]
-
+            name = id_array[name]
+        else:
+            name = "minecraft:speed"
+    
     return miscellaneous.namespace(name)
 
-def enchantment(name: str | int | nbt_tags.TypeNumeric, version: int, issues: list[dict[str, str]]) -> str:
+def enchantment(name: str | int | nbt_tags.TypeNumeric, version: int, issues: list[dict[str, str | int]]) -> str:
     global pack_version
     pack_version = version
 
     # Convert if a numeric
-    if not isinstance(name, str) and not isinstance(name, int):
+    if isinstance(name, nbt_tags.TypeNumeric):
         name = int(name.value)
 
     # Convert if a number
@@ -71,7 +70,7 @@ def enchantment(name: str | int | nbt_tags.TypeNumeric, version: int, issues: li
 
     return miscellaneous.namespace(name)
 
-def particle(particle: str, version: int, issues: list[dict[str, str]]) -> str:
+def particle(particle: str, version: int, issues: list[dict[str, str | int]]) -> str:
     global pack_version
     pack_version = version
 
@@ -89,7 +88,7 @@ def particle(particle: str, version: int, issues: list[dict[str, str]]) -> str:
 
     return particle
 
-def scoreboard_objective_criteria(objective: dict[str, str], version: int, issues: list[dict[str, str]]) -> str:
+def scoreboard_objective_criteria(objective: dict[str, str], version: int, issues: list[dict[str, str | int]]) -> str:
     global pack_version
     pack_version = version
 
@@ -116,14 +115,14 @@ def scoreboard_objective_criteria(objective: dict[str, str], version: int, issue
             object_id = ":".join(criteria.split(".")[2:])
 
             if stat in block_stats:
-                block_id = blocks.update({"id": object_id, "data_value": -1, "block_states": {}, "nbt": {}, "read": True}, pack_version, issues)["id"]
+                block_id = cast(str, blocks.update({"id": object_id, "data_value": -1, "block_states": {}, "nbt": {}, "read": True}, pack_version, issues)["id"])
                 if block_id in tables.BLOCK_TAG_REPLACEMENTS:
                     scoreboard_objective_splitter.insert_objective(name, block_stats[stat], tables.BLOCK_TAG_REPLACEMENTS[block_id])
                     return "dummy"
                 return block_stats[stat] + block_id[10:]
             
             elif stat in item_stats:
-                item_id = items.update({"id": object_id, "data_value": -1, "nbt": {}, "read": True}, pack_version, issues)["id"]
+                item_id = cast(str, items.update({"id": object_id, "data_value": -1, "nbt": {}, "read": True}, pack_version, issues)["id"])
                 if item_id in tables.ITEM_TAG_REPLACEMENTS:
                     scoreboard_objective_splitter.insert_objective(name, item_stats[stat], tables.ITEM_TAG_REPLACEMENTS[item_id])
                     return "dummy"
@@ -162,7 +161,7 @@ def scoreboard_objective_criteria(objective: dict[str, str], version: int, issue
 
     return criteria
 
-def sound_event(name: str, version: int, issues: list[dict[str, str]]) -> str:
+def sound_event(name: str, version: int, issues: list[dict[str, str | int]]) -> str:
     global pack_version
     pack_version = version
 

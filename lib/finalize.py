@@ -10,6 +10,7 @@ import os
 import shutil
 import requests
 import json
+from typing import TypedDict
 from pathlib import Path
 from lib import defaults
 from lib import option_manager
@@ -204,6 +205,10 @@ def clean_level_dat(world: Path):
     # Close file
     file.write_file(file_path)
 
+class PlayerScoreEntry(TypedDict):
+    team: str
+    objectives: list[str]
+
 def get_player_names(world: Path):
     log("Getting player names")
 
@@ -216,7 +221,7 @@ def get_player_names(world: Path):
         return
 
     # Get names
-    players: dict[str, dict[str, str | list[str]]] = {}
+    players: dict[str, PlayerScoreEntry] = {}
 
     file = NBT.NBTFile(file_path)
 
@@ -238,18 +243,19 @@ def get_player_names(world: Path):
                     players[player]["objectives"].append(str(score["Objective"]))
 
     # Convert names to strings
+    minified_players: dict[str, str] = {}
     for name in players:
-        players[name] = str(players[name])
+        minified_players[name] = str(players[name])
 
     # Write player names to file
     with (PROGRAM_PATH / "player_names.json").open("w", encoding="utf-8", newline="\n") as file:
-        file.write(json.dumps(players, indent=4).replace('"{', "{").replace('}"', "}").replace("'", '"'))
+        file.write(json.dumps(minified_players, indent=4).replace('"{', "{").replace('}"', "}").replace("'", '"'))
 
     log("Player names logged, check player_names.json")
 
 LEGAL_CHARACTERS = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","0","1","2","3","4","5","6","7","8","9","_"]
 
-def check_player_name_legality(player: str, players: dict[str, dict[str, str | list[str]]]) -> bool:
+def check_player_name_legality(player: str, players: dict[str, PlayerScoreEntry]) -> bool:
     # Stop if name is illegal
     for char in player:
         if char not in LEGAL_CHARACTERS:

@@ -6,6 +6,7 @@
 # Import things
 
 import json
+from typing import cast
 from pathlib import Path
 from lib.log import log
 from lib import defaults
@@ -72,7 +73,7 @@ def create_pack(world: Path):
     block_id_array = tables.BLOCK_IDS_DATA
 
     for block in block_id_array:
-        block_data: dict[int, dict[str, str | dict[str, str]]] = block_id_array[block]
+        block_data = cast(dict[int, tables.BlockStateStruct], block_id_array[block])
         block_ids: list[str] = []
         first_block = block_data[list(block_data.keys())[0]]
         # Initialize stored properties list for comparison, only properties which are the same for all blocks will be kept

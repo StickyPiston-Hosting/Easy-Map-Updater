@@ -7,6 +7,7 @@
 
 import math
 from pathlib import Path
+from typing import cast, Any
 from nbt import nbt as NBT
 from nbt import region
 from lib import defaults
@@ -47,10 +48,10 @@ def fix(world: Path, og_world: Path, version: int, get_confirmation: bool) -> di
     # Check for errors
     if not world.exists():
         log("ERROR: World does not exist!")
-        return
+        return {}
     if not og_world.exists():
         log("ERROR: Original copy of world does not exist!")
-        return
+        return {}
 
     # Get confirmation
     if get_confirmation:
@@ -58,7 +59,7 @@ def fix(world: Path, og_world: Path, version: int, get_confirmation: bool) -> di
         confirm = input("Is this okay? (Y/N): ")
         if confirm not in ["Y", "y"]:
             log("Action canceled")
-            return
+            return {}
     
     # Get the time
     global TIME
@@ -137,10 +138,11 @@ def fix_region_file(file_path: Path, og_file_path: Path, dimension: str):
         og_region_file = region.RegionFile(og_file_path)
     except:
         return
-    chunk_metadata: region.ChunkMetadata
-    for chunk_metadata in region_file.get_metadata():
+    for chunk_metadata in cast(list[region.ChunkMetadata], region_file.get_metadata()):
         chunk = region_file.get_nbt(chunk_metadata.x, chunk_metadata.z)
         og_chunk = og_region_file.get_nbt(chunk_metadata.x, chunk_metadata.z)
+        if not chunk or not og_chunk:
+            continue
         if "block_entities" not in chunk:
             continue
         if defaults.DEBUG_MODE:
@@ -266,29 +268,30 @@ def fix_region_file(file_path: Path, og_file_path: Path, dimension: str):
         # Save chunk
         region_file.write_chunk(chunk_metadata.x, chunk_metadata.z, chunk)
 
-def get_block_ticks(chunk: NBT.NBTFile, og_chunk: NBT.NBTFile) -> list[tuple[int]]:
-    scheduled_blocks: list[tuple[int]] = []
+def get_block_ticks(chunk: NBT.NBTFile, og_chunk: NBT.NBTFile) -> list[tuple[int, int, int]]:
+    scheduled_blocks: list[tuple[int, int, int]] = []
     if "block_ticks" not in chunk:
         return scheduled_blocks
-    block_ticks: NBT.TAG_List = chunk["block_ticks"]
+    block_ticks = cast(NBT.TAG_List, chunk["block_ticks"])
     if block_ticks == None or len(block_ticks) == 0:
         return scheduled_blocks
     
     if "block_ticks" in og_chunk:
-        og_block_ticks = og_chunk["block_ticks"]
+        og_block_ticks = cast(NBT.TAG_List, og_chunk["block_ticks"])
         use_og_block_ticks = True
     elif "Level" in og_chunk and "TileTicks" in og_chunk["Level"]:
-        og_block_ticks = og_chunk["Level"]["TileTicks"]
+        og_block_ticks = cast(NBT.TAG_List, og_chunk["Level"]["TileTicks"])
         use_og_block_ticks = True
     else:
+        og_block_ticks = NBT.TAG_List()
         use_og_block_ticks = False
     
     for i in range(len(block_ticks)-1, -1, -1):
-        block_tick: NBT.TAG_Compound = block_ticks[i]
+        block_tick = cast(NBT.TAG_Compound, block_ticks[i])
 
         # Remove block ticks that are actually out of bounds
         if use_og_block_ticks:
-            og_block_tick: NBT.TAG_Compound = og_block_ticks[i]
+            og_block_tick = cast(NBT.TAG_Compound, og_block_ticks[i])
             if (
                 not ("x" in block_tick and "x" in og_block_tick and block_tick["x"].value == og_block_tick["x"].value) or
                 not ("y" in block_tick and "y" in og_block_tick and block_tick["y"].value == og_block_tick["y"].value) or
@@ -303,11 +306,11 @@ def get_block_ticks(chunk: NBT.NBTFile, og_chunk: NBT.NBTFile) -> list[tuple[int
             not ("x" in block_tick and "y" in block_tick and "z" in block_tick)
         ):
             continue
-        scheduled_blocks.append((
+        scheduled_blocks.append(cast(tuple[int, int, int], (
             block_tick["x"].value,
             block_tick["y"].value,
             block_tick["z"].value
-        ))
+        )))
 
         if block_tick["t"].value <= 0:
             block_tick["t"] = NBT.TAG_Long(1)
@@ -402,9 +405,10 @@ def fix_entity_file(file_path: Path, og_file_path: Path, dimension: str):
         region_file = region.RegionFile(file_path)
     except:
         return
-    chunk_metadata: region.ChunkMetadata
-    for chunk_metadata in region_file.get_metadata():
+    for chunk_metadata in cast(list[region.ChunkMetadata], region_file.get_metadata()):
         chunk = region_file.get_nbt(chunk_metadata.x, chunk_metadata.z)
+        if not chunk:
+            continue
         if "Entities" not in chunk:
             continue
         entities: NBT.TAG_List = chunk["Entities"]
@@ -503,13 +507,13 @@ def fix_entity_file(file_path: Path, og_file_path: Path, dimension: str):
         # Save chunk
         region_file.write_chunk(chunk_metadata.x, chunk_metadata.z, chunk)
 
-def fix_entity_recursive_passenger(entity: NBT.TAG_Compound, is_from_spawner: bool = False) -> dict[str]:
+def fix_entity_recursive_passenger(entity: NBT.TAG_Compound, is_from_spawner: bool = False) -> dict[str, Any]:
     global uuid_dict
     global uuid_list
 
-    output: dict[str] = {}
+    output: dict[str, Any] = {}
 
-    entity_id = None
+    entity_id = ""
     if "id" in entity:
         entity_id: str = entity["id"].value
     
@@ -720,7 +724,7 @@ def fix_entity_recursive_passenger(entity: NBT.TAG_Compound, is_from_spawner: bo
 
 
 
-    passenger_output: dict[str] = {}
+    passenger_output: dict[str, Any] = {}
     if "Passengers" in entity:
         for passenger in entity["Passengers"]:
             passenger_output = fix_entity_recursive_passenger(passenger, is_from_spawner)
@@ -785,7 +789,7 @@ def fix_item(item: NBT.TAG_Compound, is_from_spawner: bool = False):
     else:
         item_nbt = nbt_tags.convert_from_lib_format(item)
         item_nbt = items.update_from_nbt(item_nbt, pack_version, [])
-        new_item: NBT.TAG_Compound = nbt_tags.convert_to_lib_format(item_nbt)
+        new_item = cast(NBT.TAG_Compound, nbt_tags.convert_to_lib_format(item_nbt))
         for key in item:
             del item[key]
         for key in new_item:

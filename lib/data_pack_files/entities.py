@@ -5,6 +5,7 @@
 
 # Import things
 
+from typing import cast
 from lib.log import log
 from lib.data_pack_files import nbt_tags
 from lib.data_pack_files import miscellaneous
@@ -21,7 +22,7 @@ pack_version = defaults.PACK_VERSION
 
 # Define functions
 
-def update(entity: str | dict[str, str], version: int, issues: list[dict[str, str]]) -> str:
+def update(entity: str | dict[str, str], version: int, issues: list[dict[str, str | int]]) -> str:
     # Assign version
     global pack_version
     pack_version = version
@@ -41,9 +42,9 @@ def update(entity: str | dict[str, str], version: int, issues: list[dict[str, st
 
     # Extract out true entity ID from NBT if "Riding" tag is present
     if nbt != "":
-        nbt: dict = nbt_tags.unpack(nbt)
-        if "Riding" in nbt:
-            entity_id = extract_riding_id(nbt["Riding"])
+        unpacked_nbt: dict = cast(dict, nbt_tags.unpack(nbt))
+        if "Riding" in unpacked_nbt:
+            entity_id = extract_riding_id(unpacked_nbt["Riding"])
 
     entity_id = miscellaneous.namespace(entity_id)
 

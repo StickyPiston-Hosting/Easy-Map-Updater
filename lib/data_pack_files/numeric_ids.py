@@ -20,7 +20,7 @@ def update_block_item(numeric_id: int, data_value: int | str) -> tuple[str, int 
 
     id_array = tables.BLOCK_ITEM_NUMERIC_IDS
     if numeric_id not in id_array:
-        return "minecraft:air"
+        return ("minecraft:air", 0)
     return (id_array[numeric_id], data_value)
 
 def update_entity(numeric_id: int) -> str:

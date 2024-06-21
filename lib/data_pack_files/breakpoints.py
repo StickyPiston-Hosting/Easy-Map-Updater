@@ -9,6 +9,7 @@ import os
 import shutil
 import json
 from pathlib import Path
+from typing import cast, Any
 from lib.log import log
 from lib import defaults
 
@@ -54,14 +55,16 @@ def apply_breakpoints(world: Path):
     
 
 
-def get_function_names(data_pack_path: Path) -> dict[str, dict[str]]:
-    data_pack_dict: dict[str, dict[str]] = {}
+def get_function_names(data_pack_path: Path) -> dict[str, dict[str, Any]]:
+    data_pack_dict: dict[str, dict[str, Any]] = {}
     for namespace_path in data_pack_path.iterdir():
         functions_path = namespace_path / "functions"
         if not functions_path.exists():
             continue
         for function_path in functions_path.glob("**/*.mcfunction"):
-            data_pack_dict[get_namespaced_id(data_pack_path, function_path)] = {"path": function_path, "breakable": False, "parents": {}, "children": {}}
+            namespaced_id = get_namespaced_id(data_pack_path, function_path)
+            if namespaced_id:
+                data_pack_dict[namespaced_id] = {"path": function_path, "breakable": False, "parents": {}, "children": {}}
     return data_pack_dict
 
 def get_namespaced_id(data_pack_path: Path, function_path: Path) -> str | None:
@@ -75,7 +78,7 @@ def get_namespaced_id(data_pack_path: Path, function_path: Path) -> str | None:
 
 
 
-def apply_function_inheritance(data_pack_dict: dict[str, dict[str]]):
+def apply_function_inheritance(data_pack_dict: dict[str, dict[str, Any]]):
     for function_id in data_pack_dict:
         function_path: Path = data_pack_dict[function_id]["path"]
         with function_path.open("r", encoding="utf-8") as file:
@@ -95,30 +98,32 @@ def apply_function_inheritance(data_pack_dict: dict[str, dict[str]]):
 
 
 
-def mark_breakable_functions(data_pack_dict: dict[str, dict[str]]):
+def mark_breakable_functions(data_pack_dict: dict[str, dict[str, Any]]):
     for function_id in data_pack_dict:
         mark_breakable_function(data_pack_dict[function_id])
 
-def mark_breakable_function(function_dict: dict[str, bool, dict[str]]):
+def mark_breakable_function(function_dict: dict[str, bool | Path | dict[str, Any]]):
     if function_dict["breakable"]:
         return
-    function_path: Path = function_dict["path"]
+    function_path = cast(Path, function_dict["path"])
     with function_path.open("r", encoding="utf-8") as file:
         contents = file.read()
     
     if defaults.BREAKPOINT_MODE in contents:
         function_dict["breakable"] = True
-    for child_function_id in function_dict["children"]:
-        if function_dict["children"][child_function_id]["breakable"]:
+    children = cast(dict[str, Any], function_dict["children"])
+    for child_function_id in children:
+        if children[child_function_id]["breakable"]:
             function_dict["breakable"] = True
 
+    parents = cast(dict[str, Any], function_dict["children"])
     if function_dict["breakable"]:
-        for function_id in function_dict["parents"]:
-            mark_breakable_function(function_dict["parents"][function_id])
+        for function_id in parents:
+            mark_breakable_function(parents[function_id])
 
 
 
-def modify_functions(data_pack_dict: dict[str, dict[str]], data_pack_path: Path):
+def modify_functions(data_pack_dict: dict[str, dict[str, Any]], data_pack_path: Path):
     forceloads: list[tuple[str, str]] = []
     for function_id in data_pack_dict:
         function_dict = data_pack_dict[function_id]

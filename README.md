@@ -187,4 +187,4 @@ After the map has been updated and finalized, these actions will help package it
 
 ## Contact and contribution
 
-The Easy Map Updater is a work in progress and is missing a lot of features. Post an issue on this repo or contact us on Discord: https://stickypiston.co/discord
+The Easy Map Updater is a work in progress and is missing a lot of features. Post an issue on this repo or contact us on Discord: https://discord.gg/nrqhv6PcqQ

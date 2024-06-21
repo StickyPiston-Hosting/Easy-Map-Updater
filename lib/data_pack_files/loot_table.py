@@ -7,6 +7,7 @@
 
 import json
 from pathlib import Path
+from typing import cast, TypedDict, Any
 from lib import defaults
 from lib import json_manager
 from lib.data_pack_files import items
@@ -40,7 +41,7 @@ def update(file_path: Path, og_file_path: Path, version: int):
 
 
 
-def loot_table(contents: dict[str, dict[str, str]], version: int) -> dict[str, dict[str, str]]:
+def loot_table(contents: dict[str, Any], version: int) -> dict[str, dict[str, str]]:
     global pack_version
     pack_version = version
 
@@ -81,13 +82,19 @@ def update_pool(pool: dict[str, list], version: int) -> dict[str, list]:
 
 
 
-def update_entry(entry: dict[str, str | list], version: int) -> dict[str, str | list]:
+class LootTableEntry(TypedDict):
+    conditions: list
+    functions: list
+    type: str
+    children: list
+
+def update_entry(entry: LootTableEntry, version: int) -> LootTableEntry:
     global pack_version
     pack_version = version
 
     # Update conditions
     if "conditions" in entry:
-        for condition in entry["conditions"]:
+        for condition in cast(list, entry["conditions"]):
             predicate.predicate(condition, version)
 
     # Update item modifiers

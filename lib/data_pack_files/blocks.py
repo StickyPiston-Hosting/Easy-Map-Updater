@@ -5,6 +5,7 @@
 
 # Import things
 
+from typing import cast, TypedDict, NotRequired
 from lib.log import log
 from lib.data_pack_files import nbt_tags
 from lib.data_pack_files import miscellaneous
@@ -25,7 +26,18 @@ pack_version = defaults.PACK_VERSION
 
 # Define functions
 
-def update_from_command(block: str | dict[str, str], version: int, issues: list[dict[str, str]]) -> str:
+class BlockInputFromCommand(TypedDict):
+    id: str
+    nbt: str
+    data_value: str
+    read: bool
+
+class BlockOutputFromCommand(TypedDict):
+    id: str
+    block_states: dict[str, str]
+    nbt: dict
+
+def update_from_command(block: str | BlockInputFromCommand, version: int, issues: list[dict[str, str | int]]) -> str:
     global pack_version
     pack_version = version
 
@@ -39,16 +51,16 @@ def update_from_command(block: str | dict[str, str], version: int, issues: list[
     # Extract arguments if a dict
     if isinstance(block, dict):
         if "id" in block:
-            block_id: str = block["id"]
+            block_id = block["id"]
         if "nbt" in block:
-            nbt: str = block["nbt"]
+            nbt = block["nbt"]
         if "data_value" in block:
             if block["data_value"] != "":
                 data_value = block["data_value"]
                 if "=" not in data_value:
                     data_value = int(data_value)
         if "read" in block:
-            read: bool = block["read"]
+            read = block["read"]
     else:
         block_id = block
 
@@ -68,7 +80,7 @@ def update_from_command(block: str | dict[str, str], version: int, issues: list[
             block_id = block_id[len(string):]
 
     # Update block
-    new_block: dict[str, str | int | dict | bool | None] = update(
+    new_block = cast(BlockOutputFromCommand, update(
         {
             "id": block_id,
             "data_value": data_value,
@@ -77,7 +89,7 @@ def update_from_command(block: str | dict[str, str], version: int, issues: list[
             "read": read
         },
         pack_version, issues
-    )
+    ))
 
     # Return block
     if new_block["nbt"]:
@@ -103,7 +115,23 @@ def pack_block_states(block_states: dict[str, str]) -> str:
 
 
 
-def update_from_nbt(block: dict[str, str | dict | nbt_tags.TypeNumeric], version: int, issues: list[dict[str, str]]):
+class BlockStateInputFromNBT(TypedDict):
+    Name: NotRequired[str]
+    Properties: NotRequired[dict[str, str]]
+
+class BlockInputFromNBT(TypedDict):
+    Block: NotRequired[str | nbt_tags.TypeNumeric]
+    Data: NotRequired[nbt_tags.TypeNumeric]
+    TileEntityData: dict
+    BlockState: BlockStateInputFromNBT
+    block_state: BlockStateInputFromNBT
+
+class BlockOutputFromNBT(TypedDict):
+    id: str | None
+    block_states: dict[str, str]
+    nbt: dict | None
+
+def update_from_nbt(block: BlockInputFromNBT, version: int, issues: list[dict[str, str | int]]):
     global pack_version
     pack_version = version
 
@@ -116,26 +144,26 @@ def update_from_nbt(block: dict[str, str | dict | nbt_tags.TypeNumeric], version
     # Extract arguments
     block_state_tag = "BlockState"
     if "Block" in block:
-        block_id: str | nbt_tags.TypeNumeric = block["Block"]
+        block_id = block["Block"]
     if "Data" in block:
         data_value = int(block["Data"].value)
     if "TileEntityData" in block:
-        nbt: dict = block["TileEntityData"]
+        nbt = block["TileEntityData"]
     if "BlockState" in block:
         if "Name" in block["BlockState"]:
-            block_id: str | nbt_tags.TypeNumeric = block["BlockState"]["Name"]
+            block_id = block["BlockState"]["Name"]
         if "Properties" in block["BlockState"]:
             block_states = block["BlockState"]["Properties"]
     if "block_state" in block:
         block_state_tag = "block_state"
         if "Name" in block["block_state"]:
-            block_id: str | nbt_tags.TypeNumeric = block["block_state"]["Name"]
+            block_id = block["block_state"]["Name"]
         if "Properties" in block["block_state"]:
             block_states = block["block_state"]["Properties"]
 
 
     # Update block
-    new_block: dict[str, str | int | dict] = update(
+    new_block = cast(BlockOutputFromNBT, update(
         {
             "id": block_id,
             "data_value": data_value,
@@ -144,7 +172,7 @@ def update_from_nbt(block: dict[str, str | dict | nbt_tags.TypeNumeric], version
             "read": read
         },
         pack_version, issues
-    )
+    ))
 
     # Return block
     if "Block" in block:
@@ -162,23 +190,35 @@ def update_from_nbt(block: dict[str, str | dict | nbt_tags.TypeNumeric], version
 
 
 
-def update(block: dict[str, str | int | dict | bool | None], version: int, issues: list[dict[str, str]]) -> dict[str, str]:
+class BlockInput(TypedDict):
+    id: str | nbt_tags.TypeNumeric | None
+    data_value: str | int
+    block_states: dict[str, str]
+    nbt: dict | None
+    read: bool
+
+class BlockOutput(TypedDict):
+    id: str | None
+    block_states: dict[str, str]
+    nbt: dict | None
+
+def update(block: BlockInput, version: int, issues: list[dict[str, str | int]]) -> BlockOutput:
     global pack_version
     pack_version = version
 
     # Extract arguments
-    block_id: str | nbt_tags.TypeNumeric | None = block["id"]
-    data_value: str | int = block["data_value"]
-    block_states: dict[str, str] = block["block_states"]
-    nbt: dict | None = block["nbt"]
-    read: bool = block["read"]
+    block_id = block["id"]
+    data_value = block["data_value"]
+    block_states = block["block_states"]
+    nbt = block["nbt"]
+    read = block["read"]
 
     # Convert block ID
     if block_id != None:
-        block_id, block_states, nbt = update_block_id(block_id, data_value, block_states, nbt, read, issues)
+        block_id, block_states, nbt = update_block_id(block_id, data_value, block_states, nbt or {}, read, issues)
 
     # Update NBT
-    nbt = nbt_tags.direct_update(nbt, pack_version, issues, "block", block_id)
+    nbt = nbt_tags.direct_update(nbt, pack_version, issues, "block", block_id or "minecraft:stone")
 
     return {
         "id": block_id,
@@ -186,7 +226,7 @@ def update(block: dict[str, str | int | dict | bool | None], version: int, issue
         "nbt": nbt
     }
 
-def update_block_id(block_id: str | nbt_tags.TypeNumeric, data_value: int | str, block_states: dict[str, str], nbt: dict, read: bool, issues: list[dict[str, str]]) -> tuple[str, dict[str, str]]:
+def update_block_id(block_id: str | nbt_tags.TypeNumeric, data_value: int | str, block_states: dict[str, str], nbt: dict, read: bool, issues: list[dict[str, str | int]]) -> tuple[str, dict[str, str], dict[str, str]]:
     # Convert if a numeric
     if not isinstance(block_id, str):
         block_id, data_value = numeric_ids.update_block_item(int(block_id.value), data_value)
@@ -219,10 +259,10 @@ def update_block_id(block_id: str | nbt_tags.TypeNumeric, data_value: int | str,
             id_array = tables.BLOCK_IDS_READ
             if block_id in id_array:
                 if "Properties" in id_array[block_id]:
-                    block_states = id_array[block_id]["Properties"]
+                    block_states = cast(dict, id_array[block_id]["Properties"])
                 else:
                     block_states = {}
-                block_id = id_array[block_id]["Name"]
+                block_id = cast(str, id_array[block_id]["Name"])
 
             if "#tag_replacements" in block_id:
                 log("Tag replacement data pack must be created!")
@@ -232,13 +272,13 @@ def update_block_id(block_id: str | nbt_tags.TypeNumeric, data_value: int | str,
             id_array = tables.BLOCK_IDS_DEFAULT
             if block_id in id_array:
                 if "Properties" in id_array[block_id]:
-                    block_states = id_array[block_id]["Properties"]
+                    block_states = cast(dict, id_array[block_id]["Properties"])
                 else:
                     block_states = {}
-                block_id = id_array[block_id]["Name"]
+                block_id = cast(str, id_array[block_id]["Name"])
 
         # Blocks specified with explicit block states
-        elif type(data_value).__name__ == "str":
+        elif isinstance(data_value, str):
             block_states = unpack_block_states(f"[{data_value}]")
 
             id_array = {
@@ -258,11 +298,12 @@ def update_block_id(block_id: str | nbt_tags.TypeNumeric, data_value: int | str,
                 else:
                     fallback = "default"
 
-                data_array: dict[int, dict[str, str | dict[str, str]]] = id_array[block_id]
+                data_array = cast(dict[int, tables.BlockStateStruct], id_array[block_id])
                 if data_value in data_array:
-                    block_id = data_array[data_value]["Name"]
-                    if "Properties" in data_array[data_value]:
-                        block_states = data_array[data_value]["Properties"]
+                    block_state = data_array[data_value]
+                    block_id = block_state["Name"]
+                    if "Properties" in block_state:
+                        block_states = block_state["Properties"]
                     else:
                         block_states = {}
                         
@@ -271,30 +312,33 @@ def update_block_id(block_id: str | nbt_tags.TypeNumeric, data_value: int | str,
                     while data_value_temp > 0:
                         data_value_temp -= 1
                         if data_value_temp in data_array:
-                            block_id = data_array[data_value_temp]["Name"]
-                            if "Properties" in data_array[data_value_temp]:
-                                block_states = data_array[data_value_temp]["Properties"]
+                            block_state = data_array[data_value_temp]
+                            block_id = block_state["Name"]
+                            if "Properties" in block_state:
+                                block_states = block_state["Properties"]
                             break
                     else:
                         id_array = tables.BLOCK_IDS_DEFAULT
                         if block_id in id_array:
-                            if "Properties" in id_array[block_id]:
-                                block_states = id_array[block_id]["Properties"]
+                            block_state = cast(tables.BlockStateStruct, id_array[block_id])
+                            if "Properties" in block_state:
+                                block_states = block_state["Properties"]
                             else:
                                 block_states = {}
-                            block_id = id_array[block_id]["Name"]
+                            block_id = block_state["Name"]
 
                 else:
                     id_array = tables.BLOCK_IDS_DEFAULT
                     if block_id in id_array:
-                        if "Properties" in id_array[block_id]:
-                            block_states = id_array[block_id]["Properties"]
+                        block_state = cast(tables.BlockStateStruct, id_array[block_id])
+                        if "Properties" in block_state:
+                            block_states = block_state["Properties"]
                         else:
                             block_states = {}
-                        block_id = id_array[block_id]["Name"]
+                        block_id = block_state["Name"]
 
             if block_id in ["minecraft:white_banner", "minecraft:white_wall_banner"] and nbt != None and "Base" in nbt:
-                block_id = f'minecraft:{miscellaneous.color(15-nbt["Base"].value)}{block_id[15:]}'
+                block_id = f'minecraft:{miscellaneous.color(15-nbt["Base"].value)}{cast(str, block_id)[15:]}'
                 del nbt["Base"]
 
             if block_id == "minecraft:red_bed":

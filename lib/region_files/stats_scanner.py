@@ -8,9 +8,9 @@
 import math
 from enum import Enum
 from pathlib import Path
+from typing import cast, Any, TypedDict
 from nbt import nbt as NBT
 from nbt import region
-from lib import defaults
 from lib.log import log
 from lib import utils
 from lib.data_pack_files import command
@@ -103,6 +103,11 @@ class Discoveries(Enum):
 
 # Define functions
 
+class StatCoordinates(TypedDict):
+    stats: dict[tuple[int, int, int], list[str]]
+    command_contents: dict[tuple[int, int, int], str]
+    command_modified: list[tuple[int, int, int]]
+
 def scan(world: Path):
     # Check for errors
     if not world.exists():
@@ -118,7 +123,7 @@ def scan(world: Path):
         Discoveries.entity_types_dynamic: False,
         Discoveries.complex_stat_usage: False
     }
-    coordinates: dict[str, list[tuple[int]] | dict[tuple[int], list[str]]] = {
+    coordinates: StatCoordinates = {
         "stats": {}, # This stores the list of stats associated with each registered coordinate
         "command_contents": {}, # This stores the command name associated with each registered coordinate
         "command_modified": [] # This stores the list of coordinates which have their commands modified
@@ -133,7 +138,7 @@ def scan(world: Path):
     scan_region_folder(discoveries, coordinates, entity_types, world / "DIM1" / "region")
     scan_entity_folder(discoveries, coordinates, entity_types, world / "DIM1" / "entities")
 
-    for coordinate in coordinates["stats"]:
+    for coordinate in cast(dict[tuple[int, int, int], list[str]], coordinates["stats"]):
         used_stats = utils.deduplicate_list(coordinates["stats"][coordinate])
         if len(used_stats) > 1:
             log(f'Multiple stats on one block found: {coordinate} {used_stats}')
@@ -158,20 +163,22 @@ def scan(world: Path):
 
 
 
-def scan_region_folder(discoveries: dict[Discoveries, bool], coordinates: dict[str, list[tuple[int]] | dict[tuple[int], list[str]]], entity_types: list[str], folder_path: Path):
+def scan_region_folder(discoveries: dict[Discoveries, bool], coordinates: StatCoordinates, entity_types: list[str], folder_path: Path):
     if not folder_path.exists():
         return
 
     for file_path in folder_path.iterdir():
         scan_region_file(discoveries, coordinates, entity_types, file_path)
 
-def scan_region_file(discoveries: dict[Discoveries, bool], coordinates: dict[str, list[tuple[int]] | dict[tuple[int], list[str]]], entity_types: list[str], file_path: Path):
+def scan_region_file(discoveries: dict[Discoveries, bool], coordinates: StatCoordinates, entity_types: list[str], file_path: Path):
     log(f" Scanning region/{file_path.name}")
 
     region_file = region.RegionFile(file_path)
     chunk_metadata: region.ChunkMetadata
     for chunk_metadata in region_file.get_metadata():
         chunk = region_file.get_nbt(chunk_metadata.x, chunk_metadata.z)
+        if not chunk:
+            continue
         if "block_entities" not in chunk:
             continue
         block_entities: NBT.TAG_List = chunk["block_entities"]
@@ -204,20 +211,22 @@ def scan_region_file(discoveries: dict[Discoveries, bool], coordinates: dict[str
 
 
 
-def scan_entity_folder(discoveries: dict[Discoveries, bool], coordinates: dict[str, list[tuple[int]] | dict[tuple[int], list[str]]], entity_types: list[str], folder_path: Path):
+def scan_entity_folder(discoveries: dict[Discoveries, bool], coordinates: StatCoordinates, entity_types: list[str], folder_path: Path):
     if not folder_path.exists():
         return
 
     for file_path in folder_path.iterdir():
         scan_entity_file(discoveries, coordinates, entity_types, file_path)
 
-def scan_entity_file(discoveries: dict[Discoveries, bool], coordinates: dict[str, list[tuple[int]] | dict[tuple[int], list[str]]], entity_types: list[str], file_path: Path):
+def scan_entity_file(discoveries: dict[Discoveries, bool], coordinates: StatCoordinates, entity_types: list[str], file_path: Path):
     log(f" Scanning entities/{file_path.name}")
 
     region_file = region.RegionFile(file_path)
     chunk_metadata: region.ChunkMetadata
     for chunk_metadata in region_file.get_metadata():
         chunk = region_file.get_nbt(chunk_metadata.x, chunk_metadata.z)
+        if not chunk:
+            continue
         if "Entities" not in chunk:
             continue
         entities: NBT.TAG_List = chunk["Entities"]
@@ -241,7 +250,7 @@ def scan_entity_file(discoveries: dict[Discoveries, bool], coordinates: dict[str
 
 
 
-def scan_command(discoveries: dict[Discoveries, bool], coordinates: dict[str, list[tuple[int]] | dict[tuple[int], list[str]]], entity_types: list[str], x: int, y: int, z: int, command_string: str):
+def scan_command(discoveries: dict[Discoveries, bool], coordinates: StatCoordinates, entity_types: list[str], x: int, y: int, z: int, command_string: str):
     # Types of commands to manipulate stats:
     # /stats: directly modifying the stats of a block or entity.
     # /blockdata, /entitydata: indirectly modifying the stats of a block or entity via NBT, requires checking the data.
@@ -339,9 +348,9 @@ def scan_command(discoveries: dict[Discoveries, bool], coordinates: dict[str, li
             # Get types from target selector
             types_used: list[str] = []
             if len(entity_selector) > 2:
-                selector_arguments = target_selectors.unpack_arguments(entity_selector[3,-1])
+                selector_arguments = target_selectors.unpack_arguments(entity_selector[3:-1])
                 if "type" in selector_arguments:
-                    types_used = selector_arguments["type"]
+                    types_used = cast(list, selector_arguments["type"])
 
             if entity_selector[1] in ["a", "p"]:
                 types_used.append("minecraft:player")
@@ -355,7 +364,7 @@ def scan_command(discoveries: dict[Discoveries, bool], coordinates: dict[str, li
                 entity_types.extend(types_used)
 
     if command_modified:
-        coordinates["command_modified"].append(execution_coords)
+        coordinates["command_modified"].append((execution_coords[0], execution_coords[1], execution_coords[2]))
         if inside_execute:
             log(f'Commands of arbitrary positions may be modified: {(x,y,z)}')
             discoveries[Discoveries.commands_written_to_arbitrary_position] = True

@@ -6,6 +6,7 @@
 # Import things
 
 import math
+from typing import cast, Any
 from lib.log import log
 from lib import defaults
 from lib import utils
@@ -23,7 +24,7 @@ pack_version = defaults.PACK_VERSION
 
 # Define functions
 
-def advancement(name: str, version: int, issues: list[dict[str, str]]) -> str:
+def advancement(name: str, version: int, issues: list[dict[str, str | int]]) -> str:
     # Assign version
     global pack_version
     pack_version = version
@@ -33,7 +34,7 @@ def advancement(name: str, version: int, issues: list[dict[str, str]]) -> str:
 
     return namespace(name)
 
-def attribute(name: str, version: int, issues: list[dict[str, str]]) -> str:
+def attribute(name: str, version: int, issues: list[dict[str, str | int]]) -> str:
     # Assign version
     global pack_version
     pack_version = version
@@ -54,7 +55,7 @@ def attribute(name: str, version: int, issues: list[dict[str, str]]) -> str:
 
     return name
 
-def attribute_modifier_operation(operation: str, version: int, issues: list[dict[str, str]]) -> str:
+def attribute_modifier_operation(operation: str, version: int, issues: list[dict[str, str | int]]) -> str:
     # Assign version
     global pack_version
     pack_version = version
@@ -70,7 +71,7 @@ def attribute_modifier_operation(operation: str, version: int, issues: list[dict
 
     return operation
 
-def banner_color(color: nbt_tags.TypeInt, version: int, issues: list[dict[str, str]]) -> nbt_tags.TypeInt:
+def banner_color(color: nbt_tags.TypeInt, version: int, issues: list[dict[str, str | int]]) -> nbt_tags.TypeInt:
     if version <= 1202:
         return nbt_tags.TypeInt(15 - color.value)
     return color
@@ -144,10 +145,10 @@ def color(index: int) -> str:
         "black"
     ][min(max(index, 0), 15)]
 
-def coordinate(coord: str, version: int, issues: list[dict[str, str]]) -> str:
+def coordinate(coord: str, version: int, issues: list[dict[str, str | int]]) -> str:
     return coord.replace("+", "")
 
-def coord_map_to_array(coordinates: dict[str, nbt_tags.TypeInt], version: int, issues: list[dict[str, str]]) -> nbt_tags.TypeIntArray:
+def coord_map_to_array(coordinates: dict[str, nbt_tags.TypeInt], version: int, issues: list[dict[str, str | int]]) -> nbt_tags.TypeIntArray:
     new_coordinates = {
         "X": nbt_tags.TypeInt(0),
         "Y": nbt_tags.TypeInt(0),
@@ -162,7 +163,7 @@ def coord_map_to_array(coordinates: dict[str, nbt_tags.TypeInt], version: int, i
         nbt_tags.TypeInt(new_coordinates["Z"].value),
     ])
 
-def difficulty(name: str, version: int, issues: list[dict[str, str]]) -> str:
+def difficulty(name: str, version: int, issues: list[dict[str, str | int]]) -> str:
     id_array = {
         "0": "peaceful",
         "1": "easy",
@@ -177,10 +178,10 @@ def difficulty(name: str, version: int, issues: list[dict[str, str]]) -> str:
         name = id_array[name]
     return name
 
-def dimension(name: str, version: int, issues: list[dict[str, str]]) -> str:
+def dimension(name: str, version: int, issues: list[dict[str, str | int]]) -> str:
     return name.lower()
 
-def effect_time(argument: str, version: int, issues: list[dict[str, str]]) -> str:
+def effect_time(argument: str, version: int, issues: list[dict[str, str | int]]) -> str:
     if argument == "infinite":
         return argument
     if not argument.isnumeric():
@@ -200,12 +201,12 @@ def entity_id_from_item(item_id: str) -> str:
        return namespace(item_id)
     return "minecraft:pig"
 
-def experience_type(value: str, version: int, issues: list[dict[str, str]]) -> str:
+def experience_type(value: str, version: int, issues: list[dict[str, str | int]]) -> str:
     if value[-1] in ["l", "L"]:
         return "levels"
     return "points"
 
-def experience_value(value: str, version: int, issues: list[dict[str, str]]) -> str:
+def experience_value(value: str, version: int, issues: list[dict[str, str | int]]) -> str:
     if value == "":
         return ""
     if value[-1] in ["l", "L"]:
@@ -216,15 +217,15 @@ def experience_value(value: str, version: int, issues: list[dict[str, str]]) -> 
         value = value[1:]
     return value
 
-def fill_mode(argument: str, version: int, issues: list[dict[str, str]]) -> str:
+def fill_mode(argument: str, version: int, issues: list[dict[str, str | int]]) -> str:
     if argument not in ["destroy", "hollow", "keep", "outline", "replace"]:
         return "replace"
     return argument
 
-def function_call(name: str, version: int, issues: list[dict[str, str]]) -> str:
+def function_call(name: str, version: int, issues: list[dict[str, str | int]]) -> str:
     return name.lower()
 
-def gamemode(name: str, version: int, issues: list[dict[str, str]]) -> str:
+def gamemode(name: str, version: int, issues: list[dict[str, str | int]]) -> str:
     id_array = {
         "0":   "survival",
         "1":   "creative",
@@ -247,10 +248,10 @@ def gamemode(name: str, version: int, issues: list[dict[str, str]]) -> str:
         name = id_array[name]
     return name
 
-def gamerule(name: str, version: int, issues: list[dict[str, str]]) -> str:
+def gamerule(name: str, version: int, issues: list[dict[str, str | int]]) -> str:
     return name
 
-def hangable_facing(direction: nbt_tags.TypeInt, version: int, issues: list[dict[str, str]]) -> nbt_tags.TypeInt:
+def hangable_facing(direction: nbt_tags.TypeInt, version: int, issues: list[dict[str, str | int]]) -> nbt_tags.TypeInt:
     if version <= 1202:
         table = {
             0: 3,
@@ -261,16 +262,16 @@ def hangable_facing(direction: nbt_tags.TypeInt, version: int, issues: list[dict
         return nbt_tags.TypeInt(table[direction.value%4])
     return direction
 
-def int_coordinate(coord: str, version: int, issues: list[dict[str, str]]) -> str:
+def int_coordinate(coord: str, version: int, issues: list[dict[str, str | int]]) -> str:
     coord = coord.replace("+", "")
     if "~" not in coord and "^" not in coord:
         coord = str(math.floor(float(coord)))
     return coord
 
-def join_text(text: dict[str, list[str]], version: int, issues: list[dict[str, str]]) -> str:
+def join_text(text: dict[str, list[str]], version: int, issues: list[dict[str, str | int]]) -> str:
     return " ".join(text["join_text"])
 
-def loot_table(name: str, version: int, issues: list[dict[str, str]]) -> str:
+def loot_table(name: str, version: int, issues: list[dict[str, str | int]]) -> str:
     # Assign version
     global pack_version
     pack_version = version
@@ -289,12 +290,12 @@ def namespace(argument: str) -> str:
         return "#minecraft:" + argument[1:]
     return "minecraft:" + argument
 
-def particle_mode(argument: str, version: int, issues: list[dict[str, str]]) -> str:
+def particle_mode(argument: str, version: int, issues: list[dict[str, str | int]]) -> str:
     if argument not in ["normal", "force"]:
         return "normal"
     return argument
 
-def pitch(argument: str, version: int, issues: list[dict[str, str]]) -> str:
+def pitch(argument: str, version: int, issues: list[dict[str, str | int]]) -> str:
     if version >= 900:
         return argument
     if "~" not in argument:
@@ -306,13 +307,13 @@ def pitch(argument: str, version: int, issues: list[dict[str, str]]) -> str:
     else:
         return argument
 
-def predicate(name: str, version: int, issues: list[dict[str, str]]) -> str:
+def predicate(name: str, version: int, issues: list[dict[str, str | int]]) -> str:
     return name.lower()
 
-def recipe(name: str, version: int, issues: list[dict[str, str]]) -> str:
+def recipe(name: str, version: int, issues: list[dict[str, str | int]]) -> str:
     return name.lower()
 
-def say_text(text: dict[str, list[str]], version: int, issues: list[dict[str, str]]) -> str:
+def say_text(text: dict[str, list[str]], version: int, issues: list[dict[str, str | int]]) -> str:
     # Convert any target selecors that are present
     output_list: list[str] = []
     for string in text["say_text"]:
@@ -321,7 +322,7 @@ def say_text(text: dict[str, list[str]], version: int, issues: list[dict[str, st
         output_list.append(string)
     return " ".join(output_list)
 
-def scoreboard_objective_display_slot(slot: str, version: int, issues: list[dict[str, str]]) -> str:
+def scoreboard_objective_display_slot(slot: str, version: int, issues: list[dict[str, str | int]]) -> str:
     id_array = {
         "belowName": "below_name"
     }
@@ -329,17 +330,17 @@ def scoreboard_objective_display_slot(slot: str, version: int, issues: list[dict
         slot = id_array[slot]
     return slot
 
-def scoreboard_range(argument: dict[str, str], version: int, issues: list[dict[str, str]]) -> str:
+def scoreboard_range(argument: dict[str, str], version: int, issues: list[dict[str, str | int]]) -> str:
     if argument["lower"] == argument["upper"]:
         return argument["lower"]
     return f'{argument["lower"]}..{argument["upper"]}'
 
-def setblock_mode(argument: str, version: int, issues: list[dict[str, str]]) -> str:
+def setblock_mode(argument: str, version: int, issues: list[dict[str, str | int]]) -> str:
     if argument not in ["destroy", "keep", "replace"]:
         return "replace"
     return argument
 
-def slot(name: str, version: int, issues: list[dict[str, str]]) -> str:
+def slot(name: str, version: int, issues: list[dict[str, str | int]]) -> str:
     # Assign version
     global pack_version
     pack_version = version
@@ -357,7 +358,7 @@ def slot(name: str, version: int, issues: list[dict[str, str]]) -> str:
 
     return name
 
-def team_setting(name: str, version: int, issues: list[dict[str, str]]) -> str:
+def team_setting(name: str, version: int, issues: list[dict[str, str | int]]) -> str:
     id_array = {
         "friendlyfire": "friendlyFire"
     }
@@ -365,7 +366,7 @@ def team_setting(name: str, version: int, issues: list[dict[str, str]]) -> str:
         name = id_array[name]
     return name
 
-def uuid_from_string(uuid: str, version: int, issues: list[dict[str, str]]) -> nbt_tags.TypeIntArray:
+def uuid_from_string(uuid: str, version: int, issues: list[dict[str, str | int]]) -> nbt_tags.TypeIntArray:
     if isinstance(uuid, nbt_tags.TypeIntArray):
         return uuid
     new_uuid = utils.uuid_from_string(uuid)
@@ -385,26 +386,26 @@ def new_uuid_int_array() -> nbt_tags.TypeIntArray:
         nbt_tags.TypeInt(new_uuid[3])
     ])
 
-def world_border_coordinate(coordinate: str, version: int, issues: list[dict[str, str]]) -> str:
+def world_border_coordinate(coordinate: str, version: int, issues: list[dict[str, str | int]]) -> str:
     if coordinate.startswith("~") or coordinate.startswith("^"):
         return coordinate
     if "." in coordinate:
-        coordinate = float(coordinate)
+        numeric_coordinate = float(coordinate)
     else:
-        coordinate = int(coordinate)
-    return str(min(max(coordinate, -29999984), 29999984))
+        numeric_coordinate = int(coordinate)
+    return str(min(max(numeric_coordinate, -29999984), 29999984))
 
-def world_border_diameter(diameter: str, version: int, issues: list[dict[str, str]]) -> str:
+def world_border_diameter(diameter: str, version: int, issues: list[dict[str, str | int]]) -> str:
     if "." in diameter:
-        diameter = float(diameter)
+        numeric_diameter = float(diameter)
     else:
-        diameter = int(diameter)
-    new_diameter = min(diameter, 59999968)
-    if new_diameter != diameter:
+        numeric_diameter = int(diameter)
+    new_diameter = min(numeric_diameter, 59999968)
+    if new_diameter != numeric_diameter:
         log("WARNING: World border diameter clamped, check if it is used in a time manager")
     return str(new_diameter)
 
-def yaw(argument: dict[str, str], version: int, issues: list[dict[str, str]]) -> str:
+def yaw(argument: dict[str, str], version: int, issues: list[dict[str, str | int]]) -> str:
     yaw_str = argument["yaw"]
     if "pitch" in argument:
         pitch_str = argument["pitch"]
