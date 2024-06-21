@@ -5,8 +5,6 @@
 
 # Import things
 
-from lib.log import log
-from lib import defaults
 from lib.data_pack_files import tables
 
 

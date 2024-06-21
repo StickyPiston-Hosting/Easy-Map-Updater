@@ -11,7 +11,7 @@ import json
 from nbt import nbt as NBT
 from pathlib import Path
 from lib.log import log
-from lib.data_pack_files import command
+from lib.data_pack_files import command # This import is necessary to prevent circular loading
 from lib.data_pack_files import advancement
 from lib.data_pack_files import predicate
 from lib.data_pack_files import loot_table

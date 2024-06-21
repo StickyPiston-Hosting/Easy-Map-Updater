@@ -6,7 +6,6 @@
 # Import things
 
 import math
-from typing import cast, Any
 from lib.log import log
 from lib import defaults
 from lib import utils
