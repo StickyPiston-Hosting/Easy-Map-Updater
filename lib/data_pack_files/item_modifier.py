@@ -7,6 +7,7 @@
 
 import json
 from pathlib import Path
+from typing import cast, Any
 from lib.log import log
 from lib import defaults
 from lib import json_manager
@@ -43,7 +44,7 @@ def update(file_path: Path, og_file_path: Path, version: int):
 
 
 
-def item_modifier(contents: dict[str, dict[str, str]] | list, version: int, object_id: str = "") -> dict[str, dict[str, str]] | list:
+def item_modifier(contents: dict[str, Any] | list, version: int, object_id: str = "") -> dict[str, Any] | list:
     global pack_version
     pack_version = version
 

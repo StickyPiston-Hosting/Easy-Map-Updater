@@ -27,7 +27,7 @@ with (PROGRAM_PATH / "nbt_tree.json").open("r", encoding="utf-8") as file:
 
 # Define functions
 
-def update(argument: dict[str, str], version: int, issues: list[dict[str, str]], source: str) -> str:
+def update(argument: dict[str, str], version: int, issues: list[dict[str, str | int]], source: str) -> str:
     global pack_version
     pack_version = version
 
@@ -41,7 +41,7 @@ def update(argument: dict[str, str], version: int, issues: list[dict[str, str]],
     path_parts = arguments.parse_with_quotes("ROOT." + path + ("[0]" if mode in ["insert", "append", "prepend"] else ""), ".", True, "[")
     return get_source(path_parts, source, nbt, issues)
 
-def get_source(path_parts: list[str], source, nbt: str, issues: list[dict[str, str]]) -> str:
+def get_source(path_parts: list[str], source, nbt: str, issues: list[dict[str, str | int]]) -> str:
     # Get guide
     if source not in NBT_TREE["sources"]:
         if defaults.SEND_WARNINGS:
@@ -49,7 +49,7 @@ def get_source(path_parts: list[str], source, nbt: str, issues: list[dict[str, s
         return nbt_tags.update(nbt, pack_version, issues, source)
     return branch(path_parts, NBT_TREE["sources"][source], source, nbt, issues)
 
-def branch(path_parts: list[str], guide: dict, source: str, nbt: str, issues: list[dict[str, str]]) -> str:
+def branch(path_parts: list[str], guide: dict, source: str, nbt: str, issues: list[dict[str, str | int]]) -> str:
     # Return function based on contents of guide
     if "edge_case" in guide:
         if defaults.SEND_WARNINGS:
@@ -65,14 +65,14 @@ def branch(path_parts: list[str], guide: dict, source: str, nbt: str, issues: li
         return branch(path_parts, guide["path"], source, nbt, issues)
     return nbt_tags.update_with_guide(nbt, pack_version, issues, source, guide, "branch")
 
-def search_tags(path_parts: list[str], guide: dict, source: str, nbt: str, issues: list[dict[str, str]]) -> str:
+def search_tags(path_parts: list[str], guide: dict, source: str, nbt: str, issues: list[dict[str, str | int]]) -> str:
     if len(path_parts) < 2:
         return nbt_tags.update_with_guide(nbt, pack_version, issues, source, guide, "tags")
     if path_parts[1] in guide:
         return branch(path_parts[1:], guide[path_parts[1]], source, nbt, issues)
     return nbt
 
-def search_list(path_parts: list[str], guide: dict, source: str, nbt: str, issues: list[dict[str, str]]) -> str:
+def search_list(path_parts: list[str], guide: dict, source: str, nbt: str, issues: list[dict[str, str | int]]) -> str:
     if len(path_parts) < 2:
         return nbt_tags.update_with_guide(nbt, pack_version, issues, source, guide, "list")
     return branch(path_parts[1:], guide, source, nbt, issues)

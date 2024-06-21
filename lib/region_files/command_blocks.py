@@ -7,6 +7,7 @@
 
 from pathlib import Path
 import json
+from typing import cast, TypedDict, NotRequired
 from nbt import nbt as NBT
 from nbt import region
 from lib.data_pack_files import command
@@ -29,6 +30,19 @@ MINECRAFT_PATH = PROGRAM_PATH.parent
 
 
 # Define functions
+
+class CommandGuide(TypedDict("JSONTextComponentCompound", {"list": str})):
+    coordinates: str
+    region: str
+    chunk_x: int
+    chunk_z: int
+    index: int
+    tag: str
+    command: str
+    uuid: NotRequired[list[int]]
+    CommandStats: NotRequired[dict]
+
+
 
 def read_commands(world: Path):
     log("Reading command block data")
@@ -86,6 +100,8 @@ def read_commands_from_region(world: Path, file_path: Path, list_name: str) -> s
     chunk_metadata: region.ChunkMetadata
     for chunk_metadata in region_file.get_metadata():
         chunk = region_file.get_nbt(chunk_metadata.x, chunk_metadata.z)
+        if not chunk:
+            continue
         if list_name not in chunk:
             continue
         block_entities: NBT.TAG_List = chunk[list_name]
@@ -111,7 +127,7 @@ def read_commands_from_region(world: Path, file_path: Path, list_name: str) -> s
                     if not command_string or not command_string.value:
                         continue
 
-                    data = {
+                    data = cast(CommandGuide, {
                         "coordinates": f"{x} {y} {z}",
                         "region": file_path.as_posix()[len(world.as_posix())+1:],
                         "chunk_x": chunk_metadata.x,
@@ -119,7 +135,7 @@ def read_commands_from_region(world: Path, file_path: Path, list_name: str) -> s
                         "list": list_name,
                         "index": index,
                         "tag": tag
-                    }
+                    })
                     if "CommandStats" in block_entity:
                         data["CommandStats"] = {}
                         for key in block_entity["CommandStats"]:
@@ -140,7 +156,7 @@ def read_commands_from_region(world: Path, file_path: Path, list_name: str) -> s
                         for message in text["messages"]:
                             sign_nbt[tag]["messages"].append(message.value)
 
-                    data = {
+                    data = cast(CommandGuide, {
                         "coordinates": f"{x} {y} {z}",
                         "region": file_path.as_posix()[len(world.as_posix())+1:],
                         "chunk_x": chunk_metadata.x,
@@ -148,7 +164,7 @@ def read_commands_from_region(world: Path, file_path: Path, list_name: str) -> s
                         "list": list_name,
                         "index": index,
                         "tag": "sign_edge_case"
-                    }
+                    })
                     if "CommandStats" in block_entity:
                         data["CommandStats"] = {}
                         for key in block_entity["CommandStats"]:
@@ -173,7 +189,7 @@ def read_commands_from_region(world: Path, file_path: Path, list_name: str) -> s
                 ]
                 if command_string == None or command_string.value == "":
                     continue
-                data = {
+                data = cast(CommandGuide, {
                     "coordinates": f"{x} {y} {z}",
                     "region": file_path.as_posix()[len(world.as_posix())+1:],
                     "chunk_x": chunk_metadata.x,
@@ -182,7 +198,7 @@ def read_commands_from_region(world: Path, file_path: Path, list_name: str) -> s
                     "index": index,
                     "tag": tag,
                     "uuid": uuid
-                }
+                })
                 if "CommandStats" in block_entity:
                     data["CommandStats"] = {}
                     for key in block_entity["CommandStats"]:
@@ -221,8 +237,12 @@ def write_commands(world: Path, get_confirmation: bool):
     chunk_change = False
     init_bool = False
     # Iterate through commands
-    guide: dict[str, str | int | list[int]] = {"coordinates": "", "region": "", "chunk_x": None, "chunk_z": None, "list": None, "index": None, "tag": None}
+    guide = cast(CommandGuide, {"coordinates": "", "region": "", "chunk_x": None, "chunk_z": None, "list": None, "index": None, "tag": None})
     previous_guide = guide.copy()
+    region_file = None
+    chunk = NBT.NBTFile()
+    block_entities = NBT.TAG_List()
+    block_entity = NBT.TAG_Compound()
     for command in commands:
         if not command:
             continue
@@ -230,12 +250,12 @@ def write_commands(world: Path, get_confirmation: bool):
         # Manage the guide
         if command.startswith("# {"):
             previous_guide = guide.copy()
-            guide: dict[str, str | int | list[int]] = json.loads(command[2:])
+            guide = cast(CommandGuide, json.loads(command[2:]))
             region_change = guide["region"] != previous_guide["region"]
             chunk_change = guide["chunk_x"] != previous_guide["chunk_x"] or guide["chunk_z"] != previous_guide["chunk_z"] or region_change
 
             # Write chunk to region file
-            if chunk_change and init_bool:
+            if chunk_change and init_bool and region_file:
                 region_file.write_chunk(previous_guide["chunk_x"], previous_guide["chunk_z"], chunk)
 
             # Manage region file
@@ -243,11 +263,12 @@ def write_commands(world: Path, get_confirmation: bool):
                 region_file = region.RegionFile(world / guide["region"])
 
             # Manage chunk
-            if chunk_change:
+            if chunk_change and region_file:
                 chunk: NBT.NBTFile = region_file.get_nbt(guide["chunk_x"], guide["chunk_z"])
-                if guide["list"] not in chunk:
-                    chunk[guide["list"]] = NBT.TAG_List(value=[])
-                block_entities: NBT.TAG_List = chunk[guide["list"]]
+                if chunk:
+                    if guide["list"] not in chunk:
+                        chunk[guide["list"]] = NBT.TAG_List(value=[])
+                    block_entities: NBT.TAG_List = chunk[guide["list"]]
 
             init_bool = True
             continue
@@ -288,12 +309,12 @@ def write_commands(world: Path, get_confirmation: bool):
         else:
             block_entity[guide["tag"]] = NBT.TAG_String(command)
 
-    if init_bool:
+    if init_bool and region_file:
         region_file.write_chunk(guide["chunk_x"], guide["chunk_z"], chunk)
 
     log("Command block data written")
 
-def test_block_entity(guide: dict[str, str | int | list[int]], block_entity: NBT.TAG_Compound) -> bool:
+def test_block_entity(guide: CommandGuide, block_entity: NBT.TAG_Compound) -> bool:
     if "uuid" in guide:
         uuid: NBT.TAG_Int_Array = block_entity["UUID"]
         return (
@@ -332,7 +353,7 @@ def update_commands(version: int):
     lines = contents.split("\n")
 
     # Iterate and convert the lines
-    comment_info: dict[str, str | int | dict[str, dict[str, str]]] = {}
+    comment_info = cast(CommandGuide, {})
     for line_index in range(len(lines)):
         line = lines[line_index]
 
@@ -340,7 +361,7 @@ def update_commands(version: int):
         if not line:
             continue
         if line.startswith("# {"):
-            comment_info = json.loads(line[2:])
+            comment_info = cast(CommandGuide, json.loads(line[2:]))
         if line[0] in ["#", " "]:
             continue
 
@@ -360,6 +381,7 @@ def update_commands(version: int):
                 not defaults.FIXES["stats_options"]["complex_stat_usage"]
             ):
                 key: str
+                used_stat = ""
                 for key in comment_info["CommandStats"]:
                     if key.endswith("Name"):
                         used_stat = key[:-4]
@@ -411,7 +433,9 @@ def extract_commands(world: Path):
     region_change = False
     chunk_change = False
     init_bool = False
-    guide: dict[str, str | int | list[int]] = {"region": "", "chunk_x": None, "chunk_z": None}
+    guide = cast(CommandGuide, {"region": "", "chunk_x": None, "chunk_z": None})
+    region_file = None
+    chunk = NBT.NBTFile()
     for i in range(1000):
         if (x,y,z) in command_data[dimension]:
             extracted_commands.append(command_data[dimension][(x,y,z)]["command"])
@@ -426,7 +450,7 @@ def extract_commands(world: Path):
         if region_change:
             region_file = region.RegionFile(world / guide["region"])
 
-        if chunk_change:
+        if chunk_change and region_file:
             chunk: NBT.NBTFile = region_file.get_nbt(guide["chunk_x"], guide["chunk_z"])
 
         block_data = fix_world.get_block_data(chunk, x, y, z)
@@ -461,12 +485,12 @@ def extract_commands(world: Path):
 
 
 
-def compile_command_data(source: str) -> dict[str, dict[tuple[int, int, int], dict[str, str | int | list[int]]]]:
+def compile_command_data(source: str) -> dict[str, dict[tuple[int, int, int], CommandGuide]]:
     with (PROGRAM_PATH / source).open("r", encoding="utf-8") as file:
         commands = file.read().split("\n")
 
-    command_data: dict[str, dict[tuple[int, int, int], dict[str, str | int | list[int]]]] = {}
-    guide: dict[str, str | int | list[int]] = {"coordinates": "", "region": "", "chunk_x": None, "chunk_z": None, "list": None, "index": None, "tag": None}
+    command_data: dict[str, dict[tuple[int, int, int], CommandGuide]] = {}
+    guide = cast(CommandGuide, {"coordinates": "", "region": "", "chunk_x": None, "chunk_z": None, "list": None, "index": None, "tag": None})
     region_key = "region"
     coordinate_key = (0,0,0)
     for command in commands:
@@ -474,7 +498,7 @@ def compile_command_data(source: str) -> dict[str, dict[tuple[int, int, int], di
             continue
 
         if command.startswith("# {"):
-            guide: dict[str, str | int | list[int]] = json.loads(command[2:])
+            guide = cast(CommandGuide, json.loads(command[2:]))
             region_key = "/".join(guide["region"].split("/")[:-1])
             coordinate_key = coord_tuple(guide["coordinates"])
             if region_key not in command_data:

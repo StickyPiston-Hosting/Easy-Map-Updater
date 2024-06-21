@@ -4,6 +4,7 @@
 
 
 import json
+from typing import cast, Any
 from pathlib import Path
 from slicer_input import DATA
 
@@ -36,11 +37,12 @@ def program():
 
 def handle_input(entry: tuple[str, str, tuple]):
     input_path = entry[1].split("/")[1:]
-    data: list = get_branch(OUTPUT, input_path, True)
+    data = cast(list, get_branch(OUTPUT, input_path, True))
 
     output: tuple[str, tuple[int], str]
     for output in entry[2:]:
         output_path = output[0].split("/")[1:]
+        i = 0
         for i in range(min(len(input_path), len(output_path))):
             if input_path[i] != output_path[i]:
                 break
@@ -58,9 +60,10 @@ def handle_input(entry: tuple[str, str, tuple]):
 
 def handle_move_realms(entry: tuple[str, str]):
     input_path = f'realms/textures/gui/{entry[1]}.png'.split("/")
-    data: list = get_branch(OUTPUT, input_path, True)
+    data = cast(list, get_branch(OUTPUT, input_path, True))
 
     output_path = ["minecraft", *(input_path[1:])]
+    i = 0
     for i in range(min(len(input_path), len(output_path))):
         if input_path[i] != output_path[i]:
             break
@@ -72,7 +75,7 @@ def handle_move_realms(entry: tuple[str, str]):
 
 def handle_clip(entry: tuple[str, str, tuple[int]]):
     input_path = f'minecraft/textures/gui/{entry[1]}.png'.split("/")
-    data: list = get_branch(OUTPUT, input_path, True)
+    data: list = cast(list, get_branch(OUTPUT, input_path, True))
     data.append(json.dumps({
         "path": input_path[-1],
         "clip": list(entry[2])
@@ -93,7 +96,7 @@ def get_branch(data: dict, path: list[str], end: bool) -> dict | list:
 
 
 
-def deep_sort(data: dict[str] | str) -> dict[str] | str:
+def deep_sort(data: dict[str, Any] | str) -> dict[str, Any] | str:
     if not isinstance(data, dict):
         return data
 

@@ -9,6 +9,7 @@ import os
 import json
 import shutil
 from pathlib import Path
+from typing import cast, Any
 from PIL import Image, ImageDraw, ImageChops
 from lib.log import log
 from lib.resource_pack_files import atlas_logger
@@ -28,7 +29,7 @@ PACK_FORMAT = defaults.RESOURCE_PACK_FORMAT
 PROGRAM_PATH = Path(__file__).parent
 
 with (PROGRAM_PATH / "resource_pack_files" / "file_legend.json").open("r", encoding="utf-8") as file:
-    FILE_LEGEND: dict[str, dict[str, dict[str]]] = json.load(file)
+    FILE_LEGEND: dict[str, Any] = json.load(file)
 
 
 
@@ -136,7 +137,7 @@ def update_file_names(og_pack: Path, pack: Path):
                     path
                 )
 
-def update_file_name(og_namespace: Path, namespace: Path, subdir: str, target: str | dict[str, str]):
+def update_file_name(og_namespace: Path, namespace: Path, subdir: str, target: str | dict[str, Any]):
     path = Path(subdir)
 
     if subdir in [
@@ -152,11 +153,11 @@ def update_file_name(og_namespace: Path, namespace: Path, subdir: str, target: s
     elif isinstance(target, dict):
         target_path = target["path"].replace("*", path.name).split("/")
         if "slice" in target:
-            slice_data: list[int] = target["slice"]
+            slice_data = cast(list[int], target["slice"])
         if "clip" in target:
-            clip_data: list[int] = target["clip"]
+            clip_data = cast(list[int], target["clip"])
         if "metadata" in target:
-            metadata: dict[str] = target["metadata"]
+            metadata = cast(dict[str, Any], target["metadata"])
 
     path = path.parent
     for target_folder in target_path:
@@ -283,7 +284,7 @@ def export_pack(world: Path, pack: Path, get_confirmation: bool):
             return
 
     # Make archive
-    shutil.make_archive(world / "resources", "zip", pack)
+    shutil.make_archive((world / "resources").as_posix(), "zip", pack)
     log("Resource pack exported")
 
 

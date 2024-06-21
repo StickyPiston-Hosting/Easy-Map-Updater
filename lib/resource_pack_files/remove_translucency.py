@@ -309,14 +309,14 @@ def extract_textures_from_block_state_variant(pack: Path, variant: dict[str, str
         isinstance(variant, dict) and
         "model" in variant
     ):
-        texture_list.extend(extract_textures_from_model(pack, variant["model"]))
+        texture_list.extend(extract_textures_from_model(pack, Path(variant["model"])))
     elif (isinstance(variant, list)):
         for entry in variant:
             if (
                 isinstance(entry, dict) and
                 "model" in entry
             ):
-                texture_list.extend(extract_textures_from_model(pack, entry["model"]))
+                texture_list.extend(extract_textures_from_model(pack, Path(entry["model"])))
     return texture_list
 
 def extract_textures_from_model_list(pack: Path, model_list: dict[str, list[str]]) -> list[str]:
@@ -383,6 +383,8 @@ def remove_translucency_from_texture(pack: Path, image_path: Path):
     if image.mode != "RGBA":
         return
     pixels = image.load()
+    if not pixels:
+        return
     modified = False
     for x in range(image.size[0]):
         for y in range(image.size[1]):

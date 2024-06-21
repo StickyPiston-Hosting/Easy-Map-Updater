@@ -67,7 +67,7 @@ def safe_load(file_path: Path) -> tuple[dict, bool]:
     
 
 
-def unpack(string: str) -> bool | int | float | str | list | dict | None:
+def unpack(string: str) -> Any:
     # Return if blank
     string = string.strip()
     if string == "":
@@ -137,7 +137,7 @@ def unpack_list(string: str) -> list:
 
 
 
-def pack(json_object: bool | int | float | str | list | dict | None) -> str:
+def pack(json_object) -> str:
     # Pack based on type
     if isinstance(json_object, dict):
         return pack_compound(json_object)

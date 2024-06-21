@@ -3,6 +3,12 @@
 
 
 
+# Import things
+
+from typing import TypedDict, NotRequired
+
+
+
 # Assign tables
 
 ATTRIBUTE_IDS = {
@@ -19,7 +25,11 @@ ATTRIBUTE_IDS = {
     "minecraft:zombie.spawnReinforcements":  "minecraft:zombie.spawn_reinforcements"
 }
 
-BLOCK_IDS_DATA = {
+class BlockStateStruct(TypedDict):
+    Name: str
+    Properties: NotRequired[dict[str, str]]
+
+BLOCK_IDS_DATA: dict[str, dict[int | str, BlockStateStruct | str]] = {
     "minecraft:acacia_door": {
         0: {"Name": "minecraft:acacia_door", "Properties": {"half": "lower", "facing": "east", "open": "false"}},
         1: {"Name": "minecraft:acacia_door", "Properties": {"half": "lower", "facing": "south", "open": "false"}},

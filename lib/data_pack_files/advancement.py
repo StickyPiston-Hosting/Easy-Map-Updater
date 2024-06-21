@@ -7,6 +7,7 @@
 
 import json
 from pathlib import Path
+from typing import cast, Any
 from lib import defaults
 from lib import json_manager
 from lib.data_pack_files import predicate
@@ -37,7 +38,7 @@ def update(file_path: Path, og_file_path: Path, version: int):
         json.dump(advancement(contents), file, indent=4)
 
 
-def advancement(contents: dict[str, dict[str, str]]) -> dict[str, dict[str, str]]:
+def advancement(contents: dict[str, Any]) -> dict[str, Any]:
     # Update criteria
     for criterion_name in contents["criteria"]:
         update_criterion(contents["criteria"][criterion_name])
@@ -62,7 +63,7 @@ def advancement(contents: dict[str, dict[str, str]]) -> dict[str, dict[str, str]
 
 
 
-def update_criterion(criterion: dict[str, str | dict[str, str]]) -> dict[str, str | dict[str, str]]:
+def update_criterion(criterion: dict[str, Any]):
 
     if "trigger" in criterion:
         criterion["trigger"] = miscellaneous.namespace(criterion["trigger"])

@@ -5,10 +5,10 @@
 
 # Import things
 
+from typing import cast
 from lib.log import log
 from lib.data_pack_files import arguments
 from lib.data_pack_files import nbt_tags
-from lib.data_pack_files import ids
 from lib.data_pack_files import entities
 from lib.data_pack_files import miscellaneous
 from lib import defaults
@@ -24,7 +24,7 @@ pack_version = defaults.PACK_VERSION
 
 # Define functions
 
-def update(selector: str | dict[str, str | bool], version: int, issues: list[dict[str, str]], imposed_limit: bool) -> str:
+def update(selector: str | dict[str, str | bool | list], version: int, issues: list[dict[str, str | int]], imposed_limit: bool) -> str:
     # Assign version
     global pack_version
     pack_version = version
@@ -35,16 +35,16 @@ def update(selector: str | dict[str, str | bool], version: int, issues: list[dic
     # Extract arguments if a dict
     if isinstance(selector, dict):
         if "nbt" in selector:
-            nbt: str = selector["nbt"]
+            nbt = cast(str, selector["nbt"])
         if isinstance(selector["selector"], str):
-            selector: str = selector["selector"]
+            selector = selector["selector"]
         elif isinstance(selector["selector"], list):
             if len(selector["selector"]) > 1 and defaults.SEND_WARNINGS:
                 log("WARNING: Multiple selectors found in legacy command!")
-            selector: str = selector["selector"][0]
+            selector = cast(str, selector["selector"][0])
 
     # Return selector if blank
-    selector = selector.strip()
+    selector = cast(str, selector).strip()
     if not selector:
         return selector
 
@@ -83,7 +83,7 @@ def update(selector: str | dict[str, str | bool], version: int, issues: list[dic
     return f'@a[name={selector},nbt={nbt_tags.update(nbt, pack_version, issues, "entity")}]'
 
 
-def update_arguments(selector: str, nbt: str, imposed_limit: bool, issues: list[dict[str, str]]) -> str:
+def update_arguments(selector: str, nbt: str, imposed_limit: bool, issues: list[dict[str, str | int]]) -> str:
     # Get selector type
     selector_type = selector[1]
 
@@ -118,7 +118,7 @@ def update_arguments(selector: str, nbt: str, imposed_limit: bool, issues: list[
             updated_nbt = nbt_tags.update(nbt, pack_version, issues, "entity")
 
         if "nbt" in selector_arguments:
-            selector_arguments["nbt"].append(updated_nbt)
+            cast(list, selector_arguments["nbt"]).append(updated_nbt)
         else:
             selector_arguments["nbt"] = [updated_nbt]
 
@@ -163,7 +163,7 @@ def unpack_arguments(in_arguments: str, nested: bool = False) -> dict[str, str |
 
             if argument_type in ["gamemode", "name", "nbt", "predicate", "tag", "team", "type"]:
                 if argument_type in out_arguments:
-                    out_arguments[argument_type].append(value)
+                    cast(list, out_arguments[argument_type]).append(value)
                 else:
                     out_arguments[argument_type] = [value]
                 continue
@@ -228,7 +228,7 @@ def pack_argument(argument_type: str, value: str | dict | list[str]) -> str:
 
 
 
-def update_argument(selector_type: str, selector_arguments: dict[str, str | dict | list], argument_type: str, value: str | dict[str, str | dict] | list[str], issues: list[dict[str, str]]):
+def update_argument(selector_type: str, selector_arguments: dict[str, str | dict | list], argument_type: str, value: str | dict[str, str | dict] | list[str], issues: list[dict[str, str | int]]):
     # Skip arguments that don't need conversion
     if argument_type in ["advancements", "distance", "dx", "dy", "dz", "level", "limit", "name", "predicate", "scores", "sort", "tag", "team", "x", "x_rotation", "y", "y_rotation", "z"]:
         return
@@ -236,7 +236,7 @@ def update_argument(selector_type: str, selector_arguments: dict[str, str | dict
     # Process list-based arguments (arguments which can occur multiple times)
     if isinstance(value, list):
         for i in range(len(value)):
-            selector_arguments[argument_type][i] = update_argument_list(argument_type, value[i], selector_arguments, issues)
+            cast(list, selector_arguments[argument_type])[i] = update_argument_list(argument_type, value[i], selector_arguments, issues)
         return
     
     # Convert range arguments
@@ -246,10 +246,10 @@ def update_argument(selector_type: str, selector_arguments: dict[str, str | dict
         if argument_type in range_arguments_type[0]:
             range_argument = range_arguments[range_arguments_type[0].index(argument_type)]
             if range_argument in selector_arguments:
-                old_value: str = selector_arguments[range_argument]
+                old_value = cast(str, selector_arguments[range_argument])
             else:
                 old_value = ""
-            selector_arguments[range_argument] = update_range(value, old_value, range_arguments_type[1])
+            selector_arguments[range_argument] = update_range(cast(str, value), old_value, range_arguments_type[1])
             del selector_arguments[argument_type]
             return
     
@@ -264,7 +264,7 @@ def update_argument(selector_type: str, selector_arguments: dict[str, str | dict
         del selector_arguments[argument_type]
         argument_type = "score_" + argument_type
     if "score_" in argument_type:
-        if not utils.is_int(value):
+        if not utils.is_int(cast(str, value)):
             del selector_arguments[argument_type]
             return
         
@@ -278,19 +278,19 @@ def update_argument(selector_type: str, selector_arguments: dict[str, str | dict
         if "scores" not in selector_arguments:
             selector_arguments["scores"] = {}
         if objective in selector_arguments["scores"]:
-            score = selector_arguments["scores"][objective]
+            score = cast(dict, selector_arguments["scores"])[objective]
         else:
             score = ""
 
-        selector_arguments["scores"][objective] = update_range(value, score, range_type)
+        cast(dict, selector_arguments["scores"])[objective] = update_range(cast(str, value), score, range_type)
         del selector_arguments[argument_type]
         return
     
     # Convert miscellaneous arguments
     if argument_type == "c":
-        selector_arguments["limit"] = str(abs(int(value)))
+        selector_arguments["limit"] = str(abs(int(cast(str, value))))
         if selector_type != "r":
-            if value[0] == "-":
+            if cast(str, value)[0] == "-":
                 selector_arguments["sort"] = "furthest"
             else:
                 selector_arguments["sort"] = "nearest"
@@ -298,7 +298,7 @@ def update_argument(selector_type: str, selector_arguments: dict[str, str | dict
         return
 
     if argument_type == "m":
-        selector_arguments["gamemode"] = miscellaneous.gamemode(value, pack_version, issues)
+        selector_arguments["gamemode"] = miscellaneous.gamemode(cast(str, value), pack_version, issues)
         del selector_arguments[argument_type]
         return
 
@@ -306,7 +306,7 @@ def update_argument(selector_type: str, selector_arguments: dict[str, str | dict
     if defaults.SEND_WARNINGS:
         log(f'WARNING: Target selector argument "{argument_type}" is not registered!')
 
-def update_argument_list(argument_type: str, value: str, selector_arguments: dict[str, str | dict | list], issues: list[dict[str, str]]) -> str:
+def update_argument_list(argument_type: str, value: str, selector_arguments: dict[str, str | dict | list], issues: list[dict[str, str | int]]) -> str:
     if argument_type == "gamemode":
         return miscellaneous.gamemode(value, pack_version, issues)
 
@@ -332,15 +332,15 @@ def update_argument_list(argument_type: str, value: str, selector_arguments: dic
 def update_range(new_value: str, old_value: str, range_type: str) -> str:
     # Get existing upper and lower bounds
     if old_value == "":
-        value_a = None
-        value_b = None
+        value_a = ""
+        value_b = ""
     elif ".." in old_value:
         if old_value[:2] == "..":
-            value_a = None
+            value_a = ""
             value_b = old_value[2:]
         elif old_value[-2:] == "..":
             value_a = old_value[:-2]
-            value_b = None
+            value_b = ""
         else:
             value_a = old_value[:old_value.index("..")]
             value_b = old_value[old_value.index("..") + 2:]

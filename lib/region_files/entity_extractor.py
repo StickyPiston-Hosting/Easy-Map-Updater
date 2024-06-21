@@ -6,6 +6,7 @@
 # Import things
 
 from pathlib import Path
+from typing import cast
 from nbt import nbt as NBT
 from nbt import region
 from lib import defaults
@@ -60,11 +61,13 @@ def extract_from_region(world: Path, region_file_path: Path, entities_folder_pat
     
     opened_entity_file = False
     region_file = region.RegionFile(region_file_path)
-    chunk_metadata: region.ChunkMetadata
-    for chunk_metadata in region_file.get_metadata():
+    entity_file = region.RegionFile()
+    for chunk_metadata in cast(list[region.ChunkMetadata], region_file.get_metadata()):
         if defaults.DEBUG_MODE:
             log(f"Extracting {chunk_metadata.x}, {chunk_metadata.z}")
         region_chunk = region_file.get_nbt(chunk_metadata.x, chunk_metadata.z)
+        if not region_chunk:
+            continue
         if "entities" not in region_chunk:
             continue
         entities: NBT.TAG_List = region_chunk["entities"]
@@ -90,6 +93,8 @@ def extract_from_region(world: Path, region_file_path: Path, entities_folder_pat
         # Open entity chunk, create it if it doesn't exist
         try:
             entity_chunk = entity_file.get_nbt(chunk_metadata.x, chunk_metadata.z)
+            if not entity_chunk:
+                raise
         except:
             entity_chunk = NBT.NBTFile()
             entity_chunk["DataVersion"] = region_chunk["DataVersion"]

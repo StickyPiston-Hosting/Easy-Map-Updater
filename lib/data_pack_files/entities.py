@@ -22,7 +22,7 @@ pack_version = defaults.PACK_VERSION
 
 # Define functions
 
-def update(entity: str | dict[str, str], version: int, issues: list[dict[str, str]]) -> str:
+def update(entity: str | dict[str, str], version: int, issues: list[dict[str, str | int]]) -> str:
     # Assign version
     global pack_version
     pack_version = version

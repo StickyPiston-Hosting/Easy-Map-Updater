@@ -6,6 +6,7 @@
 # Import things
 
 import json
+from typing import Any
 from pathlib import Path
 from lib import json_manager
 from lib.log import log
@@ -19,7 +20,7 @@ pack_version = defaults.PACK_VERSION
 PROGRAM_PATH = Path(__file__).parent
 
 with (PROGRAM_PATH / "file_legend.json").open("r", encoding="utf-8") as file:
-    FILE_LEGEND: dict[str, dict[str, dict[str]]] = json.load(file)
+    FILE_LEGEND: dict[str, Any] = json.load(file)
 
 
 
@@ -62,10 +63,10 @@ def update(pack: Path, version: int):
                     continue
                 path = ["textures"] + texture.split(":")[1].split("/")
 
-                for version in FILE_LEGEND:
-                    if pack_version > int(version):
+                for file_version in FILE_LEGEND:
+                    if pack_version > int(file_version):
                         continue
-                    legend = FILE_LEGEND[version]
+                    legend = FILE_LEGEND[file_version]
                     for folder in path[:-1]:
                         if folder in legend:
                             legend = legend[folder]

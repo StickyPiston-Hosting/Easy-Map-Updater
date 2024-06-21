@@ -6,6 +6,7 @@
 # Import things
 
 from pathlib import Path
+from typing import cast, TypedDict, NotRequired, Any
 from lib import utils
 from lib.data_pack_files import command
 from lib.data_pack_files import nbt_tags
@@ -31,7 +32,7 @@ translation_keys: dict[str, int] = {}
 
 # Define functions
 
-def update_merge(strings: dict[str, list[str]], version: int, issues: list[dict[str, str]], mangled: bool) -> str:
+def update_merge(strings: dict[str, list[str]], version: int, issues: list[dict[str, str | int]], mangled: bool) -> str:
     # Assign version
     global pack_version
     pack_version = version
@@ -41,7 +42,7 @@ def update_merge(strings: dict[str, list[str]], version: int, issues: list[dict[
 
     return update(" ".join(strings["json_text_component"]), version, issues, mangled)
 
-def update(string: str, version: int, issues: list[dict[str, str]], mangled: bool) -> str:
+def update(string: str, version: int, issues: list[dict[str, str | int]], mangled: bool) -> str:
     global pack_version
     pack_version = version
 
@@ -64,7 +65,7 @@ def update(string: str, version: int, issues: list[dict[str, str]], mangled: boo
     else:
         return json_manager.pack(updated_component)
 
-def update_string(string: str) -> list[dict[str, str | bool]] | str:
+def update_string(string: str) -> list[dict[str, str | bool] | str] | str:
     # Return string if there are no section symbols
     if "§" not in string:
         return string
@@ -77,7 +78,7 @@ def update_string(string: str) -> list[dict[str, str | bool]] | str:
     strikethrough = False
     obfuscated = False
 
-    components: list[dict[str, str | bool]] = []
+    components: list[dict[str, str | bool] | str] = []
 
     # Iterate through string
     after_first = False
@@ -151,27 +152,49 @@ def update_string(string: str) -> list[dict[str, str | bool]] | str:
     # Return JSON text component
     return components
 
-def update_component(component: list | dict[str, str | dict] | str, version: int, issues: list[dict[str, str]]) -> list | dict[str, str | dict] | str:
+class JSONTextComponentCompound(TypedDict("JSONTextComponentCompound", {"with": list[str]})):
+    type: NotRequired[str]
+    text: str
+    color: str
+    bold: str
+    italic: str
+    underlined: str
+    strikethrough: str
+    obfuscated: str
+    selector: str
+    score: dict[str, str]
+    clickEvent: dict[str, str]
+    hoverEvent: dict[str, Any]
+    translate: str
+    nbt: str
+    source: str
+    block: NotRequired[str]
+    entity: NotRequired[str]
+    storage: NotRequired[str]
+    extra: list
+    separator: Any
+
+def update_component(component: str | list | JSONTextComponentCompound, version: int, issues: list[dict[str, str | int]]) -> str | list | JSONTextComponentCompound:
     global pack_version
     pack_version = version
 
     if isinstance(component, list):
         return update_list(component, issues)
     if isinstance(component, dict):
-        return update_compound(component, issues)
+        return update_compound(cast(JSONTextComponentCompound, component), issues)
     if component == None:
-        return {"type":"text","text":""}
+        return cast(JSONTextComponentCompound, {"type":"text","text":""})
     return component
 
-def update_list(component: list, issues: list[dict[str, str]]) -> list:
+def update_list(component: list, issues: list[dict[str, str | int]]) -> list | JSONTextComponentCompound:
     # Iterate through list
     for i in range(len(component)):
         component[i] = update_component(component[i], pack_version, issues)
     if len(component) == 0:
-        return {"type":"text","text":""}
+        return cast(JSONTextComponentCompound, {"type":"text","text":""})
     return component
 
-def update_compound(component: dict[str, str | dict] | str, issues: list[dict[str, str]]) -> dict[str, str | dict]:
+def update_compound(component: str | JSONTextComponentCompound, issues: list[dict[str, str | int]]) -> str | JSONTextComponentCompound:
     if not isinstance(component, dict):
         return component
 
@@ -220,7 +243,7 @@ def update_click_event(component: dict[str, str]) -> dict[str, str]:
     
     return component
 
-def update_hover_event(component: dict[str, str], issues: list[dict[str, str]]) -> dict[str, str]:
+def update_hover_event(component: dict[str, Any], issues: list[dict[str, str | int]]) -> dict[str, str]:
     if ("value" not in component and "contents" not in component) or "action" not in component:
         return component
 
@@ -241,13 +264,14 @@ def update_hover_event(component: dict[str, str], issues: list[dict[str, str]]) 
             item_nbt = nbt_tags.unpack(item_nbt)
         else:
             item_nbt = {}
+            contents = cast(dict[str, Any], component["contents"])
             if "id" in component["contents"]:
-                item_nbt["id"] = component["contents"]["id"]
-            if "count" in component["contents"]:
-                item_nbt["Count"] = nbt_tags.TypeByte(component["contents"]["count"])
-            if "tag" in component["contents"]:
-                item_nbt["tag"] = nbt_tags.unpack(component["contents"]["tag"])
-        item_nbt = nbt_tags.direct_update(item_nbt, pack_version, issues, "item", "")
+                item_nbt["id"] = contents["id"]
+            if "count" in contents:
+                item_nbt["Count"] = nbt_tags.TypeByte(contents["count"])
+            if "tag" in contents:
+                item_nbt["tag"] = nbt_tags.unpack(contents["tag"])
+        item_nbt = cast(dict, nbt_tags.direct_update(item_nbt, pack_version, issues, "item", ""))
         component["contents"] = {}
         if "id" in item_nbt:
             component["contents"]["id"] = item_nbt["id"]
@@ -260,19 +284,20 @@ def update_hover_event(component: dict[str, str], issues: list[dict[str, str]]) 
         if "contents" not in component:
             print('WARNING: "show_entity" not handled without "contents"')
         else:
-            if "name" in component["contents"]:
-                component["contents"]["name"] = update_component(component["contents"]["name"], pack_version, issues)
-            if "type" in component["contents"]:
-                component["contents"]["type"] = entities.update(component["contents"]["type"], pack_version, issues)
+            contents = cast(dict[str, Any], component["contents"])
+            if "name" in contents:
+                contents["name"] = update_component(contents["name"], pack_version, issues)
+            if "type" in contents:
+                contents["type"] = entities.update(contents["type"], pack_version, issues)
 
     if "value" in component:
         del component["value"]
     return component
 
-def update_nbt(component: dict[str, str | dict], issues: list[dict[str, str]]):
+def update_nbt(component: JSONTextComponentCompound, issues: list[dict[str, str | int]]):
     # Iterate through keys
     for key in list(component.keys()):
-        if key == "entity":
+        if key == "entity" and key in component:
             component[key] = target_selectors.update(component[key], pack_version, issues, False)
         if key == "nbt":
             for source in ["block", "entity"]:
@@ -312,7 +337,7 @@ def update_nbt(component: dict[str, str | dict], issues: list[dict[str, str]]):
         component["storage"] = "help:data"
         component["nbt"] = f'safe_nbt_interpret.v{index}'
 
-def update_score(component: dict[str, str], issues: list[dict[str, str]]) -> dict[str, str]:
+def update_score(component: dict[str, str], issues: list[dict[str, str | int]]) -> dict[str, str]:
     if "name" not in component:
         return component
 
@@ -320,7 +345,7 @@ def update_score(component: dict[str, str], issues: list[dict[str, str]]) -> dic
 
     return component
 
-def update_translate(component: dict[str, str | dict]):
+def update_translate(component: JSONTextComponentCompound):
     # Get translation key data
     global translation_keys_retrieved
     if not translation_keys_retrieved:
@@ -361,18 +386,18 @@ def retrieve_translation_keys():
 
 
 
-def pack_mangled(component: list | dict[str, str | dict] | str) -> str:
+def pack_mangled(component: str | list | JSONTextComponentCompound) -> str:
     component = reorder_data(component)
     component = prune_data(component)
     return pack_mangled_component(component)
 
-def reorder_data(component: list | dict[str, str | dict] | str) -> dict[str, str | dict | list]:
+def reorder_data(component: str | list | JSONTextComponentCompound) -> JSONTextComponentCompound:
     if isinstance(component, str):
-        return {"text": component}
+        return cast(JSONTextComponentCompound, {"text": component})
     
     if isinstance(component, list):
         if len(component) == 0:
-            return {"text": ""}
+            return cast(JSONTextComponentCompound, {"text": ""})
         output_component = reorder_data(component[0])
         if len(component) > 1:
             if "extra" not in output_component:
@@ -412,7 +437,7 @@ def reorder_data(component: list | dict[str, str | dict] | str) -> dict[str, str
 
     return component
 
-def prune_data(component: dict[str, str | dict | list]) -> dict[str, str | dict | list] | str:
+def prune_data(component: JSONTextComponentCompound) -> str | JSONTextComponentCompound:
     for key in ["type", "source"]:
         if key in component:
             del component[key]
@@ -437,7 +462,7 @@ def prune_data(component: dict[str, str | dict | list]) -> dict[str, str | dict 
     
     return component
 
-def pack_mangled_component(component: dict[str, str | dict | list] | list | str) -> str:
+def pack_mangled_component(component: str | list | JSONTextComponentCompound) -> str:
     if isinstance(component, list):
         return pack_mangled_list(component)
     if isinstance(component, dict):
@@ -459,7 +484,7 @@ def pack_mangled_list(component: list) -> str:
 
     return f'[{",".join(out_list)}]'
 
-def pack_mangled_compound(component: dict[str, str | dict | list]) -> str:
+def pack_mangled_compound(component: JSONTextComponentCompound) -> str:
     tags: list[str] = []
 
     for key in [
@@ -491,7 +516,7 @@ def pack_mangled_compound(component: dict[str, str | dict | list]) -> str:
     
     return f'{{{",".join(tags)}}}'
 
-def pack_mangled_compound_primitive(component: dict[str, str | dict | list], keys: list[str]) -> str:
+def pack_mangled_compound_primitive(component: dict[str, Any], keys: list[str]) -> str:
     tags: list[str] = []
 
     for key in keys:
@@ -500,7 +525,7 @@ def pack_mangled_compound_primitive(component: dict[str, str | dict | list], key
 
     return f'{{{",".join(tags)}}}'
 
-def pack_mangled_hover_event(component: dict[str, str | dict | list]) -> str:
+def pack_mangled_hover_event(component: dict[str, Any]) -> str:
     tags: list[str] = []
 
     for key in ["contents", "action"]:
@@ -512,14 +537,14 @@ def pack_mangled_hover_event(component: dict[str, str | dict | list]) -> str:
 
     return f'{{{",".join(tags)}}}'
 
-def pack_mangled_hover_event_contents(component: dict[str, str], action: str) -> str:
+def pack_mangled_hover_event_contents(component: JSONTextComponentCompound, action: str) -> str:
     if action == "show_text":
         return pack_mangled_component(component)
 
     elif action == "show_item":
-        return pack_mangled_compound_primitive(component, ["id", "count", "tag"])
+        return pack_mangled_compound_primitive(cast(dict, component), ["id", "count", "tag"])
 
     elif action == "show_entity":
-        return pack_mangled_compound_primitive(component, ["type", "id", "name"])
+        return pack_mangled_compound_primitive(cast(dict, component), ["type", "id", "name"])
     
     return '""'

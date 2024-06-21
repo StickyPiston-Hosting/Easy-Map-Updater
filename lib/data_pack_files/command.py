@@ -6,6 +6,7 @@
 # Import things
 
 import json
+from typing import cast, Any
 from pathlib import Path
 from lib.log import log
 from lib.data_pack_files import arguments
@@ -117,12 +118,12 @@ def parsed_command(argument_list: list[str], display_command: bool) -> str:
         log("WARNING: Stats fixer not enabled but stats have been found!")
 
     # Initialize issues list
-    issues: list[dict[str, str]] = []
+    issues: list[dict[str, str | int]] = []
 
     return command_arguments(argument_list, command_tree, issues)
 
 
-def command_arguments(argument_list: list[str], guide: dict[str, dict[str, str]], issues: list[dict[str, str]]) -> str:
+def command_arguments(argument_list: list[str], guide: list | dict[str, Any], issues: list[dict[str, str | int]]) -> str:
     # Get guide from array based on certain parameters
     if isinstance(guide, list):
         # Iterate through entries in the guide
@@ -171,21 +172,22 @@ def test_list_entry(entry: dict[str, int] | int, value: int, boolean: bool) -> b
     return boolean
 
 
-def guide_branch(argument_list: list[str], guide: dict[str, dict[str, str]], issues: list[dict[str, str]]) -> str:
+def guide_branch(argument_list: list[str], guide: dict[str, Any], issues: list[dict[str, str | int]]) -> str:
     # Get index
     index: int = guide["index"]
 
     # Return if the branch is undefined
+    lookup_guide: dict[str, Any]
     if len(argument_list) <= index or argument_list[index] not in guide["branches"]:
         # Check for wildcard branches first
         for branch in guide["branches"]:
             if "**" not in branch:
                 continue
             if branch[-2:] == "**" and branch[:-2] in argument_list[index] and branch[:-2] == argument_list[index][:len(branch) - 2]:
-                lookup_guide: dict[str, dict[str, str]] | str = guide["branches"][branch]
+                lookup_guide = guide["branches"][branch]
                 break
             if branch[:2] == "**" and branch[2:] in argument_list[index] and branch[2:] == argument_list[index][2 - len(branch):]:
-                lookup_guide: dict[str, dict[str, str]] | str = guide["branches"][branch]
+                lookup_guide = guide["branches"][branch]
                 break
         else:
             if "else" not in guide:
@@ -193,23 +195,23 @@ def guide_branch(argument_list: list[str], guide: dict[str, dict[str, str]], iss
                     log(f'WARNING: "{" ".join(argument_list)}" is not registered!')
                 return " ".join(argument_list)
             # Use 'else' as the lookup guide
-            lookup_guide: dict[str, dict[str, str]] | str = guide["else"]
+            lookup_guide = guide["else"]
 
     # Get lookup guide directly
     else:
-        lookup_guide: dict[str, dict[str, str]] | str = guide["branches"][argument_list[index]]
+        lookup_guide = guide["branches"][argument_list[index]]
 
     # Get reference from guide if lookup guide is a string
     if isinstance(lookup_guide, str):
-        lookup_guide: dict[str, dict[str, str]] = guide["branches"][lookup_guide]
+        lookup_guide = guide["branches"][lookup_guide]
 
     # Explore the branch
     return command_arguments(argument_list, lookup_guide, issues)
 
 
-def guide_mapping(argument_list: list[str], guide: dict[str, list | dict], issues: list[dict[str, str]]) -> str:
+def guide_mapping(argument_list: list[str], guide: dict[str, list | dict], issues: list[dict[str, str | int]]) -> str:
     # Get mapping
-    mapping: list[str] = guide["mapping"]
+    mapping: list[str] = cast(list, guide["mapping"])
 
     # Get legend
     legend = get_legend(mapping, guide)
@@ -217,7 +219,7 @@ def guide_mapping(argument_list: list[str], guide: dict[str, list | dict], issue
     # Get defaults
     defaults = {}
     if "defaults" in guide:
-        defaults: dict[str, str] = guide["defaults"]
+        defaults: dict[str, str] = cast(dict, guide["defaults"])
 
     # Compile new arguments list
     new_argument_list: list[str] = []
@@ -239,7 +241,7 @@ def guide_mapping(argument_list: list[str], guide: dict[str, list | dict], issue
     return fix_helper_edge_case(new_argument_list, argument_list, issues)
     
 
-def get_legend(mapping: list[str], guide: dict[str, list[int | str | dict]]) -> list[int | str | dict[str, int | str | dict[str, int] | bool]]:
+def get_legend(mapping: list[str], guide: dict[str, Any]) -> list:
     # Get legend directly
     if "legend" in guide:
         return guide["legend"]
@@ -256,13 +258,13 @@ def get_legend(mapping: list[str], guide: dict[str, list[int | str | dict]]) -> 
                 return entry["legend"]
 
     # Set legend to direct mapping if all else fails
-    return range(len(mapping))
+    return list(range(len(mapping)))
 
 
-def get_source(argument_list: list[str], source: int | str | dict[str, int | dict[str, int] | bool]) -> str | dict[str, str | list[str] | bool]:
+def get_source(argument_list: list[str], source: int | str | dict[str, Any]) -> str | dict[str, Any]:
     # Get source from arguments if a number
     if isinstance(source, int):
-        return get_argument(argument_list, source)
+        return cast(str, get_argument(argument_list, source))
 
     # Convert sources into their arguments
     if isinstance(source, dict):
@@ -280,7 +282,7 @@ def get_source(argument_list: list[str], source: int | str | dict[str, int | dic
     return source
     
 
-def get_argument(argument_list: list[str], source: int | dict[str, int] | bool) -> str | list[str] | bool:
+def get_argument(argument_list: list[str], source: int | str | dict[str, Any]) -> str | list[str] | bool:
     # Get argument from list if source is a number
     if isinstance(source, int) and not isinstance(source, bool):
         # Get argument from list if source is in range
@@ -310,10 +312,10 @@ def get_argument(argument_list: list[str], source: int | dict[str, int] | bool) 
 
 
 
-def update_argument(argument: str | dict[str, str | list[str] | bool], argument_type: str, issues: list[dict[str, str]]) -> str:
+def update_argument(argument: str | dict[str, Any], argument_type: str, issues: list[dict[str, str | int]]) -> str:
     # Return carry arguments
     if argument_type == "carry":
-        return argument
+        return cast(str, argument)
 
     # Return arguments based on type
     if argument_type in ARGUMENT_FUNCTIONS:
@@ -325,18 +327,18 @@ def update_argument(argument: str | dict[str, str | list[str] | bool], argument_
     # Report that argument type was not found
     if defaults.SEND_WARNINGS:
         log(f'WARNING: Argument type "{argument_type}" is not defined!')
-    return argument
+    return cast(str, argument)
 
 
-def execute_command(argument: dict[str, list[str] | bool], version: int, issues: list[dict[str, str]]):
+def execute_command(argument: dict[str, list[str] | bool] | list[str], version: int, issues: list[dict[str, str | int]]):
     # Initialize parameters
     execute = False
 
     # Extract arguments if a dict
     if isinstance(argument, dict):
         if "execute" in argument:
-            execute: bool = argument["execute"]
-        argument: list[str] = argument["argument"]
+            execute = cast(bool, argument["execute"])
+        argument = cast(list, argument["argument"])
 
     # Prefix with "execute"
     if execute:
@@ -347,12 +349,12 @@ def execute_command(argument: dict[str, list[str] | bool], version: int, issues:
         return "execute"
     return parsed_command(argument, False)
 
-def command_string(command: str, version: int, issues: list[dict[str, str]]):
+def command_string(command: str, version: int, issues: list[dict[str, str | int]]):
     return update(command, version, "NBT")
 
 
 
-def fix_helper_edge_case(argument_list: list[str], old_argument_list: list[str], issues: list[dict[str, str]]) -> str:
+def fix_helper_edge_case(argument_list: list[str], old_argument_list: list[str], issues: list[dict[str, str | int]]) -> str:
     # Fix comparator block updates (FIND VERSION WHERE IT IS NECESSARY)
     if (
         pack_version <= 1202 and
@@ -371,7 +373,7 @@ def fix_helper_edge_case(argument_list: list[str], old_argument_list: list[str],
             argument_list[1] == "merge" and
             argument_list[2] == "block"
         ):
-            block_nbt: dict[str] = nbt_tags.unpack(argument_list[6])
+            block_nbt: dict[str, Any] = nbt_tags.unpack(argument_list[6])
             old_block_nbt = nbt_tags.unpack(old_argument_list[6 if old_argument_list[0] == "data" else 4])
             if "front_text" in block_nbt and "front_text" not in old_block_nbt:
                 return sign_merge_handler.handle_merge(argument_list, block_nbt, old_block_nbt)
@@ -495,7 +497,7 @@ def fix_helper_edge_case(argument_list: list[str], old_argument_list: list[str],
 
 
     # Process issues list
-    safe_nbt_interpret_issues: list[dict[str, str]] = []
+    safe_nbt_interpret_issues: list[dict[str, str | int]] = []
     for issue in issues:
         if issue["type"] == "safe_nbt_interpret":
             safe_nbt_interpret_issues.append(issue)

@@ -27,7 +27,7 @@ with (PROGRAM_PATH / "nbt_tree.json").open("r", encoding="utf-8") as file:
 
 # Define functions
 
-def update(path: str, version: int, issues: list[dict[str, str]], source: str) -> str:
+def update(path: str, version: int, issues: list[dict[str, str | int]], source: str) -> str:
     global pack_version
     pack_version = version
 
@@ -47,7 +47,7 @@ def update(path: str, version: int, issues: list[dict[str, str]], source: str) -
             output += "." + part
     return output
 
-def get_source(path_parts: list[str], source, issues: list[dict[str, str]]) -> list[str]:
+def get_source(path_parts: list[str], source, issues: list[dict[str, str | int]]) -> list[str]:
     # Get guide
     if source not in NBT_TREE["sources"]:
         if defaults.SEND_WARNINGS:
@@ -55,7 +55,7 @@ def get_source(path_parts: list[str], source, issues: list[dict[str, str]]) -> l
         return path_parts
     return branch(path_parts, NBT_TREE["sources"][source], source, issues)
 
-def branch(path_parts: list[str], guide: dict, source: str, issues: list[dict[str, str]]) -> list[str]:
+def branch(path_parts: list[str], guide: dict, source: str, issues: list[dict[str, str | int]]) -> list[str]:
     # Return function based on contents of guide
     if "rename" in guide:
         path_parts = [guide["rename"]] + path_parts[1:]
@@ -69,7 +69,7 @@ def branch(path_parts: list[str], guide: dict, source: str, issues: list[dict[st
         return search_list(path_parts, guide["list"], source, issues)
     return path_parts
     
-def modify_path(path_parts: list[str], guide: dict, source: str, issues: list[dict[str, str]]) -> list[str]:
+def modify_path(path_parts: list[str], guide: dict, source: str, issues: list[dict[str, str | int]]) -> list[str]:
     if "rename" in guide:
         return guide["rename"]
     if "source" in guide:
@@ -78,14 +78,14 @@ def modify_path(path_parts: list[str], guide: dict, source: str, issues: list[di
         return search_tags(path_parts, guide["tags"], source, issues)
     return path_parts
 
-def search_tags(path_parts: list[str], guide: dict, source: str, issues: list[dict[str, str]]) -> list[str]:
+def search_tags(path_parts: list[str], guide: dict, source: str, issues: list[dict[str, str | int]]) -> list[str]:
     if len(path_parts) < 2:
         return path_parts
     if path_parts[1] in guide:
         return path_parts[:1] + branch(path_parts[1:], guide[path_parts[1]], source, issues)
     return path_parts
 
-def search_list(path_parts: list[str], guide: dict, source: str, issues: list[dict[str, str]]) -> list[str]:
+def search_list(path_parts: list[str], guide: dict, source: str, issues: list[dict[str, str | int]]) -> list[str]:
     if len(path_parts) < 2:
         return path_parts
     if path_parts[1].startswith("[") and path_parts[1][1:-1].strip().startswith("{"):

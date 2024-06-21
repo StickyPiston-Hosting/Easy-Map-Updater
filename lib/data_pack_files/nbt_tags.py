@@ -6,6 +6,7 @@
 # Import things
 
 import json
+from typing import Any
 from nbt import nbt as NBT
 from pathlib import Path
 from lib.log import log
@@ -21,7 +22,7 @@ pack_version = defaults.PACK_VERSION
 
 PROGRAM_PATH = Path(__file__).parent
 with (PROGRAM_PATH / "nbt_tree.json").open("r", encoding="utf-8") as file:
-    NBT_TREE: dict[str, dict[str, str]] = json.load(file)
+    NBT_TREE: dict[str, Any] = json.load(file)
 
 
 
@@ -144,6 +145,7 @@ class TypeLongArray(TypeList):
 
 # Import more stuff to prevent circular loading issues
 
+from typing import cast, Any
 from lib.data_pack_files import command
 from lib.data_pack_files import arguments
 from lib.data_pack_files import items
@@ -157,28 +159,28 @@ from lib.data_pack_files import ids
 
 # Define functions
 
-def update(nbt: str | dict[str, str], version: int, issues: list[dict[str, str]], source: str) -> str:
+def update(snbt: str | dict[str, str], version: int, issues: list[dict[str, str | int]], source: str) -> str:
     global pack_version
     pack_version = version
 
     object_id = ""
 
     # Extract arguments if a dict
-    if isinstance(nbt, dict):
-        if "object_id" in nbt:
-            object_id: str = nbt["object_id"]
-        nbt: str = nbt["nbt"]
+    if isinstance(snbt, dict):
+        if "object_id" in snbt:
+            object_id: str = snbt["object_id"]
+        snbt = snbt["nbt"]
 
     # Return if not SNBT
-    if nbt == "":
-        return nbt
-    if nbt[0] != "{":
-        return nbt
+    if snbt == "":
+        return snbt
+    if snbt[0] != "{":
+        return snbt
 
-    nbt: dict = unpack(nbt)
+    nbt: dict = cast(dict, unpack(snbt))
     return pack(get_source({}, nbt, source, object_id, issues))
 
-def direct_update(nbt: dict | None, version: int, issues: list[dict[str, str]], source: str, object_id: str) -> dict | None:
+def direct_update(nbt: dict | None, version: int, issues: list[dict[str, str | int]], source: str, object_id: str) -> dict | None:
     global pack_version
     pack_version = version
 
@@ -187,33 +189,35 @@ def direct_update(nbt: dict | None, version: int, issues: list[dict[str, str]], 
     
     return get_source({}, nbt, source, object_id, issues)
 
-def update_with_guide(nbt: str, version: int, issues: list[dict[str, str]], source: str, guide: dict, callback: str) -> str:
+def update_with_guide(snbt: str, version: int, issues: list[dict[str, str | int]], source: str, guide: dict, callback: str) -> str:
     global pack_version
     pack_version = version
 
     # Return if not SNBT
-    if not nbt:
-        return nbt
+    if not snbt:
+        return snbt
     
     if defaults.DEBUG_MODE:
         log(f'CALLBACK: {callback} - GUIDE: {guide}')
 
-    nbt: dict = unpack(nbt)
+    nbt: dict = cast(dict, unpack(snbt))
     match callback:
         case "branch":
             return pack(branch({}, nbt, guide, source, "", issues))
         case "tags":
             if "necessary_tags" in guide:
-                return update_tags({}, nbt, guide, source, "", guide["necessary_tags"], issues)
+                return pack(update_tags({}, nbt, guide, source, "", guide["necessary_tags"], issues))
             return pack(update_tags({}, nbt, guide, source, "", {}, issues))
         case "list":
-            return pack(update_list({}, nbt, guide, source, "", issues))
+            return pack(update_list({}, cast(TypeList, nbt), guide, source, "", issues))
+        
+    return snbt
     
 
 
 
 
-def unpack(nbt: str):
+def unpack(nbt: str) -> Any:
     if nbt == "":
         return
 
@@ -313,7 +317,7 @@ def pack(nbt) -> str:
 
     return nbt.pack()
 
-def pack_compound(nbt: dict[str]) -> str:
+def pack_compound(nbt: dict[str, Any]) -> str:
     # Prepare tag list
     tags: list[str] = []
 
@@ -333,7 +337,7 @@ def pack_list(nbt: list) -> str:
 
 
 
-def get_source(parent: dict, nbt: dict, source: str, object_id: str, issues: list[dict[str, str]]) -> dict:
+def get_source(parent: dict, nbt: dict, source: str, object_id: str, issues: list[dict[str, str | int]]) -> Any:
     # Get guide
     if source not in NBT_TREE["sources"]:
         if defaults.SEND_WARNINGS:
@@ -341,7 +345,7 @@ def get_source(parent: dict, nbt: dict, source: str, object_id: str, issues: lis
         return nbt
     return branch(parent, nbt, NBT_TREE["sources"][source], source, object_id, issues)
 
-def branch(parent: dict, nbt, guide: dict, source: str, object_id: str, issues: list[dict[str, str]]) -> dict:
+def branch(parent: dict, nbt, guide: dict, source: str, object_id: str, issues: list[dict[str, str | int]]) -> Any:
     # Return function based on contents of guide
     if "edge_case" in guide:
         return edge_case(parent, nbt, guide["edge_case"], source, object_id, issues)
@@ -357,7 +361,7 @@ def branch(parent: dict, nbt, guide: dict, source: str, object_id: str, issues: 
         return update_data(parent, nbt, guide, source, object_id, issues)
     return nbt
 
-def update_tags(parent: dict, nbt: dict, guide: dict, source: str, object_id: str, necessary_tags: dict, issues: list[dict[str, str]]) -> dict:
+def update_tags(parent: dict, nbt: dict, guide: dict, source: str, object_id: str, necessary_tags: dict, issues: list[dict[str, str | int]]) -> dict:
     if not isinstance(nbt, dict):
         return nbt
 
@@ -427,7 +431,7 @@ def update_tags(parent: dict, nbt: dict, guide: dict, source: str, object_id: st
 
     return nbt
 
-def update_list(parent: dict, nbt: TypeList, guide: dict, source: str, object_id: str, issues: list[dict[str, str]]) -> TypeList:
+def update_list(parent: dict, nbt: TypeList, guide: dict, source: str, object_id: str, issues: list[dict[str, str | int]]) -> TypeList:
     if not isinstance(nbt, TypeList):
         return nbt
 
@@ -436,7 +440,7 @@ def update_list(parent: dict, nbt: TypeList, guide: dict, source: str, object_id
         nbt[i] = branch(parent, nbt[i], guide, source, object_id, issues)
     return nbt
 
-def update_data(parent: dict, nbt, guide: dict, source: str, object: str, issues: list[dict[str, str]]) -> str:
+def update_data(parent: dict, nbt, guide: dict, source: str, object: str, issues: list[dict[str, str | int]]) -> str:
     # Get types
     data_type: str = guide["data_type"]
     output_data_type = data_type
@@ -456,12 +460,12 @@ def update_data(parent: dict, nbt, guide: dict, source: str, object: str, issues
             obj = retrieve(parent, guide["parameters"][key])
             if obj != None:
                 parameters[key] = obj
-        return apply_data_type(command.update_argument(parameters, argument_type), output_data_type)
+        return apply_data_type(command.update_argument(parameters, argument_type, issues), output_data_type)
 
     # Convert based on argument type
     return apply_data_type(command.update_argument(nbt, argument_type, issues), output_data_type)
 
-def apply_data_type(nbt, data_type: str):
+def apply_data_type(nbt, data_type: str) -> Any:
     if data_type == "byte":
         return TypeByte(nbt)
     if data_type == "short":
@@ -494,7 +498,7 @@ def invert_riding(nbt: dict) -> dict:
 
 
 
-def edge_case(parent: dict, nbt, case: str | dict[str, str], source: str, object_id: str, issues: list[dict[str, str]]):
+def edge_case(parent: dict, nbt, case: str | dict[str, str], source: str, object_id: str, issues: list[dict[str, str | int]]) -> Any:
     # Get case
     if isinstance(case, dict):
         case_type: str = case["case"]
@@ -505,7 +509,7 @@ def edge_case(parent: dict, nbt, case: str | dict[str, str], source: str, object
     if case_type == "banner_base":
         return edge_case_banner_base(parent, object_id, issues)
     if case_type == "block_entity":
-        return blocks.update_from_nbt(parent, pack_version, issues)
+        return blocks.update_from_nbt(cast(blocks.BlockInputFromNBT, parent), pack_version, issues)
     if case_type == "can_place_on":
         return edge_case_can_place_on(nbt, issues)
     if case_type == "entity_id":
@@ -527,22 +531,22 @@ def edge_case(parent: dict, nbt, case: str | dict[str, str], source: str, object
     if case_type == "spawn_potential_entity":
         return edge_case_spawn_potential_entity(parent, nbt, object_id, issues)
     if case_type == "uuid_long":
-        return edge_case_uuid_long(parent, case)
+        return edge_case_uuid_long(parent, cast(dict, case))
 
     if defaults.SEND_WARNINGS:
         log(f'WARNING: "{case_type}" case is not registered!')
     return nbt
 
-def edge_case_banner_base(parent: dict[str, TypeInt], object_id: str, issues: list[dict[str, str]]):
+def edge_case_banner_base(parent: dict[str, TypeInt], object_id: str, issues: list[dict[str, str | int]]):
     if miscellaneous.namespace(object_id) == "minecraft:shield":
         parent["Base"] = miscellaneous.banner_color(parent["Base"], pack_version, issues)
     else:
         del parent["Base"]
 
-def edge_case_can_place_on(nbt: list[str], issues: list[dict[str, str]]):
+def edge_case_can_place_on(nbt: list[str], issues: list[dict[str, str | int]]):
     new_list: list[str] = []
     for block in nbt:
-        new_block = blocks.update(
+        new_block = cast(str, blocks.update(
             {
                 "id": block,
                 "data_value": -1,
@@ -551,20 +555,20 @@ def edge_case_can_place_on(nbt: list[str], issues: list[dict[str, str]]):
                 "read": True
             },
             pack_version, issues
-        )["id"]
+        )["id"])
         new_list.append(new_block)
     return TypeList(utils.deduplicate_list(new_list))
 
-def edge_case_entity_id(parent: dict, nbt: str, object_id: str, issues: list[dict[str, str]]):
+def edge_case_entity_id(parent: dict, nbt: str, object_id: str, issues: list[dict[str, str | int]]):
     if "SpawnData" in parent:
-        parent["SpawnData"] = edge_case_spawn_data(parent["SpawnData"], object_id)
+        parent["SpawnData"] = edge_case_spawn_data(parent["SpawnData"], object_id, issues)
     else:
         parent["SpawnData"] = {}
     if "entity" not in parent["SpawnData"]:
         parent["SpawnData"]["entity"] = {}
     parent["SpawnData"]["entity"]["id"] = entities.update(nbt, pack_version, issues)
 
-def edge_case_equipment(parent: dict, nbt: TypeList, object_id: str, issues: list[dict[str, str]]):
+def edge_case_equipment(parent: dict, nbt: TypeList, object_id: str, issues: list[dict[str, str | int]]):
     parent["ArmorItems"] = TypeList([{},{},{},{}])
     parent["HandItems"] = TypeList([{},{}])
     length = len(nbt)
@@ -611,7 +615,7 @@ def edge_case_fuse(parent: dict, object_id: str):
         if object_id == "minecraft:creeper":
             del parent["fuse"]
 
-def edge_case_mooshroom_stew(parent: dict, pack_version: int, issues: list[dict[str, str]]):
+def edge_case_mooshroom_stew(parent: dict, pack_version: int, issues: list[dict[str, str | int]]):
     parent["stew_effects"] = TypeList([{}])
     if "EffectId" in parent:
         parent["stew_effects"][0]["id"] = ids.effect(parent["EffectId"], pack_version, issues)
@@ -620,7 +624,7 @@ def edge_case_mooshroom_stew(parent: dict, pack_version: int, issues: list[dict[
         parent["stew_effects"][0]["duration"] = parent["EffectDuration"]
         del parent["EffectDuration"]
 
-def edge_case_old_spawn_potential_entity(parent: dict[str], nbt: dict[str], object_id: str, issues: list[dict[str, str]]):
+def edge_case_old_spawn_potential_entity(parent: dict[str, Any], nbt: dict[str, Any], object_id: str, issues: list[dict[str, str | int]]):
     if "data" not in parent:
         parent["data"] = {}
     if "entity" not in parent["data"]:
@@ -633,7 +637,7 @@ def edge_case_old_spawn_potential_entity(parent: dict[str], nbt: dict[str], obje
         del parent["Type"]
     parent["data"]["entity"] = get_source(parent["data"], parent["data"]["entity"], "entity", object_id, issues)
 
-def edge_case_sign_text(parent: dict, issues: list[dict[str, str]]):
+def edge_case_sign_text(parent: dict, issues: list[dict[str, str | int]]):
     # Prepare front text
     if "front_text" not in parent:
         parent["front_text"] = {}
@@ -652,7 +656,7 @@ def edge_case_sign_text(parent: dict, issues: list[dict[str, str]]):
         parent["front_text"]["has_glowing_text"] = parent["GlowingText"]
         del parent["GlowingText"]
 
-def edge_case_spawn_data(nbt: dict[str], object_id: str, issues: list[dict[str, str]]):
+def edge_case_spawn_data(nbt: dict[str, Any], object_id: str, issues: list[dict[str, str | int]]):
     # Move tags into "entity" if they aren't there already
     if "entity" not in nbt:
         entity = nbt.copy()
@@ -664,7 +668,7 @@ def edge_case_spawn_data(nbt: dict[str], object_id: str, issues: list[dict[str, 
     nbt["entity"] = get_source(nbt, nbt["entity"], "entity", object_id, issues)
     return nbt
 
-def edge_case_spawn_potential_entity(parent: dict[str], nbt: dict[str], object_id: str, issues: list[dict[str, str]]):
+def edge_case_spawn_potential_entity(parent: dict[str, Any], nbt: dict[str, Any], object_id: str, issues: list[dict[str, str | int]]):
     if "data" not in parent:
         parent["data"] = {}
     parent["data"]["entity"] = get_source(parent["data"], parent["data"]["entity"], "entity", object_id, issues)
@@ -675,9 +679,13 @@ def edge_case_uuid_long(parent: dict, case: dict[str, str]):
     if least_tag in parent:
         least: int = parent[least_tag].value
         del parent[least_tag]
+    else:
+        least = 0
     if most_tag in parent:
         most: int = parent[most_tag].value
         del parent[most_tag]
+    else:
+        most = 0
     parent[case["output"]] = TypeIntArray([
         TypeInt(utils.int_range(most  // 4294967296)),
         TypeInt(utils.int_range(most  %  4294967296)),
@@ -711,7 +719,7 @@ def retrieve(nbt, address: str):
 
 
 
-def convert_to_lib_format(nbt: dict[str] | TypeList | TypeNumeric | str) -> NBT.TAG:
+def convert_to_lib_format(nbt: dict | TypeList | TypeNumeric | str) -> NBT.TAG:
     if isinstance(nbt, dict):
         return convert_to_lib_format_compound(nbt)
     if isinstance(nbt, TypeList):
@@ -722,16 +730,16 @@ def convert_to_lib_format(nbt: dict[str] | TypeList | TypeNumeric | str) -> NBT.
         return convert_to_lib_format_string(nbt)
     log("ERROR: convert_to_lib_format: NBT type not determined!")
     
-def convert_to_lib_format_compound(nbt: dict[str]) -> NBT.TAG_Compound:
+def convert_to_lib_format_compound(nbt: dict[str, Any]) -> NBT.TAG_Compound:
     output_nbt = NBT.TAG_Compound()
     for key in nbt:
         output_nbt[key] = convert_to_lib_format(nbt[key])
     return output_nbt
 
-def convert_to_lib_format_list(nbt: TypeList):
+def convert_to_lib_format_list(nbt: TypeList) -> Any:
     if isinstance(nbt, TypeByteArray):
         output = NBT.TAG_Byte_Array()
-        output.value = [ int(nbt[i].value) for i in range(len(nbt)) ]
+        output.value = cast(bytearray, [ int(nbt[i].value) for i in range(len(nbt)) ])
     elif isinstance(nbt, TypeIntArray):
         output = NBT.TAG_Int_Array()
         output.value = [ int(nbt[i].value) for i in range(len(nbt)) ]
@@ -747,7 +755,7 @@ def convert_to_lib_format_list(nbt: TypeList):
         output.tags = data
     return output
 
-def convert_to_lib_format_numeric(nbt: TypeNumeric):
+def convert_to_lib_format_numeric(nbt: TypeNumeric) -> Any:
     if isinstance(nbt, TypeByte):
         return NBT.TAG_Byte(int(nbt.value))
     if isinstance(nbt, TypeShort):
@@ -767,7 +775,7 @@ def convert_to_lib_format_string(nbt: str) -> NBT.TAG_String:
 
 
 
-def convert_from_lib_format(nbt: NBT.TAG):
+def convert_from_lib_format(nbt: NBT.TAG) -> Any:
     if isinstance(nbt, NBT.TAG_Compound):
         return convert_from_lib_format_compound(nbt)
     if isinstance(nbt, NBT.TAG_List):
@@ -784,7 +792,7 @@ def convert_from_lib_format(nbt: NBT.TAG):
         return convert_from_lib_format_string(nbt)
     log("ERROR: convert_from_lib_format: NBT type not determined!")
     
-def convert_from_lib_format_compound(nbt: NBT.TAG_Compound) -> dict[str]:
+def convert_from_lib_format_compound(nbt: NBT.TAG_Compound) -> dict[str, Any]:
     output_nbt: dict = {}
     for key in nbt:
         output_nbt[key] = convert_from_lib_format(nbt[key])
@@ -816,6 +824,7 @@ def convert_from_lib_format_numeric(nbt: NBT._TAG_Numeric) -> TypeNumeric:
     if isinstance(nbt, NBT.TAG_Double):
         return TypeDouble(nbt.value)
     log("ERROR: convert_from_lib_format_numeric: Numeric type not determined!")
+    return TypeInt(0)
 
 def convert_from_lib_format_string(nbt: NBT.TAG_String) -> str:
     return nbt.value
