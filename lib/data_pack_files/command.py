@@ -61,7 +61,11 @@ def update(line: str, version: int, function_id: str) -> str:
                 log("Pack version changed to 1202 in:\n  " + namespaced_id + "\n  " + line)
                 pack_version = 1202
 
-    return command(line.strip()).strip()
+    try:
+        return command(line.strip()).strip()
+    except Exception:
+        log(f'A command from {namespaced_id} has thrown an error:\n\n{line.strip()}')
+        raise Exception
 
 def command(line: str) -> str:
     # Return if blank
