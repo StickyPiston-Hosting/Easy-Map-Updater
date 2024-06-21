@@ -11,7 +11,6 @@ from lib import finalize
 from lib import option_manager
 from lib.log import log
 from lib.data_pack_files import command_helper
-from lib.data_pack_files import nbt_tags
 
 
 
