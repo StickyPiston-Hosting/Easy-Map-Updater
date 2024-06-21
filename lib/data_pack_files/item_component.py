@@ -5,6 +5,7 @@
 
 # Import things
 
+from typing import Any
 from lib.data_pack_files import nbt_tags
 from lib.data_pack_files import arguments
 from lib.data_pack_files import miscellaneous
@@ -24,14 +25,14 @@ def unpack(components: str):
     return output_block_states
 
 
-def pack(components: dict[str]) -> str:
+def pack(components: dict[str, Any]) -> str:
     component_strings: list[str] = []
     for component in components.keys():
         component_strings.append(f'{component}={nbt_tags.pack(components[component])}')
     return f'[{",".join(component_strings)}]'
 
 
-def conform(components: dict[str]) -> dict[str]:
+def conform(components: dict[str, Any]) -> dict[str, Any]:
     # Apply namespace to all components
     for component in list(components.keys()):
         namespaced_component = miscellaneous.namespace(component)
@@ -42,13 +43,13 @@ def conform(components: dict[str]) -> dict[str]:
 
     # Adjust formatting of components
     if "minecraft:can_break" in components:
-        can_break: dict[str] = components["minecraft:can_break"]
+        can_break: dict[str, Any] = components["minecraft:can_break"]
         if "predicates" not in can_break and "show_in_tooltip" not in can_break:
             can_break = {"predicates": [can_break]}
         components["minecraft:can_break"] = can_break
 
     if "minecraft:can_place_on" in components:
-        can_place_on: dict[str] = components["minecraft:can_place_on"]
+        can_place_on: dict[str, Any] = components["minecraft:can_place_on"]
         if "predicates" not in can_place_on and "show_in_tooltip" not in can_place_on:
             can_place_on = {"predicates": [can_place_on]}
         components["minecraft:can_place_on"] = can_place_on
@@ -69,7 +70,7 @@ def conform(components: dict[str]) -> dict[str]:
         components["minecraft:dyed_color"] = dyed_color
 
     if "minecraft:enchantments" in components:
-        enchantments: dict[str] = components["minecraft:enchantments"]
+        enchantments: dict[str, Any] = components["minecraft:enchantments"]
         if "levels" not in enchantments and "show_in_tooltip" not in enchantments:
             enchantments = {"levels": enchantments}
         if "levels" in enchantments:
@@ -82,7 +83,7 @@ def conform(components: dict[str]) -> dict[str]:
         components["minecraft:enchantments"] = enchantments
 
     if "minecraft:stored_enchantments" in components:
-        stored_enchantments: dict[str] = components["minecraft:stored_enchantments"]
+        stored_enchantments: dict[str, Any] = components["minecraft:stored_enchantments"]
         if "levels" not in stored_enchantments and "show_in_tooltip" not in stored_enchantments:
             stored_enchantments = {"levels": stored_enchantments}
         if "levels" in stored_enchantments:
@@ -118,7 +119,7 @@ def conform(components: dict[str]) -> dict[str]:
     return components
 
 
-def extract(item_id: str, components: dict[str], nbt: dict[str], version: int) -> dict[str]:
+def extract(item_id: str, components: dict[str, Any] | None, nbt: dict[str, Any], version: int) -> dict[str, Any]:
     if components == None:
         components = {}
 
@@ -161,7 +162,7 @@ def extract(item_id: str, components: dict[str], nbt: dict[str], version: int) -
         del nbt["author"]
 
     if "BlockEntityTag" in nbt:
-        block_entity_tag: dict[str] = nbt["BlockEntityTag"]
+        block_entity_tag: dict[str, Any] = nbt["BlockEntityTag"]
 
         if "Base" in block_entity_tag:
             components["minecraft:base_color"] = miscellaneous.color(block_entity_tag["Base"].value)
@@ -171,7 +172,7 @@ def extract(item_id: str, components: dict[str], nbt: dict[str], version: int) -
             if "minecraft:bees" not in components:
                 components["minecraft:bees"] = []
             for bee in block_entity_tag["Bees"]:
-                bee_entry: dict[str] = {}
+                bee_entry: dict[str, Any] = {}
                 if "EntityData" in bee:
                     bee_entry["entity_data"] = bee["EntityData"]
                 if "TicksInHive" in bee:
@@ -186,7 +187,7 @@ def extract(item_id: str, components: dict[str], nbt: dict[str], version: int) -
                 components["minecraft:container"] = []
             container = components["minecraft:container"]
             for item in block_entity_tag["Items"]:
-                container_entry: dict[str] = {}
+                container_entry: dict[str, Any] = {}
                 if "Slot" in item:
                     container_entry["slot"] = nbt_tags.TypeInt(item["Slot"])
                 container_entry["item"] = {}
@@ -224,7 +225,7 @@ def extract(item_id: str, components: dict[str], nbt: dict[str], version: int) -
                 components["minecraft:banner_patterns"] = []
             banner_patterns = components["minecraft:banner_patterns"]
             for pattern in block_entity_tag["Patterns"]:
-                banner_pattern: dict[str] = {}
+                banner_pattern: dict[str, Any] = {}
                 if "Pattern" in pattern:
                     banner_pattern["pattern"] = miscellaneous.banner_pattern(pattern["Pattern"], version)
                 if "Color" in pattern:
@@ -268,7 +269,7 @@ def extract(item_id: str, components: dict[str], nbt: dict[str], version: int) -
         can_break = components["minecraft:can_break"]
         if "predicates" not in can_break:
             can_break["predicates"] = []
-        predicates = [{"blocks": []}]
+        predicates: list[dict[str, Any]] = [{"blocks": []}]
         block: str
         for block in nbt["CanDestroy"]:
             if block.startswith("#"):
@@ -656,7 +657,7 @@ def extract(item_id: str, components: dict[str], nbt: dict[str], version: int) -
                     profile["properties"] = []
                 properties: list = profile["properties"]
                 if "textures" in skull_owner["Properties"]:
-                    textures: list[dict[str]] = skull_owner["Properties"]["textures"]
+                    textures: list[dict[str, Any]] = skull_owner["Properties"]["textures"]
                     for texture in textures:
                         property_entry = {"name": "textures"}
                         if "Value" in texture:

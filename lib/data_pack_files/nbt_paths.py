@@ -45,7 +45,7 @@ def update(path: str, version: int, issues: list[dict[str, str | int]], source: 
         log(str(path_parts))
     return pack(path_parts[1:])
 
-def direct_update(path_parts: list[str], version: int, issues: list[dict[str, str]], source: str) -> list[str]:
+def direct_update(path_parts: list[str], version: int, issues: list[dict[str, str | int]], source: str) -> list[str]:
     global pack_version
     pack_version = version
 
@@ -114,7 +114,7 @@ def pack(path_parts: list[str]) -> str:
 
 
 
-def build_nbt_from_path(nbt, path_parts: list[str]) -> tuple[dict[str], list[str]]:
+def build_nbt_from_path(nbt, path_parts: list[str]) -> tuple[dict[str, Any], list[str]]:
     if len(path_parts) == 0:
         return nbt, path_parts
     

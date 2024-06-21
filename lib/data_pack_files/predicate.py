@@ -182,6 +182,7 @@ def predicate_item(contents: dict, version: int) -> dict:
                     {
                         "id": contents["items"][index],
                         "data_value": -1,
+                        "components": {},
                         "nbt": {},
                         "read": True
                     },
@@ -192,6 +193,7 @@ def predicate_item(contents: dict, version: int) -> dict:
                 {
                     "id": contents["items"],
                     "data_value": -1,
+                    "components": {},
                     "nbt": {},
                     "read": True
                 },

@@ -118,6 +118,7 @@ def update_entry(entry: LootTableEntry, version: int) -> LootTableEntry:
                     {
                         "id": entry["name"],
                         "data_value": -1,
+                        "components": {},
                         "nbt": {},
                         "read": True
                     },

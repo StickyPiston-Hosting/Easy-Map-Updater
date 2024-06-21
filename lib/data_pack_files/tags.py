@@ -51,6 +51,7 @@ def update(file_path: Path, og_file_path: Path, version: int, tag_type: str):
                 {
                     "id": contents["values"][i],
                     "data_value": -1,
+                    "components": {},
                     "nbt": {},
                     "read": True
                 },
