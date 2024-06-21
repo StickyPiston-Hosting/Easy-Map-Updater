@@ -6,11 +6,10 @@
 # Import things
 
 import json
-from typing import Any
+from typing import cast, Any
 from nbt import nbt as NBT
 from pathlib import Path
 from lib.log import log
-from lib.data_pack_files import tables
 from lib import defaults
 from lib import utils
 
@@ -145,7 +144,6 @@ class TypeLongArray(TypeList):
 
 # Import more stuff to prevent circular loading issues
 
-from typing import cast, Any
 from lib.data_pack_files import command
 from lib.data_pack_files import arguments
 from lib.data_pack_files import items

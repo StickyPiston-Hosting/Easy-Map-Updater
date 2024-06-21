@@ -8,7 +8,7 @@
 import math
 from enum import Enum
 from pathlib import Path
-from typing import cast, Any, TypedDict
+from typing import cast, TypedDict
 from nbt import nbt as NBT
 from nbt import region
 from lib.log import log

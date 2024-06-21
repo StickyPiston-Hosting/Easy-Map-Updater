@@ -30,7 +30,6 @@ from lib.data_pack_files.command_helpers import safe_nbt_interpret
 from lib.data_pack_files.restore_behavior import firework_damage_canceler
 from lib.region_files import illegal_chunk
 from lib import defaults
-from lib import utils
 
 
 

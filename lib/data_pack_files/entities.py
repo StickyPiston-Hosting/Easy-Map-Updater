@@ -6,7 +6,6 @@
 # Import things
 
 from typing import cast
-from lib.log import log
 from lib.data_pack_files import nbt_tags
 from lib.data_pack_files import miscellaneous
 from lib.data_pack_files import tables

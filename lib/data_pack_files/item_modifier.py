@@ -7,7 +7,7 @@
 
 import json
 from pathlib import Path
-from typing import cast, Any
+from typing import Any
 from lib.log import log
 from lib import defaults
 from lib import json_manager
