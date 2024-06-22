@@ -201,15 +201,12 @@ def update_tags(folder: Path, og_folder: Path, tag_type: str):
 
 
 
-def extract_stored_functions(world: Path, og_world: Path, get_confirmation: bool):
+def extract_stored_functions(world: Path, get_confirmation: bool):
     log("Extracting stored functions")
 
     # Check for errors
     if not world.exists():
         log("ERROR: World does not exist!")
-        return
-    if not og_world.exists():
-        log("ERROR: Original copy of world does not exist!")
         return
     if not (world / "data" / "functions"):
         log("ERROR: World has no stored functions!")
@@ -244,11 +241,11 @@ def extract_stored_functions(world: Path, og_world: Path, get_confirmation: bool
         for file_path in namespace.glob("**/*.mcfunction"):
             destination = data_pack / "data" / namespace.name.lower() / "functions" / file_path.as_posix()[path_length:].lower()
             destination.parent.mkdir(exist_ok=True, parents=True)
-            shutil.move(file_path, data_pack / "data" / namespace.name.lower() / "functions" / file_path.as_posix()[path_length:].lower())
+            shutil.move(file_path, destination)
 
     # Get gameLoopFunction value
-    if (og_world / "level.dat").exists():
-        file = NBT.NBTFile(og_world / "level.dat")
+    if (world / "level.dat").exists():
+        file = NBT.NBTFile(world / "level.dat")
         if (
             "Data" in file and
             "GameRules" in file["Data"] and
@@ -313,7 +310,7 @@ def extract_stored_advancements(world: Path, get_confirmation: bool):
         for file_path in namespace.glob("**/*.json"):
             destination = data_pack / "data" / namespace.name.lower() / "advancements" / file_path.as_posix()[path_length:].lower()
             destination.parent.mkdir(exist_ok=True, parents=True)
-            shutil.move(file_path, data_pack / "data" / namespace.name.lower() / "advancements" / file_path.as_posix()[path_length:].lower())
+            shutil.move(file_path, destination)
 
     log("Stored advancements extracted")
 

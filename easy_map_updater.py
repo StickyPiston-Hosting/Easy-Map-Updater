@@ -694,7 +694,6 @@ def action_firework_damage_canceler():
 def action_stored_functions(manual: bool = True): # Needs confirmation
     data_pack.extract_stored_functions(
         MINECRAFT_PATH / "saves" / option_manager.get_map_name(),
-        MINECRAFT_PATH / "saves" / f'{option_manager.get_map_name()}_original',
         manual
     )
 
