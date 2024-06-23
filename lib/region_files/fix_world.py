@@ -7,7 +7,7 @@
 
 import math
 from pathlib import Path
-from typing import cast, Any
+from typing import cast, Any, TypedDict
 from nbt import nbt as NBT
 from nbt import region
 from lib import defaults
@@ -37,20 +37,28 @@ uuid_list: list[str] = []
 
 # Define functions
 
-def fix(world: Path, source_world: Path, version: int, get_confirmation: bool) -> dict[str, bool]:
+class FixWorldFlags(TypedDict):
+    spawner_bossbar: bool
+
+def fix(world: Path, source_world: Path, version: int, get_confirmation: bool) -> FixWorldFlags:
     log("Fixing world data")
 
     # Set pack version
     global pack_version
     pack_version = version
 
+    # Initialize flags
+    flags: FixWorldFlags = {
+        "spawner_bossbar": False,
+    }
+
     # Check for errors
     if not world.exists():
         log("ERROR: World does not exist!")
-        return {}
+        return flags
     if not source_world.exists():
         log("ERROR: Source copy of world does not exist!")
-        return {}
+        return flags
 
     # Get confirmation
     if get_confirmation:
@@ -58,7 +66,7 @@ def fix(world: Path, source_world: Path, version: int, get_confirmation: bool) -
         confirm = input("Is this okay? (Y/N): ")
         if confirm not in ["Y", "y"]:
             log("Action canceled")
-            return {}
+            return flags
     
     # Get the time
     global TIME
@@ -93,16 +101,15 @@ def fix(world: Path, source_world: Path, version: int, get_confirmation: bool) -
     log("World data fixed")
 
     # Create spawner bossbar storage file
-    spawn_bossbar_boolean = False
     if spawner_bossbar_list:
         create_spawner_bossbar_file(world)
-        spawn_bossbar_boolean = True
+        flags["spawner_bossbar"] = True
 
     # Create spawner position data pack
     if spawner_position_list:
         spawner_position.create_pack(world, spawner_position_list)
 
-    return {"spawner_bossbar": spawn_bossbar_boolean}
+    return flags
 
 
 

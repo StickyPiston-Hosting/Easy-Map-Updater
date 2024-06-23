@@ -38,11 +38,21 @@ def delete_file(file: Path):
 
 
 
-def scan_world(world: Path, resource_pack: Path) -> dict[str, bool]:
+class WorldScan(TypedDict):
+    world: bool
+    resource_pack: bool
+    disabled_vanilla: bool
+    zipped_data_packs: bool
+    stored_functions: bool
+    stored_advancements: bool
+    advancements: bool
+    recipes: bool
+
+def scan_world(world: Path, resource_pack: Path) -> WorldScan:
     log("Scanning world")
 
     # Initialize booleans
-    booleans = {
+    booleans: WorldScan = {
         "world": False,
         "resource_pack": False,
         "disabled_vanilla": False,
@@ -50,7 +60,7 @@ def scan_world(world: Path, resource_pack: Path) -> dict[str, bool]:
         "stored_functions": False,
         "stored_advancements": False,
         "advancements": False,
-        "recipes": False
+        "recipes": False,
     }
 
     # Throw error if the world doesn't exist
