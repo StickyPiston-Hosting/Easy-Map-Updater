@@ -21,7 +21,7 @@ namespaced_id = ""
 
 # Define functions
 
-def update(file_path: Path, og_file_path: Path, version: int, function_id: str):
+def update(file_path: Path, source_file_path: Path, version: int, function_id: str):
     # Set pack version
     global pack_version
     pack_version = version
@@ -33,7 +33,7 @@ def update(file_path: Path, og_file_path: Path, version: int, function_id: str):
         log(f"Function: {namespaced_id}")
 
     # Read file
-    with og_file_path.open("r", encoding="utf-8") as file:
+    with source_file_path.open("r", encoding="utf-8") as file:
         contents = file.read()
 
     # Write to new location

@@ -37,8 +37,8 @@ PACK_FORMAT = defaults.DATA_PACK_FORMAT
 def update(world: Path, version: int):
     log("Updating data packs")
 
-    # Set original path
-    og_world = world.parent / f'{world.name}_original'
+    # Set source path
+    source_world = world.parent / f'{world.name}_source'
 
     # Set pack version
     global pack_version
@@ -48,23 +48,23 @@ def update(world: Path, version: int):
     if not world.exists():
         log("ERROR: World does not exist!")
         return
-    if not og_world.exists():
-        log("ERROR: Original copy of world doesn't exist, prepare it!")
+    if not source_world.exists():
+        log("ERROR: Source copy of world doesn't exist, prepare it!")
         return
     if not (world / "datapacks").exists():
         log("ERROR: World has no data packs!")
         return
-    if not (og_world / "datapacks").exists():
-        log("ERROR: Original copy of world has no data packs!")
+    if not (source_world / "datapacks").exists():
+        log("ERROR: Source copy of world has no data packs!")
         return
 
     # Update data packs
-    for data_pack in (og_world / "datapacks").iterdir():
+    for data_pack in (source_world / "datapacks").iterdir():
         if data_pack.is_file():
             continue
         update_data_pack(
             world / "datapacks" / data_pack.name,
-            og_world / "datapacks" / data_pack.name,
+            source_world / "datapacks" / data_pack.name,
             data_pack.name
         )
 
@@ -73,22 +73,22 @@ def update(world: Path, version: int):
 
 
 
-def update_data_pack(pack: Path, og_pack: Path, data_pack: str):
+def update_data_pack(pack: Path, source_pack: Path, data_pack: str):
     log(f"Updating {data_pack}")
 
     pack.mkdir(exist_ok=True, parents=True)
-    update_pack_mcmeta(pack, og_pack)
-    update_namespaces(pack, og_pack)
+    update_pack_mcmeta(pack, source_pack)
+    update_namespaces(pack, source_pack)
 
 
 
-def update_pack_mcmeta(pack: Path, og_pack: Path):
-    # Skip if the original pack.mcmeta does not exist
-    if not (og_pack / "pack.mcmeta").exists():
+def update_pack_mcmeta(pack: Path, source_pack: Path):
+    # Skip if the source pack.mcmeta does not exist
+    if not (source_pack / "pack.mcmeta").exists():
         return
 
     # Modify contents of pack.mcmeta
-    contents, load_bool = json_manager.safe_load(og_pack / "pack.mcmeta")
+    contents, load_bool = json_manager.safe_load(source_pack / "pack.mcmeta")
     if not load_bool:
         return
     if contents["pack"]["pack_format"] < PACK_FORMAT:
@@ -98,118 +98,115 @@ def update_pack_mcmeta(pack: Path, og_pack: Path):
 
 
 
-def update_namespaces(pack: Path, og_pack: Path):
+def update_namespaces(pack: Path, source_pack: Path):
     # Skip if the data folder does not exist
-    if not (og_pack / "data").exists():
+    if not (source_pack / "data").exists():
         return
 
     # Iterate through namespaces
-    for namespace in (og_pack / "data").iterdir():
+    for namespace in (source_pack / "data").iterdir():
         # Skip if not a folder
         if not namespace.is_dir():
             continue
 
         # Update functions
         folder = pack / "data" / namespace.name / "functions"
-        og_folder = namespace / "functions"
-        if og_folder.exists():
-            update_functions(folder, og_folder, namespace.name)
+        source_folder = namespace / "functions"
+        if source_folder.exists():
+            update_functions(folder, source_folder, namespace.name)
 
         # Update advancements
         folder = pack / "data" / namespace.name / "advancements"
-        og_folder = namespace / "advancements"
-        if og_folder.exists():
-            update_advancements(folder, og_folder)
+        source_folder = namespace / "advancements"
+        if source_folder.exists():
+            update_advancements(folder, source_folder)
 
         # Update predicates
         folder = pack / "data" / namespace.name / "predicates"
-        og_folder = namespace / "predicates"
-        if og_folder.exists():
-            update_predicates(folder, og_folder)
+        source_folder = namespace / "predicates"
+        if source_folder.exists():
+            update_predicates(folder, source_folder)
 
         # Update loot tables
         folder = pack / "data" / namespace.name / "loot_tables"
-        og_folder = namespace / "loot_tables"
-        if og_folder.exists():
-            update_loot_tables(folder, og_folder)
+        source_folder = namespace / "loot_tables"
+        if source_folder.exists():
+            update_loot_tables(folder, source_folder)
 
         # Update item modifiers
         folder = pack / "data" / namespace.name / "item_modifiers"
-        og_folder = namespace / "item_modifiers"
-        if og_folder.exists():
-            update_item_modifiers(folder, og_folder)
+        source_folder = namespace / "item_modifiers"
+        if source_folder.exists():
+            update_item_modifiers(folder, source_folder)
 
         # Update block tags
         folder = pack / "data" / namespace.name / "tags" / "blocks"
-        og_folder = namespace / "tags" / "blocks"
-        if og_folder.exists():
-            update_tags(folder, og_folder, "blocks")
+        source_folder = namespace / "tags" / "blocks"
+        if source_folder.exists():
+            update_tags(folder, source_folder, "blocks")
 
         # Update item tags
         folder = pack / "data" / namespace.name / "tags" / "items"
-        og_folder = namespace / "tags" / "items"
-        if og_folder.exists():
-            update_tags(folder, og_folder, "items")
+        source_folder = namespace / "tags" / "items"
+        if source_folder.exists():
+            update_tags(folder, source_folder, "items")
 
 
 
-def update_functions(folder: Path, og_folder: Path, namespace: str):
-    for og_file_path in og_folder.glob("**/*.mcfunction"):
-        pack_subdir = og_file_path.as_posix()[len(og_folder.as_posix()) + 1:]
+def update_functions(folder: Path, source_folder: Path, namespace: str):
+    for source_file_path in source_folder.glob("**/*.mcfunction"):
+        pack_subdir = source_file_path.as_posix()[len(source_folder.as_posix()) + 1:]
         file_path = folder / pack_subdir
-        mcfunction.update(file_path, og_file_path, pack_version, namespace + ":" + pack_subdir.split(".")[0].replace("\\", "/"))
+        mcfunction.update(file_path, source_file_path, pack_version, namespace + ":" + pack_subdir.split(".")[0].replace("\\", "/"))
 
 
 
-def update_advancements(folder: Path, og_folder: Path):
-    for og_file_path in og_folder.glob("**/*.json"):
-        pack_subdir = og_file_path.as_posix()[len(og_folder.as_posix()) + 1:]
+def update_advancements(folder: Path, source_folder: Path):
+    for source_file_path in source_folder.glob("**/*.json"):
+        pack_subdir = source_file_path.as_posix()[len(source_folder.as_posix()) + 1:]
         file_path = folder / pack_subdir
-        advancement.update(file_path, og_file_path, pack_version)
+        advancement.update(file_path, source_file_path, pack_version)
 
 
 
-def update_predicates(folder: Path, og_folder: Path):
-    for og_file_path in og_folder.glob("**/*.json"):
-        pack_subdir = og_file_path.as_posix()[len(og_folder.as_posix()) + 1:]
+def update_predicates(folder: Path, source_folder: Path):
+    for source_file_path in source_folder.glob("**/*.json"):
+        pack_subdir = source_file_path.as_posix()[len(source_folder.as_posix()) + 1:]
         file_path = folder / pack_subdir
-        predicate.update(file_path, og_file_path, pack_version)
+        predicate.update(file_path, source_file_path, pack_version)
 
 
 
-def update_loot_tables(folder: Path, og_folder: Path):
-    for og_file_path in og_folder.glob("**/*.json"):
-        pack_subdir = og_file_path.as_posix()[len(og_folder.as_posix()) + 1:]
+def update_loot_tables(folder: Path, source_folder: Path):
+    for source_file_path in source_folder.glob("**/*.json"):
+        pack_subdir = source_file_path.as_posix()[len(source_folder.as_posix()) + 1:]
         file_path = folder / pack_subdir
-        loot_table.update(file_path, og_file_path, pack_version)
+        loot_table.update(file_path, source_file_path, pack_version)
 
 
 
-def update_item_modifiers(folder: Path, og_folder: Path):
-    for og_file_path in og_folder.glob("**/*.json"):
-        pack_subdir = og_file_path.as_posix()[len(og_folder.as_posix()) + 1:]
+def update_item_modifiers(folder: Path, source_folder: Path):
+    for source_file_path in source_folder.glob("**/*.json"):
+        pack_subdir = source_file_path.as_posix()[len(source_folder.as_posix()) + 1:]
         file_path = folder / pack_subdir
-        item_modifier.update(file_path, og_file_path, pack_version)
+        item_modifier.update(file_path, source_file_path, pack_version)
 
 
 
-def update_tags(folder: Path, og_folder: Path, tag_type: str):
-    for og_file_path in og_folder.glob("**/*.json"):
-        pack_subdir = og_file_path.as_posix()[len(og_folder.as_posix()) + 1:]
+def update_tags(folder: Path, source_folder: Path, tag_type: str):
+    for source_file_path in source_folder.glob("**/*.json"):
+        pack_subdir = source_file_path.as_posix()[len(source_folder.as_posix()) + 1:]
         file_path = folder / pack_subdir
-        tags.update(file_path, og_file_path, pack_version, tag_type)
+        tags.update(file_path, source_file_path, pack_version, tag_type)
 
 
 
-def extract_stored_functions(world: Path, og_world: Path, get_confirmation: bool):
+def extract_stored_functions(world: Path, get_confirmation: bool):
     log("Extracting stored functions")
 
     # Check for errors
     if not world.exists():
         log("ERROR: World does not exist!")
-        return
-    if not og_world.exists():
-        log("ERROR: Original copy of world does not exist!")
         return
     if not (world / "data" / "functions"):
         log("ERROR: World has no stored functions!")
@@ -244,11 +241,11 @@ def extract_stored_functions(world: Path, og_world: Path, get_confirmation: bool
         for file_path in namespace.glob("**/*.mcfunction"):
             destination = data_pack / "data" / namespace.name.lower() / "functions" / file_path.as_posix()[path_length:].lower()
             destination.parent.mkdir(exist_ok=True, parents=True)
-            shutil.move(file_path, data_pack / "data" / namespace.name.lower() / "functions" / file_path.as_posix()[path_length:].lower())
+            shutil.move(file_path, destination)
 
     # Get gameLoopFunction value
-    if (og_world / "level.dat").exists():
-        file = NBT.NBTFile(og_world / "level.dat")
+    if (world / "level.dat").exists():
+        file = NBT.NBTFile(world / "level.dat")
         if (
             "Data" in file and
             "GameRules" in file["Data"] and
@@ -313,7 +310,7 @@ def extract_stored_advancements(world: Path, get_confirmation: bool):
         for file_path in namespace.glob("**/*.json"):
             destination = data_pack / "data" / namespace.name.lower() / "advancements" / file_path.as_posix()[path_length:].lower()
             destination.parent.mkdir(exist_ok=True, parents=True)
-            shutil.move(file_path, data_pack / "data" / namespace.name.lower() / "advancements" / file_path.as_posix()[path_length:].lower())
+            shutil.move(file_path, destination)
 
     log("Stored advancements extracted")
 

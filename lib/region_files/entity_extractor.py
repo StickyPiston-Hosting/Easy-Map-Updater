@@ -61,7 +61,7 @@ def extract_from_region(world: Path, region_file_path: Path, entities_folder_pat
     
     opened_entity_file = False
     region_file = region.RegionFile(region_file_path)
-    entity_file = region.RegionFile()
+    entity_file = None
     for chunk_metadata in cast(list[region.ChunkMetadata], region_file.get_metadata()):
         if defaults.DEBUG_MODE:
             log(f"Extracting {chunk_metadata.x}, {chunk_metadata.z}")
@@ -92,8 +92,11 @@ def extract_from_region(world: Path, region_file_path: Path, entities_folder_pat
 
         # Open entity chunk, create it if it doesn't exist
         try:
-            entity_chunk = entity_file.get_nbt(chunk_metadata.x, chunk_metadata.z)
-            if not entity_chunk:
+            if entity_file:
+                entity_chunk = entity_file.get_nbt(chunk_metadata.x, chunk_metadata.z)
+                if not entity_chunk:
+                    raise
+            else:
                 raise
         except:
             entity_chunk = NBT.NBTFile()
@@ -109,4 +112,5 @@ def extract_from_region(world: Path, region_file_path: Path, entities_folder_pat
 
         # Save chunks
         region_file.write_chunk(chunk_metadata.x, chunk_metadata.z, region_chunk)
-        entity_file.write_chunk(chunk_metadata.x, chunk_metadata.z, entity_chunk)
+        if entity_file:
+            entity_file.write_chunk(chunk_metadata.x, chunk_metadata.z, entity_chunk)

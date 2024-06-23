@@ -38,7 +38,7 @@ if not (
 import shutil
 import json
 import traceback
-from typing import TypedDict, Callable
+from typing import cast, TypedDict, Callable
 from enum import Enum
 from pathlib import Path
 from lib.log import log
@@ -111,6 +111,7 @@ class Action(Enum):
     WORLD_ORIGINAL = "world.original"
     WORLD_ORIGINAL_PLAY = "world.original.play"
     WORLD_RELOAD = "world.reload"
+    WORLD_SOURCE = "world.source"
     WORLD_PLAY = "world.play"
     WORLD_FIX = "world.fix"
 
@@ -140,16 +141,40 @@ class Action(Enum):
     DEBUG_JSON = "debug.json"
     DEBUG = "debug"
 
+
+
 class ActionDefinition(TypedDict):
     show: bool
     function: Callable
     name: str
 
 actions: dict[str, ActionDefinition]
-update_progress: dict[str, int | bool] = {
-    "stage": 0,
-    "zipped_data_packs": False,
-}
+
+
+
+class UpdateProgressDefinition(TypedDict):
+    stage: int
+    world_scan: finalize.WorldScan
+    fix_world_flags: fix_world.FixWorldFlags
+
+def default_update_progress() -> UpdateProgressDefinition:
+    return {
+        "stage": 0,
+        "world_scan": {
+            "world": False,
+            "resource_pack": False,
+            "disabled_vanilla": False,
+            "zipped_data_packs": False,
+            "stored_functions": False,
+            "stored_advancements": False,
+            "advancements": False,
+            "recipes": False,
+        },
+        "fix_world_flags": {
+            "spawner_bossbar": False,
+        },
+    }
+update_progress: UpdateProgressDefinition = default_update_progress()
 
 
 
@@ -185,6 +210,7 @@ def program():
         try:
             actions[action]["function"]()
         except Exception:
+            save_session()
             print("")
             log(f'ERROR:\n{traceback.format_exc()}', True)
 
@@ -192,29 +218,33 @@ def program():
         save_session()
         list_actions()
 
+class SessionDefinition(TypedDict):
+    actions: dict[str, bool]
+    update_progress: UpdateProgressDefinition
+
 def load_session():
     session_path = PROGRAM_PATH / "session.json"
     if not session_path.exists():
         return
     with session_path.open("r", encoding="utf-8") as file:
-        session = json.load(file)
+        session = cast(SessionDefinition, json.load(file))
     if "debug.cmd" in session:
-        session = {"actions": session}
+        session = cast(SessionDefinition, {"actions": session})
 
     if "actions" not in session:
-        session["actions"] = {}
+        session["actions"] = cast(dict[str, bool], {})
     for action in session["actions"]:
         if action in actions:
             actions[action]["show"] = session["actions"][action]
 
     if "update_progress" in session:
-        global update_progress
-        update_progress = session["update_progress"]
-
-    
+        session_update_progress = session["update_progress"]
+        for key in ["stage", "world_scan", "fix_world_flags"]:
+            if key in session_update_progress:
+                update_progress[key] = session_update_progress[key]
 
 def save_session():
-    session: dict[str, dict[str, int | bool]] = {
+    session: SessionDefinition = {
         "actions": {},
         "update_progress": update_progress
     }
@@ -250,6 +280,10 @@ def action_reset():
         Action.UPDATE.value:                { "show": True,  "function": action_update, "name": "Update map" },
         Action.SCAN.value:                  { "show": True,  "function": action_scan_world, "name": "Scans your world to gather relevant information" },
 
+        Action.WORLD_ORIGINAL.value:        { "show": False, "function": action_prepare_original_copy_world, "name": "Prepare original copy of world (do this before updating)" },
+        Action.WORLD_ORIGINAL_PLAY.value:   { "show": False, "function": action_prepare_original_play_copy, "name": "Prepare play version of original copy of world" },
+        Action.WORLD_RELOAD.value:          { "show": False, "function": action_reload_from_original_world, "name": "Reload world from original copy" },
+
         Action.RP_IMPORT.value:             { "show": False, "function": action_import_resource_pack, "name": "Import resource pack from world" },
         Action.RP_ORIGINAL.value:           { "show": False, "function": action_prepare_original_copy_resource_pack, "name": "Prepare original copy of resource pack" },
         Action.RP_RELOAD.value:             { "show": False, "function": action_reload_from_original_resource_pack, "name": "Reload resource pack from original copy" },
@@ -266,9 +300,7 @@ def action_reset():
         Action.DP_ADVANCEMENT.value:        { "show": False, "function": action_disable_advancements, "name": "Disable advancements (if one of the data packs makes them all impossible)" },
         Action.DP_RECIPE.value:             { "show": False, "function": action_disable_recipes, "name": "Disable recipes (if one of the data packs makes them all impossible)" },
 
-        Action.WORLD_ORIGINAL.value:        { "show": False, "function": action_prepare_original_copy_world, "name": "Prepare original copy of world (do this before opening the world)" },
-        Action.WORLD_ORIGINAL_PLAY.value:   { "show": False, "function": action_prepare_original_play_copy, "name": "Prepare play version of original copy of world" },
-        Action.WORLD_RELOAD.value:          { "show": False, "function": action_reload_from_original_world, "name": "Reload world from original copy" },
+        Action.WORLD_SOURCE.value:          { "show": False, "function": action_prepare_source_copy, "name": "Prepare source copy of world (do this before opening world)" },
         
         Action.DP_UPDATE.value:             { "show": False, "function": action_update_data_packs, "name": "Update data packs" },
 
@@ -305,7 +337,7 @@ def action_reset():
 
         Action.DP_ZIP.value:                { "show": False, "function": action_zip_data_packs, "name": "Zip data packs" },
         Action.RP_EXPORT.value:             { "show": False, "function": action_export_resource_pack, "name": "Export resource pack to world" },
-        Action.RP_EXPORT_ORIGINAL.value:    { "show": False, "function": action_export_original_resource_pack, "name": "Export original resource pack to original world" },
+        Action.RP_EXPORT_ORIGINAL.value:    { "show": False, "function": action_export_original_resource_pack, "name": "Export original resource pack to source world" },
         Action.CLEAN.value:                 { "show": False, "function": action_clean_up, "name": "Clean up files (remove worlds and resource pack)" },
 
         Action.VERSION.value:               { "show": True,  "function": action_set_version, "name": "Edit source version" },
@@ -330,6 +362,7 @@ def action_update(): # Needs confirmation
     # Make sure that world exists
     world: Path = MINECRAFT_PATH / "saves" / option_manager.get_map_name()
     og_world: Path = MINECRAFT_PATH / "saves" / f'{option_manager.get_map_name()}_original'
+    source_world: Path = MINECRAFT_PATH / "saves" / f'{option_manager.get_map_name()}_source'
     resource_pack: Path = MINECRAFT_PATH / "resourcepacks" / option_manager.get_resource_pack()
     if not world.exists():
         log("ERROR: World does not exist!")
@@ -358,34 +391,40 @@ def action_update(): # Needs confirmation
             confirm = input("Original copy of world found, do you wish to update from the original? (Y/N): ")
             if confirm in ["y", "Y"]:
                 action_reload_from_original_world(False)
+        else:
+            action_prepare_original_copy_world(False)
         next_update_progress_section()
 
     # Scan world
-    scan_world_booleans = finalize.scan_world(
-        world,
-        resource_pack
-    )
+    progress_scan = update_progress["world_scan"]
+    progress_flags = update_progress["fix_world_flags"]
     if update_progress["stage"] == 100:
+        world_scan = finalize.scan_world(
+            world,
+            resource_pack
+        )
         scan_again = False
-        update_progress["zipped_data_packs"] = False
-        if scan_world_booleans["resource_pack"]:
+        for key in world_scan:
+            progress_scan[key] = world_scan[key]
+        if world_scan["resource_pack"]:
             action_import_resource_pack(False)
             scan_again = True
-        if scan_world_booleans["zipped_data_packs"]:
+        if world_scan["zipped_data_packs"]:
             action_unzip_data_packs(False)
             scan_again = True
-            update_progress["zipped_data_packs"] = True
-        if scan_world_booleans["stored_functions"]:
+        if world_scan["stored_functions"]:
             action_stored_functions(False)
             scan_again = True
-        if scan_world_booleans["stored_advancements"]:
+        if world_scan["stored_advancements"]:
             action_stored_advancements(False)
             scan_again = True
         if scan_again:
-            scan_world_booleans = finalize.scan_world(
+            world_scan = finalize.scan_world(
                 world,
                 resource_pack
             )
+            for key in world_scan:
+                progress_scan[key] = world_scan[key]
         next_update_progress_section()
 
     version: int = option_manager.get_version()
@@ -399,17 +438,17 @@ def action_update(): # Needs confirmation
 
     # Update data pack
     if update_progress["stage"] == 300:
-        if scan_world_booleans["disabled_vanilla"]:
+        if progress_scan["disabled_vanilla"]:
             action_fix_disabled_vanilla()
         next_update_progress()
     if update_progress["stage"] == 301:
-        if scan_world_booleans["advancements"]:
+        if progress_scan["advancements"]:
             print("")
             log("Advancements in the 'minecraft' namespace were found, which may be used to disable advancements in older maps")
             confirm = input("Do you wish to disable them via pack.mcmeta filters instead? (Y/N): ")
             if confirm in ["y", "Y"]:
                 action_disable_advancements(False)
-        if scan_world_booleans["recipes"]:
+        if progress_scan["recipes"]:
             print("")
             log("Recipes in the 'minecraft' namespace were found, which may be used to disable recipes in older maps")
             confirm = input("Do you wish to disable them via pack.mcmeta filters instead? (Y/N): ")
@@ -417,7 +456,7 @@ def action_update(): # Needs confirmation
                 action_disable_recipes(False)
         next_update_progress()
     if update_progress["stage"] == 302:
-        action_prepare_original_copy_world(False)
+        action_prepare_source_copy(False)
         next_update_progress()
     if update_progress["stage"] == 303:
         action_update_data_packs(False)
@@ -439,8 +478,9 @@ def action_update(): # Needs confirmation
             action_entity_extract(False)
         next_update_progress()
     if update_progress["stage"] == 501:
-        fix_world_booleans = action_fix_world(False)
-        update_progress["spawner_bossbar"] = fix_world_booleans["spawner_bossbar"]
+        fix_world_flags = action_fix_world(False)
+        for key in fix_world_flags:
+            progress_flags[key] = fix_world_flags[key]
         next_update_progress_section()
 
     # Update command blocks
@@ -456,7 +496,7 @@ def action_update(): # Needs confirmation
 
     # Add various things to the world to restore old behavior
     if update_progress["stage"] == 700:
-        if update_progress["spawner_bossbar"]:
+        if progress_flags["spawner_bossbar"]:
             action_spawner_bossbar()
         next_update_progress()
     if update_progress["stage"] == 701:
@@ -512,7 +552,7 @@ def action_update(): # Needs confirmation
         action_finalize_map(False)
         next_update_progress()
     if update_progress["stage"] == 802:
-        if update_progress["zipped_data_packs"]:
+        if progress_scan["zipped_data_packs"]:
             action_zip_data_packs(False)
         next_update_progress()
     if update_progress["stage"] == 803:
@@ -535,11 +575,7 @@ def action_update(): # Needs confirmation
 
 def reset_update_progress():
     global update_progress
-    update_progress = {
-        "stage": 0,
-        "zipped_data_packs": False,
-        "spawner_bossbar": False,
-    }
+    update_progress = default_update_progress()
     save_session()
 
 def next_update_progress():
@@ -553,28 +589,28 @@ def next_update_progress_section():
 
 
 def action_scan_world():
-    booleans = finalize.scan_world(
+    world_scan = finalize.scan_world(
         MINECRAFT_PATH / "saves" / option_manager.get_map_name(),
         MINECRAFT_PATH / "resourcepacks" / option_manager.get_resource_pack()
     )
 
-    if not booleans["world"]:
+    if not world_scan["world"]:
         return
 
     global actions
-    if booleans["resource_pack"]:
+    if world_scan["resource_pack"]:
         actions[Action.RP_IMPORT.value]["show"] = True
-    if booleans["disabled_vanilla"]:
+    if world_scan["disabled_vanilla"]:
         actions[Action.DP_VANILLA.value]["show"] = True
-    if booleans["zipped_data_packs"]:
+    if world_scan["zipped_data_packs"]:
         actions[Action.DP_UNZIP.value]["show"] = True
-    if booleans["stored_functions"]:
+    if world_scan["stored_functions"]:
         actions[Action.DP_STORED_FUNCTION.value]["show"] = True
-    if booleans["stored_advancements"]:
+    if world_scan["stored_advancements"]:
         actions[Action.DP_STORED_ADVANCEMENT.value]["show"] = True
-    if booleans["advancements"]:
+    if world_scan["advancements"]:
         actions[Action.DP_ADVANCEMENT.value]["show"] = True
-    if booleans["recipes"]:
+    if world_scan["recipes"]:
         actions[Action.DP_RECIPE.value]["show"] = True
 
     actions[Action.WORLD_ORIGINAL.value]["show"] = True
@@ -603,7 +639,7 @@ def action_export_resource_pack(manual: bool = True): # Needs confirmation
 
 def action_export_original_resource_pack(manual: bool = True): # Needs confirmation
     resource_pack.export_pack(
-        MINECRAFT_PATH / "saves" / f'{option_manager.get_map_name()}_original',
+        MINECRAFT_PATH / "saves" / f'{option_manager.get_map_name()}_source',
         MINECRAFT_PATH / "resourcepacks" / f'{option_manager.get_resource_pack()}_original',
         manual
     )
@@ -702,7 +738,6 @@ def action_effect_overflow():
 def action_stored_functions(manual: bool = True): # Needs confirmation
     data_pack.extract_stored_functions(
         MINECRAFT_PATH / "saves" / option_manager.get_map_name(),
-        MINECRAFT_PATH / "saves" / f'{option_manager.get_map_name()}_original',
         manual
     )
 
@@ -852,8 +887,7 @@ def action_prepare_original_copy_world(manual: bool = True): # Needs confirmatio
         global actions
         actions[Action.WORLD_ORIGINAL_PLAY.value]["show"] = True
         actions[Action.WORLD_RELOAD.value]["show"] = True
-        actions[Action.DP_UPDATE.value]["show"] = True
-        actions[Action.OPTIMIZE.value]["show"] = True
+        actions[Action.WORLD_SOURCE.value]["show"] = True
 
 def action_prepare_original_play_copy(): # Needs confirmation
     log("Preparing original play world copy")
@@ -901,6 +935,31 @@ def action_reload_from_original_world(manual: bool = True): # Needs confirmation
         global actions
         actions[Action.WORLD_ORIGINAL_PLAY.value]["show"] = True
         actions[Action.WORLD_RELOAD.value]["show"] = True
+        actions[Action.WORLD_SOURCE.value]["show"] = True
+
+def action_prepare_source_copy(manual: bool = True): # Needs confirmation
+    log("Preparing source world copy")
+    
+    world: Path = MINECRAFT_PATH / "saves" / option_manager.get_map_name()
+    source_world: Path = MINECRAFT_PATH / "saves" / f'{option_manager.get_map_name()}_source'
+
+    if source_world.exists() and manual:
+        log(f'This action will overwrite: {source_world.as_posix()}')
+        confirm = input("Is this okay? (Y/N): ")
+        if confirm not in ["Y", "y"]:
+            log("Action canceled")
+            return
+
+    if not world.exists():
+        log("ERROR: World does not exist!")
+        return
+    if source_world.exists():
+        shutil.rmtree(source_world)
+    shutil.copytree(world, source_world)
+    log("Source world copy prepared")
+
+    if manual:
+        global actions
         actions[Action.DP_UPDATE.value]["show"] = True
         actions[Action.OPTIMIZE.value]["show"] = True
 
@@ -1011,7 +1070,7 @@ def action_illegal_chunk():
 def action_fix_world(manual: bool = True): # Needs confirmation
     booleans = fix_world.fix(
         MINECRAFT_PATH / "saves" / option_manager.get_map_name(),
-        MINECRAFT_PATH / "saves" / f'{option_manager.get_map_name()}_original',
+        MINECRAFT_PATH / "saves" / f'{option_manager.get_map_name()}_source',
         option_manager.get_version(),
         manual
     )
@@ -1046,6 +1105,7 @@ def action_clean_up(): # Needs confirmation
     paths: list[Path] = [
         MINECRAFT_PATH / "saves" / option_manager.get_map_name(),
         MINECRAFT_PATH / "saves" / f'{option_manager.get_map_name()}_original',
+        MINECRAFT_PATH / "saves" / f'{option_manager.get_map_name()}_source',
         MINECRAFT_PATH / "saves" / f'{option_manager.get_map_name()}_play',
         MINECRAFT_PATH / "saves" / f'{option_manager.get_map_name()}_original_play',
         MINECRAFT_PATH / "resourcepacks" / option_manager.get_resource_pack(),

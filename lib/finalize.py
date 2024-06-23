@@ -38,11 +38,21 @@ def delete_file(file: Path):
 
 
 
-def scan_world(world: Path, resource_pack: Path) -> dict[str, bool]:
+class WorldScan(TypedDict):
+    world: bool
+    resource_pack: bool
+    disabled_vanilla: bool
+    zipped_data_packs: bool
+    stored_functions: bool
+    stored_advancements: bool
+    advancements: bool
+    recipes: bool
+
+def scan_world(world: Path, resource_pack: Path) -> WorldScan:
     log("Scanning world")
 
     # Initialize booleans
-    booleans = {
+    booleans: WorldScan = {
         "world": False,
         "resource_pack": False,
         "disabled_vanilla": False,
@@ -50,7 +60,7 @@ def scan_world(world: Path, resource_pack: Path) -> dict[str, bool]:
         "stored_functions": False,
         "stored_advancements": False,
         "advancements": False,
-        "recipes": False
+        "recipes": False,
     }
 
     # Throw error if the world doesn't exist
@@ -383,6 +393,7 @@ def delete_junk_files(world: Path):
     delete_file(world / "level.dat.bak")
     delete_file(world / "session.lock")
     delete_file(world / "uid.dat")
+    delete_file(world / "mcedit_waypoints.dat")
     delete_file(world / ".gitignore")
     delete_file(world / "world_properties.StickyPiston")
     delete_file(world / "data" / "fabricDynamicRegistry.dat")
@@ -429,9 +440,20 @@ def log_data_packs(world: Path):
     file_path = world / "level.dat"
     file = NBT.NBTFile(file_path)
 
+    # Create NBT paths if they don't exist
+    if "Data" not in file:
+        file["Data"] = NBT.TAG_Compound()
+    if "DataPacks" not in file["Data"]:
+        file["Data"]["DataPacks"] = NBT.TAG_Compound()
+    data_packs_compound = file["Data"]["DataPacks"]
+    if "Enabled" not in data_packs_compound:
+        data_packs_compound["Enabled"] = NBT.TAG_List(NBT.TAG_String)
+    if "Disabled" not in data_packs_compound:
+        data_packs_compound["Disabled"] = NBT.TAG_List(NBT.TAG_String)
+
     # Remove disabled packs from the list
     vanilla_disabled = False
-    for data_pack in file["Data"]["DataPacks"]["Disabled"]:
+    for data_pack in data_packs_compound["Disabled"]:
         if str(data_pack) in data_packs:
             data_packs.remove(str(data_pack))
         if str(data_pack) == "vanilla":
@@ -439,14 +461,14 @@ def log_data_packs(world: Path):
 
     # Remove enabled packs which do not exist
     removed_packs = 0
-    length = len(file["Data"]["DataPacks"]["Enabled"])
+    length = len(data_packs_compound["Enabled"])
     for i in range(length):
         i -= removed_packs
-        data_pack = str(file["Data"]["DataPacks"]["Enabled"][i])
+        data_pack = str(data_packs_compound["Enabled"][i])
 
         # Remove if the data pack is already listed in the enabled list
-        if utils.nbt_list_contains(file["Data"]["DataPacks"]["Enabled"][:i], data_pack):
-            file["Data"]["DataPacks"]["Enabled"].pop(i)
+        if utils.nbt_list_contains(data_packs_compound["Enabled"][:i], data_pack):
+            data_packs_compound["Enabled"].pop(i)
             removed_packs += 1
         # Skip if the data pack is already listed
         if data_pack in data_packs:
@@ -457,16 +479,16 @@ def log_data_packs(world: Path):
         else:
             data_pack += ".zip"
         if data_pack in data_packs:
-            file["Data"]["DataPacks"]["Enabled"][i] = NBT.TAG_String(data_pack)
+            data_packs_compound["Enabled"][i] = NBT.TAG_String(data_pack)
             continue
         # Remove the data pack from the list if it isn't found
-        file["Data"]["DataPacks"]["Enabled"].pop(i)
+        data_packs_compound["Enabled"].pop(i)
         removed_packs += 1
 
     # Add unlisted data packs to the enabled list
     for data_pack in data_packs:
-        if not utils.nbt_list_contains(file["Data"]["DataPacks"]["Enabled"], data_pack):
-            file["Data"]["DataPacks"]["Enabled"].append(NBT.TAG_String(data_pack))
+        if not utils.nbt_list_contains(data_packs_compound["Enabled"], data_pack):
+            data_packs_compound["Enabled"].append(NBT.TAG_String(data_pack))
 
     # Close file
     file.write_file(file_path)
