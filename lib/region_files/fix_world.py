@@ -37,7 +37,7 @@ uuid_list: list[str] = []
 
 # Define functions
 
-def fix(world: Path, og_world: Path, version: int, get_confirmation: bool) -> dict[str, bool]:
+def fix(world: Path, source_world: Path, version: int, get_confirmation: bool) -> dict[str, bool]:
     log("Fixing world data")
 
     # Set pack version
@@ -48,8 +48,8 @@ def fix(world: Path, og_world: Path, version: int, get_confirmation: bool) -> di
     if not world.exists():
         log("ERROR: World does not exist!")
         return {}
-    if not og_world.exists():
-        log("ERROR: Original copy of world does not exist!")
+    if not source_world.exists():
+        log("ERROR: Source copy of world does not exist!")
         return {}
 
     # Get confirmation
@@ -66,21 +66,21 @@ def fix(world: Path, og_world: Path, version: int, get_confirmation: bool) -> di
     
     # Iterate through region files
     log("Fixing regions")
-    fix_region_folder(world /           "region"  , og_world /           "region", "minecraft:overworld" )
-    fix_entity_folder(world /           "entities", og_world /           "region", "minecraft:overworld" )
-    fix_region_folder(world / "DIM-1" / "region"  , og_world / "DIM-1" / "region", "minecraft:the_nether")
-    fix_entity_folder(world / "DIM-1" / "entities", og_world / "DIM-1" / "region", "minecraft:the_nether")
-    fix_region_folder(world / "DIM1"  / "region"  , og_world / "DIM1"  / "region", "minecraft:the_end"   )
-    fix_entity_folder(world / "DIM1"  / "entities", og_world / "DIM1"  / "region", "minecraft:the_end"   )
+    fix_region_folder(world /           "region"  , source_world /           "region", "minecraft:overworld" )
+    fix_entity_folder(world /           "entities", source_world /           "region", "minecraft:overworld" )
+    fix_region_folder(world / "DIM-1" / "region"  , source_world / "DIM-1" / "region", "minecraft:the_nether")
+    fix_entity_folder(world / "DIM-1" / "entities", source_world / "DIM-1" / "region", "minecraft:the_nether")
+    fix_region_folder(world / "DIM1"  / "region"  , source_world / "DIM1"  / "region", "minecraft:the_end"   )
+    fix_entity_folder(world / "DIM1"  / "entities", source_world / "DIM1"  / "region", "minecraft:the_end"   )
     dimensions = world / "dimensions"
-    og_dimensions = og_world / "dimensions"
+    source_dimensions = source_world / "dimensions"
     if dimensions.exists():
         for dimension_namespace in dimensions.iterdir():
-            og_dimension_namespace = og_dimensions / dimension_namespace.name
+            source_dimension_namespace = source_dimensions / dimension_namespace.name
             for dimension in dimension_namespace.iterdir():
-                og_dimension = og_dimension_namespace / dimension.name
-                fix_region_folder(dimension / "region", og_dimension / "region", "custom")
-                fix_entity_folder(dimension / "entities", og_dimension / "entities", "custom")
+                source_dimension = source_dimension_namespace / dimension.name
+                fix_region_folder(dimension / "region", source_dimension / "region", "custom")
+                fix_entity_folder(dimension / "entities", source_dimension / "entities", "custom")
     
     # Fix scoreboard objectives
     log("Fixing scoreboard.dat")
@@ -120,27 +120,27 @@ def get_time(world: Path) -> int:
 
 
 
-def fix_region_folder(folder_path: Path, og_folder_path: Path, dimension: str):
+def fix_region_folder(folder_path: Path, source_folder_path: Path, dimension: str):
     if not folder_path.exists():
         return
 
     for file_path in folder_path.iterdir():
-        fix_region_file(file_path, og_folder_path / file_path.name, dimension)
+        fix_region_file(file_path, source_folder_path / file_path.name, dimension)
 
-def fix_region_file(file_path: Path, og_file_path: Path, dimension: str):
+def fix_region_file(file_path: Path, source_file_path: Path, dimension: str):
     log(f" Fixing region/{file_path.name}")
 
     global spawner_bossbar_list
 
     try:
         region_file = region.RegionFile(file_path)
-        og_region_file = region.RegionFile(og_file_path)
+        source_region_file = region.RegionFile(source_file_path)
     except:
         return
     for chunk_metadata in cast(list[region.ChunkMetadata], region_file.get_metadata()):
         chunk = region_file.get_nbt(chunk_metadata.x, chunk_metadata.z)
-        og_chunk = og_region_file.get_nbt(chunk_metadata.x, chunk_metadata.z)
-        if not chunk or not og_chunk:
+        source_chunk = source_region_file.get_nbt(chunk_metadata.x, chunk_metadata.z)
+        if not chunk or not source_chunk:
             continue
         if "block_entities" not in chunk:
             continue
@@ -166,7 +166,7 @@ def fix_region_file(file_path: Path, og_file_path: Path, dimension: str):
         #     del chunk["HeightMap"]
 
         # Get list of scheduled command blocks
-        scheduled_blocks = get_block_ticks(chunk, og_chunk)
+        scheduled_blocks = get_block_ticks(chunk, source_chunk)
 
         # Iterate through block entities
         block_entity: NBT.TAG_Compound
@@ -267,7 +267,7 @@ def fix_region_file(file_path: Path, og_file_path: Path, dimension: str):
         # Save chunk
         region_file.write_chunk(chunk_metadata.x, chunk_metadata.z, chunk)
 
-def get_block_ticks(chunk: NBT.NBTFile, og_chunk: NBT.NBTFile) -> list[tuple[int, int, int]]:
+def get_block_ticks(chunk: NBT.NBTFile, source_chunk: NBT.NBTFile) -> list[tuple[int, int, int]]:
     scheduled_blocks: list[tuple[int, int, int]] = []
     if "block_ticks" not in chunk:
         return scheduled_blocks
@@ -275,26 +275,26 @@ def get_block_ticks(chunk: NBT.NBTFile, og_chunk: NBT.NBTFile) -> list[tuple[int
     if block_ticks == None or len(block_ticks) == 0:
         return scheduled_blocks
     
-    if "block_ticks" in og_chunk:
-        og_block_ticks = cast(NBT.TAG_List, og_chunk["block_ticks"])
-        use_og_block_ticks = True
-    elif "Level" in og_chunk and "TileTicks" in og_chunk["Level"]:
-        og_block_ticks = cast(NBT.TAG_List, og_chunk["Level"]["TileTicks"])
-        use_og_block_ticks = True
+    if "block_ticks" in source_chunk:
+        source_block_ticks = cast(NBT.TAG_List, source_chunk["block_ticks"])
+        use_source_block_ticks = True
+    elif "Level" in source_chunk and "TileTicks" in source_chunk["Level"]:
+        source_block_ticks = cast(NBT.TAG_List, source_chunk["Level"]["TileTicks"])
+        use_source_block_ticks = True
     else:
-        og_block_ticks = NBT.TAG_List()
-        use_og_block_ticks = False
+        source_block_ticks = NBT.TAG_List()
+        use_source_block_ticks = False
     
     for i in range(len(block_ticks)-1, -1, -1):
         block_tick = cast(NBT.TAG_Compound, block_ticks[i])
 
         # Remove block ticks that are actually out of bounds
-        if use_og_block_ticks:
-            og_block_tick = cast(NBT.TAG_Compound, og_block_ticks[i])
+        if use_source_block_ticks:
+            source_block_tick = cast(NBT.TAG_Compound, source_block_ticks[i])
             if (
-                not ("x" in block_tick and "x" in og_block_tick and block_tick["x"].value == og_block_tick["x"].value) or
-                not ("y" in block_tick and "y" in og_block_tick and block_tick["y"].value == og_block_tick["y"].value) or
-                not ("z" in block_tick and "z" in og_block_tick and block_tick["z"].value == og_block_tick["z"].value)
+                not ("x" in block_tick and "x" in source_block_tick and block_tick["x"].value == source_block_tick["x"].value) or
+                not ("y" in block_tick and "y" in source_block_tick and block_tick["y"].value == source_block_tick["y"].value) or
+                not ("z" in block_tick and "z" in source_block_tick and block_tick["z"].value == source_block_tick["z"].value)
             ):
                 block_ticks.tags.pop(i)
                 continue
@@ -387,14 +387,14 @@ def fix_block_entity(block_entity: NBT.TAG_Compound):
 
 
 
-def fix_entity_folder(folder_path: Path, og_folder_path: Path, dimension: str):
+def fix_entity_folder(folder_path: Path, source_folder_path: Path, dimension: str):
     if not folder_path.exists():
         return
 
     for file_path in folder_path.iterdir():
-        fix_entity_file(file_path, og_folder_path / file_path.name, dimension)
+        fix_entity_file(file_path, source_folder_path / file_path.name, dimension)
 
-def fix_entity_file(file_path: Path, og_file_path: Path, dimension: str):
+def fix_entity_file(file_path: Path, source_file_path: Path, dimension: str):
     log(f" Fixing entities/{file_path.name}")
     
     global uuid_dict

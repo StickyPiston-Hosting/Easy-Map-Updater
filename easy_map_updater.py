@@ -109,6 +109,7 @@ class Action(Enum):
     WORLD_ORIGINAL = "world.original"
     WORLD_ORIGINAL_PLAY = "world.original.play"
     WORLD_RELOAD = "world.reload"
+    WORLD_SOURCE = "world.source"
     WORLD_PLAY = "world.play"
     WORLD_FIX = "world.fix"
 
@@ -248,6 +249,10 @@ def action_reset():
         Action.UPDATE.value:                { "show": True,  "function": action_update, "name": "Update map" },
         Action.SCAN.value:                  { "show": True,  "function": action_scan_world, "name": "Scans your world to gather relevant information" },
 
+        Action.WORLD_ORIGINAL.value:        { "show": False, "function": action_prepare_original_copy_world, "name": "Prepare original copy of world (do this before updating)" },
+        Action.WORLD_ORIGINAL_PLAY.value:   { "show": False, "function": action_prepare_original_play_copy, "name": "Prepare play version of original copy of world" },
+        Action.WORLD_RELOAD.value:          { "show": False, "function": action_reload_from_original_world, "name": "Reload world from original copy" },
+
         Action.RP_IMPORT.value:             { "show": False, "function": action_import_resource_pack, "name": "Import resource pack from world" },
         Action.RP_ORIGINAL.value:           { "show": False, "function": action_prepare_original_copy_resource_pack, "name": "Prepare original copy of resource pack" },
         Action.RP_RELOAD.value:             { "show": False, "function": action_reload_from_original_resource_pack, "name": "Reload resource pack from original copy" },
@@ -264,9 +269,7 @@ def action_reset():
         Action.DP_ADVANCEMENT.value:        { "show": False, "function": action_disable_advancements, "name": "Disable advancements (if one of the data packs makes them all impossible)" },
         Action.DP_RECIPE.value:             { "show": False, "function": action_disable_recipes, "name": "Disable recipes (if one of the data packs makes them all impossible)" },
 
-        Action.WORLD_ORIGINAL.value:        { "show": False, "function": action_prepare_original_copy_world, "name": "Prepare original copy of world (do this before opening the world)" },
-        Action.WORLD_ORIGINAL_PLAY.value:   { "show": False, "function": action_prepare_original_play_copy, "name": "Prepare play version of original copy of world" },
-        Action.WORLD_RELOAD.value:          { "show": False, "function": action_reload_from_original_world, "name": "Reload world from original copy" },
+        Action.WORLD_SOURCE.value:          { "show": False, "function": action_prepare_source_copy, "name": "Prepare source copy of world (do this before opening world)" },
         
         Action.DP_UPDATE.value:             { "show": False, "function": action_update_data_packs, "name": "Update data packs" },
 
@@ -302,7 +305,7 @@ def action_reset():
 
         Action.DP_ZIP.value:                { "show": False, "function": action_zip_data_packs, "name": "Zip data packs" },
         Action.RP_EXPORT.value:             { "show": False, "function": action_export_resource_pack, "name": "Export resource pack to world" },
-        Action.RP_EXPORT_ORIGINAL.value:    { "show": False, "function": action_export_original_resource_pack, "name": "Export original resource pack to original world" },
+        Action.RP_EXPORT_ORIGINAL.value:    { "show": False, "function": action_export_original_resource_pack, "name": "Export original resource pack to source world" },
         Action.CLEAN.value:                 { "show": False, "function": action_clean_up, "name": "Clean up files (remove worlds and resource pack)" },
 
         Action.VERSION.value:               { "show": True,  "function": action_set_version, "name": "Edit source version" },
@@ -327,6 +330,7 @@ def action_update(): # Needs confirmation
     # Make sure that world exists
     world: Path = MINECRAFT_PATH / "saves" / option_manager.get_map_name()
     og_world: Path = MINECRAFT_PATH / "saves" / f'{option_manager.get_map_name()}_original'
+    source_world: Path = MINECRAFT_PATH / "saves" / f'{option_manager.get_map_name()}_source'
     resource_pack: Path = MINECRAFT_PATH / "resourcepacks" / option_manager.get_resource_pack()
     if not world.exists():
         log("ERROR: World does not exist!")
@@ -355,6 +359,8 @@ def action_update(): # Needs confirmation
             confirm = input("Original copy of world found, do you wish to update from the original? (Y/N): ")
             if confirm in ["y", "Y"]:
                 action_reload_from_original_world(False)
+        else:
+            action_prepare_original_copy_world(False)
         next_update_progress_section()
 
     # Scan world
@@ -414,7 +420,7 @@ def action_update(): # Needs confirmation
                 action_disable_recipes(False)
         next_update_progress()
     if update_progress["stage"] == 302:
-        action_prepare_original_copy_world(False)
+        action_prepare_source_copy(False)
         next_update_progress()
     if update_progress["stage"] == 303:
         action_update_data_packs(False)
@@ -600,7 +606,7 @@ def action_export_resource_pack(manual: bool = True): # Needs confirmation
 
 def action_export_original_resource_pack(manual: bool = True): # Needs confirmation
     resource_pack.export_pack(
-        MINECRAFT_PATH / "saves" / f'{option_manager.get_map_name()}_original',
+        MINECRAFT_PATH / "saves" / f'{option_manager.get_map_name()}_source',
         MINECRAFT_PATH / "resourcepacks" / f'{option_manager.get_resource_pack()}_original',
         manual
     )
@@ -843,8 +849,7 @@ def action_prepare_original_copy_world(manual: bool = True): # Needs confirmatio
         global actions
         actions[Action.WORLD_ORIGINAL_PLAY.value]["show"] = True
         actions[Action.WORLD_RELOAD.value]["show"] = True
-        actions[Action.DP_UPDATE.value]["show"] = True
-        actions[Action.OPTIMIZE.value]["show"] = True
+        actions[Action.WORLD_SOURCE.value]["show"] = True
 
 def action_prepare_original_play_copy(): # Needs confirmation
     log("Preparing original play world copy")
@@ -892,6 +897,31 @@ def action_reload_from_original_world(manual: bool = True): # Needs confirmation
         global actions
         actions[Action.WORLD_ORIGINAL_PLAY.value]["show"] = True
         actions[Action.WORLD_RELOAD.value]["show"] = True
+        actions[Action.WORLD_SOURCE.value]["show"] = True
+
+def action_prepare_source_copy(manual: bool = True): # Needs confirmation
+    log("Preparing source world copy")
+    
+    world: Path = MINECRAFT_PATH / "saves" / option_manager.get_map_name()
+    source_world: Path = MINECRAFT_PATH / "saves" / f'{option_manager.get_map_name()}_source'
+
+    if source_world.exists() and manual:
+        log(f'This action will overwrite: {source_world.as_posix()}')
+        confirm = input("Is this okay? (Y/N): ")
+        if confirm not in ["Y", "y"]:
+            log("Action canceled")
+            return
+
+    if not world.exists():
+        log("ERROR: World does not exist!")
+        return
+    if source_world.exists():
+        shutil.rmtree(source_world)
+    shutil.copytree(world, source_world)
+    log("Source world copy prepared")
+
+    if manual:
+        global actions
         actions[Action.DP_UPDATE.value]["show"] = True
         actions[Action.OPTIMIZE.value]["show"] = True
 
@@ -1002,7 +1032,7 @@ def action_illegal_chunk():
 def action_fix_world(manual: bool = True): # Needs confirmation
     booleans = fix_world.fix(
         MINECRAFT_PATH / "saves" / option_manager.get_map_name(),
-        MINECRAFT_PATH / "saves" / f'{option_manager.get_map_name()}_original',
+        MINECRAFT_PATH / "saves" / f'{option_manager.get_map_name()}_source',
         option_manager.get_version(),
         manual
     )
@@ -1035,6 +1065,7 @@ def action_clean_up(): # Needs confirmation
     paths: list[Path] = [
         MINECRAFT_PATH / "saves" / option_manager.get_map_name(),
         MINECRAFT_PATH / "saves" / f'{option_manager.get_map_name()}_original',
+        MINECRAFT_PATH / "saves" / f'{option_manager.get_map_name()}_source',
         MINECRAFT_PATH / "saves" / f'{option_manager.get_map_name()}_play',
         MINECRAFT_PATH / "saves" / f'{option_manager.get_map_name()}_original_play',
         MINECRAFT_PATH / "resourcepacks" / option_manager.get_resource_pack(),

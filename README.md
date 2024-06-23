@@ -28,10 +28,11 @@ The maps and resource packs that it updates will be in the `saves` and `resource
 To update your map, run `easy_map_updater.py`, then type `update` and hit enter. A few prompts will come up at various stages when user input is needed. Once it is done, you should have the following files:
 
 - `saves/world`: Your updated map.
-- `saves/world_original`: Original copy of the map used as a reference.
+- `saves/world_original`: Original copy of the map which is left unmodified.
+- `saves/world_source`: Source copy of the map used as a reference.
 - `saves/world_play`: Play copy of the map. Join this copy to playtest your map to make sure that the update was successful.
 - `resourcepacks/resources`: Your updated resource pack. The resource pack will also be zipped and inserted into the world as `resources.zip`.
-- `resourcepacks/resources_original`: Original copy of the resource pack used as a reference.
+- `resourcepacks/resources_original`: Original copy of the resource pack used as a reference which is left unmodified.
 
 After you have confirmed the map to be fully-functioning with the play copy, you can distribute the main copy. To clean up all the files when you're done, you can use the `clean` action.
 
@@ -55,9 +56,18 @@ Begin by running the `scan` action, which will scan your map to gather any infor
 - `scan`: Scans the map for any important information that E.M.U. needs to know, for instance if there is a resource pack inside, what version the map is on, whether there are legacy functions in the `data` folder, etc.
 
 
-### Pre-original world actions
+### Original world actions
 
-Before you make the original copy of your world, certain actions need to be run to prepare it.
+Before updating, an original copy of your map is created which is not modified at any point during the update process.
+
+- `world.original`: This will create the original copy of your world.
+- `world.original.play`: This will create a play copy of your original world in the event that you need to test it.
+- `world.reload`: This will overwrite the working copy of your world with the original copy.
+
+
+### Pre-source world actions
+
+Before you make the source copy of your world, certain actions need to be run to prepare it.
 
 - `rp.import`: If your world contains `resources.zip`, this will extract it out into the `resourcepacks` folder so that it can be updated.
 - `rp.original`: This will create the original copy of your resource pack. This is necessary to run before updating it because it is used as an unchanging reference when updating the resource pack.
@@ -80,11 +90,9 @@ Before you make the original copy of your world, certain actions need to be run 
 
 After the above actions are sorted, certain actions need to be run to prepare your world for optimization.
 
-- `world.original`: This will create the original copy of your world. This is necessary to run before updating your data packs because it is used as an unchanging reference.
-- `world.original.play`: This will create a play copy of your original world in the event that you need to test it.
-- `world.reload`: This will overwrite the working copy of your world with the original copy.
+- `world.source`: This will create the source copy of your world. This is necessary to run before updating your data packs because it is used as reference.
 
-- `dp.update`: Updates all of the data packs in the working copy of your world to the latest version, using the original as a source. This may create a data pack called `command_helper` which contains functions that replace certain complex commands which require multiple commands to replicate.
+- `dp.update`: Updates all of the data packs in the working copy of your world to the latest version, using the source copy as a reference. This may create a data pack called `command_helper` which contains functions that replace certain complex commands which require multiple commands to replicate.
 
 
 ### World optimization
@@ -127,7 +135,7 @@ Certain old features require entire data packs to be created to properly replica
 ### Command block actions
 
 - `cmd.read`: Reads all the command block, command block minecart, and sign data in your world and puts the data into `commands.mcfunction` and `commands_original.mcfunction`. This is where the command block data is updated from. They are put into text files first to allow manual edits to the data.
-- `cmd.update`: Updates the commands in `commands.mcfunction` using `commands_original.mcfunction` as an unchanging reference. This may create a data pack called `command_helper` which contains functions that replace certain complex commands which require multiple commands to replicate.
+- `cmd.update`: Updates the commands in `commands.mcfunction` using `commands_original.mcfunction` as a reference. This may create a data pack called `command_helper` which contains functions that replace certain complex commands which require multiple commands to replicate.
 - `cmd.write`: Writes the contents of `commands.mcfunction` back into your world.
 - `cmd.clear`: Deletes the `command_helper` data pack in case changes were made to the source commands.
 - `cmd.extract`: Extracts commands from a specified command block chain in your world and writes them into `command_chain.mcfunction`.
@@ -166,7 +174,7 @@ After the map has been updated and finalized, these actions will help package it
 
 - `dp.zip`: Zips all of the data packs to reduce file count and size.
 - `rp.export`: Zips the working copy of your resource pack and puts it into your world as `resources.zip`.
-- `rp.export_original`: Zips the original copy of your resource pack and puts it into your original world as `resources.zip`.
+- `rp.export_original`: Zips the original copy of your resource pack and puts it into your source world as `resources.zip`.
 - `clean`: Deletes the working copies of your world and resource pack, and all the generated duplicates of them.
 
 

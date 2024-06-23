@@ -23,12 +23,12 @@ pack_version = defaults.PACK_VERSION
 
 # Define functions
 
-def update(file_path: Path, og_file_path: Path, version: int):
+def update(file_path: Path, source_file_path: Path, version: int):
     global pack_version
     pack_version = version
 
     # Read file
-    contents, load_bool = json_manager.safe_load(og_file_path)
+    contents, load_bool = json_manager.safe_load(source_file_path)
     if not load_bool:
         return
 
