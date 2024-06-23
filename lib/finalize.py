@@ -377,6 +377,7 @@ def delete_junk_files(world: Path):
     delete_file(world / "level.dat.bak")
     delete_file(world / "session.lock")
     delete_file(world / "uid.dat")
+    delete_file(world / "mcedit_waypoints.dat")
     delete_file(world / ".gitignore")
     delete_file(world / "world_properties.StickyPiston")
     delete_file(world / "data" / "fabricDynamicRegistry.dat")
