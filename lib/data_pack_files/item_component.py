@@ -480,7 +480,7 @@ def extract(item_id: str, components: dict[str, Any] | None, nbt: dict[str, Any]
                 "star",
                 "creeper",
                 "burst",
-            ][explosion["Type"]]
+            ][explosion["Type"].value]
         if "Colors" in explosion:
             firework_explosion["colors"] = nbt_tags.TypeIntArray(explosion["Colors"])
         if "FadeColors" in explosion:
@@ -507,7 +507,7 @@ def extract(item_id: str, components: dict[str, Any] | None, nbt: dict[str, Any]
                         "star",
                         "creeper",
                         "burst",
-                    ][explosion["Type"]]
+                    ][explosion["Type"].value]
                 if "Colors" in explosion:
                     firework_explosion["colors"] = nbt_tags.TypeIntArray(explosion["Colors"])
                 if "FadeColors" in explosion:
