@@ -103,6 +103,7 @@ class ItemInputFromNBT(TypedDict):
     tag: dict
     Damage: nbt_tags.TypeNumeric
     Count: nbt_tags.TypeNumeric
+    count: nbt_tags.TypeNumeric
     Slot: nbt_tags.TypeNumeric
 
 def update_from_nbt(item: ItemInputFromNBT, version: int, issues: list[dict[str, str | int]]) -> dict[str, Any]:
@@ -195,15 +196,12 @@ def update(item: ItemInput, version: int, issues: list[dict[str, str | int]]) ->
         item_id = entities.update(extract_riding_id(nbt["EntityTag"]["Riding"]), pack_version, issues) + "_spawn_egg"
 
     # Update NBT
-    nbt = nbt_tags.direct_update(nbt, pack_version, issues, "item_tag", old_item_id or "minecraft:stone")
+    if nbt:
+        components = cast(dict[str, Any], nbt_tags.direct_update(nbt, pack_version, issues, "item_tag", old_item_id or "minecraft:stone"))
 
     # Conform component format
     if components:
         components = item_component.conform(components)
-
-    # Extract components out of NBT
-    if nbt:
-        components = item_component.extract(item_id or "", components, nbt, version)
 
     # Apply damage to items with durability
     if item_id in tables.ITEMS_WITH_DURABILITY and (data_value >= 1 or (data_value == 0 and read)):
@@ -213,7 +211,7 @@ def update(item: ItemInput, version: int, issues: list[dict[str, str | int]]) ->
 
     # Apply pre-1.8 adventure mode fixes
     if pack_version <= 710 and defaults.FIXES["old_adventure_mode_items"] and not read:
-        nbt = insert_old_adventure_mode_tags(nbt, item_id or "minecraft:stone")
+        components = insert_old_adventure_mode_tags(components, item_id or "minecraft:stone")
 
     return {
         "id": item_id,
@@ -299,72 +297,44 @@ def extract_riding_id(nbt: dict) -> str:
     
 
 
-def insert_old_adventure_mode_tags(nbt: dict | None, item_id: str):
-    if nbt == None or nbt == "":
-        nbt = {}
-    nbt["adventure"] = nbt_tags.TypeByte(1)
-    nbt["HideFlags"] = nbt_tags.TypeInt(24)
+def insert_old_adventure_mode_tags(components: dict | None, item_id: str) -> dict:
+    if components == None or components == "":
+        components = {}
+    if "minecraft:custom_data" not in components:
+        components["minecraft:custom_data"] = {}
+    components["minecraft:custom_data"]["adventure"] = nbt_tags.TypeByte(1)
+
+    can_place_on = nbt_tags.TypeList([])
+    can_break = nbt_tags.TypeList([])
     
     if item_id in tables.BLOCK_PLACEABLE:
-        nbt["CanPlaceOn"] = nbt_tags.TypeList(["#adventure:all"])
-        nbt["CanDestroy"] = nbt_tags.TypeList(["#adventure:mineable/universal"])
+        can_place_on = nbt_tags.TypeList([{"blocks": "#adventure:all"}])
+        can_break = nbt_tags.TypeList([{"blocks": "#adventure:mineable/universal"}])
 
-    elif item_id in [
-        "minecraft:wooden_pickaxe",
-        "minecraft:stone_pickaxe",
-        "minecraft:golden_pickaxe",
-        "minecraft:iron_pickaxe",
-        "minecraft:diamond_pickaxe",
-        "minecraft:netherite_pickaxe"
-    ]:
-        nbt["CanDestroy"] = nbt_tags.TypeList(["#minecraft:mineable/pickaxe", "#adventure:mineable/universal"])
+    elif item_id.endswith("_pickaxe"):
+        can_break = nbt_tags.TypeList([{"blocks": "#minecraft:mineable/pickaxe"}, {"blocks": "#adventure:mineable/universal"}])
 
-    elif item_id in [
-        "minecraft:wooden_shovel",
-        "minecraft:stone_shovel",
-        "minecraft:golden_shovel",
-        "minecraft:iron_shovel",
-        "minecraft:diamond_shovel",
-        "minecraft:netherite_shovel"
-    ]:
-        nbt["CanDestroy"] = nbt_tags.TypeList(["#minecraft:mineable/shovel", "#adventure:mineable/universal"])
+    elif item_id.endswith("_shovel"):
+        can_break = nbt_tags.TypeList([{"blocks": "#minecraft:mineable/shovel"}, {"blocks": "#adventure:mineable/universal"}])
 
-    elif item_id in [
-        "minecraft:wooden_axe",
-        "minecraft:stone_axe",
-        "minecraft:golden_axe",
-        "minecraft:iron_axe",
-        "minecraft:diamond_axe",
-        "minecraft:netherite_axe"
-    ]:
-        nbt["CanDestroy"] = nbt_tags.TypeList(["#minecraft:mineable/axe", "#adventure:mineable/universal"])
+    elif item_id.endswith("_axe"):
+        can_break = nbt_tags.TypeList([{"blocks": "#minecraft:mineable/axe"}, {"blocks": "#adventure:mineable/universal"}])
 
-    elif item_id in [
-        "minecraft:wooden_hoe",
-        "minecraft:stone_hoe",
-        "minecraft:golden_hoe",
-        "minecraft:iron_hoe",
-        "minecraft:diamond_hoe",
-        "minecraft:netherite_hoe" 
-    ]:
-        nbt["CanDestroy"] = nbt_tags.TypeList(["#minecraft:mineable/hoe", "#adventure:mineable/universal"])
+    elif item_id.endswith("_hoe"):
+        can_break = nbt_tags.TypeList([{"blocks": "#minecraft:mineable/hoe"}, {"blocks": "#adventure:mineable/universal"}])
 
-    elif item_id in [
-        "minecraft:wooden_sword",
-        "minecraft:stone_sword",
-        "minecraft:golden_sword",
-        "minecraft:iron_sword",
-        "minecraft:diamond_sword",
-        "minecraft:netherite_sword"
-    ]:
-        nbt["CanDestroy"] = nbt_tags.TypeList(["#adventure:mineable/sword", "#adventure:mineable/universal"])
+    elif item_id.endswith("_sword"):
+        can_break = nbt_tags.TypeList([{"blocks": "#adventure:mineable/sword"}, {"blocks": "#adventure:mineable/universal"}])
 
     elif item_id == "minecraft:shears":
-        nbt["CanDestroy"] = nbt_tags.TypeList(["#adventure:mineable/shears", "#adventure:mineable/universal"])
+        can_break = nbt_tags.TypeList([{"blocks": "#adventure:mineable/shears"}, {"blocks": "#adventure:mineable/universal"}])
 
     else:
-        nbt["CanDestroy"] = nbt_tags.TypeList(["#adventure:mineable/universal"])
+        can_break = nbt_tags.TypeList([{"blocks": "#adventure:mineable/universal"}])
 
+    if len(can_place_on):
+        components["minecraft:can_place_on"] = {"predicates": can_place_on, "show_in_tooltip": nbt_tags.TypeByte(0)}
+    if len(can_break):
+        components["minecraft:can_break"] = {"predicates": can_break, "show_in_tooltip": nbt_tags.TypeByte(0)}
 
-
-    return nbt
+    return components

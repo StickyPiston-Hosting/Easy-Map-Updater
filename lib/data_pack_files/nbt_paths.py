@@ -10,8 +10,10 @@ from typing import Any
 from pathlib import Path
 from lib.log import log
 from lib import defaults
+from lib import utils
 from lib.data_pack_files import arguments
 from lib.data_pack_files import nbt_tags
+from lib.data_pack_files import item_component
 
 
 
@@ -76,6 +78,8 @@ def branch(path_parts: list[str], guide: dict, source: str, issues: list[dict[st
     return path_parts
     
 def modify_path(path_parts: list[str], guide: dict, source: str, issues: list[dict[str, str | int]]) -> list[str]:
+    if "edge_case" in guide:
+        return edge_case(path_parts, guide["edge_case"], source, issues)
     if "rename" in guide:
         return guide["rename"]
     if "source" in guide:
@@ -101,15 +105,20 @@ def search_list(path_parts: list[str], guide: dict, source: str, issues: list[di
 
 
 def unpack(path: str) -> list[str]:
-    return arguments.parse_with_quotes(path, ".", True, "[")
+    path_parts = arguments.parse_with_quotes(path, ".", True, "[")
+    for i in range(len(path_parts)):
+        path_parts[i] = utils.unpack_string_check(path_parts[i])
+    return path_parts
 
 def pack(path_parts: list[str]) -> str:
     path = ""
     for part in path_parts:
-        if not path or part.startswith("["):
-            path += part
-        else:
-            path += "." + part
+        if not part.startswith("["):
+            if ":" in part:
+                part = utils.pack_string(part, True)
+            if path:
+                part = "." + part
+        path += part
     return path
 
 
@@ -151,3 +160,13 @@ def extract_nbt_from_path(nbt, path_parts: list[str]):
     
     if path_parts[0] in nbt:
         return extract_nbt_from_path(nbt[path_parts[0]], path_parts[1:])
+
+
+
+def edge_case(path_parts: list[str], case_type: str, source: str, issues: list[dict[str, str | int]]) -> list[str]:
+    if case_type == "item_tag":
+        return item_component.update_path(path_parts, pack_version, issues)
+
+    if defaults.SEND_WARNINGS:
+        log(f'WARNING: "{case_type}" case is not registered!')
+    return path_parts

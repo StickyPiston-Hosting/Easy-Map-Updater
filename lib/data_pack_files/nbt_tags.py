@@ -10,7 +10,6 @@ from typing import cast, Any
 from nbt import nbt as NBT
 from pathlib import Path
 from lib.log import log
-from lib.data_pack_files import nbt_paths
 from lib import defaults
 from lib import utils
 
@@ -114,6 +113,9 @@ class TypeList:
     
     def append(self, value):
         self.value.append(value)
+
+    def extend(self, value):
+        self.value.extend(value)
     
     def pop(self, i):
         return self.value.pop(i)
@@ -153,6 +155,8 @@ from lib.data_pack_files import entities
 from lib.data_pack_files import json_text_component
 from lib.data_pack_files import miscellaneous
 from lib.data_pack_files import ids
+from lib.data_pack_files import nbt_paths
+from lib.data_pack_files import item_component
 
 
 
@@ -435,7 +439,7 @@ def update_tags(parent: dict, nbt: dict, guide: dict, source: str, object_id: st
                     continue
 
             if generator == "item_entity":
-                nbt[key] = {"id": "minecraft:stone", "Count": TypeByte(1)}
+                nbt[key] = {"id": "minecraft:stone", "count": TypeByte(1)}
             if generator == "uuid":
                 nbt[key] = miscellaneous.new_uuid_int_array()
 
@@ -530,6 +534,10 @@ def edge_case(parent: dict, nbt, case: str | dict[str, str], source: str, object
         return edge_case_fuse(parent, object_id)
     if case_type == "item":
         return items.update_from_nbt(nbt, pack_version, issues)
+    if case_type == "item_components":
+        return edge_case_item_components(nbt)
+    if case_type == "item_tag":
+        return edge_case_item_tag(parent, nbt, object_id, pack_version, issues)
     if case_type == "mooshroom_stew":
         return edge_case_mooshroom_stew(parent, pack_version, issues)
     if case_type == "old_spawn_potential_entity":
@@ -624,6 +632,13 @@ def edge_case_fuse(parent: dict, object_id: str):
             del parent["Fuse"]
         if object_id == "minecraft:creeper":
             del parent["fuse"]
+
+def edge_case_item_components(nbt: dict[str, Any]) -> dict[str, Any]:
+    return item_component.conform(nbt)
+
+def edge_case_item_tag(parent: dict[str, Any], nbt: dict[str, Any], object_id: str, pack_version: int, issues: list[dict[str, str | int]]) -> dict[str, Any]:
+    nbt = update_tags(parent, nbt, NBT_TREE["sources"]["item_tag"]["tags"], "item_tag", object_id, {}, issues)
+    return item_component.extract(object_id, parent["components"] if "components" in parent else {}, nbt, pack_version)
 
 def edge_case_mooshroom_stew(parent: dict, pack_version: int, issues: list[dict[str, str | int]]):
     parent["stew_effects"] = TypeList([{}])

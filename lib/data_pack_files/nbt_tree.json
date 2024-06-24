@@ -512,15 +512,20 @@
                     "data_type": "string",
                     "argument_type": "item"
                 },
+                "components": { "edge_case": "item_components" },
                 "count": { "data_type": "int" },
                 "Count": {
                     "rename": "count",
                     "data_type": "int"
                 },
-                "tag": { "source": "item_tag" }
+                "tag": {
+                    "rename": "components",
+                    "source": "item_tag"
+                }
             }
         },
         "item_tag": {
+            "edge_case": "item_tag",
             "tags": {
                 "AttributeModifiers": { "list": { "source": "attribute_modifier" } },
                 "BlockEntityTag": { "source": "block" },
@@ -580,6 +585,9 @@
                     }
                 },
                 "Unbreakable": { "data_type": "byte" }
+            },
+            "path": {
+                "edge_case": "item_tag"
             }
         },
         "skull_owner": {

@@ -5,10 +5,12 @@
 
 # Import things
 
-from typing import Any
+from typing import cast, Any
 from lib.data_pack_files import nbt_tags
 from lib.data_pack_files import arguments
 from lib.data_pack_files import miscellaneous
+from lib.log import log
+from lib import defaults
 from lib import utils
 
 
@@ -45,18 +47,33 @@ def conform(components: dict[str, Any]) -> dict[str, Any]:
     if "minecraft:can_break" in components:
         can_break: dict[str, Any] = components["minecraft:can_break"]
         if "predicates" not in can_break and "show_in_tooltip" not in can_break:
-            can_break = {"predicates": [can_break]}
+            can_break = {"predicates": nbt_tags.TypeList([can_break])}
+        if "predicates" in can_break:
+            for predicate in cast(nbt_tags.TypeList, can_break["predicates"]):
+                if "blocks" in predicate and isinstance(predicate["blocks"], nbt_tags.TypeList):
+                    if len(predicate["blocks"]) == 1:
+                        predicate["blocks"] = miscellaneous.namespace(predicate["blocks"][0])
+                    else:
+                        for i in range(len(predicate["blocks"])):
+                            predicate["blocks"] = miscellaneous.namespace(predicate["blocks"][i])
         components["minecraft:can_break"] = can_break
 
     if "minecraft:can_place_on" in components:
         can_place_on: dict[str, Any] = components["minecraft:can_place_on"]
         if "predicates" not in can_place_on and "show_in_tooltip" not in can_place_on:
-            can_place_on = {"predicates": [can_place_on]}
+            can_place_on = {"predicates": nbt_tags.TypeList([can_place_on])}
+        if "predicates" in can_place_on:
+            for predicate in cast(nbt_tags.TypeList, can_place_on["predicates"]):
+                if "blocks" in predicate and isinstance(predicate["blocks"], nbt_tags.TypeList):
+                    if len(predicate["blocks"]) == 1:
+                        predicate["blocks"] = miscellaneous.namespace(predicate["blocks"][0])
+                    else:
+                        for i in range(len(predicate["blocks"])):
+                            predicate["blocks"] = miscellaneous.namespace(predicate["blocks"][i])
         components["minecraft:can_place_on"] = can_place_on
 
     if "minecraft:debug_stick_state" in components:
         debug_stick_state: dict[str, str] = components["minecraft:debug_stick_state"]
-        block: str
         for block in list(debug_stick_state.keys()):
             namespaced_block = miscellaneous.namespace(block)
             if block != namespaced_block:
@@ -98,7 +115,7 @@ def conform(components: dict[str, Any]) -> dict[str, Any]:
     if "minecraft:writable_book_content" in components:
         writable_book_content = components["minecraft:writable_book_content"]
         if "pages" not in writable_book_content:
-            writable_book_content["pages"] = []
+            writable_book_content["pages"] = nbt_tags.TypeList([])
         pages = writable_book_content["pages"]
         for index in range(len(pages)):
             page = pages[index]
@@ -108,7 +125,7 @@ def conform(components: dict[str, Any]) -> dict[str, Any]:
     if "minecraft:written_book_content" in components:
         written_book_content = components["minecraft:written_book_content"]
         if "pages" not in written_book_content:
-            written_book_content["pages"] = []
+            written_book_content["pages"] = nbt_tags.TypeList([])
         pages = written_book_content["pages"]
         for index in range(len(pages)):
             page = pages[index]
@@ -136,7 +153,7 @@ def extract(item_id: str, components: dict[str, Any] | None, nbt: dict[str, Any]
             components["minecraft:attribute_modifiers"] = {}
         attribute_modifiers = components["minecraft:attribute_modifiers"]
         if "modifiers" not in attribute_modifiers:
-            attribute_modifiers["modifiers"] = []
+            attribute_modifiers["modifiers"] = nbt_tags.TypeList([])
         for attribute_modifier in nbt["AttributeModifiers"]:
             attribute = {}
             if "AttributeName" in attribute_modifier:
@@ -170,7 +187,7 @@ def extract(item_id: str, components: dict[str, Any] | None, nbt: dict[str, Any]
 
         if "Bees" in block_entity_tag:
             if "minecraft:bees" not in components:
-                components["minecraft:bees"] = []
+                components["minecraft:bees"] = nbt_tags.TypeList([])
             for bee in block_entity_tag["Bees"]:
                 bee_entry: dict[str, Any] = {}
                 if "EntityData" in bee:
@@ -184,7 +201,7 @@ def extract(item_id: str, components: dict[str, Any] | None, nbt: dict[str, Any]
 
         if "Items" in block_entity_tag:
             if "minecraft:container" not in components:
-                components["minecraft:container"] = []
+                components["minecraft:container"] = nbt_tags.TypeList([])
             container = components["minecraft:container"]
             for item in block_entity_tag["Items"]:
                 container_entry: dict[str, Any] = {}
@@ -222,7 +239,7 @@ def extract(item_id: str, components: dict[str, Any] | None, nbt: dict[str, Any]
 
         if "Patterns" in block_entity_tag:
             if "minecraft:banner_patterns" not in components:
-                components["minecraft:banner_patterns"] = []
+                components["minecraft:banner_patterns"] = nbt_tags.TypeList([])
             banner_patterns = components["minecraft:banner_patterns"]
             for pattern in block_entity_tag["Patterns"]:
                 banner_pattern: dict[str, Any] = {}
@@ -234,7 +251,7 @@ def extract(item_id: str, components: dict[str, Any] | None, nbt: dict[str, Any]
             del block_entity_tag["Patterns"]
 
         if "sherds" in block_entity_tag:
-            components["minecraft:pot_decorations"] = []
+            components["minecraft:pot_decorations"] = nbt_tags.TypeList([])
             for sherd in block_entity_tag["sherds"]:
                 components["minecraft:pot_decorations"].append(miscellaneous.namespace(sherd))
             del block_entity_tag["sherds"]
@@ -268,15 +285,21 @@ def extract(item_id: str, components: dict[str, Any] | None, nbt: dict[str, Any]
             components["minecraft:can_break"] = {}
         can_break = components["minecraft:can_break"]
         if "predicates" not in can_break:
-            can_break["predicates"] = []
-        predicates: list[dict[str, Any]] = [{"blocks": []}]
+            can_break["predicates"] = nbt_tags.TypeList([])
+        predicates: list[dict[str, Any]] = [{"blocks": nbt_tags.TypeList([])}]
         block: str
         for block in nbt["CanDestroy"]:
             if block.startswith("#"):
                 predicates.append({"blocks": block})
             else:
                 predicates[0]["blocks"].append(block)
+        if len(predicates[0]["blocks"]) == 0:
+            predicates.pop(0)
+        elif len(predicates[0]["blocks"]) == 1:
+            predicates[0]["blocks"] = predicates[0]["blocks"][0]
         can_break["predicates"].extend(predicates)
+        if len(can_break["predicates"]) == 0:
+            can_break["predicates"].append({})
         del nbt["CanDestroy"]
 
     if "CanPlaceOn" in nbt:
@@ -284,22 +307,28 @@ def extract(item_id: str, components: dict[str, Any] | None, nbt: dict[str, Any]
             components["minecraft:can_place_on"] = {}
         can_place_on = components["minecraft:can_place_on"]
         if "predicates" not in can_place_on:
-            can_place_on["predicates"] = []
-        predicates = [{"blocks": []}]
+            can_place_on["predicates"] = nbt_tags.TypeList([])
+        predicates = [{"blocks": nbt_tags.TypeList([])}]
         block: str
         for block in nbt["CanPlaceOn"]:
             if block.startswith("#"):
                 predicates.append({"blocks": block})
             else:
                 predicates[0]["blocks"].append(block)
+        if len(predicates[0]["blocks"]) == 0:
+            predicates.pop(0)
+        elif len(predicates[0]["blocks"]) == 1:
+            predicates[0]["blocks"] = predicates[0]["blocks"][0]
         can_place_on["predicates"].extend(predicates)
+        if len(can_place_on["predicates"]) == 0:
+            can_place_on["predicates"].append({})
         del nbt["CanPlaceOn"]
 
     if "Charged" in nbt:
         del nbt["Charged"]
     if "ChargedProjectiles" in nbt:
         if "minecraft:charged_projectiles" not in components:
-            components["minecraft:charged_projectiles"] = []
+            components["minecraft:charged_projectiles"] = nbt_tags.TypeList([])
         charged_projectiles = components["minecraft:charged_projectiles"]
         for charged_projectile in nbt["ChargedProjectiles"]:
             charged_projectiles.append(charged_projectile)
@@ -406,7 +435,7 @@ def extract(item_id: str, components: dict[str, Any] | None, nbt: dict[str, Any]
 
     if "effects" in nbt:
         if "minecraft:suspicious_stew_effects" not in components:
-            components["minecraft:suspicious_stew_effects"] = []
+            components["minecraft:suspicious_stew_effects"] = nbt_tags.TypeList([])
         components["minecraft:suspicious_stew_effects"].extend(nbt["effects"])
         del nbt["effects"]
 
@@ -468,7 +497,7 @@ def extract(item_id: str, components: dict[str, Any] | None, nbt: dict[str, Any]
         fireworks = components["minecraft:fireworks"]
         if "Explosions" in nbt["Fireworks"]:
             if "explosions" not in fireworks:
-                fireworks["explosions"] = []
+                fireworks["explosions"] = nbt_tags.TypeList([])
             for explosion in nbt["Fireworks"]["Explosions"]:
                 firework_explosion = {}
                 if "Type" in explosion:
@@ -529,7 +558,7 @@ def extract(item_id: str, components: dict[str, Any] | None, nbt: dict[str, Any]
 
     if "Items" in nbt:
         if "minecraft:bundle_contents" not in components:
-            components["minecraft:bundle_contents"] = []
+            components["minecraft:bundle_contents"] = nbt_tags.TypeList([])
         bundle_contents = components["minecraft:bundle_contents"]
         bundle_contents.extend(nbt["Items"])
         del nbt["Items"]
@@ -593,7 +622,7 @@ def extract(item_id: str, components: dict[str, Any] | None, nbt: dict[str, Any]
                 components["minecraft:writable_book_content"] = {}
             writable_book_content = components["minecraft:writable_book_content"]
             if "pages" not in writable_book_content:
-                writable_book_content["pages"] = []
+                writable_book_content["pages"] = nbt_tags.TypeList([])
             pages = writable_book_content["pages"]
             for page in nbt["pages"]:
                 pages.append({"raw": page})
@@ -603,7 +632,7 @@ def extract(item_id: str, components: dict[str, Any] | None, nbt: dict[str, Any]
                 components["minecraft:written_book_content"] = {}
             written_book_content = components["minecraft:written_book_content"]
             if "pages" not in written_book_content:
-                written_book_content["pages"] = []
+                written_book_content["pages"] = nbt_tags.TypeList([])
             pages = written_book_content["pages"]
             for page in nbt["pages"]:
                 pages.append({"raw": page})
@@ -618,7 +647,7 @@ def extract(item_id: str, components: dict[str, Any] | None, nbt: dict[str, Any]
 
     if "Recipes" in nbt:
         if "minecraft:recipes" not in components:
-            components["minecraft:recipes"] = []
+            components["minecraft:recipes"] = nbt_tags.TypeList([])
         for recipe in nbt["Recipes"]:
             components["minecraft:recipes"].append(miscellaneous.namespace(recipe))
         del nbt["Recipes"]
@@ -654,7 +683,7 @@ def extract(item_id: str, components: dict[str, Any] | None, nbt: dict[str, Any]
                 profile["id"] = nbt_tags.TypeIntArray(skull_owner["Id"])
             if "Properties" in skull_owner:
                 if "properties" not in profile:
-                    profile["properties"] = []
+                    profile["properties"] = nbt_tags.TypeList([])
                 properties: list = profile["properties"]
                 if "textures" in skull_owner["Properties"]:
                     textures: list[dict[str, Any]] = skull_owner["Properties"]["textures"]
@@ -740,3 +769,280 @@ def extract(item_id: str, components: dict[str, Any] | None, nbt: dict[str, Any]
 
 
     return components
+
+
+
+def update_path(path_parts: list[str], version: int, issues: list[dict[str, str | int]]) -> list[str]:
+
+    if defaults.DEBUG_MODE:
+        log(f'Path: {path_parts}')
+
+    if len(path_parts) < 2:
+        return path_parts
+    
+    if path_parts[1] == "Age":
+        return ["components", "minecraft:bucket_entity_data", "Age"]
+
+    if path_parts[1] == "AttributeModifiers":
+        if len(path_parts) == 2:
+            return ["components", "minecraft:attribute_modifiers", "modifiers"]
+        if len(path_parts) == 3:
+            return ["components", "minecraft:attribute_modifiers", "modifiers", path_parts[2]]
+        if path_parts[3] == "AttributeName":
+            return ["components", "minecraft:attribute_modifiers", "modifiers", path_parts[2], "type"]
+        if path_parts[3] == "Slot":
+            return ["components", "minecraft:attribute_modifiers", "modifiers", path_parts[2], "slot"]
+        if path_parts[3] == "UUID":
+            return ["components", "minecraft:attribute_modifiers", "modifiers", path_parts[2], "uuid"] + path_parts[4:]
+        if path_parts[3] == "Name":
+            return ["components", "minecraft:attribute_modifiers", "modifiers", path_parts[2], "name"]
+        if path_parts[3] == "Operation":
+            return ["components", "minecraft:attribute_modifiers", "modifiers", path_parts[2], "operation"]
+        if path_parts[3] == "Amount":
+            return ["components", "minecraft:attribute_modifiers", "modifiers", path_parts[2], "amount"]
+        if defaults.SEND_WARNINGS:
+            log(f'WARNING: Invalid child of item tag "AttributeModifiers{path_parts[2]}": {path_parts[3]}')
+        return ["components", "minecraft:attribute_modifiers", "modifiers", path_parts[2]]
+
+    if path_parts[1] == "author":
+        return ["components", "minecraft:written_book_content", "author"]
+
+    if path_parts[1] == "BlockEntityTag":
+        if defaults.SEND_WARNINGS:
+            log(f'WARNING: Item tag {path_parts[1]} is not implemented yet for path conversion')
+        if len(path_parts) == 2:
+            return ["components", "minecraft:"]
+        return ["components", "minecraft:"] + path_parts[2:]
+
+    if path_parts[1] == "BlockStateTag":
+        return ["components", "minecraft:block_state"] + path_parts[2:]
+
+    if path_parts[1] == "BucketVariantTag":
+        return ["components", "minecraft:bucket_entity_data", "Variant"]
+
+    if path_parts[1] == "CanDestroy":
+        if defaults.SEND_WARNINGS:
+            log(f'WARNING: Item tag {path_parts[1]} is not implemented yet for path conversion')
+        if len(path_parts) == 2:
+            return ["components", "minecraft:"]
+        return ["components", "minecraft:"] + path_parts[2:]
+
+    if path_parts[1] == "CanPlaceOn":
+        if defaults.SEND_WARNINGS:
+            log(f'WARNING: Item tag {path_parts[1]} is not implemented yet for path conversion')
+        if len(path_parts) == 2:
+            return ["components", "minecraft:"]
+        return ["components", "minecraft:"] + path_parts[2:]
+
+    if path_parts[1] == "Charged":
+        if defaults.SEND_WARNINGS:
+            log(f'WARNING: Item tag "Charged" was removed')
+        return ["components", "minecraft:charged_projectiles"]
+
+    if path_parts[1] == "ChargedProjectiles":
+        return ["components", "minecraft:charged_projectiles"] + path_parts[2:]
+
+    if path_parts[1] == "CustomModelData":
+        return ["components", "minecraft:custom_model_data"]
+
+    if path_parts[1] == "CustomPotionColor":
+        return ["components", "minecraft:potion_contents", "custom_color"]
+
+    if path_parts[1] == "custom_potion_effects":
+        return ["components", "minecraft:potion_contents", "custom_effects"] + path_parts[2:]
+
+    if path_parts[1] == "Damage":
+        return ["components", "minecraft:damage"]
+
+    if path_parts[1] == "DebugProperty":
+        if len(path_parts) == 2:
+            return ["components", "minecraft:debug_stick_state"]
+        return ["components", "minecraft:debug_stick_state", miscellaneous.namespace(path_parts[2])] + path_parts[3:]
+
+    if path_parts[1] == "Decorations":
+        if len(path_parts) == 2:
+            return ["components", "minecraft:map_decorations"]
+        if defaults.SEND_WARNINGS:
+            log(f'WARNING: Children of item tag "Decorations" are not handled yet in component conversion')
+        return ["components", "minecraft:map_decorations"] + path_parts[2:]
+
+    if path_parts[1] == "display":
+        if len(path_parts) == 2:
+            if defaults.SEND_WARNINGS:
+                log(f'WARNING: Item tag "display" cannot properly be fetched on its own as a component')
+            return ["components", "minecraft:custom_name"]
+        if path_parts[2] == "Name":
+            return ["components", "minecraft:custom_name"]
+        if path_parts[2] == "Lore":
+            return ["components", "minecraft:lore"] + path_parts[3:]
+        if path_parts[2] == "color":
+            return ["components", "minecraft:dyed_color", "rgb"]
+        if path_parts[2] == "MapColor":
+            return ["components", "minecraft:map_color"]
+        if defaults.SEND_WARNINGS:
+            log(f'WARNING: Invalid child of item tag "display": {path_parts[2]}')
+        return ["components", "minecraft:custom_name"]
+
+    if path_parts[1] == "effects":
+        return ["components", "minecraft:suspicious_stew_effects"] + path_parts[2:]
+
+    if path_parts[1] == "Enchantments":
+        if len(path_parts) == 2:
+            return ["components", "minecraft:enchantments"]
+        if defaults.SEND_WARNINGS:
+            log(f'WARNING: Children of item tag "Enchantments" are not handled yet in component conversion')
+        return ["components", "minecraft:enchantments"] + path_parts[2:]
+
+    if path_parts[1] == "EntityTag":
+        return ["components", "minecraft:entity_data"] + path_parts[2:]
+
+    if path_parts[1] == "Explosion":
+        if len(path_parts) == 2:
+            return ["components", "minecraft:firework_explosion"]
+        if path_parts[2] == "Type":
+            return ["components", "minecraft:firework_explosion", "shape"]
+        if path_parts[2] == "Colors":
+            return ["components", "minecraft:firework_explosion", "colors"] + path_parts[3:]
+        if path_parts[2] == "FadeColors":
+            return ["components", "minecraft:firework_explosion", "fade_colors"] + path_parts[3:]
+        if path_parts[2] == "Trail":
+            return ["components", "minecraft:firework_explosion", "has_trail"]
+        if path_parts[2] == "Flicker":
+            return ["components", "minecraft:firework_explosion", "has_twinkle"]
+        if defaults.SEND_WARNINGS:
+            log(f'WARNING: Invalid child of item tag "Explosion": {path_parts[2]}')
+        return ["components", "minecraft:firework_explosion"]
+
+    if path_parts[1] == "Fireworks":
+        if len(path_parts) == 2:
+            return ["components", "minecraft:fireworks"]
+        if path_parts[2] == "Explosions":
+            if len(path_parts) == 3:
+                return ["components", "minecraft:fireworks", "explosions"]
+            if len(path_parts) == 4:
+                return ["components", "minecraft:fireworks", "explosions", path_parts[3]]
+            if path_parts[4] == "Type":
+                return ["components", "minecraft:fireworks", "explosions", path_parts[3], "shape"]
+            if path_parts[4] == "Colors":
+                return ["components", "minecraft:fireworks", "explosions", path_parts[3], "colors"] + path_parts[5:]
+            if path_parts[4] == "FadeColors":
+                return ["components", "minecraft:fireworks", "explosions", path_parts[3], "fade_colors"] + path_parts[5:]
+            if path_parts[4] == "Trail":
+                return ["components", "minecraft:fireworks", "explosions", path_parts[3], "has_trail"]
+            if path_parts[4] == "Flicker":
+                return ["components", "minecraft:fireworks", "explosions", path_parts[3], "has_twinkle"]
+            if defaults.SEND_WARNINGS:
+                log(f'WARNING: Invalid child of item tag "Fireworks.Explosions{path_parts[3]}": {path_parts[4]}')
+            return ["components", "minecraft:fireworks", "explosions", path_parts[3]]
+        if path_parts[2] == "Flight":
+            return ["components", "minecraft:fireworks", "flight_duration"]
+        if defaults.SEND_WARNINGS:
+            log(f'WARNING: Invalid child of item tag "Fireworks": {path_parts[2]}')
+        return ["components", "minecraft:fireworks"]
+
+    if path_parts[1] == "generation":
+        return ["components", "minecraft:written_book_content", "generation"]
+
+    if path_parts[1] == "Glowing":
+        return ["components", "minecraft:bucket_entity_data", "Glowing"]
+
+    if path_parts[1] == "Health":
+        return ["components", "minecraft:bucket_entity_data", "Health"]
+    
+    if path_parts[1] == "HideFlags":
+        if defaults.SEND_WARNINGS:
+            log(f'WARNING: Item tag {path_parts[1]} is not implemented yet for path conversion')
+        if len(path_parts) == 2:
+            return ["components", "minecraft:"]
+        return ["components", "minecraft:"] + path_parts[2:]
+
+    if path_parts[1] == "HuntingCooldown":
+        return ["components", "minecraft:bucket_entity_data", "HuntingCooldown"]
+
+    if path_parts[1] == "instrument":
+        return ["components", "minecraft:instrument"]
+
+    if path_parts[1] == "Invulnerable":
+        return ["components", "minecraft:bucket_entity_data", "Invulnerable"]
+
+    if path_parts[1] == "Items":
+        return ["components", "minecraft:bundle_contents"] + path_parts[2:]
+
+    if path_parts[1] == "LodestoneDimension":
+        return ["components", "minecraft:lodestone_tracker", "target", "dimension"]
+
+    if path_parts[1] == "LodestonePos":
+        if len(path_parts) == 2:
+            return ["components", "minecraft:lodestone_tracker", "target", "pos"]
+        return ["components", "minecraft:lodestone_tracker", "target", "pos", f'[{["x", "y", "z"].index(path_parts[2])}]']
+
+    if path_parts[1] == "LodestoneTracked":
+        return ["components", "minecraft:lodestone_tracker", "target", "tracked"]
+
+    if path_parts[1] == "map":
+        return ["components", "minecraft:map_id"]
+
+    if path_parts[1] == "NoAI":
+        return ["components", "minecraft:bucket_entity_data", "NoAI"]
+
+    if path_parts[1] == "NoGravity":
+        return ["components", "minecraft:bucket_entity_data", "NoGravity"]
+
+    if path_parts[1] == "pages":
+        if defaults.SEND_WARNINGS:
+            log(f'WARNING: Item tag {path_parts[1]} is not implemented yet for path conversion')
+        if len(path_parts) == 2:
+            return ["components", "minecraft:"]
+        return ["components", "minecraft:"] + path_parts[2:]
+
+    if path_parts[1] == "Potion":
+        if defaults.SEND_WARNINGS:
+            log(f'WARNING: Item tag {path_parts[1]} is not implemented yet for path conversion')
+        if len(path_parts) == 2:
+            return ["components", "minecraft:"]
+        return ["components", "minecraft:"] + path_parts[2:]
+
+    if path_parts[1] == "Recipes":
+        return ["components", "minecraft:recipes"] + path_parts[2:]
+
+    if path_parts[1] == "RepairCost":
+        return ["components", "minecraft:repair_cost"]
+
+    if path_parts[1] == "resolved":
+        return ["components", "minecraft:written_book_content", "resolved"]
+
+    if path_parts[1] == "Silent":
+        return ["components", "minecraft:bucket_entity_data", "Silent"]
+
+    if path_parts[1] == "SkullOwner":
+        if defaults.SEND_WARNINGS:
+            log(f'WARNING: Item tag {path_parts[1]} is not implemented yet for path conversion')
+        if len(path_parts) == 2:
+            return ["components", "minecraft:"]
+        return ["components", "minecraft:"] + path_parts[2:]
+
+    if path_parts[1] == "StoredEnchantments":
+        if defaults.SEND_WARNINGS:
+            log(f'WARNING: Item tag {path_parts[1]} is not implemented yet for path conversion')
+        if len(path_parts) == 2:
+            return ["components", "minecraft:"]
+        return ["components", "minecraft:"] + path_parts[2:]
+
+    if path_parts[1] == "title":
+        return ["components", "minecraft:written_book_content", "title", "raw"]
+
+    if path_parts[1] == "Trim":
+        if defaults.SEND_WARNINGS:
+            log(f'WARNING: Item tag {path_parts[1]} is not implemented yet for path conversion')
+        if len(path_parts) == 2:
+            return ["components", "minecraft:"]
+        return ["components", "minecraft:"] + path_parts[2:]
+
+    if path_parts[1] == "Unbreakable":
+        return ["components", "minecraft:unbreakable"]
+
+    if path_parts[1] == "Variant":
+        return ["components", "minecraft:bucket_entity_data", "Variant"]
+    
+
+    return ["components", "minecraft:custom_data"] + path_parts[1:]
