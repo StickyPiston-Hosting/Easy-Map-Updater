@@ -146,8 +146,14 @@ def fix_region_file(file_path: Path, source_file_path: Path, dimension: str):
     except:
         return
     for chunk_metadata in cast(list[region.ChunkMetadata], region_file.get_metadata()):
-        chunk = region_file.get_nbt(chunk_metadata.x, chunk_metadata.z)
-        source_chunk = source_region_file.get_nbt(chunk_metadata.x, chunk_metadata.z)
+        try:
+            chunk = region_file.get_nbt(chunk_metadata.x, chunk_metadata.z)
+        except:
+            continue
+        try:
+            source_chunk = source_region_file.get_nbt(chunk_metadata.x, chunk_metadata.z)
+        except:
+            source_chunk = chunk
         if not chunk or not source_chunk:
             continue
         if "block_entities" not in chunk:
@@ -413,7 +419,10 @@ def fix_entity_file(file_path: Path, source_file_path: Path, dimension: str):
     except:
         return
     for chunk_metadata in cast(list[region.ChunkMetadata], region_file.get_metadata()):
-        chunk = region_file.get_nbt(chunk_metadata.x, chunk_metadata.z)
+        try:
+            chunk = region_file.get_nbt(chunk_metadata.x, chunk_metadata.z)
+        except:
+            continue
         if not chunk:
             continue
         if "Entities" not in chunk:
