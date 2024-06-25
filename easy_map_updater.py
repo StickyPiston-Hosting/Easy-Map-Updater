@@ -533,7 +533,7 @@ def action_update(): # Needs confirmation
         else:
             confirm = "n"
         if confirm in ["y", "Y"]:
-            action_get_player_names()
+            action_get_player_names(False)
             print("")
             log("Player names have been logged in player_names.json")
             log("Go through the list and remove non-player names from the list (e.g. fakeplayer variable names)")
