@@ -176,7 +176,10 @@ def scan_region_file(discoveries: dict[Discoveries, bool], coordinates: StatCoor
     region_file = region.RegionFile(file_path)
     chunk_metadata: region.ChunkMetadata
     for chunk_metadata in region_file.get_metadata():
-        chunk = region_file.get_nbt(chunk_metadata.x, chunk_metadata.z)
+        try:
+            chunk = region_file.get_nbt(chunk_metadata.x, chunk_metadata.z)
+        except:
+            continue
         if not chunk:
             continue
         if "block_entities" not in chunk:
@@ -224,7 +227,10 @@ def scan_entity_file(discoveries: dict[Discoveries, bool], coordinates: StatCoor
     region_file = region.RegionFile(file_path)
     chunk_metadata: region.ChunkMetadata
     for chunk_metadata in region_file.get_metadata():
-        chunk = region_file.get_nbt(chunk_metadata.x, chunk_metadata.z)
+        try:
+            chunk = region_file.get_nbt(chunk_metadata.x, chunk_metadata.z)
+        except:
+            continue
         if not chunk:
             continue
         if "Entities" not in chunk:

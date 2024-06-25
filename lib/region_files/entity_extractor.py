@@ -65,7 +65,10 @@ def extract_from_region(world: Path, region_file_path: Path, entities_folder_pat
     for chunk_metadata in cast(list[region.ChunkMetadata], region_file.get_metadata()):
         if defaults.DEBUG_MODE:
             log(f"Extracting {chunk_metadata.x}, {chunk_metadata.z}")
-        region_chunk = region_file.get_nbt(chunk_metadata.x, chunk_metadata.z)
+        try:
+            region_chunk = region_file.get_nbt(chunk_metadata.x, chunk_metadata.z)
+        except:
+            continue
         if not region_chunk:
             continue
         if "entities" not in region_chunk:

@@ -99,7 +99,10 @@ def read_commands_from_region(world: Path, file_path: Path, list_name: str) -> s
     region_file = region.RegionFile(file_path)
     chunk_metadata: region.ChunkMetadata
     for chunk_metadata in region_file.get_metadata():
-        chunk = region_file.get_nbt(chunk_metadata.x, chunk_metadata.z)
+        try:
+            chunk = region_file.get_nbt(chunk_metadata.x, chunk_metadata.z)
+        except:
+            continue
         if not chunk:
             continue
         if list_name not in chunk:
