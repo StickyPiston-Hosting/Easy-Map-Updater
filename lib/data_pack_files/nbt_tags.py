@@ -386,11 +386,7 @@ def update_tags(parent: dict, nbt: dict, guide: dict, source: str, object_id: st
         if source in ["block", "entity"] and key == "CommandStats" and not defaults.FIXES["stats"]:
             log("WARNING: Stats fixer not enabled but stats have been found!")
         if key in guide and key in nbt:
-            if "rename" in guide[key]:
-                nbt[guide[key]["rename"]] = branch(nbt, nbt[key], guide[key], source, object_id, issues)
-                if key in nbt:
-                    del nbt[key]
-            elif (
+            if (
                 "remove" in guide[key] and
                 (
                     (isinstance(guide[key]["remove"], bool) and guide[key]["remove"]) or
@@ -403,6 +399,10 @@ def update_tags(parent: dict, nbt: dict, guide: dict, source: str, object_id: st
                 )
             ):
                 branch(nbt, nbt[key], guide[key], source, object_id, issues)
+                if key in nbt:
+                    del nbt[key]
+            elif "rename" in guide[key]:
+                nbt[guide[key]["rename"]] = branch(nbt, nbt[key], guide[key], source, object_id, issues)
                 if key in nbt:
                     del nbt[key]
             else:
