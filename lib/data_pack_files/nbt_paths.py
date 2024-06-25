@@ -165,6 +165,7 @@ def extract_nbt_from_path(nbt, path_parts: list[str]):
 
 def edge_case(path_parts: list[str], case_type: str, source: str, issues: list[dict[str, str | int]]) -> list[str]:
     if case_type == "item_tag":
+        path_parts = search_tags(path_parts, NBT_TREE["sources"]["item_tag"]["tags"], source, issues)
         return item_component.update_path(path_parts, pack_version, issues)
 
     if defaults.SEND_WARNINGS:

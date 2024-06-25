@@ -808,11 +808,54 @@ def update_path(path_parts: list[str], version: int, issues: list[dict[str, str 
         return ["components", "minecraft:written_book_content", "author"]
 
     if path_parts[1] == "BlockEntityTag":
-        if defaults.SEND_WARNINGS:
-            log(f'WARNING: Item tag {path_parts[1]} is not implemented yet for path conversion')
         if len(path_parts) == 2:
-            return ["components", "minecraft:"]
-        return ["components", "minecraft:"] + path_parts[2:]
+            return ["components", "minecraft:block_entity_data"]
+        if path_parts[2] == "Base":
+            return ["components", "minecraft:base_color"]
+        if path_parts[2] == "Bees":
+            if len(path_parts) == 3:
+                return ["components", "minecraft:bees"]
+            if len(path_parts) == 4:
+                return ["components", "minecraft:bees", path_parts[3]]
+            if path_parts[4] == "EntityData":
+                return ["components", "minecraft:bees", path_parts[3], "entity_data"] + path_parts[5:]
+            if path_parts[4] == "TicksInHive":
+                return ["components", "minecraft:bees", path_parts[3], "ticks_in_hive"]
+            if path_parts[4] == "MinOccupationTicks":
+                return ["components", "minecraft:bees", path_parts[3], "min_ticks_in_hive"]
+        if path_parts[2] == "Items":
+            if len(path_parts) == 3:
+                return ["components", "minecraft:container"]
+            if len(path_parts) == 4:
+                return ["components", "minecraft:container", path_parts[3]]
+            if path_parts[4] == "Slot":
+                return ["components", "minecraft:container", path_parts[3], "slot"]
+            if path_parts[4] == "id":
+                return ["components", "minecraft:container", path_parts[3], "item", "id"]
+            if path_parts[4] == "count":
+                return ["components", "minecraft:container", path_parts[3], "item", "count"]
+            if path_parts[4] == "components":
+                return ["components", "minecraft:container", path_parts[3], "item", "components"] + path_parts[5:]
+        if path_parts[2] == "Lock":
+            return ["components", "minecraft:lock"]
+        if path_parts[2] == "LootTable":
+            return ["components", "minecraft:container_loot", "loot_table"]
+        if path_parts[2] == "LootTableSeed":
+            return ["components", "minecraft:container_loot", "seed"]
+        if path_parts[2] == "note_block_sound":
+            return ["components", "minecraft:note_block_sound"]
+        if path_parts[2] == "Patterns":
+            if len(path_parts) == 3:
+                return ["components", "minecraft:banner_patterns"]
+            if len(path_parts) == 4:
+                return ["components", "minecraft:banner_patterns", path_parts[3]]
+            if path_parts[4] == "Pattern":
+                return ["components", "minecraft:banner_patterns", path_parts[3], "pattern"]
+            if path_parts[4] == "Color":
+                return ["components", "minecraft:banner_patterns", path_parts[3], "color"]
+        if path_parts[2] == "sherds":
+            return ["components", "minecraft:pot_decorations"] + path_parts[3:]
+        return ["components", "minecraft:block_entity_tag"] + path_parts[2:]
 
     if path_parts[1] == "BlockStateTag":
         return ["components", "minecraft:block_state"] + path_parts[2:]
@@ -821,18 +864,18 @@ def update_path(path_parts: list[str], version: int, issues: list[dict[str, str 
         return ["components", "minecraft:bucket_entity_data", "Variant"]
 
     if path_parts[1] == "CanDestroy":
-        if defaults.SEND_WARNINGS:
-            log(f'WARNING: Item tag {path_parts[1]} is not implemented yet for path conversion')
         if len(path_parts) == 2:
-            return ["components", "minecraft:"]
-        return ["components", "minecraft:"] + path_parts[2:]
+            return ["components", "minecraft:can_break", "predicates"]
+        if defaults.SEND_WARNINGS:
+            log(f'WARNING: Children of item tag {path_parts[1]} are not handled yet in component conversion')
+        return ["components", "minecraft:can_break"] + path_parts[2:]
 
     if path_parts[1] == "CanPlaceOn":
-        if defaults.SEND_WARNINGS:
-            log(f'WARNING: Item tag {path_parts[1]} is not implemented yet for path conversion')
         if len(path_parts) == 2:
-            return ["components", "minecraft:"]
-        return ["components", "minecraft:"] + path_parts[2:]
+            return ["components", "minecraft:can_place_on"]
+        if defaults.SEND_WARNINGS:
+            log(f'WARNING: Children of item tag {path_parts[1]} are not handled yet in component conversion')
+        return ["components", "minecraft:can_place_on"] + path_parts[2:]
 
     if path_parts[1] == "Charged":
         if defaults.SEND_WARNINGS:
@@ -890,7 +933,7 @@ def update_path(path_parts: list[str], version: int, issues: list[dict[str, str 
         if len(path_parts) == 2:
             return ["components", "minecraft:enchantments"]
         if defaults.SEND_WARNINGS:
-            log(f'WARNING: Children of item tag "Enchantments" are not handled yet in component conversion')
+            log(f'WARNING: Children of item tag {path_parts[1]} are not handled yet in component conversion')
         return ["components", "minecraft:enchantments"] + path_parts[2:]
 
     if path_parts[1] == "EntityTag":
@@ -951,10 +994,8 @@ def update_path(path_parts: list[str], version: int, issues: list[dict[str, str 
     
     if path_parts[1] == "HideFlags":
         if defaults.SEND_WARNINGS:
-            log(f'WARNING: Item tag {path_parts[1]} is not implemented yet for path conversion')
-        if len(path_parts) == 2:
-            return ["components", "minecraft:"]
-        return ["components", "minecraft:"] + path_parts[2:]
+            log(f'WARNING: Item tag {path_parts[1]} cannot be converted for NBT paths')
+        return ["components", "minecraft:custom_data", "HideFlags"]
 
     if path_parts[1] == "HuntingCooldown":
         return ["components", "minecraft:bucket_entity_data", "HuntingCooldown"]
@@ -990,17 +1031,13 @@ def update_path(path_parts: list[str], version: int, issues: list[dict[str, str 
 
     if path_parts[1] == "pages":
         if defaults.SEND_WARNINGS:
-            log(f'WARNING: Item tag {path_parts[1]} is not implemented yet for path conversion')
+            log(f'WARNING: Item tag {path_parts[1]} depends on item context, item is either minecraft:writable_book or minecraft:written_book')
         if len(path_parts) == 2:
-            return ["components", "minecraft:"]
-        return ["components", "minecraft:"] + path_parts[2:]
+            return ["components", "minecraft:written_book_content", "pages"]
+        return ["components", "minecraft:written_book_content", "pages", path_parts[2], "raw"]
 
     if path_parts[1] == "Potion":
-        if defaults.SEND_WARNINGS:
-            log(f'WARNING: Item tag {path_parts[1]} is not implemented yet for path conversion')
-        if len(path_parts) == 2:
-            return ["components", "minecraft:"]
-        return ["components", "minecraft:"] + path_parts[2:]
+        return ["components", "minecraft:potion_contents", "potion"] + path_parts[2:]
 
     if path_parts[1] == "Recipes":
         return ["components", "minecraft:recipes"] + path_parts[2:]
@@ -1015,28 +1052,48 @@ def update_path(path_parts: list[str], version: int, issues: list[dict[str, str 
         return ["components", "minecraft:bucket_entity_data", "Silent"]
 
     if path_parts[1] == "SkullOwner":
-        if defaults.SEND_WARNINGS:
-            log(f'WARNING: Item tag {path_parts[1]} is not implemented yet for path conversion')
         if len(path_parts) == 2:
-            return ["components", "minecraft:"]
-        return ["components", "minecraft:"] + path_parts[2:]
+            return ["components", "minecraft:profile", "name"]
+        if path_parts[2] == "Name":
+            return ["components", "minecraft:profile", "name"]
+        if path_parts[2] == "Id":
+            return ["components", "minecraft:profile", "id"] + path_parts[3:]
+        if path_parts[2] == "Properties":
+            if len(path_parts) == 3:
+                return ["components", "minecraft:profile", "properties"]
+            if path_parts[3] == "textures":
+                if len(path_parts) == 4:
+                    return ["components", "minecraft:profile", "properties"]
+                if len(path_parts) == 5:
+                    return ["components", "minecraft:profile", "properties", path_parts[4]]
+                if path_parts[5] == "Value":
+                    return ["components", "minecraft:profile", "properties", path_parts[4], "value"]
+                if path_parts[5] == "Signature":
+                    return ["components", "minecraft:profile", "properties", path_parts[4], "signature"]
+        if defaults.SEND_WARNINGS:
+            log(f'WARNING: Invalid child of item tag "SkullOwner": {path_parts[2]}')
+        return ["components", "minecraft:profile", "name"]
 
     if path_parts[1] == "StoredEnchantments":
-        if defaults.SEND_WARNINGS:
-            log(f'WARNING: Item tag {path_parts[1]} is not implemented yet for path conversion')
         if len(path_parts) == 2:
-            return ["components", "minecraft:"]
-        return ["components", "minecraft:"] + path_parts[2:]
+            return ["components", "minecraft:stored_enchantments"]
+        if defaults.SEND_WARNINGS:
+            log(f'WARNING: Children of item tag {path_parts[1]} are not handled yet in component conversion')
+        return ["components", "minecraft:stored_enchantments"] + path_parts[2:]
 
     if path_parts[1] == "title":
         return ["components", "minecraft:written_book_content", "title", "raw"]
 
     if path_parts[1] == "Trim":
-        if defaults.SEND_WARNINGS:
-            log(f'WARNING: Item tag {path_parts[1]} is not implemented yet for path conversion')
         if len(path_parts) == 2:
-            return ["components", "minecraft:"]
-        return ["components", "minecraft:"] + path_parts[2:]
+            return ["components", "minecraft:trim"]
+        if path_parts[2] == "pattern":
+            return ["components", "minecraft:trim", "pattern"]
+        if path_parts[2] == "material":
+            return ["components", "minecraft:trim", "material"]
+        if defaults.SEND_WARNINGS:
+            log(f'WARNING: Invalid child of item tag "Trim": {path_parts[2]}')
+        return ["components", "minecraft:trim"]
 
     if path_parts[1] == "Unbreakable":
         return ["components", "minecraft:unbreakable"]
