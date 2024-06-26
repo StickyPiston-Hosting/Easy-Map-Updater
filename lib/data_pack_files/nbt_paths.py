@@ -80,14 +80,17 @@ def branch(path_parts: list[str], guide: dict, source: str, issues: list[dict[st
 def modify_path(path_parts: list[str], guide: dict, source: str, issues: list[dict[str, str | int]]) -> list[str]:
     if "edge_case" in guide:
         return edge_case(path_parts, guide["edge_case"], source, issues)
-    if "rename" in guide:
-        path_parts = [pack(guide["rename"])] + path_parts[1:]
     if "source" in guide:
-        return get_source(path_parts, guide["source"], issues)
+        path_parts = get_source(path_parts, guide["source"], issues)
     if "tags" in guide:
-        return search_tags(path_parts, guide["tags"], source, issues)
+        path_parts = search_tags(path_parts, guide["tags"], source, issues)
     if "list" in guide:
-        return search_list(path_parts, guide["list"], source, issues)
+        path_parts = search_list(path_parts, guide["list"], source, issues)
+    if "rename" in guide:
+        if isinstance(guide["rename"], list):
+            path_parts = guide["rename"] + path_parts[1:]
+        else:
+            path_parts = [guide["rename"]] + path_parts[1:]
     return path_parts
 
 def search_tags(path_parts: list[str], guide: dict, source: str, issues: list[dict[str, str | int]]) -> list[str]:

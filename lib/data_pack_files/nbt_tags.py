@@ -528,6 +528,8 @@ def edge_case(parent: dict, nbt, case: str | dict[str, str], source: str, object
         return edge_case_can_place_on(nbt, issues)
     if case_type == "color":
         return edge_case_color(parent)
+    if case_type == "custom_potion_effects":
+        return edge_case_custom_potion_effects(parent, object_id, issues)
     if case_type == "effects":
         return edge_case_effects(parent, object_id, issues)
     if case_type == "entity_id":
@@ -547,7 +549,7 @@ def edge_case(parent: dict, nbt, case: str | dict[str, str], source: str, object
     if case_type == "old_spawn_potential_entity":
         return edge_case_old_spawn_potential_entity(parent, nbt, object_id, issues)
     if case_type == "potion":
-        return edge_case_potion(parent)
+        return edge_case_potion(parent, object_id)
     if case_type == "sign_text":
         return edge_case_sign_text(parent, issues)
     if case_type == "spawn_data":
@@ -587,7 +589,26 @@ def edge_case_color(parent: dict):
     if "potion_contents" not in parent:
         parent["potion_contents"] = {}
     parent["potion_contents"]["custom_color"] = TypeInt(parent["Color"].value)
-    del parent["Color"]
+
+def edge_case_custom_potion_effects(parent: dict, object_id: str, issues: list[dict[str, str | int]]):
+    if "item" not in parent:
+        parent["item"] = {}
+    if "id" not in parent["item"]:
+        parent["item"]["id"] = "minecraft:arrow"
+    if "count" not in parent["item"]:
+        parent["item"]["count"] = TypeInt(1)
+    if "components" not in parent["item"]:
+        parent["item"]["components"] = {}
+    if "minecraft:potion_contents" not in parent["item"]["components"]:
+        parent["item"]["components"]["minecraft:potion_contents"] = {}
+    if "custom_effects" not in parent["item"]["components"]["minecraft:potion_contents"]:
+        parent["item"]["components"]["minecraft:potion_contents"]["custom_effects"] = TypeList([])
+    if "CustomPotionEffects" in parent:
+        key = "CustomPotionEffects"
+    else:
+        key = "custom_potion_effects"
+    for effect in parent[key]:
+        parent["item"]["components"]["minecraft:potion_contents"]["custom_effects"].append(get_source(parent, effect, "effect", object_id, issues))
 
 def edge_case_effects(parent: dict, object_id: str, issues: list[dict[str, str | int]]):
     if "potion_contents" not in parent:
@@ -595,7 +616,6 @@ def edge_case_effects(parent: dict, object_id: str, issues: list[dict[str, str |
     parent["potion_contents"]["custom_effects"] = TypeList([])
     for effect in parent["effects"]:
         parent["potion_contents"]["custom_effects"].append(get_source(parent, effect, "effect", object_id, issues))
-    del parent["effects"]
 
 def edge_case_entity_id(parent: dict, nbt: str, object_id: str, issues: list[dict[str, str | int]]):
     if "SpawnData" in parent:
@@ -647,10 +667,9 @@ def edge_case_fuse(parent: dict, object_id: str):
         parent["fuse"] = TypeShort(parent["Fuse"].value)
         if "id" in parent:
             object_id = parent["id"]
-        object_id = miscellaneous.namespace(object_id)
-        if object_id == "minecraft:tnt":
+        if miscellaneous.namespace(object_id) == "minecraft:tnt":
             del parent["Fuse"]
-        if object_id == "minecraft:creeper":
+        if miscellaneous.namespace(object_id) == "minecraft:creeper":
             del parent["fuse"]
 
 def edge_case_item_components(nbt: dict[str, Any]) -> dict[str, Any]:
@@ -682,11 +701,29 @@ def edge_case_old_spawn_potential_entity(parent: dict[str, Any], nbt: dict[str, 
         del parent["Type"]
     parent["data"]["entity"] = get_source(parent["data"], parent["data"]["entity"], "entity", object_id, issues)
 
-def edge_case_potion(parent: dict):
-    if "potion_contents" not in parent:
-        parent["potion_contents"] = {}
-    parent["potion_contents"]["potion"] = miscellaneous.namespace(parent["Potion"])
-    del parent["Potion"]
+def edge_case_potion(parent: dict, object_id: str):
+    # Handle tipped arrow case
+    if (
+        ("id" in parent and miscellaneous.namespace(parent["id"]) == "minecraft:arrow") or
+        ("id" not in parent and miscellaneous.namespace(object_id) == "minecraft:arrow")
+    ):
+        if "item" not in parent:
+            parent["item"] = {}
+        if "id" not in parent["item"]:
+            parent["item"]["id"] = "minecraft:arrow"
+        if "count" not in parent["item"]:
+            parent["item"]["count"] = TypeInt(1)
+        if "components" not in parent["item"]:
+            parent["item"]["components"] = {}
+        if "minecraft:potion_contents" not in parent["item"]["components"]:
+            parent["item"]["components"]["minecraft:potion_contents"] = {}
+        parent["item"]["components"]["minecraft:potion_contents"]["potion"] = miscellaneous.namespace(parent["Potion"])
+
+    else:
+        # Handle area effect cloud case by default
+        if "potion_contents" not in parent:
+            parent["potion_contents"] = {}
+        parent["potion_contents"]["potion"] = miscellaneous.namespace(parent["Potion"])
 
 def edge_case_sign_text(parent: dict, issues: list[dict[str, str | int]]):
     # Prepare front text

@@ -308,6 +308,7 @@
                 "body_armor_drop_chance": { "data_type": "float" },
                 "body_armor_item": { "source": "item" },
                 "Color": {
+                    "remove": true,
                     "edge_case": "color",
                     "path": { "rename": [ "potion_contents", "custom_color" ] }
                 },
@@ -321,10 +322,21 @@
                     "argument_type": "json_text_component_mangled"
                 },
                 "CustomNameVisible": { "data_type": "byte" },
-                "custom_potion_effects": { "list": { "source": "effect" } },
+                "custom_potion_effects": {
+                    "remove": true,
+                    "edge_case": "custom_potion_effects",
+                    "path": {
+                        "rename": [ "item", "components", "minecraft:potion_contents", "custom_effects" ],
+                        "list": { "source": "effect" }
+                    }
+                },
                 "CustomPotionEffects": {
-                    "rename": "custom_potion_effects",
-                    "list": { "source": "effect" }
+                    "remove": true,
+                    "edge_case": "custom_potion_effects",
+                    "path": {
+                        "rename": [ "item", "components", "minecraft:potion_contents", "custom_effects" ],
+                        "list": { "source": "effect" }
+                    }
                 },
                 "DecorItem": {
                     "rename": "body_armor_item",
@@ -346,6 +358,7 @@
                     }
                 },
                 "effects": {
+                    "remove": true,
                     "edge_case": "effects",
                     "path": {
                         "rename": [ "potion_contents", "custom_effects" ],
@@ -453,6 +466,7 @@
                     }
                 },
                 "Potion": {
+                    "remove": true,
                     "edge_case": "potion",
                     "path": { "rename": [ "potion_contents", "potion" ] }
                 },
