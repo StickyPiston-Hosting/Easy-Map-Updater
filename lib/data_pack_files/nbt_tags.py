@@ -526,6 +526,10 @@ def edge_case(parent: dict, nbt, case: str | dict[str, str], source: str, object
         return blocks.update_from_nbt(cast(blocks.BlockInputFromNBT, parent), pack_version, issues)
     if case_type == "can_place_on":
         return edge_case_can_place_on(nbt, issues)
+    if case_type == "color":
+        return edge_case_color(parent)
+    if case_type == "effects":
+        return edge_case_effects(parent, object_id, issues)
     if case_type == "entity_id":
         return edge_case_entity_id(parent, nbt, object_id, issues)
     if case_type == "equipment":
@@ -542,6 +546,8 @@ def edge_case(parent: dict, nbt, case: str | dict[str, str], source: str, object
         return edge_case_mooshroom_stew(parent, pack_version, issues)
     if case_type == "old_spawn_potential_entity":
         return edge_case_old_spawn_potential_entity(parent, nbt, object_id, issues)
+    if case_type == "potion":
+        return edge_case_potion(parent)
     if case_type == "sign_text":
         return edge_case_sign_text(parent, issues)
     if case_type == "spawn_data":
@@ -576,6 +582,20 @@ def edge_case_can_place_on(nbt: list[str], issues: list[dict[str, str | int]]):
         )["id"])
         new_list.append(new_block)
     return TypeList(utils.deduplicate_list(new_list))
+
+def edge_case_color(parent: dict):
+    if "potion_contents" not in parent:
+        parent["potion_contents"] = {}
+    parent["potion_contents"]["custom_color"] = TypeInt(parent["Color"].value)
+    del parent["Color"]
+
+def edge_case_effects(parent: dict, object_id: str, issues: list[dict[str, str | int]]):
+    if "potion_contents" not in parent:
+        parent["potion_contents"] = {}
+    parent["potion_contents"]["custom_effects"] = TypeList([])
+    for effect in parent["effects"]:
+        parent["potion_contents"]["custom_effects"].append(get_source(parent, effect, "effect", object_id, issues))
+    del parent["effects"]
 
 def edge_case_entity_id(parent: dict, nbt: str, object_id: str, issues: list[dict[str, str | int]]):
     if "SpawnData" in parent:
@@ -661,6 +681,12 @@ def edge_case_old_spawn_potential_entity(parent: dict[str, Any], nbt: dict[str, 
         parent["data"]["entity"]["id"] = entities.update(parent["Type"], pack_version, issues)
         del parent["Type"]
     parent["data"]["entity"] = get_source(parent["data"], parent["data"]["entity"], "entity", object_id, issues)
+
+def edge_case_potion(parent: dict):
+    if "potion_contents" not in parent:
+        parent["potion_contents"] = {}
+    parent["potion_contents"]["potion"] = miscellaneous.namespace(parent["Potion"])
+    del parent["Potion"]
 
 def edge_case_sign_text(parent: dict, issues: list[dict[str, str | int]]):
     # Prepare front text

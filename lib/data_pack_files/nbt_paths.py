@@ -81,11 +81,13 @@ def modify_path(path_parts: list[str], guide: dict, source: str, issues: list[di
     if "edge_case" in guide:
         return edge_case(path_parts, guide["edge_case"], source, issues)
     if "rename" in guide:
-        return guide["rename"]
+        path_parts = [pack(guide["rename"])] + path_parts[1:]
     if "source" in guide:
         return get_source(path_parts, guide["source"], issues)
     if "tags" in guide:
         return search_tags(path_parts, guide["tags"], source, issues)
+    if "list" in guide:
+        return search_list(path_parts, guide["list"], source, issues)
     return path_parts
 
 def search_tags(path_parts: list[str], guide: dict, source: str, issues: list[dict[str, str | int]]) -> list[str]:

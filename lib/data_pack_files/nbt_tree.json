@@ -307,6 +307,10 @@
                 "block_state": { "edge_case": "block_entity" },
                 "body_armor_drop_chance": { "data_type": "float" },
                 "body_armor_item": { "source": "item" },
+                "Color": {
+                    "edge_case": "color",
+                    "path": { "rename": [ "potion_contents", "custom_color" ] }
+                },
                 "Command": {
                     "data_type": "string",
                     "argument_type": "command_string"
@@ -341,7 +345,13 @@
                         "rename": ["stew_effects", "[0]", "duration"]
                     }
                 },
-                "effects": { "list": { "source": "effect" } },
+                "effects": {
+                    "edge_case": "effects",
+                    "path": {
+                        "rename": [ "potion_contents", "custom_effects" ],
+                        "list": { "source": "effect" }
+                    }
+                },
                 "Effects": {
                     "rename": "effects",
                     "list": { "source": "effect" }
@@ -441,6 +451,10 @@
                         "RightArm": { "list": { "data_type": "float" } },
                         "RightLeg": { "list": { "data_type": "float" } }
                     }
+                },
+                "Potion": {
+                    "edge_case": "potion",
+                    "path": { "rename": [ "potion_contents", "potion" ] }
                 },
                 "Rotation": { "list": { "data_type": "float" } },
                 "SelectedItem": { "source": "item" },
