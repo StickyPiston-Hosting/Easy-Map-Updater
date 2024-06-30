@@ -71,6 +71,40 @@
                 "Base": {
                     "edge_case": "banner_base"
                 },
+                "Bees": {
+                    "rename": "bees",
+                    "list": {
+                        "tags": {
+                            "EntityData": {
+                                "rename": "entity_data",
+                                "source": "entity"
+                            },
+                            "TicksInHive": {
+                                "rename": "ticks_in_hive",
+                                "data_type": "int"
+                            },
+                            "MinOccupationTicks": {
+                                "rename": "min_ticks_in_hive",
+                                "data_type": "int"
+                            }
+                        }
+                    }
+                },
+                "bees": {
+                    "list": {
+                        "tags": {
+                            "entity_data": {
+                                "source": "entity"
+                            },
+                            "ticks_in_hive": {
+                                "data_type": "int"
+                            },
+                            "min_ticks_in_hive": {
+                                "data_type": "int"
+                            }
+                        }
+                    }
+                },
                 "Color": {
                     "remove": true,
                     "edge_case": "sign_text",

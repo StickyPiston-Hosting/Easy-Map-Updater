@@ -199,6 +199,20 @@ def extract(item_id: str, components: dict[str, Any] | None, nbt: dict[str, Any]
                 components["minecraft:bees"].append(bee_entry)
             del block_entity_tag["Bees"]
 
+        if "bees" in block_entity_tag:
+            if "minecraft:bees" not in components:
+                components["minecraft:bees"] = nbt_tags.TypeList([])
+            for bee in block_entity_tag["bees"]:
+                bee_entry: dict[str, Any] = {}
+                if "entity_data" in bee:
+                    bee_entry["entity_data"] = bee["entity_data"]
+                if "ticks_in_hive" in bee:
+                    bee_entry["ticks_in_hive"] = nbt_tags.TypeInt(bee["ticks_in_hive"])
+                if "min_ticks_in_hive" in bee:
+                    bee_entry["min_ticks_in_hive"] = nbt_tags.TypeInt(bee["min_ticks_in_hive"])
+                components["minecraft:bees"].append(bee_entry)
+            del block_entity_tag["bees"]
+
         if "Items" in block_entity_tag:
             if "minecraft:container" not in components:
                 components["minecraft:container"] = nbt_tags.TypeList([])
