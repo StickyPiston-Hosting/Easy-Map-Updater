@@ -7,7 +7,7 @@
 
 import json
 from pathlib import Path
-from typing import cast, TypedDict, Any
+from typing import cast, TypedDict, Any, NotRequired
 from lib import defaults
 from lib import json_manager
 from lib.data_pack_files import items
@@ -37,11 +37,15 @@ def update(file_path: Path, source_file_path: Path, version: int):
     # Write to new location
     file_path.parent.mkdir(parents=True, exist_ok=True)
     with file_path.open("w", encoding="utf-8", newline="\n") as file:
-        json.dump(loot_table(contents, version), file, indent=4)
+        json.dump(loot_table(cast(LootTable, contents), version), file, indent=4)
 
 
 
-def loot_table(contents: dict[str, Any], version: int) -> dict[str, dict[str, str]]:
+class LootTable(TypedDict):
+    functions: list
+    pools: "list[LootTablePool]"
+
+def loot_table(contents: LootTable, version: int) -> LootTable:
     global pack_version
     pack_version = version
 
@@ -59,7 +63,12 @@ def loot_table(contents: dict[str, Any], version: int) -> dict[str, dict[str, st
 
 
 
-def update_pool(pool: dict[str, list], version: int) -> dict[str, list]:
+class LootTablePool(TypedDict):
+    conditions: list
+    functions: list
+    entries: "list[LootTableEntry]"
+
+def update_pool(pool: LootTablePool, version: int) -> LootTablePool:
     global pack_version
     pack_version = version
 
@@ -86,6 +95,8 @@ class LootTableEntry(TypedDict):
     conditions: list
     functions: list
     type: str
+    name: NotRequired[str]
+    value: str | LootTable
     children: list
 
 def update_entry(entry: LootTableEntry, version: int) -> LootTableEntry:
@@ -114,7 +125,7 @@ def update_entry(entry: LootTableEntry, version: int) -> LootTableEntry:
 
         if entry["type"] == "minecraft:item":
             if "name" in entry:
-                entry["name"] = items.update(
+                entry["name"] = cast(str, items.update(
                     {
                         "id": entry["name"],
                         "data_value": -1,
@@ -123,9 +134,20 @@ def update_entry(entry: LootTableEntry, version: int) -> LootTableEntry:
                         "read": True
                     },
                     version, []
-                )["id"]
+                )["id"])
                 
-        if entry["type"] in ["minecraft:loot_table", "minecraft:tag"]:
+        if entry["type"] == "minecraft:loot_table":
+            if "name" in entry:
+                entry["value"] = miscellaneous.namespace(entry["name"])
+                del entry["name"]
+
+            elif "value" in entry:
+                if isinstance(entry["value"], dict):
+                    entry["value"] = loot_table(entry["value"], pack_version)
+                else:
+                    entry["value"] = miscellaneous.namespace(entry["value"])
+
+        if entry["type"] == "minecraft:tag":
             if "name" in entry:
                 entry["name"] = miscellaneous.namespace(entry["name"])
 
