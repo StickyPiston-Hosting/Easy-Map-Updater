@@ -70,12 +70,17 @@ def attribute_modifier_operation(operation: str, version: int, issues: list[dict
 
     return operation
 
-def banner_color(color: nbt_tags.TypeInt, version: int, issues: list[dict[str, str | int]]) -> nbt_tags.TypeInt:
+def banner_color(name: nbt_tags.TypeInt, version: int, issues: list[dict[str, str | int]]) -> str:
     if version <= 1202:
-        return nbt_tags.TypeInt(15 - color.value)
-    return color
+        return color(15 - name.value)
+    return color(name.value)
 
-def banner_pattern(pattern: str, version: int) -> str:
+def banner_color_numeric(name: nbt_tags.TypeInt, version: int) -> nbt_tags.TypeInt:
+    if version <= 1202:
+        return nbt_tags.TypeInt(15 - name.value)
+    return name
+
+def banner_pattern(pattern: str, version: int, issues: list[dict[str, str | int]]) -> str:
     if version <= 2004:
         id_array = {
             "b":    "minecraft:base",

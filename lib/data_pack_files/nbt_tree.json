@@ -141,11 +141,18 @@
                     "source": "skull_owner"
                 },
                 "Patterns": {
+                    "rename": "patterns",
                     "list": {
                         "tags": {
                             "Color": {
-                                "data_type": "int",
+                                "rename": "color",
+                                "data_type": "string",
                                 "argument_type": "banner_color"
+                            },
+                            "Pattern": {
+                                "rename": "pattern",
+                                "data_type": "string",
+                                "argument_type": "banner_pattern"
                             }
                         }
                     }

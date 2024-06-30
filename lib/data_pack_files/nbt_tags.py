@@ -565,7 +565,7 @@ def edge_case(parent: dict, nbt, case: str | dict[str, str], source: str, object
 
 def edge_case_banner_base(parent: dict[str, TypeInt], object_id: str, issues: list[dict[str, str | int]]):
     if miscellaneous.namespace(object_id) == "minecraft:shield":
-        parent["Base"] = miscellaneous.banner_color(parent["Base"], pack_version, issues)
+        parent["Base"] = miscellaneous.banner_color_numeric(parent["Base"], pack_version)
     else:
         del parent["Base"]
 
@@ -677,7 +677,7 @@ def edge_case_item_components(nbt: dict[str, Any]) -> dict[str, Any]:
 
 def edge_case_item_tag(parent: dict[str, Any], nbt: dict[str, Any], object_id: str, pack_version: int, issues: list[dict[str, str | int]]) -> dict[str, Any]:
     nbt = update_tags(parent, nbt, NBT_TREE["sources"]["item_tag"]["tags"], "item_tag", object_id, {}, issues)
-    return item_component.extract(object_id, parent["components"] if "components" in parent else {}, nbt, pack_version)
+    return item_component.extract(object_id, parent["components"] if "components" in parent else {}, nbt, pack_version, issues)
 
 def edge_case_mooshroom_stew(parent: dict, pack_version: int, issues: list[dict[str, str | int]]):
     parent["stew_effects"] = TypeList([{}])

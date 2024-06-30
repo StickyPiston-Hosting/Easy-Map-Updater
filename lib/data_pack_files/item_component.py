@@ -136,7 +136,7 @@ def conform(components: dict[str, Any]) -> dict[str, Any]:
     return components
 
 
-def extract(item_id: str, components: dict[str, Any] | None, nbt: dict[str, Any], version: int) -> dict[str, Any]:
+def extract(item_id: str, components: dict[str, Any] | None, nbt: dict[str, Any], version: int, issues: list[dict[str, str | int]]) -> dict[str, Any]:
     if components == None:
         components = {}
 
@@ -244,11 +244,24 @@ def extract(item_id: str, components: dict[str, Any] | None, nbt: dict[str, Any]
             for pattern in block_entity_tag["Patterns"]:
                 banner_pattern: dict[str, Any] = {}
                 if "Pattern" in pattern:
-                    banner_pattern["pattern"] = miscellaneous.banner_pattern(pattern["Pattern"], version)
+                    banner_pattern["pattern"] = miscellaneous.banner_pattern(pattern["Pattern"], version, issues)
                 if "Color" in pattern:
-                    banner_pattern["color"] = miscellaneous.color(pattern["Color"].value)
+                    banner_pattern["color"] = miscellaneous.banner_color(pattern["Color"], version, issues)
                 banner_patterns.append(banner_pattern)
             del block_entity_tag["Patterns"]
+
+        if "patterns" in block_entity_tag:
+            if "minecraft:banner_patterns" not in components:
+                components["minecraft:banner_patterns"] = nbt_tags.TypeList([])
+            banner_patterns = components["minecraft:banner_patterns"]
+            for pattern in block_entity_tag["patterns"]:
+                banner_pattern: dict[str, Any] = {}
+                if "pattern" in pattern:
+                    banner_pattern["pattern"] = miscellaneous.namespace(pattern["pattern"])
+                if "color" in pattern:
+                    banner_pattern["color"] = pattern["color"]
+                banner_patterns.append(banner_pattern)
+            del block_entity_tag["patterns"]
 
         if "sherds" in block_entity_tag:
             components["minecraft:pot_decorations"] = nbt_tags.TypeList([])

@@ -543,6 +543,7 @@ ARGUMENT_FUNCTIONS: dict[str, tuple] = {
     "attribute": ( miscellaneous.attribute, None ),
     "attribute_modifier_operation": ( miscellaneous.attribute_modifier_operation, None ),
     "banner_color": ( miscellaneous.banner_color, None ),
+    "banner_pattern": ( miscellaneous.banner_pattern, None ),
     "block": ( blocks.update_from_command, None),
     "block_nbt": ( nbt_tags.update, "block" ),
     "block_nbt_from_path": ( nbt_tags_from_path.update, "block" ),
