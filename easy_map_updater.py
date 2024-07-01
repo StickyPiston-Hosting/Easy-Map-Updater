@@ -1204,7 +1204,7 @@ def action_update_json_text_component():
         log(f'New component: {json_text_component.update(test_component, option_manager.get_version(), [], False)}')
         print("")
 
-def retrieve_json_file_contents(message: str) -> dict[str, Any] | None:
+def retrieve_json_file_contents(message: str) -> Any:
     while True:
         path_input = input(message)
         if not path_input:
