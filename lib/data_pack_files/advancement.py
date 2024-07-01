@@ -35,10 +35,13 @@ def update(file_path: Path, source_file_path: Path, version: int):
     # Write to new location
     file_path.parent.mkdir(parents=True, exist_ok=True)
     with file_path.open("w", encoding="utf-8", newline="\n") as file:
-        json.dump(advancement(contents), file, indent=4)
+        json.dump(advancement(contents, version), file, indent=4)
 
 
-def advancement(contents: dict[str, Any]) -> dict[str, Any]:
+def advancement(contents: dict[str, Any], version: int) -> dict[str, Any]:
+    global pack_version
+    pack_version = version
+
     # Update criteria
     for criterion_name in contents["criteria"]:
         update_criterion(contents["criteria"][criterion_name])

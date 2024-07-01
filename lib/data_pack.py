@@ -15,6 +15,7 @@ from lib.data_pack_files import command # This import is necessary to prevent ci
 from lib.data_pack_files import advancement
 from lib.data_pack_files import predicate
 from lib.data_pack_files import loot_table
+from lib.data_pack_files import recipe
 from lib.data_pack_files import item_modifier
 from lib.data_pack_files import mcfunction
 from lib.data_pack_files import tags
@@ -133,6 +134,12 @@ def update_namespaces(pack: Path, source_pack: Path):
         if source_folder.exists():
             update_loot_tables(folder, source_folder)
 
+        # Update recipes
+        folder = pack / "data" / namespace.name / "recipes"
+        source_folder = namespace / "recipes"
+        if source_folder.exists():
+            update_recipes(folder, source_folder)
+
         # Update item modifiers
         folder = pack / "data" / namespace.name / "item_modifiers"
         source_folder = namespace / "item_modifiers"
@@ -182,6 +189,14 @@ def update_loot_tables(folder: Path, source_folder: Path):
         pack_subdir = source_file_path.as_posix()[len(source_folder.as_posix()) + 1:]
         file_path = folder / pack_subdir
         loot_table.update(file_path, source_file_path, pack_version)
+
+
+
+def update_recipes(folder: Path, source_folder: Path):
+    for source_file_path in source_folder.glob("**/*.json"):
+        pack_subdir = source_file_path.as_posix()[len(source_folder.as_posix()) + 1:]
+        file_path = folder / pack_subdir
+        recipe.update(file_path, source_file_path, pack_version)
 
 
 

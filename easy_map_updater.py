@@ -38,7 +38,7 @@ if not (
 import shutil
 import json
 import traceback
-from typing import cast, TypedDict, Callable
+from typing import cast, TypedDict, Callable, Any
 from enum import Enum
 from pathlib import Path
 from lib.log import log
@@ -48,9 +48,15 @@ from lib import finalize
 from lib import data_pack
 from lib import resource_pack
 from lib import option_manager
+from lib import json_manager
 from lib.data_pack_files import command
 from lib.data_pack_files import json_text_component
 from lib.data_pack_files import breakpoints
+from lib.data_pack_files import advancement
+from lib.data_pack_files import item_modifier
+from lib.data_pack_files import loot_table
+from lib.data_pack_files import predicate
+from lib.data_pack_files import recipe
 from lib.data_pack_files.restore_behavior import tag_replacements
 from lib.data_pack_files.restore_behavior import spawner_bossbar
 from lib.data_pack_files.restore_behavior import ore_fixer
@@ -137,9 +143,14 @@ class Action(Enum):
     LICENSE = "license"
     EXIT = "exit"
 
+    DEBUG = "debug"
     DEBUG_CMD = "debug.cmd"
     DEBUG_JSON = "debug.json"
-    DEBUG = "debug"
+    DEBUG_ADVANCEMENT = "debug.advancement"
+    DEBUG_LOOT_TABLE = "debug.loot_table"
+    DEBUG_ITEM_MODIFIER = "debug.item_modifier"
+    DEBUG_PREDICATE = "debug.predicate"
+    DEBUG_RECIPE = "debug.recipe"
 
 
 
@@ -344,9 +355,14 @@ def action_reset():
         Action.LICENSE.value:               { "show": True,  "function": action_license, "name": "Show software license" },
         Action.EXIT.value:                  { "show": True,  "function": action_exit, "name": "Exit program" },
 
-        Action.DEBUG_CMD.value:             { "show": True,  "function": action_update_single_command, "name": "Update single command (for testing)" },
-        Action.DEBUG_JSON.value:            { "show": True,  "function": action_update_json_text_component, "name": "Update JSON text component (for testing)" },
         Action.DEBUG.value:                 { "show": False, "function": action_toggle_debug_mode, "name": "Toggle debug mode" },
+        Action.DEBUG_CMD.value:             { "show": False,  "function": action_update_single_command, "name": "Update single command (for testing)" },
+        Action.DEBUG_JSON.value:            { "show": False,  "function": action_update_json_text_component, "name": "Update JSON text component (for testing)" },
+        Action.DEBUG_ADVANCEMENT.value:     { "show": False,  "function": action_update_advancement, "name": "Update advancement from file (for testing)" },
+        Action.DEBUG_LOOT_TABLE.value:      { "show": False,  "function": action_update_loot_table, "name": "Update loot table from file (for testing)" },
+        Action.DEBUG_ITEM_MODIFIER.value:   { "show": False,  "function": action_update_item_modifier, "name": "Update item modifier from file (for testing)" },
+        Action.DEBUG_PREDICATE.value:       { "show": False,  "function": action_update_predicate, "name": "Update predicate from file (for testing)" },
+        Action.DEBUG_RECIPE.value:          { "show": False,  "function": action_update_recipe, "name": "Update recipe from file (for testing)" },
     }
 
 def action_show_all_actions():
@@ -1158,6 +1174,16 @@ def action_exit():
     log("Exiting...")
     exit()
 
+
+
+def action_toggle_debug_mode():
+    if defaults.DEBUG_MODE:
+        defaults.DEBUG_MODE = False
+        log("Disabled debug mode")
+    else:
+        defaults.DEBUG_MODE = True
+        log("Enabled debug mode")
+
 def action_update_single_command():
     while True:
         test_command = input("Command to update (leave blank to cancel): ")
@@ -1178,13 +1204,84 @@ def action_update_json_text_component():
         log(f'New component: {json_text_component.update(test_component, option_manager.get_version(), [], False)}')
         print("")
 
-def action_toggle_debug_mode():
-    if defaults.DEBUG_MODE:
-        defaults.DEBUG_MODE = False
-        log("Disabled debug mode")
-    else:
-        defaults.DEBUG_MODE = True
-        log("Enabled debug mode")
+def retrieve_json_file_contents(message: str) -> dict[str, Any] | None:
+    while True:
+        path_input = input(message)
+        if not path_input:
+            return
+        if path_input.startswith("&"):
+            path_input = path_input[1:].strip()
+        path_input = utils.unpack_string_check(path_input)
+        file_path = Path(path_input)
+        if not file_path.exists():
+            print("ERROR: File does not exist!")
+            continue
+        contents, load_bool = json_manager.safe_load(file_path)
+        if not load_bool:
+            print("ERROR: File could not be loaded!")
+            continue
+        return contents
+
+def action_update_advancement():
+    while True:
+        contents = retrieve_json_file_contents("Advancement file path to update (leave blank to exit): ")
+        if not contents:
+            break
+        contents = advancement.advancement(contents, option_manager.get_version())
+        print("")
+        log("Updated advancement:")
+        print("")
+        log(json.dumps(contents, indent=4))
+        print("")
+
+def action_update_loot_table():
+    while True:
+        contents = retrieve_json_file_contents("Loot table file path to update (leave blank to exit): ")
+        if not contents:
+            break
+        contents = loot_table.loot_table(contents, option_manager.get_version())
+        print("")
+        log("Updated loot table:")
+        print("")
+        log(json.dumps(contents, indent=4))
+        print("")
+
+def action_update_item_modifier():
+    while True:
+        contents = retrieve_json_file_contents("Item modifier file path to update (leave blank to exit): ")
+        if not contents:
+            break
+        contents = item_modifier.item_modifier(contents, option_manager.get_version())
+        print("")
+        log("Updated item modifier:")
+        print("")
+        log(json.dumps(contents, indent=4))
+        print("")
+
+def action_update_predicate():
+    while True:
+        contents = retrieve_json_file_contents("Predicate file path to update (leave blank to exit): ")
+        if not contents:
+            break
+        contents = predicate.predicate(contents, option_manager.get_version())
+        print("")
+        log("Updated predicate:")
+        print("")
+        log(json.dumps(contents, indent=4))
+        print("")
+
+def action_update_recipe():
+    while True:
+        contents = retrieve_json_file_contents("Recipe file path to update (leave blank to exit): ")
+        if not contents:
+            break
+        contents = recipe.recipe(contents, option_manager.get_version())
+        print("")
+        log("Updated recipe:")
+        print("")
+        log(json.dumps(contents, indent=4))
+        print("")
+
 
 
 
