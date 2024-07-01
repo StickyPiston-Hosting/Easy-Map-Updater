@@ -188,6 +188,7 @@ def predicate_item(contents: dict, version: int) -> dict:
             contents["predicates"]["minecraft:enchantments"] = []
         for enchantment in contents["enchantments"]:
             contents["predicates"]["minecraft:enchantments"].append(enchantment)
+        del contents["enchantments"]
 
     if "items" in contents:
         if isinstance(contents["items"], list):
@@ -216,11 +217,6 @@ def predicate_item(contents: dict, version: int) -> dict:
 
     if "nbt" in contents:
         updated_data = cast(dict[str, Any], nbt_tags.direct_update(nbt_tags.unpack(contents["nbt"]), version, [], "item_tag", ""))
-        if "minecraft:custom_data" in updated_data:
-            if "predicates" not in contents:
-                contents["predicates"] = {}
-            contents["predicates"]["minecraft:custom_data"] = nbt_tags.pack(updated_data["minecraft:custom_data"])
-            del updated_data["minecraft:custom_data"]
         if len(updated_data):
             contents["components"] = nbt_tags.convert_to_json(updated_data)
         del contents["nbt"]
@@ -238,6 +234,7 @@ def predicate_item(contents: dict, version: int) -> dict:
             contents["predicates"]["minecraft:stored_enchantments"] = []
         for enchantment in contents["stored_enchantments"]:
             contents["predicates"]["minecraft:stored_enchantments"].append(enchantment)
+        del contents["stored_enchantments"]
 
     if "tag" in contents:
         if "items" in contents:
