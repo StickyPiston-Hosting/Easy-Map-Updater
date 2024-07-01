@@ -175,6 +175,20 @@ def predicate_item(contents: dict, version: int) -> dict:
     global pack_version
     pack_version = version
 
+    if "durability" in contents:
+        if "predicates" not in contents:
+            contents["predicates"] = {}
+        contents["predicates"]["durability"] = contents["durability"]
+        del contents["durability"]
+
+    if "enchantments" in contents:
+        if "predicates" not in contents:
+            contents["predicates"] = {}
+        if "minecraft:enchantments" not in contents["predicates"]:
+            contents["predicates"]["minecraft:enchantments"] = []
+        for enchantment in contents["enchantments"]:
+            contents["predicates"]["minecraft:enchantments"].append(enchantment)
+
     if "items" in contents:
         if isinstance(contents["items"], list):
             for index in range(len(contents["items"])):
@@ -201,7 +215,39 @@ def predicate_item(contents: dict, version: int) -> dict:
             )["id"]
 
     if "nbt" in contents:
-        contents["nbt"] = nbt_tags.update(contents["nbt"], version, [], "item_tag")
+        updated_data = cast(dict[str, Any], nbt_tags.direct_update(nbt_tags.unpack(contents["nbt"]), version, [], "item_tag", ""))
+        if "minecraft:custom_data" in updated_data:
+            if "predicates" not in contents:
+                contents["predicates"] = {}
+            contents["predicates"]["minecraft:custom_data"] = nbt_tags.pack(updated_data["minecraft:custom_data"])
+            del updated_data["minecraft:custom_data"]
+        if len(updated_data):
+            contents["components"] = nbt_tags.convert_to_json(updated_data)
+        del contents["nbt"]
+
+    if "potion" in contents:
+        if "predicates" not in contents:
+            contents["predicates"] = {}
+        contents["predicates"]["minecraft:potion_contents"] = miscellaneous.namespace(contents["potion"])
+        del contents["potion"]
+
+    if "stored_enchantments" in contents:
+        if "predicates" not in contents:
+            contents["predicates"] = {}
+        if "minecraft:stored_enchantments" not in contents["predicates"]:
+            contents["predicates"]["minecraft:stored_enchantments"] = []
+        for enchantment in contents["stored_enchantments"]:
+            contents["predicates"]["minecraft:stored_enchantments"].append(enchantment)
+
+    if "tag" in contents:
+        if "items" in contents:
+            if isinstance(contents["items"], list):
+                contents["items"].append(contents["tag"])
+            else:
+                contents["items"] = [contents["items"], contents["tag"]]
+        else:
+            contents["items"] = contents["tag"]
+        del contents["tag"]
 
     return contents
 
