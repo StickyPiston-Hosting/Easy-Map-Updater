@@ -237,13 +237,8 @@ def predicate_item(contents: dict, version: int) -> dict:
         del contents["stored_enchantments"]
 
     if "tag" in contents:
-        if "items" in contents:
-            if isinstance(contents["items"], list):
-                contents["items"].append(contents["tag"])
-            else:
-                contents["items"] = [contents["items"], contents["tag"]]
-        else:
-            contents["items"] = contents["tag"]
+        if "items" not in contents:
+            contents["items"] = miscellaneous.namespace(contents["tag"])
         del contents["tag"]
 
     return contents
@@ -254,8 +249,32 @@ def predicate_location(contents: dict, version: int) -> dict:
     global pack_version
     pack_version = version
 
+    if "biome" in contents:
+        contents["biomes"] = contents["biome"]
+        del contents["biome"]
+
     if "block" in contents:
         if "nbt" in contents["block"]:
             contents["block"]["nbt"] = nbt_tags.update(contents["block"]["nbt"], version, [], "block")
+
+        if "tag" in contents["block"]:
+            if "blocks" not in contents["block"]:
+                contents["block"]["blocks"] = miscellaneous.namespace(contents["block"]["tag"])
+            del contents["block"]["tag"]
+
+
+    if "fluid" in contents:
+        if "fluid" in contents["fluid"]:
+            contents["fluid"]["fluids"] = miscellaneous.namespace(contents["fluid"])
+            del contents["fluid"]
+
+        if "tag" in contents["fluid"]:
+            if "fluids" not in contents["fluid"]:
+                contents["fluid"]["fluids"] = miscellaneous.namespace(contents["fluid"]["tag"])
+            del contents["fluid"]["tag"]
+
+    if "structure" in contents:
+        contents["structures"] = contents["structure"]
+        del contents["structure"]
 
     return contents
