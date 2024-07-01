@@ -217,6 +217,11 @@ def predicate_item(contents: dict, version: int) -> dict:
 
     if "nbt" in contents:
         updated_data = cast(dict[str, Any], nbt_tags.direct_update(nbt_tags.unpack(contents["nbt"]), version, [], "item_tag", ""))
+        if "minecraft:custom_data" in updated_data:
+            if "predicates" not in contents:
+                contents["predicates"] = {}
+            contents["predicates"]["minecraft:custom_data"] = nbt_tags.pack(updated_data["minecraft:custom_data"])
+            del updated_data["minecraft:custom_data"]
         if len(updated_data):
             contents["components"] = nbt_tags.convert_to_json(updated_data)
         del contents["nbt"]

@@ -7,7 +7,7 @@
 
 import json
 from pathlib import Path
-from typing import Any
+from typing import cast, Any
 from lib.log import log
 from lib import defaults
 from lib import json_manager
@@ -50,9 +50,22 @@ def item_modifier(contents: dict[str, Any] | list, version: int, object_id: str 
 
     # Handle lists
     if isinstance(contents, list):
-        for i in range(len(contents)):
-            contents[i] = item_modifier(contents[i], version, object_id)
-        return contents
+        output = []
+        for entry in contents:
+            entry = item_modifier(entry, version, object_id)
+            if isinstance(entry, list):
+                output.extend(entry)
+            else:
+                output.append(entry)
+        return output
+
+
+
+    if "conditions" in contents:
+        for i in range(len(contents["conditions"])):
+            contents["conditions"][i] = predicate.predicate(contents["conditions"][i], version)
+
+
 
     # Process different functions
     function_id: str = contents["function"]
@@ -62,6 +75,7 @@ def item_modifier(contents: dict[str, Any] | list, version: int, object_id: str 
 
 
     if function_id == "minecraft:copy_nbt":
+        contents["function"] = "minecraft:copy_custom_data"
         source = contents["source"]
         if isinstance(source, dict):
             if source["type"] == "context":
@@ -80,7 +94,25 @@ def item_modifier(contents: dict[str, Any] | list, version: int, object_id: str 
             if source in id_array:
                 source = id_array[source]
             operation["source"] = nbt_paths.update(operation["source"], version, [], source)
-            operation["target"] = nbt_paths.update(operation["target"], version, [], "item_tag")
+            target_path = nbt_paths.direct_update(nbt_paths.unpack(operation["target"]), version, [], "item_tag")
+            if target_path[0] == "minecraft:custom_data":
+                operation["target"] = nbt_paths.pack(target_path[1:])
+            else:
+                operation["target"] = nbt_paths.pack(target_path)
+                if defaults.SEND_WARNINGS:
+                    log(f'WARNING: Item modifier function "minecraft:copy_nbt" could not be converted to "minecraft:copy_components", target path changed to: {operation["target"]}')
+
+    if function_id == "minecraft:set_attributes":
+        if "modifiers" in contents:
+            for modifier in contents["modifiers"]:
+                if "operation" in modifier:
+                    id_array = {
+                        "addition": "add_value",
+                        "multiply_base": "add_multiplied_base",
+                        "multiply_total": "add_multiplied_total",
+                    }
+                    if modifier["operation"] in id_array:
+                        modifier["operation"] = id_array[modifier["operation"]]
 
     if function_id == "minecraft:set_contents":
         if "entries" in contents:
@@ -103,12 +135,33 @@ def item_modifier(contents: dict[str, Any] | list, version: int, object_id: str 
         contents["name"] = json_text_component.update_component(contents["name"], version, [])
 
     if function_id == "minecraft:set_nbt":
-        contents["tag"] = nbt_tags.update(contents["tag"], version, [], "item_tag")
+        updated_data = cast(dict[str, Any], nbt_tags.direct_update(nbt_tags.unpack(contents["tag"]), version, [], "item_tag", ""))
+        if "minecraft:custom_data" in updated_data:
+            set_custom_data = {
+                "function": "minecraft:set_custom_data",
+                "tag": nbt_tags.pack(updated_data["minecraft:custom_data"])
+            }
+            if "conditions" in contents:
+                set_custom_data["conditions"] = contents["conditions"]
+            del updated_data["minecraft:custom_data"]
+        else:
+            set_custom_data = None
+        if len(updated_data):
+            set_components = {
+                "function": "minecraft:set_components",
+                "components": nbt_tags.convert_to_json(updated_data)
+            }
+            if "conditions" in contents:
+                set_components["conditions"] = contents["conditions"]
+        else:
+            set_components = None
+        if set_custom_data and set_components:
+            return [set_custom_data, set_components]
+        if set_custom_data:
+            return set_custom_data
+        if set_components:
+            return set_components
+        return []
 
-
-
-    if "conditions" in contents:
-        for i in range(len(contents["conditions"])):
-            contents["conditions"][i] = predicate.predicate(contents["conditions"][i], version)
 
     return contents
