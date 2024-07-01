@@ -766,5 +766,15 @@
                 }
             }
         }
+    },
+    "2005": {
+        "minecraft": {
+            "textures": {
+                "gui": {
+                    "options_background.png": "menu_background.png",
+                    "light_dirt_background.png": "menu_list_background.png"
+                }
+            }
+        }
     }
 }
