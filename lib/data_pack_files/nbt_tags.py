@@ -940,3 +940,43 @@ def convert_to_json_numeric(nbt: TypeNumeric) -> Any:
     if isinstance(nbt, TypeDouble):
         return float(nbt.value)
     log("ERROR: convert_to_json_numeric: Numeric type not determined!")
+
+
+
+def convert_from_json(nbt: dict | list | int | float | str | bool) -> Any:
+    if isinstance(nbt, dict):
+        return convert_from_json_compound(nbt)
+    if isinstance(nbt, list):
+        return convert_from_json_list(nbt)
+    if isinstance(nbt, bool):
+        return convert_from_json_bool(nbt)
+    if isinstance(nbt, float):
+        return convert_from_json_float(nbt)
+    if isinstance(nbt, int):
+        return convert_from_json_int(nbt)
+    if isinstance(nbt, str):
+        return convert_from_json_string(nbt)
+    log("ERROR: convert_from_json: NBT type not determined!")
+    
+def convert_from_json_compound(nbt: dict) -> dict[str, Any]:
+    output_nbt: dict = {}
+    for key in nbt:
+        output_nbt[key] = convert_from_json(nbt[key])
+    return output_nbt
+
+def convert_from_json_list(nbt: list) -> TypeList:
+    return TypeList([ convert_from_json(nbt[i]) for i in range(len(nbt)) ])
+
+def convert_from_json_bool(nbt: bool) -> TypeByte:
+    if nbt:
+        return TypeByte(1)
+    return TypeByte(0)
+
+def convert_from_json_int(nbt: int) -> TypeInt:
+    return TypeInt(nbt)
+
+def convert_from_json_float(nbt: float) -> TypeDecimal:
+    return TypeDecimal(nbt)
+
+def convert_from_json_string(nbt: str) -> str:
+    return nbt

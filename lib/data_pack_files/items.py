@@ -163,6 +163,44 @@ def update_from_nbt(item: ItemInputFromNBT, version: int, issues: list[dict[str,
 
 
 
+class ItemInputFromJSON(TypedDict):
+    id: str
+    components: dict | None
+
+def update_from_json(item: ItemInputFromJSON, version: int, issues: list[dict[str, str | int]]) -> dict[str, Any]:
+    # Assign version
+    global pack_version
+    pack_version = version
+
+    # Initialize parameters
+    item_id = None
+    components = None
+
+    # Extract arguments
+    if "id" in item:
+        item_id = item["id"]
+    if "components" in item:
+        components = item["components"]
+
+    # Update item
+    new_item = update(
+        {
+            "id": item_id,
+            "components": nbt_tags.convert_from_json(components) if components else None,
+            "data_value": -1,
+            "nbt": None,
+            "read": False
+        },
+        pack_version, issues
+    )
+
+    return {
+        "id": new_item["id"],
+        "components": nbt_tags.convert_to_json(new_item["components"]) if new_item["components"] else None,
+    }
+
+
+
 class ItemInput(TypedDict):
     id: str | nbt_tags.TypeNumeric | None
     data_value: int
