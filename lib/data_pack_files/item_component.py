@@ -44,6 +44,12 @@ def conform(components: dict[str, Any]) -> dict[str, Any]:
 
 
     # Adjust formatting of components
+    if "minecraft:attribute_modifiers" in components:
+        attribute_modifiers = components["minecraft:attribute_modifiers"]
+        if not isinstance(attribute_modifiers, dict):
+            attribute_modifiers = {"modifiers": attribute_modifiers}
+        components["minecraft:attribute_modifiers"] = attribute_modifiers
+
     if "minecraft:can_break" in components:
         can_break: dict[str, Any] = components["minecraft:can_break"]
         if "predicates" not in can_break and "show_in_tooltip" not in can_break:
@@ -98,6 +104,18 @@ def conform(components: dict[str, Any]) -> dict[str, Any]:
                     levels[namespaced_enchantment] = levels[enchantment]
                     del levels[enchantment]
         components["minecraft:enchantments"] = enchantments
+
+    if "minecraft:potion_contents" in components:
+        potion_contents = components["minecraft:potion_contents"]
+        if not isinstance(potion_contents, dict):
+            potion_contents = {"potion": potion_contents}
+        components["minecraft:potion_contents"] = potion_contents
+
+    if "minecraft:profile" in components:
+        profile = components["minecraft:profile"]
+        if not isinstance(profile, dict):
+            profile = {"name": profile}
+        components["minecraft:profile"] = profile
 
     if "minecraft:stored_enchantments" in components:
         stored_enchantments: dict[str, Any] = components["minecraft:stored_enchantments"]
