@@ -130,6 +130,9 @@ def item_modifier(contents: dict[str, Any] | list, version: int, object_id: str 
     if function_id == "minecraft:set_lore":
         for i in range(len(contents["lore"])):
             contents["lore"][i] = json_text_component.update_component(contents["lore"][i], version, [])
+        if "replace" in contents:
+            contents["mode"] = "replace_all" if contents["replace"] else "append"
+            del contents["replace"]
 
     if function_id == "minecraft:set_name":
         contents["name"] = json_text_component.update_component(contents["name"], version, [])
