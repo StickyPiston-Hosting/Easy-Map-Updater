@@ -19,6 +19,7 @@ from lib.data_pack_files import items
 from lib.data_pack_files import blocks
 from lib.data_pack_files import entities
 from lib.data_pack_files import json_text_component
+from lib.data_pack_files import particle
 from lib.data_pack_files import miscellaneous
 from lib.data_pack_files.command_helpers import block_nbt_modifier
 from lib.data_pack_files.command_helpers import block_update_mitigator
@@ -577,8 +578,9 @@ ARGUMENT_FUNCTIONS: dict[str, tuple] = {
     "loot_table": ( miscellaneous.loot_table, None ),
     "nbt": ( nbt_tags.update, "arbitrary" ),
     "nbt_path": ( nbt_paths.update, "arbitrary" ),
-    "particle": ( ids.particle, None ),
+    "particle": ( particle.update_from_command, None ),
     "particle_mode": ( miscellaneous.particle_mode, None ),
+    "particle_nbt": ( particle.update_from_nbt, None ),
     "pitch": ( miscellaneous.pitch, None ),
     "predicate": ( miscellaneous.predicate, None ),
     "recipe": ( miscellaneous.recipe, None ),

@@ -69,24 +69,6 @@ def enchantment(name: str | int | nbt_tags.TypeNumeric, version: int, issues: li
 
     return miscellaneous.namespace(name)
 
-def particle(particle: str, version: int, issues: list[dict[str, str | int]]) -> str:
-    global pack_version
-    pack_version = version
-
-    particle = miscellaneous.namespace(particle)
-
-    # Convert ID based on version
-    if pack_version <= 1202:
-        for substring in ["minecraft:blockcrack_", "minecraft:blockdust_", "minecraft:iconcrack_"]:
-            if substring in particle:
-                particle = substring[:len(substring) - 1]
-
-        id_array = tables.PARTICLE_IDS
-        if particle in id_array:
-            particle = id_array[particle]
-
-    return particle
-
 def scoreboard_objective_criteria(objective: dict[str, str], version: int, issues: list[dict[str, str | int]]) -> str:
     global pack_version
     pack_version = version

@@ -1045,13 +1045,13 @@
                 "index": 1,
                 "branches": {
                     "blockcrack_**": {
-                        "mapping": ["carry", "particle", "block", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "carry", "carry", "particle_mode"],
-                        "legend": [0, 1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+                        "mapping": ["carry", "particle", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "carry", "carry", "particle_mode"],
+                        "legend": [0, {"particle": 1, "block": 1}, 2, 3, 4, 5, 6, 7, 8, 9, 10]
                     },
                     "blockdust_**": "blockcrack_**",
                     "iconcrack_**": {
-                        "mapping": ["carry", "particle", "item", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "carry", "carry", "particle_mode"],
-                        "legend": [0, 1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+                        "mapping": ["carry", "particle", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "carry", "carry", "particle_mode"],
+                        "legend": [0, {"particle": 1, "item": 1}, 2, 3, 4, 5, 6, 7, 8, 9, 10]
                     }
                 },
                 "else": {
@@ -1063,13 +1063,13 @@
                 "index": 1,
                 "branches": {
                     "blockcrack": {
-                        "mapping": ["carry", "particle", "block", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "carry", "carry", "particle_mode", "target_selector"],
-                        "legend": [0, 1, 12, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+                        "mapping": ["carry", "particle", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "carry", "carry", "particle_mode", "target_selector"],
+                        "legend": [0, {"particle": 1, "block": 12}, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
                     },
                     "blockdust": "blockcrack",
                     "iconcrack": {
-                        "mapping": ["carry", "particle", "item", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "carry", "carry", "particle_mode", "target_selector"],
-                        "legend": [0, 1, 12, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+                        "mapping": ["carry", "particle", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "carry", "carry", "particle_mode", "target_selector"],
+                        "legend": [0, {"particle": 1, "item": 12}, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
                     }
                 },
                 "else": {
@@ -1077,31 +1077,38 @@
                 }
             },
             {
-                "version": {"min": 1300},
+                "version": {"min": 1300, "max": 2004},
                 "index": 1,
                 "branches": {
                     "block": {
-                        "mapping": ["carry", "particle", "block", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "carry", "carry", "particle_mode", "target_selector"]
+                        "mapping": ["carry", "particle", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "carry", "carry", "particle_mode", "target_selector"],
+                        "legend": [0, {"particle": 1, "block": 2}, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
                     },
                     "block_marker": "block",
                     "dust": {
-                        "mapping": ["carry", "particle", "carry", "carry", "carry", "carry", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "carry", "carry", "particle_mode", "target_selector"]
+                        "mapping": ["carry", "particle", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "carry", "carry", "particle_mode", "target_selector"],
+                        "legend": [0, {"particle": 1, "color_r": 2, "color_g": 3, "color_b": 4, "scale": 5}, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
                     },
                     "dust_color_transition": {
-                        "mapping": ["carry", "particle", "carry", "carry", "carry", "carry", "carry", "carry", "carry", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "carry", "carry", "particle_mode", "target_selector"]
+                        "mapping": ["carry", "particle", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "carry", "carry", "particle_mode", "target_selector"],
+                        "legend": [0, {"particle": 1, "from_color_r": 2, "from_color_g": 3, "from_color_b": 4, "scale": 5, "to_color_r": 6, "to_color_g": 7, "to_color_b": 8}, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
                     },
                     "falling_dust": "block",
                     "item": {
-                        "mapping": ["carry", "particle", "item", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "carry", "carry", "particle_mode", "target_selector"]
+                        "mapping": ["carry", "particle", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "carry", "carry", "particle_mode", "target_selector"],
+                        "legend": [0, {"particle": 1, "item": 2}, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
                     },
                     "sculk_charge": {
-                        "mapping": ["carry", "particle", "carry", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "carry", "carry", "particle_mode", "target_selector"]
+                        "mapping": ["carry", "particle", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "carry", "carry", "particle_mode", "target_selector"],
+                        "legend": [0, {"particle": 1, "roll": 2}, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
                     },
                     "shriek": {
-                        "mapping": ["carry", "particle", "carry", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "carry", "carry", "particle_mode", "target_selector"]
+                        "mapping": ["carry", "particle", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "carry", "carry", "particle_mode", "target_selector"],
+                        "legend": [0, {"particle": 1, "delay": 2}, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
                     },
                     "vibration": {
-                        "mapping": ["carry", "particle", "carry", "carry", "carry", "carry", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "carry", "carry", "particle_mode", "target_selector"]
+                        "mapping": ["carry", "particle", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "carry", "carry", "particle_mode", "target_selector"],
+                        "legend": [0, {"particle": 1, "pos_x": 2, "pos_y": 3, "pos_z": 4, "arrival_in_ticks": 5}, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
                     },
 
                     "minecraft:block": "block",
@@ -1117,6 +1124,10 @@
                 "else": {
                     "mapping": ["carry", "particle", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "carry", "carry", "particle_mode", "target_selector"]
                 }
+            },
+            {
+                "version": {"min": 2005},
+                "mapping": ["carry", "particle", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "carry", "carry", "particle_mode", "target_selector"]
             }
         ],
         "place": {

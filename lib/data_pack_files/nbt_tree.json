@@ -480,6 +480,10 @@
                 "NoAI": { "data_type": "byte" },
                 "NoBasePlate": { "data_type": "byte" },
                 "NoGravity": { "data_type": "byte" },
+                "Particle": {
+                    "data_type": "carry",
+                    "argument_type": "particle_nbt"
+                },
                 "Passengers": { "list": { "source": "entity" } },
                 "PatrolTarget": {
                     "rename": "patrol_target",
