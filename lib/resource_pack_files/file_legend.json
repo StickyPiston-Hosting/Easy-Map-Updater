@@ -773,6 +773,44 @@
                 "gui": {
                     "options_background.png": "menu_background.png",
                     "light_dirt_background.png": "menu_list_background.png"
+                },
+                "map": {
+                    "map_icons.png": [
+                        {"path": "map_decorations/player.png", "slice": [0, 0, 8, 8, 128, 128]},
+                        {"path": "map_decorations/frame.png", "slice": [8, 0, 8, 8, 128, 128]},
+                        {"path": "map_decorations/red_marker.png", "slice": [16, 0, 8, 8, 128, 128]},
+                        {"path": "map_decorations/blue_marker.png", "slice": [24, 0, 8, 8, 128, 128]},
+                        {"path": "map_decorations/target_x.png", "slice": [32, 0, 8, 8, 128, 128]},
+                        {"path": "map_decorations/target_point.png", "slice": [40, 0, 8, 8, 128, 128]},
+                        {"path": "map_decorations/player_off_map.png", "slice": [48, 0, 8, 8, 128, 128]},
+                        {"path": "map_decorations/player_off_limits.png", "slice": [56, 0, 8, 8, 128, 128]},
+                        {"path": "map_decorations/woodland_mansion.png", "slice": [64, 0, 8, 8, 128, 128]},
+                        {"path": "map_decorations/ocean_monument.png", "slice": [72, 0, 8, 8, 128, 128]},
+                        {"path": "map_decorations/white_banner.png", "slice": [80, 0, 8, 8, 128, 128]},
+                        {"path": "map_decorations/orange_banner.png", "slice": [88, 0, 8, 8, 128, 128]},
+                        {"path": "map_decorations/magenta_banner.png", "slice": [96, 0, 8, 8, 128, 128]},
+                        {"path": "map_decorations/light_blue_banner.png", "slice": [104, 0, 8, 8, 128, 128]},
+                        {"path": "map_decorations/yellow_banner.png", "slice": [112, 0, 8, 8, 128, 128]},
+                        {"path": "map_decorations/lime_banner.png", "slice": [120, 0, 8, 8, 128, 128]},
+                        {"path": "map_decorations/pink_banner.png", "slice": [0, 8, 8, 8, 128, 128]},
+                        {"path": "map_decorations/gray_banner.png", "slice": [8, 8, 8, 8, 128, 128]},
+                        {"path": "map_decorations/light_gray_banner.png", "slice": [16, 8, 8, 8, 128, 128]},
+                        {"path": "map_decorations/cyan_banner.png", "slice": [24, 8, 8, 8, 128, 128]},
+                        {"path": "map_decorations/purple_banner.png", "slice": [32, 8, 8, 8, 128, 128]},
+                        {"path": "map_decorations/blue_banner.png", "slice": [40, 8, 8, 8, 128, 128]},
+                        {"path": "map_decorations/brown_banner.png", "slice": [48, 8, 8, 8, 128, 128]},
+                        {"path": "map_decorations/green_banner.png", "slice": [56, 8, 8, 8, 128, 128]},
+                        {"path": "map_decorations/red_banner.png", "slice": [64, 8, 8, 8, 128, 128]},
+                        {"path": "map_decorations/black_banner.png", "slice": [72, 8, 8, 8, 128, 128]},
+                        {"path": "map_decorations/red_x.png", "slice": [80, 8, 8, 8, 128, 128]},
+                        {"path": "map_decorations/desert_village.png", "slice": [88, 8, 8, 8, 128, 128]},
+                        {"path": "map_decorations/plains_village.png", "slice": [96, 8, 8, 8, 128, 128]},
+                        {"path": "map_decorations/savanna_village.png", "slice": [104, 8, 8, 8, 128, 128]},
+                        {"path": "map_decorations/snowy_village.png", "slice": [112, 8, 8, 8, 128, 128]},
+                        {"path": "map_decorations/taiga_village.png", "slice": [120, 8, 8, 8, 128, 128]},
+                        {"path": "map_decorations/jungle_temple.png", "slice": [0, 16, 8, 8, 128, 128]},
+                        {"path": "map_decorations/swamp_hut.png", "slice": [8, 16, 8, 8, 128, 128]}
+                    ]
                 }
             }
         }
