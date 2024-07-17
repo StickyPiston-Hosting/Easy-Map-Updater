@@ -178,7 +178,9 @@ def predicate_item(contents: dict, version: int) -> dict:
     if "durability" in contents:
         if "predicates" not in contents:
             contents["predicates"] = {}
-        contents["predicates"]["durability"] = contents["durability"]
+        contents["predicates"]["minecraft:damage"] = {
+            "durability": contents["durability"]
+        }
         del contents["durability"]
 
     if "enchantments" in contents:
@@ -189,31 +191,6 @@ def predicate_item(contents: dict, version: int) -> dict:
         for enchantment in contents["enchantments"]:
             contents["predicates"]["minecraft:enchantments"].append(enchantment)
         del contents["enchantments"]
-
-    if "items" in contents:
-        if isinstance(contents["items"], list):
-            for index in range(len(contents["items"])):
-                contents["items"][index] = items.update(
-                    {
-                        "id": contents["items"][index],
-                        "data_value": -1,
-                        "components": {},
-                        "nbt": {},
-                        "read": True
-                    },
-                    version, []
-                )["id"]
-        if isinstance(contents["items"], str):
-            contents["items"] = items.update(
-                {
-                    "id": contents["items"],
-                    "data_value": -1,
-                    "components": {},
-                    "nbt": {},
-                    "read": True
-                },
-                version, []
-            )["id"]
 
     if "nbt" in contents:
         updated_data = cast(dict[str, Any], nbt_tags.direct_update(nbt_tags.unpack(contents["nbt"]), version, [], "item_tag", ""))
@@ -241,10 +218,54 @@ def predicate_item(contents: dict, version: int) -> dict:
             contents["predicates"]["minecraft:stored_enchantments"].append(enchantment)
         del contents["stored_enchantments"]
 
+
+
+    if "items" in contents:
+        if isinstance(contents["items"], list):
+            for index in range(len(contents["items"])):
+                contents["items"][index] = items.update(
+                    {
+                        "id": contents["items"][index],
+                        "data_value": -1,
+                        "components": {},
+                        "nbt": {},
+                        "read": True
+                    },
+                    version, []
+                )["id"]
+        if isinstance(contents["items"], str):
+            contents["items"] = items.update(
+                {
+                    "id": contents["items"],
+                    "data_value": -1,
+                    "components": {},
+                    "nbt": {},
+                    "read": True
+                },
+                version, []
+            )["id"]
+
     if "tag" in contents:
         if "items" not in contents:
             contents["items"] = miscellaneous.namespace(contents["tag"])
         del contents["tag"]
+
+
+
+    if "predicates" in contents:
+        predicates = contents["predicates"]
+        
+        if "minecraft:bundle_contents" in predicates:
+            if "items" in predicates["minecraft:bundle_contents"]:
+                if "contains" in predicates["minecraft:bundle_contents"]["items"]:
+                    predicates["minecraft:bundle_contents"]["items"]["contains"] = predicate_item(predicates["minecraft:bundle_contents"]["items"]["contains"], version)
+
+        if "minecraft:container" in predicates:
+            if "items" in predicates["minecraft:container"]:
+                if "contains" in predicates["minecraft:container"]["items"]:
+                    predicates["minecraft:container"]["items"]["contains"] = predicate_item(predicates["minecraft:container"]["items"]["contains"], version)
+
+
 
     return contents
 
