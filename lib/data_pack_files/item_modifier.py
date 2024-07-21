@@ -17,6 +17,7 @@ from lib.data_pack_files import nbt_paths
 from lib.data_pack_files import predicate
 from lib.data_pack_files import json_text_component
 from lib.data_pack_files import loot_table
+from lib.data_pack_files import items
 
 
 
@@ -102,6 +103,16 @@ def item_modifier(contents: dict[str, Any] | list, version: int, object_id: str 
                 if defaults.SEND_WARNINGS:
                     log(f'WARNING: Item modifier function "minecraft:copy_nbt" could not be converted to "minecraft:copy_components", target path changed to: {operation["target"]}')
 
+    if function_id == "minecraft:filtered":
+        if "item_filter" in contents:
+            contents["item_filter"] = predicate.predicate(contents["item_filter"], version)
+        if "modifier" in contents:
+            contents["modifier"] = item_modifier(contents["modifier"], version, object_id)
+
+    if function_id == "minecraft:modify_contents":
+        if "modifier" in contents:
+            contents["modifier"] = item_modifier(contents["modifier"], version, object_id)
+
     if function_id == "minecraft:set_attributes":
         if "modifiers" in contents:
             for modifier in contents["modifiers"]:
@@ -134,6 +145,9 @@ def item_modifier(contents: dict[str, Any] | list, version: int, object_id: str 
             else:
                 contents["component"] = "minecraft:container"
 
+    if function_id == "minecraft:set_item":
+        if "item" in contents:
+            contents["item"] = items.update_from_command(contents["item"], version, [])
 
     if function_id == "minecraft:set_lore":
         for i in range(len(contents["lore"])):
