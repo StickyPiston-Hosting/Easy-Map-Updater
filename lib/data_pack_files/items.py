@@ -14,7 +14,10 @@ from lib.data_pack_files import entities
 from lib.data_pack_files import numeric_ids
 from lib.data_pack_files import tables
 from lib.data_pack_files import item_component
+from lib.data_pack_files.restore_behavior import tag_replacements
 from lib import defaults
+from lib import option_manager
+import easy_map_updater
 
 
 
@@ -276,7 +279,9 @@ def update_item_id(item_id: str | nbt_tags.TypeNumeric, components: dict | None,
                 item_id = id_array[item_id]
 
             if "#tag_replacements" in item_id:
-                log("Tag replacement data pack must be created!")
+                tag_replacements.create_pack(
+                    easy_map_updater.MINECRAFT_PATH / "saves" / option_manager.get_map_name()
+                )
         else:
             id_array = tables.ITEM_IDS_DATA
 
@@ -322,6 +327,13 @@ def update_item_id(item_id: str | nbt_tags.TypeNumeric, components: dict | None,
         }
         if item_id in id_array:
             item_id = id_array[item_id]
+
+    if pack_version <= 2004:
+        if item_id == "#minecraft:tools":
+            item_id = "#tag_replacements:tools"
+            tag_replacements.create_pack(
+                easy_map_updater.MINECRAFT_PATH / "saves" / option_manager.get_map_name()
+            )
 
     return item_id
 

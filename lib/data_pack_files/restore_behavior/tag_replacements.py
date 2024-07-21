@@ -37,6 +37,9 @@ def create_pack(world: Path):
 
     # Create data pack
     data_pack_path = world / "datapacks" / "tag_replacements"
+    if data_pack_path.exists():
+        log("Tag replacements data pack already exists")
+        return
     data_pack_path.mkdir(exist_ok=True, parents=True)
 
     with (data_pack_path / "pack.mcmeta").open("w", encoding="utf-8", newline="\n") as file:
@@ -66,6 +69,14 @@ def create_pack(world: Path):
                 log(f'"{item}": "{item_id_array[item][0]}",')
         else:
             create_item_tag(folder_path, item, item_id_array[item])
+    create_item_tag(folder_path, "minecraft:tools", [
+        "#minecraft:swords",
+        "#minecraft:axes",
+        "#minecraft:pickaxes",
+        "#minecraft:shovels",
+        "#minecraft:hoes",
+        "minecraft:trident",
+    ])
 
     # Create block tags
     folder_path = data_pack_path / "data" / "tag_replacements" / "tags" / "blocks"
