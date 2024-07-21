@@ -118,13 +118,21 @@ def item_modifier(contents: dict[str, Any] | list, version: int, object_id: str 
         if "entries" in contents:
             for entry in contents["entries"]:
                 loot_table.update_entry(entry, version)
-        if "type" not in contents:
-            if object_id:
-                contents["type"] = object_id
+        if "type" in contents:
+            if miscellaneous.namespace(contents["type"]) == "minecraft:bundle":
+                contents["component"] = "minecraft:bundle_contents"
+            elif miscellaneous.namespace(contents["type"]) == "minecraft:crossbow":
+                contents["component"] = "minecraft:charged_projectiles"
             else:
-                contents["type"] = "minecraft:shulker_box"
-                if defaults.SEND_WARNINGS:
-                    log('WARNING: Item modifier function "minecraft:set_contents" type specifier defaulted to "minecraft:shulker_box", check that this is correct')
+                contents["component"] = "minecraft:container"
+            del contents["type"]
+        elif "component" not in contents:
+            if miscellaneous.namespace(object_id) == "minecraft:bundle":
+                contents["component"] = "minecraft:bundle_contents"
+            elif miscellaneous.namespace(object_id) == "minecraft:crossbow":
+                contents["component"] = "minecraft:charged_projectiles"
+            else:
+                contents["component"] = "minecraft:container"
 
 
     if function_id == "minecraft:set_lore":
