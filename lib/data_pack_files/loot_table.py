@@ -7,7 +7,7 @@
 
 import json
 from pathlib import Path
-from typing import cast, TypedDict, Any, NotRequired
+from typing import cast, TypedDict, NotRequired
 from lib import defaults
 from lib import json_manager
 from lib.data_pack_files import items
@@ -51,8 +51,7 @@ def loot_table(contents: LootTable, version: int) -> LootTable:
 
     # Update item modifiers
     if "functions" in contents:
-        for item_function in contents["functions"]:
-            item_modifier.item_modifier(item_function, version)
+        contents["functions"] = cast(list, item_modifier.item_modifier(contents["functions"], version))
 
     # Update pools
     if "pools" in contents:
@@ -79,8 +78,7 @@ def update_pool(pool: LootTablePool, version: int) -> LootTablePool:
 
     # Update item modifiers
     if "functions" in pool:
-        for item_function in pool["functions"]:
-            item_modifier.item_modifier(item_function, version)
+        pool["functions"] = cast(list, item_modifier.item_modifier(pool["functions"], version))
 
     # Update entries
     if "entries" in pool:
@@ -111,8 +109,7 @@ def update_entry(entry: LootTableEntry, version: int) -> LootTableEntry:
     # Update item modifiers
     if "functions" in entry:
         object_id = miscellaneous.namespace(entry["name"]) if miscellaneous.namespace(entry["type"]) == "minecraft:item" and "name" in entry else ""
-        for item_function in entry["functions"]:
-            item_modifier.item_modifier(item_function, version, object_id)
+        entry["functions"] = cast(list, item_modifier.item_modifier(entry["functions"], version, object_id))
 
     # Update children
     if "children" in entry:
