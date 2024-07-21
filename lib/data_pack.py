@@ -172,7 +172,11 @@ def update_advancements(folder: Path, source_folder: Path):
     for source_file_path in source_folder.glob("**/*.json"):
         pack_subdir = source_file_path.as_posix()[len(source_folder.as_posix()) + 1:]
         file_path = folder / pack_subdir
-        advancement.update(file_path, source_file_path, pack_version)
+        try:
+            advancement.update(file_path, source_file_path, pack_version)
+        except Exception:
+            log(f"ERROR: An error occurred when updating advancement: {source_file_path.as_posix()}")
+            raise Exception
 
 
 
@@ -180,7 +184,11 @@ def update_predicates(folder: Path, source_folder: Path):
     for source_file_path in source_folder.glob("**/*.json"):
         pack_subdir = source_file_path.as_posix()[len(source_folder.as_posix()) + 1:]
         file_path = folder / pack_subdir
-        predicate.update(file_path, source_file_path, pack_version)
+        try:
+            predicate.update(file_path, source_file_path, pack_version)
+        except Exception:
+            log(f"ERROR: An error occurred when updating predicate: {source_file_path.as_posix()}")
+            raise Exception
 
 
 
@@ -188,7 +196,11 @@ def update_loot_tables(folder: Path, source_folder: Path):
     for source_file_path in source_folder.glob("**/*.json"):
         pack_subdir = source_file_path.as_posix()[len(source_folder.as_posix()) + 1:]
         file_path = folder / pack_subdir
-        loot_table.update(file_path, source_file_path, pack_version)
+        try:
+            loot_table.update(file_path, source_file_path, pack_version)
+        except Exception:
+            log(f"ERROR: An error occurred when updating loot table: {source_file_path.as_posix()}")
+            raise Exception
 
 
 
@@ -196,7 +208,11 @@ def update_recipes(folder: Path, source_folder: Path):
     for source_file_path in source_folder.glob("**/*.json"):
         pack_subdir = source_file_path.as_posix()[len(source_folder.as_posix()) + 1:]
         file_path = folder / pack_subdir
-        recipe.update(file_path, source_file_path, pack_version)
+        try:
+            recipe.update(file_path, source_file_path, pack_version)
+        except Exception:
+            log(f"ERROR: An error occurred when updating recipe: {source_file_path.as_posix()}")
+            raise Exception
 
 
 
@@ -204,7 +220,11 @@ def update_item_modifiers(folder: Path, source_folder: Path):
     for source_file_path in source_folder.glob("**/*.json"):
         pack_subdir = source_file_path.as_posix()[len(source_folder.as_posix()) + 1:]
         file_path = folder / pack_subdir
-        item_modifier.update(file_path, source_file_path, pack_version)
+        try:
+            item_modifier.update(file_path, source_file_path, pack_version)
+        except Exception:
+            log(f"ERROR: An error occurred when updating item modifier: {source_file_path.as_posix()}")
+            raise Exception
 
 
 
@@ -212,7 +232,11 @@ def update_tags(folder: Path, source_folder: Path, tag_type: str):
     for source_file_path in source_folder.glob("**/*.json"):
         pack_subdir = source_file_path.as_posix()[len(source_folder.as_posix()) + 1:]
         file_path = folder / pack_subdir
-        tags.update(file_path, source_file_path, pack_version, tag_type)
+        try:
+            tags.update(file_path, source_file_path, pack_version, tag_type)
+        except Exception:
+            log(f"ERROR: An error occurred when updating tag: {source_file_path.as_posix()}")
+            raise Exception
 
 
 
