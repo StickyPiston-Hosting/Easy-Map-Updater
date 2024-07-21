@@ -625,13 +625,13 @@ def extract(item_id: str, components: dict[str, Any] | None, nbt: dict[str, Any]
         if "target" not in lodestone_tracker:
             lodestone_tracker["target"] = {}
         target = lodestone_tracker["target"]
-        x, y, z = 0, 0, 0
-        if "x" in nbt["LodestonePos"]:
-            x = nbt["LodestonePos"]["x"].value
-        if "y" in nbt["LodestonePos"]:
-            y = nbt["LodestonePos"]["y"].value
-        if "z" in nbt["LodestonePos"]:
-            z = nbt["LodestonePos"]["z"].value
+        x, y, z = nbt_tags.TypeInt(0), nbt_tags.TypeInt(0), nbt_tags.TypeInt(0)
+        if "X" in nbt["LodestonePos"]:
+            x = nbt["LodestonePos"]["X"]
+        if "Y" in nbt["LodestonePos"]:
+            y = nbt["LodestonePos"]["Y"]
+        if "Z" in nbt["LodestonePos"]:
+            z = nbt["LodestonePos"]["Z"]
         target["pos"] = nbt_tags.TypeIntArray([x,y,z])
         del nbt["LodestonePos"]
 
