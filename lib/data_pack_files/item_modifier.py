@@ -14,6 +14,7 @@ from lib import json_manager
 from lib.data_pack_files import miscellaneous
 from lib.data_pack_files import nbt_tags
 from lib.data_pack_files import nbt_paths
+from lib.data_pack_files import nbt_to_json
 from lib.data_pack_files import predicate
 from lib.data_pack_files import json_text_component
 from lib.data_pack_files import loot_table
@@ -174,7 +175,7 @@ def item_modifier(contents: dict[str, Any] | list, version: int, object_id: str 
         if len(updated_data):
             set_components = {
                 "function": "minecraft:set_components",
-                "components": nbt_tags.convert_to_json(updated_data)
+                "components": nbt_to_json.convert_item_components_to_json(updated_data)
             }
             if "conditions" in contents:
                 set_components["conditions"] = contents["conditions"]

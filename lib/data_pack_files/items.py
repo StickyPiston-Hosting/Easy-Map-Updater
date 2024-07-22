@@ -9,6 +9,7 @@ from typing import cast, TypedDict, NotRequired, Any
 from lib.log import log
 from lib.data_pack_files import arguments
 from lib.data_pack_files import nbt_tags
+from lib.data_pack_files import nbt_to_json
 from lib.data_pack_files import miscellaneous
 from lib.data_pack_files import entities
 from lib.data_pack_files import numeric_ids
@@ -199,7 +200,7 @@ def update_from_json(item: ItemInputFromJSON, version: int, issues: list[dict[st
 
     return {
         "id": new_item["id"],
-        "components": nbt_tags.convert_to_json(new_item["components"]) if new_item["components"] else None,
+        "components": nbt_to_json.convert_item_components_to_json(new_item["components"]) if new_item["components"] else None,
     }
 
 

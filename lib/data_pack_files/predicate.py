@@ -14,6 +14,7 @@ from lib.data_pack_files import blocks
 from lib.data_pack_files import items
 from lib.data_pack_files import miscellaneous
 from lib.data_pack_files import nbt_tags
+from lib.data_pack_files import nbt_to_json
 
 
 
@@ -200,7 +201,7 @@ def predicate_item(contents: dict, version: int) -> dict:
             contents["predicates"]["minecraft:custom_data"] = nbt_tags.pack(updated_data["minecraft:custom_data"])
             del updated_data["minecraft:custom_data"]
         if len(updated_data):
-            contents["components"] = nbt_tags.convert_to_json(updated_data)
+            contents["components"] = nbt_to_json.convert_item_components_to_json(updated_data)
         del contents["nbt"]
 
     if "potion" in contents:
