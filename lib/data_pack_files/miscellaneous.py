@@ -292,6 +292,8 @@ def namespace(argument: str) -> str:
         return argument
     if argument[0] == "#":
         return "#minecraft:" + argument[1:]
+    if argument[0] == "!":
+        return "!minecraft:" + argument[1:]
     return "minecraft:" + argument
 
 def particle_mode(argument: str, version: int, issues: list[dict[str, str | int]]) -> str:
