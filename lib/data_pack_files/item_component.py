@@ -977,6 +977,18 @@ def update_path(path_parts: list[str], version: int, issues: list[dict[str, str 
     if path_parts[1] == "Enchantments":
         if len(path_parts) == 2:
             return ["components", "minecraft:enchantments"]
+        # Get specific enchantment index if an object with an ID is defined
+        if path_parts[2].startswith("["):
+            index = path_parts[2][1:-1].strip()
+            if index.startswith("{"):
+                unpacked_index = cast(dict[str, Any], nbt_tags.unpack(index))
+                if (
+                    "id" in unpacked_index and
+                    "lvl" not in unpacked_index and
+                    len(path_parts) == 4 and
+                    path_parts[3] == "lvl"
+                ):
+                    return ["components", "minecraft:enchantments", "levels", unpacked_index["id"]]
         if defaults.SEND_WARNINGS:
             log(f'WARNING: Children of item tag {path_parts[1]} are not handled yet in component conversion')
         return ["components", "minecraft:enchantments"] + path_parts[2:]
