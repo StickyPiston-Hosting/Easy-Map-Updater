@@ -76,6 +76,11 @@ def command(line: str) -> str:
     # Return commented version if the command begins with certain illegal characters
     if line[0] in [".", ","]:
         return "#" + line
+    
+    # Return command if a macro
+    if line.startswith("$"):
+        log(f'Macros are not yet handled: {line}')
+        return line
 
     # Convert command
     command = parsed_command(arguments.parse(line, " ", pack_version >= 1400), True)
