@@ -1,6 +1,6 @@
 # Place water block
 
-execute if block ^ ^ ^0.02 #minecraft:leaves[waterlogged=true] if block ~ ~ ~ #leaves:passable run setblock ~ ~ ~ water
+execute if block ^ ^ ^0.02 #minecraft:leaves[waterlogged=true] if block ~ ~ ~ #leaves:passable run setblock ~ ~ ~ minecraft:water
 execute positioned ^ ^ ^0.02 if block ~ ~ ~ #minecraft:leaves[waterlogged=true] run function leaves:unwaterlog_leaves
 
 

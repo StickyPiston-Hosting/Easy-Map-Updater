@@ -1,4 +1,22 @@
-{
-    "function": "minecraft:set_nbt",
-    "tag": "{adventure:1b,HideFlags:24,CanDestroy:[\"#minecraft:mineable/shovel\",\"#adventure:mineable/universal\"]}"
-}
+[
+    {
+        "function": "minecraft:set_custom_data",
+        "tag": "{adventure:1b}"
+    },
+    {
+        "function": "minecraft:set_components",
+        "components": {
+            "minecraft:can_break": {
+                "predicates": [
+                    {
+                        "blocks": "#minecraft:mineable/shovel"
+                    },
+                    {
+                        "blocks": "#adventure:mineable/universal"
+                    }
+                ],
+                "show_in_tooltip": false
+            }
+        }
+    }
+]

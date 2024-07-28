@@ -14,11 +14,11 @@ import sys
 # Check that correct Python version is running
 
 if not (
-    (sys.version_info[0] == 3 and sys.version_info[1] >= 9)
+    (sys.version_info[0] == 3 and sys.version_info[1] >= 12)
     or
     (sys.version_info[0] > 3)
 ):
-    print("\n\nERROR: Data Pack Zipper requires Python 3.9 or newer!")
+    print("\n\nERROR: Data Pack Zipper requires Python 3.12 or newer!")
     input()
     exit()
 

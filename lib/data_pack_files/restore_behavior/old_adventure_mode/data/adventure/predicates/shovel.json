@@ -5,10 +5,10 @@
         "predicate": {
             "equipment": {
                 "head": {
-                    "tag": "adventure:shovel",
                     "count": {
                         "min": 1
-                    }
+                    },
+                    "items": "#adventure:shovel"
                 }
             }
         }
@@ -21,7 +21,9 @@
             "predicate": {
                 "equipment": {
                     "head": {
-                        "nbt": "{adventure:1b}"
+                        "predicates": {
+                            "minecraft:custom_data": "{adventure:1b}"
+                        }
                     }
                 }
             }

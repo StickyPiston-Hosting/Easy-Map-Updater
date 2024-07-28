@@ -10,5 +10,5 @@ execute positioned ~-5 ~-5 ~-5 as @a[gamemode=!creative,gamemode=!spectator,dx=9
 
 # Manage bat tags
 
-tag @e[type=bat,tag=firework.target] add firework.entity.post
-tag @e[type=bat,tag=firework.target] remove firework.target
+tag @e[type=minecraft:bat,tag=firework.target] add firework.entity.post
+tag @e[type=minecraft:bat,tag=firework.target] remove firework.target

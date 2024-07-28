@@ -35,4 +35,4 @@ tag @s remove firework.target
 
 # Spawn bat
 
-execute at @s run summon bat ~ ~ ~ {Tags:["firework.target"],DeathLootTable:"",NoAI:1b,Silent:1b,Health:1.0f,PersistenceRequired:1b}
+execute at @s run summon minecraft:bat ~ ~ ~ {Tags:["firework.target"],DeathLootTable:"",NoAI:1b,Silent:1b,Health:1.0f,PersistenceRequired:1b}
