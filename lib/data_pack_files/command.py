@@ -164,6 +164,8 @@ def command_arguments(argument_list: list[str], guide: list | dict[str, Any], is
         return command_arguments(argument_list, guide["array"], issues)
 
     log(f'WARNING: Branch is undefined for: {" ".join(argument_list)}')
+    if defaults.DEBUG_MODE:
+        log(f'Current guide: {guide}')
     return " ".join(argument_list)
 
 def test_list_entry(entry: dict[str, int] | int, value: int, boolean: bool) -> bool:
