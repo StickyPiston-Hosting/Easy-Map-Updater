@@ -734,7 +734,26 @@
             },
             {
                 "version": {"min": 1300},
-                "mapping": ["carry", "function"]
+                "index": 2,
+                "branches": {
+                    "with": {
+                        "index": 3,
+                        "branches": {
+                            "block": {
+                                "mapping": ["carry", "function", "carry", "carry", "coordinate", "coordinate", "coordinate", "block_nbt_path"]
+                            },
+                            "entity": {
+                                "mapping": ["carry", "function", "carry", "carry", "target_selector_single", "entity_nbt_path"]
+                            },
+                            "storage": {
+                                "mapping": ["carry", "function", "carry", "carry", "carry", "nbt_path"]
+                            }
+                        }
+                    }
+                },
+                "else": {
+                    "mapping": ["carry", "function"]
+                }
             }
         ],
         "gamemode": {
