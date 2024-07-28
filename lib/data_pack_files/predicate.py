@@ -248,7 +248,7 @@ def predicate_item(contents: dict, version: int) -> dict:
 
     if "tag" in contents:
         if "items" not in contents:
-            contents["items"] = miscellaneous.namespace(contents["tag"])
+            contents["items"] = "#" + miscellaneous.namespace(contents["tag"])
         del contents["tag"]
 
 
