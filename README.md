@@ -5,7 +5,7 @@ The Easy Map Updater (E.M.U.) is a toolset implemented in Python for automatical
 
 ## Requirements
 
-E.M.U. requires Python 3.9 or newer.
+E.M.U. requires Python 3.12 or newer.
 
 The following modules are required:
 
