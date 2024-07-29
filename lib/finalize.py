@@ -116,12 +116,24 @@ def scan_world(world: Path, resource_pack: Path) -> WorldScan:
                 booleans["zipped_data_packs"] = True
 
             # Check if advancements are present in the minecraft namespace
-            if not booleans["advancements"] and pack.is_dir() and (pack / "data" / "minecraft" / "advancements").exists():
+            if (
+                not booleans["advancements"] and pack.is_dir() and
+                (
+                    (pack / "data" / "minecraft" / "advancements").exists() or
+                    (pack / "data" / "minecraft" / "advancement").exists()
+                )
+            ):
                 log("Advancements in the 'minecraft' namespace were found, consider disabling them")
                 booleans["advancements"] = True
 
             # Check if recipes are present in the minecraft namespace
-            if not booleans["recipes"] and pack.is_dir() and (pack / "data" / "minecraft" / "recipes").exists():
+            if (
+                not booleans["recipes"] and pack.is_dir() and
+                (
+                    (pack / "data" / "minecraft" / "recipes").exists() or
+                    (pack / "data" / "minecraft" / "recipe").exists()
+                )
+            ):
                 log("Recipes in the 'minecraft' namespace were found, consider disabling them")
                 booleans["recipes"] = True
 

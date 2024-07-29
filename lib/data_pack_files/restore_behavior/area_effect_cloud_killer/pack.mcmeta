@@ -1,6 +1,6 @@
 {
     "pack": {
-        "pack_format": 41,
+        "pack_format": 48,
         "description": "Kills area effect clouds in pre-1.9 maps."
     }
 }

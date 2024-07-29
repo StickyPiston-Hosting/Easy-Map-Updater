@@ -8,6 +8,7 @@
 import os
 import shutil
 import json
+from typing import cast
 from nbt import nbt as NBT
 from pathlib import Path
 from lib.log import log
@@ -30,6 +31,22 @@ from lib import utils
 
 pack_version = defaults.PACK_VERSION
 PACK_FORMAT = defaults.DATA_PACK_FORMAT
+
+DIRECTORY_RENAMES = [
+    ("advancements", "advancement"),
+    ("functions", "function"),
+    ("item_modifiers", "item_modifier"),
+    ("loot_tables", "loot_table"),
+    ("predicates", "predicate"),
+    ("recipes", "recipe"),
+    ("structures", "structure"),
+    ("tags/blocks", "tags/block"),
+    ("tags/entity_types", "tags/entity_type"),
+    ("tags/fluids", "tags/fluid"),
+    ("tags/functions", "tags/function"),
+    ("tags/game_events", "tags/game_event"),
+    ("tags/items", "tags/item"),
+]
 
 
 
@@ -94,6 +111,15 @@ def update_pack_mcmeta(pack: Path, source_pack: Path):
         return
     if contents["pack"]["pack_format"] < PACK_FORMAT:
         contents["pack"]["pack_format"] = PACK_FORMAT
+
+    # Update filters
+    if "filter" in contents:
+        if "block" in contents["filter"]:
+            for path_filter in contents["filter"]["block"]:
+                for folder_pair in DIRECTORY_RENAMES:
+                    if cast(str, path_filter["path"]).startswith(folder_pair[0]):
+                        path_filter["path"] = folder_pair[1] + path_filter["path"][len(folder_pair[0]):]
+
     with (pack / "pack.mcmeta").open("w", encoding="utf-8", newline="\n") as file:
         json.dump(contents, file, indent=4)
 
@@ -111,52 +137,52 @@ def update_namespaces(pack: Path, source_pack: Path):
             continue
 
         # Update functions
-        folder = pack / "data" / namespace.name / "functions"
-        source_folder = namespace / "functions"
+        folder = pack / "data" / namespace.name / "function"
+        source_folder = namespace / "function"
         if source_folder.exists():
             update_functions(folder, source_folder, namespace.name)
 
         # Update advancements
-        folder = pack / "data" / namespace.name / "advancements"
-        source_folder = namespace / "advancements"
+        folder = pack / "data" / namespace.name / "advancement"
+        source_folder = namespace / "advancement"
         if source_folder.exists():
             update_advancements(folder, source_folder)
 
         # Update predicates
-        folder = pack / "data" / namespace.name / "predicates"
-        source_folder = namespace / "predicates"
+        folder = pack / "data" / namespace.name / "predicate"
+        source_folder = namespace / "predicate"
         if source_folder.exists():
             update_predicates(folder, source_folder)
 
         # Update loot tables
-        folder = pack / "data" / namespace.name / "loot_tables"
-        source_folder = namespace / "loot_tables"
+        folder = pack / "data" / namespace.name / "loot_table"
+        source_folder = namespace / "loot_table"
         if source_folder.exists():
             update_loot_tables(folder, source_folder)
 
         # Update recipes
-        folder = pack / "data" / namespace.name / "recipes"
-        source_folder = namespace / "recipes"
+        folder = pack / "data" / namespace.name / "recipe"
+        source_folder = namespace / "recipe"
         if source_folder.exists():
             update_recipes(folder, source_folder)
 
         # Update item modifiers
-        folder = pack / "data" / namespace.name / "item_modifiers"
-        source_folder = namespace / "item_modifiers"
+        folder = pack / "data" / namespace.name / "item_modifier"
+        source_folder = namespace / "item_modifier"
         if source_folder.exists():
             update_item_modifiers(folder, source_folder)
 
         # Update block tags
-        folder = pack / "data" / namespace.name / "tags" / "blocks"
-        source_folder = namespace / "tags" / "blocks"
+        folder = pack / "data" / namespace.name / "tags" / "block"
+        source_folder = namespace / "tags" / "block"
         if source_folder.exists():
-            update_tags(folder, source_folder, "blocks")
+            update_tags(folder, source_folder, "block")
 
         # Update item tags
-        folder = pack / "data" / namespace.name / "tags" / "items"
-        source_folder = namespace / "tags" / "items"
+        folder = pack / "data" / namespace.name / "tags" / "item"
+        source_folder = namespace / "tags" / "item"
         if source_folder.exists():
-            update_tags(folder, source_folder, "items")
+            update_tags(folder, source_folder, "item")
 
 
 
@@ -237,6 +263,42 @@ def update_tags(folder: Path, source_folder: Path, tag_type: str):
         except Exception:
             log(f"ERROR: An error occurred when updating tag: {source_file_path.as_posix()}")
             raise Exception
+        
+
+
+def rename_directories(world: Path, get_conformation: bool):
+    log("Renaming data pack directories")
+
+    # Check for errors
+    if not world.exists():
+        log("ERROR: World does not exist!")
+        return
+    
+    # Get confirmation
+    if get_conformation:
+        log(f'This action will rename several directories in: {(world / "datapacks").as_posix()}')
+        confirm = input("Is this okay? (Y/N): ")
+        if confirm not in ["Y", "y"]:
+            log("Action canceled")
+            return
+        
+    # Iterate through folders
+    data_pack_path = world / "datapacks"
+    if data_pack_path.exists() and data_pack_path.is_dir():
+        for data_pack in (world / "datapacks").iterdir():
+            data_path = data_pack / "data"
+            if data_path.exists() and data_path.is_dir():
+                for namespace in data_path.iterdir():
+                    for folder_pair in DIRECTORY_RENAMES:
+                        source_path = namespace / folder_pair[0]
+                        target_path = namespace / folder_pair[1]
+                        if source_path.exists() and source_path.is_dir():
+                            if target_path.exists():
+                                log(f'ERROR: Cannot rename directory {source_path}, target path already exists')
+                            else:
+                                os.rename(source_path, target_path)
+    
+    log("Data pack directories renamed")
 
 
 
@@ -278,7 +340,7 @@ def extract_stored_functions(world: Path, get_confirmation: bool):
             continue
         path_length = len(namespace.as_posix()) + 1
         for file_path in namespace.glob("**/*.mcfunction"):
-            destination = data_pack / "data" / namespace.name.lower() / "functions" / file_path.as_posix()[path_length:].lower()
+            destination = data_pack / "data" / namespace.name.lower() / "function" / file_path.as_posix()[path_length:].lower()
             destination.parent.mkdir(exist_ok=True, parents=True)
             shutil.move(file_path, destination)
 
@@ -292,7 +354,7 @@ def extract_stored_functions(world: Path, get_confirmation: bool):
         ):
             ticking_function: str = file["Data"]["GameRules"]["gameLoopFunction"].value.lower()
             if ticking_function:
-                tick_json = data_pack / "data" / "minecraft" / "tags" / "functions" / "tick.json"
+                tick_json = data_pack / "data" / "minecraft" / "tags" / "function" / "tick.json"
                 tick_json.parent.mkdir(exist_ok=True, parents=True)
                 with tick_json.open("w", encoding="utf-8", newline="\n") as file:
                     json.dump(
@@ -347,7 +409,7 @@ def extract_stored_advancements(world: Path, get_confirmation: bool):
             continue
         path_length = len(namespace.as_posix()) + 1
         for file_path in namespace.glob("**/*.json"):
-            destination = data_pack / "data" / namespace.name.lower() / "advancements" / file_path.as_posix()[path_length:].lower()
+            destination = data_pack / "data" / namespace.name.lower() / "advancement" / file_path.as_posix()[path_length:].lower()
             destination.parent.mkdir(exist_ok=True, parents=True)
             shutil.move(file_path, destination)
 
@@ -356,10 +418,10 @@ def extract_stored_advancements(world: Path, get_confirmation: bool):
 
 
 def disable_advancements(world: Path, get_confirmation: bool):
-    disable_folder(world, "advancements", get_confirmation)
+    disable_folder(world, "advancement", get_confirmation)
 
 def disable_recipes(world: Path, get_confirmation: bool):
-    disable_folder(world, "recipes", get_confirmation)
+    disable_folder(world, "recipe", get_confirmation)
 
 def disable_folder(world: Path, folder: str, get_confirmation: bool):
     log(f"Disabling {folder}")
@@ -461,15 +523,15 @@ def fix_disabled_vanilla(world: Path):
             	    "block": [
                         {
             	            "namespace": "minecraft",
-            	            "path": "advancements/.*"
+            	            "path": "advancement/.*"
             	        },
             	        {
             	            "namespace": "minecraft",
-            	            "path": "loot_tables/.*"
+            	            "path": "loot_table/.*"
             	        },
                         {
             	            "namespace": "minecraft",
-            	            "path": "recipes/.*"
+            	            "path": "recipe/.*"
             	        },
                         {
             	            "namespace": "minecraft",
@@ -477,7 +539,7 @@ def fix_disabled_vanilla(world: Path):
             	        },
                         {
             	            "namespace": "minecraft",
-            	            "path": "tags/blocks/.*"
+            	            "path": "tags/block/.*"
             	        },
                         {
             	            "namespace": "minecraft",
@@ -485,15 +547,15 @@ def fix_disabled_vanilla(world: Path):
             	        },
                         {
             	            "namespace": "minecraft",
-            	            "path": "tags/entity_types/.*"
+            	            "path": "tags/entity_type/.*"
             	        },
                         {
             	            "namespace": "minecraft",
-            	            "path": "tags/fluids/.*"
+            	            "path": "tags/fluid/.*"
             	        },
                         {
             	            "namespace": "minecraft",
-            	            "path": "tags/game_events/.*"
+            	            "path": "tags/game_event/.*"
             	        },
                         {
             	            "namespace": "minecraft",
@@ -501,7 +563,7 @@ def fix_disabled_vanilla(world: Path):
             	        },
                         {
             	            "namespace": "minecraft",
-            	            "path": "tags/items/.*"
+            	            "path": "tags/item/.*"
             	        },
                         {
             	            "namespace": "minecraft",
@@ -688,9 +750,9 @@ def merge_packs(world: Path, name: str):
     finalize.log_data_packs(world)
 
     # Tell if there are minecraft advancements or recipes
-    if (world / "datapacks" / (name + " Data Pack") / "data" / "minecraft" / "advancements").exists():
+    if (world / "datapacks" / (name + " Data Pack") / "data" / "minecraft" / "advancement").exists():
         log("Advancements in the 'minecraft' namespace were found, consider disabling them")
-    if (world / "datapacks" / (name + " Data Pack") / "data" / "minecraft" / "recipes").exists():
+    if (world / "datapacks" / (name + " Data Pack") / "data" / "minecraft" / "recipe").exists():
         log("Recipes in the 'minecraft' namespace were found, consider disabling them")
 
 def merge_pack(pack_a: Path, pack_b: Path, data_pack: str):

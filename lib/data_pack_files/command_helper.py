@@ -47,7 +47,7 @@ def create_function(commands: str) -> str:
         )
 
     # Prepare load function
-    file_path = data_pack_path / "data" / "minecraft" / "tags" / "functions" / "load.json"
+    file_path = data_pack_path / "data" / "minecraft" / "tags" / "function" / "load.json"
     file_path.parent.mkdir(exist_ok=True, parents=True)
     with file_path.open("w", encoding="utf-8", newline="\n") as file:
         json.dump(
@@ -59,7 +59,7 @@ def create_function(commands: str) -> str:
             file,
             indent=4
         )
-    file_path = data_pack_path / "data" / "help" / "functions" / "load.mcfunction"
+    file_path = data_pack_path / "data" / "help" / "function" / "load.mcfunction"
     file_path.parent.mkdir(exist_ok=True, parents=True)
     with file_path.open("w", encoding="utf-8", newline="\n") as file:
         file.write(
@@ -68,7 +68,7 @@ def create_function(commands: str) -> str:
         )
 
     # Prepare tick function
-    file_path = data_pack_path / "data" / "minecraft" / "tags" / "functions" / "tick.json"
+    file_path = data_pack_path / "data" / "minecraft" / "tags" / "function" / "tick.json"
     file_path.parent.mkdir(exist_ok=True, parents=True)
     with file_path.open("w", encoding="utf-8", newline="\n") as file:
         json.dump(
@@ -80,7 +80,7 @@ def create_function(commands: str) -> str:
             file,
             indent=4
         )
-    file_path = data_pack_path / "data" / "help" / "functions" / "tick.mcfunction"
+    file_path = data_pack_path / "data" / "help" / "function" / "tick.mcfunction"
     file_path.parent.mkdir(exist_ok=True, parents=True)
     with file_path.open("w", encoding="utf-8", newline="\n") as file:
         file.write(
@@ -90,7 +90,7 @@ def create_function(commands: str) -> str:
 
     # Create function
     function_name = hashlib.sha256(commands.encode("utf-8")).hexdigest()
-    function_path = data_pack_path / "data" / "help" / "functions" / f"{function_name}.mcfunction"
+    function_path = data_pack_path / "data" / "help" / "function" / f"{function_name}.mcfunction"
     function_path.parent.mkdir(exist_ok=True, parents=True)
     with function_path.open("w", encoding="utf-8", newline="\n") as file:
         file.write(commands)

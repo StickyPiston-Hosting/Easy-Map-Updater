@@ -39,7 +39,7 @@ def insert_objective(name: str, criteria: str, id_list: list[str]):
         create_data_pack(world, data_pack_path)
 
     # Insert commands into functions
-    function_path = data_pack_path / "data" / "objective" / "functions"
+    function_path = data_pack_path / "data" / "objective" / "function"
 
     with (function_path / "load.mcfunction").open("r", encoding="utf-8") as file:
         contents = file.read().split("\n")
@@ -84,7 +84,7 @@ def create_data_pack(world: Path, data_pack_path: Path):
             indent=4
         )
         
-    function_tag_path = data_pack_path / "data" / "minecraft" / "tags" / "functions"
+    function_tag_path = data_pack_path / "data" / "minecraft" / "tags" / "function"
     function_tag_path.mkdir(exist_ok=True, parents=True)
     with (function_tag_path / "load.json").open("w", encoding="utf-8", newline="\n") as file:
         json.dump(
@@ -107,7 +107,7 @@ def create_data_pack(world: Path, data_pack_path: Path):
             indent=4
         )
 
-    function_path = data_pack_path / "data" / "objective" / "functions"
+    function_path = data_pack_path / "data" / "objective" / "function"
     function_path.mkdir(exist_ok=True, parents=True)
     for function_name in ["load", "push_scores", "reset_scores"]:
         with (function_path / f"{function_name}.mcfunction").open("w", encoding="utf-8", newline="\n") as file:

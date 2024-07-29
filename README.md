@@ -78,6 +78,7 @@ Before you make the source copy of your world, certain actions need to be run to
 
 - `dp.unzip`: If there are any zipped data packs in your world, this will unzip them so that they can be updated.
 - `dp.log`: This will update the world's internal data pack list from the current set of data packs in the `datapacks` folder.
+- `dp.directory`: This will rename the data pack directories to the post-1.21 format.
 - `dp.vanilla`: If the vanilla data pack is disabled on your world (to remove advancements, block tags, etc.), this will re-enable it and filter out those things which are commonly removed. As of ~1.19, certain dimension data was stored in the vanilla data pack which prevented worlds from loading correctly if it was disabled.
 - `dp.merge`: This will merge all the data packs together. Entirely optional.
 - `dp.stored_function`: This will extract functions from `data/functions` and put them into their own data pack. Worlds from 1.12 had functions stored there.

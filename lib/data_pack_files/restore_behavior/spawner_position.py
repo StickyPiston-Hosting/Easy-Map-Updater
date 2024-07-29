@@ -45,7 +45,7 @@ def create_pack(world: Path, spawner_position_list: list[str]):
             indent=4
         )
 
-    tag_path = data_pack_path / "data" / "minecraft" / "tags" / "functions"
+    tag_path = data_pack_path / "data" / "minecraft" / "tags" / "function"
     tag_path.mkdir(exist_ok=True, parents=True)
 
     with (tag_path / "tick.json").open("w", encoding="utf-8", newline="\n") as file:
@@ -59,7 +59,7 @@ def create_pack(world: Path, spawner_position_list: list[str]):
             indent=4
         )
 
-    function_path = data_pack_path / "data" / "spawner_position" / "functions" / "tick.mcfunction"
+    function_path = data_pack_path / "data" / "spawner_position" / "function" / "tick.mcfunction"
     function_path.parent.mkdir(exist_ok=True, parents=True)
 
     contents: list[str] = []

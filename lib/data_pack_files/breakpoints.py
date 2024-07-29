@@ -58,7 +58,7 @@ def apply_breakpoints(world: Path):
 def get_function_names(data_pack_path: Path) -> dict[str, dict[str, Any]]:
     data_pack_dict: dict[str, dict[str, Any]] = {}
     for namespace_path in data_pack_path.iterdir():
-        functions_path = namespace_path / "functions"
+        functions_path = namespace_path / "function"
         if not functions_path.exists():
             continue
         for function_path in functions_path.glob("**/*.mcfunction"):
@@ -216,7 +216,7 @@ def modify_functions(data_pack_dict: dict[str, dict[str, Any]], data_pack_path: 
             file.write("\n".join(new_commands).replace("@e", "@e[tag=!break.kill]").replace("tag=!break.kill][", "tag=!break.kill,"))
 
 
-    function_path = data_pack_path / "data" / "break" / "functions" / "load.mcfunction"
+    function_path = data_pack_path / "data" / "break" / "function" / "load.mcfunction"
     function_path.parent.mkdir(exist_ok=True, parents=True)
     commands: list[str] = []
     for coordinate in forceloads:
@@ -229,7 +229,7 @@ def modify_functions(data_pack_dict: dict[str, dict[str, Any]], data_pack_path: 
             "\n".join(commands)
         )
 
-    file_path = data_pack_path / "data" / "minecraft" / "tags" / "functions" / "load.json"
+    file_path = data_pack_path / "data" / "minecraft" / "tags" / "function" / "load.json"
     file_path.parent.mkdir(exist_ok=True, parents=True)
     if file_path.exists():
         with file_path.open("r", encoding="utf-8") as file:
@@ -244,7 +244,7 @@ def modify_functions(data_pack_dict: dict[str, dict[str, Any]], data_pack_path: 
             json.dump({ "values": [ "break:load" ] }, file, indent=4)
 
     
-    function_path = data_pack_path / "data" / "break" / "functions" / "timer.mcfunction"
+    function_path = data_pack_path / "data" / "break" / "function" / "timer.mcfunction"
     function_path.parent.mkdir(exist_ok=True, parents=True)
     commands: list[str] = ["kill @e[tag=break.kill]"]
     for coordinate in forceloads:
@@ -255,7 +255,7 @@ def modify_functions(data_pack_dict: dict[str, dict[str, Any]], data_pack_path: 
         file.write("\n".join(commands))
 
 
-    file_path = data_pack_path / "data" / "minecraft" / "tags" / "functions" / "tick.json"
+    file_path = data_pack_path / "data" / "minecraft" / "tags" / "function" / "tick.json"
     file_path.parent.mkdir(exist_ok=True, parents=True)
     tick_function = "namespace:tick"
     if file_path.exists():
@@ -273,7 +273,7 @@ def modify_functions(data_pack_dict: dict[str, dict[str, Any]], data_pack_path: 
         with file_path.open("w", encoding="utf-8", newline="\n") as file:
             json.dump({ "values": [ "break:tick" ] }, file, indent=4)
 
-    function_path = data_pack_path / "data" / "break" / "functions" / "tick.mcfunction"
+    function_path = data_pack_path / "data" / "break" / "function" / "tick.mcfunction"
     function_path.parent.mkdir(exist_ok=True, parents=True)
     with function_path.open("w", encoding="utf-8", newline="\n") as file:
         file.write(
@@ -285,7 +285,7 @@ def modify_functions(data_pack_dict: dict[str, dict[str, Any]], data_pack_path: 
             'execute unless data storage break:data stack[0] run function break:timer'
         )
 
-    with (data_pack_path / "data" / "break" / "functions" / "run_stack.mcfunction").open("w", encoding="utf-8", newline="\n") as file:
+    with (data_pack_path / "data" / "break" / "function" / "run_stack.mcfunction").open("w", encoding="utf-8", newline="\n") as file:
         file.write(
 """execute store result score #calls_bool break.value if data storage break:data stack[-1].calls[0]
 
@@ -303,7 +303,7 @@ execute if score #calls_bool break.value matches 0 unless score #tick break.valu
 scoreboard players set #calls_bool break.value -1"""
         )
 
-    with (data_pack_path / "data" / "break" / "functions" / "run_function.mcfunction").open("w", encoding="utf-8", newline="\n") as file:
+    with (data_pack_path / "data" / "break" / "function" / "run_function.mcfunction").open("w", encoding="utf-8", newline="\n") as file:
         file.write(
 """scoreboard players set #function_bool break.value 0
 
@@ -317,7 +317,7 @@ execute if score #function_end_bool break.value matches 0 run scoreboard players
 $execute if score #function_end_bool break.value matches 1 run kill @e[type=marker,tag=break.context,scores={break.id=$(context)}]"""
         )
 
-    with (data_pack_path / "data" / "break" / "functions" / "add_call.mcfunction").open("w", encoding="utf-8", newline="\n") as file:
+    with (data_pack_path / "data" / "break" / "function" / "add_call.mcfunction").open("w", encoding="utf-8", newline="\n") as file:
         file.write(
 """execute unless score @s break.id = @s break.id store result score @s break.id run scoreboard players add #global break.id 1
 execute summon marker run function break:add_context
@@ -326,7 +326,7 @@ execute store result storage break:data stack[-1].calls[-1].executor int 1 run s
 execute store result storage break:data stack[-1].calls[-1].context int 1 run scoreboard players get #context_id break.value"""
         )
 
-    with (data_pack_path / "data" / "break" / "functions" / "add_context.mcfunction").open("w", encoding="utf-8", newline="\n") as file:
+    with (data_pack_path / "data" / "break" / "function" / "add_context.mcfunction").open("w", encoding="utf-8", newline="\n") as file:
         file.write(
 """execute store result score @s break.id run scoreboard players add #global break.id 1
 tag @s add break.context
@@ -334,14 +334,14 @@ tp @s ~ ~ ~ ~ ~
 scoreboard players operation #context_id break.value = @s break.id"""
         )
 
-    with (data_pack_path / "data" / "break" / "functions" / "child_end.mcfunction").open("w", encoding="utf-8", newline="\n") as file:
+    with (data_pack_path / "data" / "break" / "function" / "child_end.mcfunction").open("w", encoding="utf-8", newline="\n") as file:
         file.write(
 """data remove storage break:data stack[-1]
 execute if data storage break:data stack[0] run function break:run_stack
 scoreboard players set #function_end_bool break.value 1"""
         )
 
-    with (data_pack_path / "data" / "break" / "functions" / "modify_section.mcfunction").open("w", encoding="utf-8", newline="\n") as file:
+    with (data_pack_path / "data" / "break" / "function" / "modify_section.mcfunction").open("w", encoding="utf-8", newline="\n") as file:
         file.write(
 """$scoreboard players set #modifier break.value $(modifier)
 scoreboard players operation #section break.value += #modifier break.value

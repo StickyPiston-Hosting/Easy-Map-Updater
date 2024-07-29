@@ -396,7 +396,7 @@ def update_commands(version: int):
 
     with (PROGRAM_PATH / "commands.mcfunction").open("w", encoding="utf-8", newline="\n") as file:
         file.write("\n".join(lines))
-    function_path = MINECRAFT_PATH / "saves" / "Testing World" / "datapacks" / "Test Data Pack" / "data" / "test" / "functions"
+    function_path = MINECRAFT_PATH / "saves" / "Testing World" / "datapacks" / "Test Data Pack" / "data" / "test" / "function"
     if function_path.exists():
         with (function_path / "commands.mcfunction").open("w", encoding="utf-8", newline="\n") as file:
             file.write("\n".join(lines))

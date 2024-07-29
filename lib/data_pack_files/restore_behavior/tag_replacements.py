@@ -55,7 +55,7 @@ def create_pack(world: Path):
         )
 
     # Create item tags
-    folder_path = data_pack_path / "data" / "tag_replacements" / "tags" / "items"
+    folder_path = data_pack_path / "data" / "tag_replacements" / "tags" / "item"
     folder_path.mkdir(exist_ok=True, parents=True)
     item_id_array = tables.ITEM_IDS_DATA
 
@@ -79,7 +79,7 @@ def create_pack(world: Path):
     ])
 
     # Create block tags
-    folder_path = data_pack_path / "data" / "tag_replacements" / "tags" / "blocks"
+    folder_path = data_pack_path / "data" / "tag_replacements" / "tags" / "block"
     folder_path.mkdir(exist_ok=True, parents=True)
     block_id_array = tables.BLOCK_IDS_DATA
 

@@ -97,6 +97,7 @@ class Action(Enum):
     DP_UNZIP = "dp.unzip"
     DP_ZIP = "dp.zip"
     DP_LOG = "dp.log"
+    DP_DIRECTORY = "dp.directory"
     DP_VANILLA = "dp.vanilla"
     DP_MERGE = "dp.merge"
     DP_STORED_FUNCTION = "dp.stored_function"
@@ -304,6 +305,7 @@ def action_reset():
 
         Action.DP_UNZIP.value:              { "show": False, "function": action_unzip_data_packs, "name": "Unzip data packs" },
         Action.DP_LOG.value:                { "show": False, "function": action_log_data_packs, "name": "Log data packs" },
+        Action.DP_DIRECTORY.value:          { "show": False, "function": action_rename_data_pack_directories, "name": "Rename data pack directories" },
         Action.DP_VANILLA.value:            { "show": False, "function": action_fix_disabled_vanilla, "name": "Fix disabled vanilla data pack (must be done before merging)" },
         Action.DP_MERGE.value:              { "show": False, "function": action_merge_data_packs, "name": "Merge data packs" },
         Action.DP_STORED_FUNCTION.value:    { "show": False, "function": action_stored_functions, "name": "Extract stored functions" },
@@ -454,10 +456,14 @@ def action_update(): # Needs confirmation
 
     # Update data pack
     if update_progress["stage"] == 300:
+        if version <= 2006:
+            action_rename_data_pack_directories(False)
+        next_update_progress()
+    if update_progress["stage"] == 301:
         if progress_scan["disabled_vanilla"]:
             action_fix_disabled_vanilla()
         next_update_progress()
-    if update_progress["stage"] == 301:
+    if update_progress["stage"] == 302:
         if progress_scan["advancements"]:
             print("")
             log("Advancements in the 'minecraft' namespace were found, which may be used to disable advancements in older maps")
@@ -471,10 +477,10 @@ def action_update(): # Needs confirmation
             if confirm in ["y", "Y"]:
                 action_disable_recipes(False)
         next_update_progress()
-    if update_progress["stage"] == 302:
+    if update_progress["stage"] == 303:
         action_prepare_source_copy(False)
         next_update_progress()
-    if update_progress["stage"] == 303:
+    if update_progress["stage"] == 304:
         action_update_data_packs(False)
         next_update_progress_section()
 
@@ -699,6 +705,12 @@ def action_merge_data_packs(manual: bool = True): # Needs confirmation
     if manual:
         global actions
         actions[Action.DP_MERGE.value]["show"] = True
+
+def action_rename_data_pack_directories(manual: bool = True):
+    data_pack.rename_directories(
+        MINECRAFT_PATH / "saves" / option_manager.get_map_name(),
+        manual
+    )
 
 def action_update_data_packs(manual: bool = True):
     data_pack.update(
