@@ -156,6 +156,8 @@ def item_modifier(contents: dict[str, Any] | list, version: int, object_id: str 
         if "replace" in contents:
             contents["mode"] = "replace_all" if contents["replace"] else "append"
             del contents["replace"]
+        if "mode" not in contents:
+            contents["mode"] = "append"
 
     if function_id == "minecraft:set_name":
         contents["name"] = json_text_component.update_component(contents["name"], version, [])
