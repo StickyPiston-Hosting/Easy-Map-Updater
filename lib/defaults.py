@@ -5,10 +5,10 @@
 
 # Set default variables
 
-PACK_VERSION = 2005
+PACK_VERSION = 2006
 DATA_PACK_FORMAT = 41
 RESOURCE_PACK_FORMAT = 32
-DATA_VERSION = 3830
+DATA_VERSION = 3839
 DEBUG_MODE = False
 SEND_WARNINGS = True
 TEXT_FILE_FORMATS = [".txt", ".json", ".mcmeta", ".fsh", ".vsh", ".glsl"]
@@ -79,5 +79,6 @@ DATA_VERSIONS = {
     3578: 2002,
     3698: 2003,
     3700: 2004,
-    1000000000: 2005,
+    3837: 2005,
+    1000000000: 2006,
 }
