@@ -215,4 +215,6 @@ def get_version_from_user(message: str, skippable: bool) -> tuple[str, int]:
         return version_input, version
 
 def get_version_string(version: int) -> str:
+    if version%100 == 0:
+        return f'1.{version//100%100}'
     return f'1.{version//100%100}.{version%100}'
