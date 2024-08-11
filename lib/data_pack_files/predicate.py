@@ -106,6 +106,17 @@ def predicate(contents: dict[str, Any] | list[dict], version: int) -> dict[str, 
     elif condition == "minecraft:match_tool":
         contents["predicate"] = predicate_item(contents["predicate"], version)
 
+
+
+    # Update entity context
+    id_array = {
+        "killer": "attacker",
+        "direct_killer": "direct_attacker",
+        "killer_player": "attacking_player",
+    }
+    if "entity" in contents and contents["entity"] in id_array:
+        contents["entity"] = id_array[contents["entity"]]
+
     
     
     return contents
