@@ -315,14 +315,27 @@ def predicate_item(contents: dict, version: int) -> dict:
         predicates = contents["predicates"]
         
         if "minecraft:bundle_contents" in predicates:
-            if "items" in predicates["minecraft:bundle_contents"]:
-                if "contains" in predicates["minecraft:bundle_contents"]["items"]:
-                    predicates["minecraft:bundle_contents"]["items"]["contains"] = predicate_item(predicates["minecraft:bundle_contents"]["items"]["contains"], version)
+            bundle_contents = predicates["minecraft:bundle_contents"]
+            if "items" in bundle_contents:
+                if "contains" in bundle_contents["items"]:
+                    bundle_contents["items"]["contains"] = predicate_item(bundle_contents["items"]["contains"], version)
 
         if "minecraft:container" in predicates:
-            if "items" in predicates["minecraft:container"]:
-                if "contains" in predicates["minecraft:container"]["items"]:
-                    predicates["minecraft:container"]["items"]["contains"] = predicate_item(predicates["minecraft:container"]["items"]["contains"], version)
+            container = predicates["minecraft:container"]
+            if "items" in container:
+                if "contains" in container["items"]:
+                    container["items"]["contains"] = predicate_item(container["items"]["contains"], version)
+
+        if "minecraft:enchantments" in predicates:
+            enchantments = predicates["minecraft:enchantments"]
+            if "enchantment" in enchantments:
+                enchantments["enchantments"] = enchantments["enchantment"]
+                del enchantments["enchantment"]
+            if isinstance(enchantments["enchantments"], str):
+                enchantments["enchantments"] = ids.enchantment(enchantments["enchantments"], version, [])
+            else:
+                for i in range(len(enchantments["enchantments"])):
+                    enchantments["enchantments"][i] = ids.enchantment(enchantments["enchantments"][i], version, [])
 
 
 
