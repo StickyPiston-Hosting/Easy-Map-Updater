@@ -127,6 +127,11 @@ def item_modifier(contents: dict[str, Any] | list, version: int, object_id: str 
                 if defaults.SEND_WARNINGS:
                     log(f'WARNING: Item modifier function "minecraft:copy_nbt" could not be converted to "minecraft:copy_components", target path changed to: {operation["target"]}')
     
+    if function_id == "minecraft:enchant_randomly":
+        if "enchantments" in contents:
+            contents["options"] = contents["enchantments"]
+            del contents["enchantments"]
+    
     if function_id == "minecraft:enchant_with_levels":
         contents["levels"] = miscellaneous.number_provider(contents["levels"])
 
