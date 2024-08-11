@@ -134,6 +134,8 @@ def item_modifier(contents: dict[str, Any] | list, version: int, object_id: str 
     
     if function_id == "minecraft:enchant_with_levels":
         contents["levels"] = miscellaneous.number_provider(contents["levels"])
+        if "treasure" in contents:
+            del contents["treasure"]
 
     if function_id == "minecraft:enchanted_count_increase":
         contents["count"] = miscellaneous.number_provider(contents["count"])
