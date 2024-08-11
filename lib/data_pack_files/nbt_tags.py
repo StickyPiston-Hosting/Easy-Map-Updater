@@ -550,6 +550,8 @@ def edge_case(parent: dict, nbt, case: str | dict[str, str], source: str, object
         return edge_case_old_spawn_potential_entity(parent, nbt, object_id, issues)
     if case_type == "potion":
         return edge_case_potion(parent, object_id)
+    if case_type == "shot_from_crossbow":
+        return edge_case_shot_from_crossbow(parent)
     if case_type == "sign_text":
         return edge_case_sign_text(parent, issues)
     if case_type == "spawn_data":
@@ -724,6 +726,15 @@ def edge_case_potion(parent: dict, object_id: str):
         if "potion_contents" not in parent:
             parent["potion_contents"] = {}
         parent["potion_contents"]["potion"] = miscellaneous.namespace(parent["Potion"])
+
+def edge_case_shot_from_crossbow(parent: dict):
+    if parent["ShotFromCrossbow"].value == 1:
+        parent["weapon"] = {
+            "id": "minecraft:crossbow",
+            "count": TypeInt(1)
+        }
+    else:
+        log(f'WARNING: Entity tag "ShotFromCrossbow:0b" was used, make sure it isn\'t being read')
 
 def edge_case_sign_text(parent: dict, issues: list[dict[str, str | int]]):
     # Prepare front text

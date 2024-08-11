@@ -518,6 +518,11 @@
                 "Rotation": { "list": { "data_type": "float" } },
                 "SelectedItem": { "source": "item" },
                 "ShotAtAngle": { "data_type": "byte" },
+                "ShotFromCrossbow": {
+                    "remove": true,
+                    "edge_case": "shot_from_crossbow",
+                    "path": { "edge_case": "shot_from_crossbow" }
+                },
                 "ShowArms": { "data_type": "byte" },
                 "Silent": { "data_type": "byte" },
                 "Small": { "data_type": "byte" },
@@ -544,6 +549,7 @@
                     }
                 },
                 "wander_target": { "data_type": "int_array" },
+                "weapon": { "source": "item" },
                 "UUIDLeast": {
                     "remove": true,
                     "edge_case": {
