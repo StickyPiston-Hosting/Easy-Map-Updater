@@ -11,6 +11,7 @@ from typing import cast, Any
 from lib.log import log
 from lib import defaults
 from lib import json_manager
+from lib.data_pack_files import ids
 from lib.data_pack_files import miscellaneous
 from lib.data_pack_files import nbt_tags
 from lib.data_pack_files import nbt_paths
@@ -76,26 +77,48 @@ def item_modifier(contents: dict[str, Any] | list, version: int, object_id: str 
 
 
 
+    if function_id == "minecraft:copy_custom_data":
+        source = contents["source"]
+        if isinstance(source, dict):
+            source["type"] = miscellaneous.namespace(source["type"])
+            source_type = source["type"]
+            if source_type == "minecraft:context":
+                source["target"] = miscellaneous.loot_context_alt(source["target"])
+        else:
+            contents["source"] = miscellaneous.loot_context_alt(source)
+
+    if function_id == "minecraft:copy_name":
+        if "source" in contents:
+            contents["source"] = miscellaneous.loot_context_alt(contents["source"])
+
     if function_id == "minecraft:copy_nbt":
         contents["function"] = "minecraft:copy_custom_data"
         source = contents["source"]
         if isinstance(source, dict):
-            if source["type"] == "context":
-                source = source["target"]
+            source["type"] = miscellaneous.namespace(source["type"])
+            source_type = source["type"]
+            if source_type == "minecraft:context":
+                source["target"] = miscellaneous.loot_context_alt(source["target"])
+                nbt_source = source["target"]
             else:
-                source = "storage"
+                nbt_source = "storage"
+        else:
+            contents["source"] = miscellaneous.loot_context_alt(source)
+            nbt_source = contents["source"]
+
         for operation in contents["ops"]:
             id_array = {
                 "block_entity": "block",
                 "this": "entity",
-                "killer": "entity",
-                "direct_killer": "entity",
-                "killer_player": "entity",
-                "storage": "arbitrary"
+                "attacking_entity": "entity",
+                "last_damage_player": "entity",
+                "storage": "arbitrary",
             }
-            if source in id_array:
-                source = id_array[source]
-            operation["source"] = nbt_paths.update(operation["source"], version, [], source)
+            if nbt_source in id_array:
+                nbt_source = id_array[nbt_source]
+            else:
+                nbt_source = "arbitrary"
+            operation["source"] = nbt_paths.update(operation["source"], version, [], nbt_source)
             target_path = nbt_paths.direct_update(nbt_paths.unpack(operation["target"]), version, [], "item_tag")
             if target_path[0] == "minecraft:custom_data":
                 operation["target"] = nbt_paths.pack(target_path[1:])
@@ -103,12 +126,32 @@ def item_modifier(contents: dict[str, Any] | list, version: int, object_id: str 
                 operation["target"] = nbt_paths.pack(target_path)
                 if defaults.SEND_WARNINGS:
                     log(f'WARNING: Item modifier function "minecraft:copy_nbt" could not be converted to "minecraft:copy_components", target path changed to: {operation["target"]}')
+    
+    if function_id == "minecraft:enchant_with_levels":
+        contents["levels"] = miscellaneous.number_provider(contents["levels"])
+
+    if function_id == "minecraft:enchanted_count_increase":
+        contents["count"] = miscellaneous.number_provider(contents["count"])
+        if "enchantment" in contents:
+            contents["enchantment"] = ids.enchantment(contents["enchantment"], version, [])
+
+    if function_id == "minecraft:fill_player_head":
+        if "entity" in contents:
+            contents["entity"] = miscellaneous.loot_context(contents["entity"])
 
     if function_id == "minecraft:filtered":
         if "item_filter" in contents:
             contents["item_filter"] = predicate.predicate(contents["item_filter"], version)
         if "modifier" in contents:
             contents["modifier"] = item_modifier(contents["modifier"], version, object_id)
+
+    if function_id == "minecraft:limit_count":
+        limit = contents["limit"]
+        if isinstance(limit, dict):
+            if "min" in limit:
+                limit["min"] = miscellaneous.number_provider(limit["min"])
+            if "max" in limit:
+                limit["max"] = miscellaneous.number_provider(limit["max"])
 
     if function_id == "minecraft:modify_contents":
         if "modifier" in contents:
@@ -117,6 +160,8 @@ def item_modifier(contents: dict[str, Any] | list, version: int, object_id: str 
     if function_id == "minecraft:set_attributes":
         if "modifiers" in contents:
             for modifier in contents["modifiers"]:
+                if "amount" in modifier:
+                    modifier["amount"] = miscellaneous.number_provider(modifier["amount"])
                 if "operation" in modifier:
                     id_array = {
                         "addition": "add_value",
@@ -146,6 +191,19 @@ def item_modifier(contents: dict[str, Any] | list, version: int, object_id: str 
             else:
                 contents["component"] = "minecraft:container"
 
+    if function_id == "minecraft:set_count":
+        contents["count"] = miscellaneous.number_provider(contents["count"])
+
+    if function_id == "minecraft:set_custom_model_data":
+        contents["value"] = miscellaneous.number_provider(contents["value"])
+
+    if function_id == "minecraft:set_damage":
+        contents["damage"] = miscellaneous.number_provider(contents["damage"])
+
+    if function_id == "minecraft:set_enchantments":
+        for enchantment in contents["enchantments"]:
+            contents["enchantments"][enchantment] = miscellaneous.number_provider(contents["enchantments"][enchantment])
+
     if function_id == "minecraft:set_item":
         if "item" in contents:
             contents["item"] = items.update_from_command(contents["item"], version, [])
@@ -158,9 +216,13 @@ def item_modifier(contents: dict[str, Any] | list, version: int, object_id: str 
             del contents["replace"]
         if "mode" not in contents:
             contents["mode"] = "append"
+        if "entity" in contents:
+            contents["entity"] = miscellaneous.loot_context(contents["entity"])
 
     if function_id == "minecraft:set_name":
         contents["name"] = json_text_component.update_component(contents["name"], version, [])
+        if "entity" in contents:
+            contents["entity"] = miscellaneous.loot_context(contents["entity"])
 
     if function_id == "minecraft:set_nbt":
         updated_data = cast(dict[str, Any], nbt_tags.direct_update(nbt_tags.unpack(contents["tag"]), version, [], "item_tag", ""))
@@ -190,6 +252,11 @@ def item_modifier(contents: dict[str, Any] | list, version: int, object_id: str 
         if set_components:
             return set_components
         return []
+    
+    if function_id == "minecraft:set_stew_effect":
+        for effect in contents["effects"]:
+            if "duration" in effect:
+                effect["duration"] = miscellaneous.number_provider(effect["duration"])
 
 
     return contents

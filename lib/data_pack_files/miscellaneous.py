@@ -275,6 +275,25 @@ def int_coordinate(coord: str, version: int, issues: list[dict[str, str | int]])
 def join_text(text: dict[str, list[str]], version: int, issues: list[dict[str, str | int]]) -> str:
     return " ".join(text["join_text"])
 
+def loot_context(context: str) -> str:
+    id_array = {
+        "killer": "attacker",
+        "direct_killer": "direct_attacker",
+        "killer_player": "attacking_player",
+    }
+    if context in id_array:
+        context = id_array[context]
+    return context
+
+def loot_context_alt(context: str) -> str:
+    id_array = {
+        "killer": "attacking_entity",
+        "killer_player": "last_damage_player",
+    }
+    if context in id_array:
+        context = id_array[context]
+    return context
+
 def loot_table(name: str, version: int, issues: list[dict[str, str | int]]) -> str:
     # Assign version
     global pack_version
@@ -295,6 +314,34 @@ def namespace(argument: str) -> str:
     if argument[0] == "!":
         return "!minecraft:" + argument[1:]
     return "minecraft:" + argument
+
+def number_provider(provider: int | float | dict) -> int | float | dict:
+    if not isinstance(provider, dict):
+        return provider
+    if "type" not in provider:
+        provider["type"] = "minecraft:uniform"
+    provider["type"] = namespace(provider["type"])
+    provider_type = provider["type"]
+
+    if provider_type == "minecraft:binomial":
+        provider["n"] = number_provider(provider["n"])
+        provider["p"] = number_provider(provider["p"])
+
+    if provider_type == "minecraft:score":
+        target = provider["target"]
+        if isinstance(target, dict):
+            target["type"] = namespace(target["type"])
+            target_type = target["type"]
+            if target_type == "minecraft:context":
+                target["target"] = loot_context(target["target"])
+        else:
+            provider["target"] = loot_context(target)
+
+    if provider_type == "minecraft:uniform":
+        provider["min"] = number_provider(provider["min"])
+        provider["max"] = number_provider(provider["max"])
+
+    return provider
 
 def particle_mode(argument: str, version: int, issues: list[dict[str, str | int]]) -> str:
     if argument not in ["normal", "force"]:

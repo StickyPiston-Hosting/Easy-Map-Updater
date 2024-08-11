@@ -65,16 +65,16 @@ def predicate(contents: dict[str, Any] | list[dict], version: int) -> dict[str, 
         for i in range(len(contents["terms"])):
             contents["terms"][i] = predicate(contents["terms"][i], version)
 
-    elif condition == "minecraft:alternative":
+    if condition == "minecraft:alternative":
         contents["condition"] = "minecraft:any_of"
         for i in range(len(contents["terms"])):
             contents["terms"][i] = predicate(contents["terms"][i], version)
 
-    elif condition == "minecraft:any_of":
+    if condition == "minecraft:any_of":
         for i in range(len(contents["terms"])):
             contents["terms"][i] = predicate(contents["terms"][i], version)
 
-    elif condition == "minecraft:block_state_property":
+    if condition == "minecraft:block_state_property":
         block_data = cast(blocks.BlockInputFromNBT, {"BlockState": {"Name": contents["block"]}})
         if "properties" in contents["block"]:
             block_data["BlockState"]["Properties"] = {}
@@ -91,22 +91,35 @@ def predicate(contents: dict[str, Any] | list[dict], version: int) -> dict[str, 
             for block_property in block_data["Properties"]:
                 cast(dict, contents["block"])["properties"] = block_data["Properties"][block_property]
 
-    elif condition == "minecraft:damage_source_properties":
+    if condition == "minecraft:damage_source_properties":
         contents["predicate"] = predicate_damage_type(contents["predicate"], version)
 
-    elif condition == "minecraft:entity_properties":
+    if condition == "minecraft:entity_properties":
         contents["predicate"] = predicate_entity(contents["predicate"], version)
 
-    elif condition == "minecraft:inverted":
+    if condition == "minecraft:entity_scores":
+        contents["entity"] = miscellaneous.loot_context(contents["entity"])
+        for score in contents["scores"]:
+            score_provider = contents["scores"][score]
+            if isinstance(score_provider, dict):
+                if "min" in score_provider:
+                    score_provider["min"] = miscellaneous.number_provider(score_provider["min"])
+                if "max" in score_provider:
+                    score_provider["max"] = miscellaneous.number_provider(score_provider["max"])
+
+    if condition == "minecraft:inverted":
         contents["term"] = predicate(contents["term"], version)
 
-    elif condition == "minecraft:location_check":
+    if condition == "minecraft:location_check":
         contents["predicate"] = predicate_location(contents["predicate"], version)
 
-    elif condition == "minecraft:match_tool":
+    if condition == "minecraft:match_tool":
         contents["predicate"] = predicate_item(contents["predicate"], version)
 
-    elif condition == "minecraft:random_chance_with_looting":
+    if condition == "minecraft:random_chance":
+        contents["chance"] = miscellaneous.number_provider(contents["chance"])
+
+    if condition == "minecraft:random_chance_with_looting":
         contents["condition"] = "minecraft:random_chance_with_enchanted_bonus"
         contents["enchantment"] = "minecraft:looting"
         if "chance" in contents:
@@ -123,17 +136,29 @@ def predicate(contents: dict[str, Any] | list[dict], version: int) -> dict[str, 
             del contents["looting_multiplier"]
         else:
             contents["enchanted_chance"] = contents["unenchanted_chance"]
+
+    if condition == "minecraft:time_check":
+        value = contents["value"]
+        if isinstance(value, dict):
+            if "min" in value:
+                value["min"] = miscellaneous.number_provider(value["min"])
+            if "max" in value:
+                value["max"] = miscellaneous.number_provider(value["max"])
+
+    if condition == "minecraft:value_check":
+        contents["value"] = miscellaneous.number_provider(contents["value"])
+        value_range = contents["range"]
+        if isinstance(value_range, dict):
+            if "min" in value_range:
+                value_range["min"] = miscellaneous.number_provider(value_range["min"])
+            if "max" in value_range:
+                value_range["max"] = miscellaneous.number_provider(value_range["max"])
         
 
 
     # Update entity context
-    id_array = {
-        "killer": "attacker",
-        "direct_killer": "direct_attacker",
-        "killer_player": "attacking_player",
-    }
-    if "entity" in contents and contents["entity"] in id_array:
-        contents["entity"] = id_array[contents["entity"]]
+    if "entity" in contents:
+        contents["entity"] = miscellaneous.loot_context(contents["entity"])
 
     
     

@@ -66,6 +66,8 @@ class LootTablePool(TypedDict):
     conditions: list
     functions: list
     entries: "list[LootTableEntry]"
+    rolls: int | float | dict
+    bonus_rolls: int | float | dict
 
 def update_pool(pool: LootTablePool, version: int) -> LootTablePool:
     global pack_version
@@ -84,6 +86,12 @@ def update_pool(pool: LootTablePool, version: int) -> LootTablePool:
     if "entries" in pool:
         for entry in pool["entries"]:
             update_entry(entry, version)
+
+    # Update rolls
+    if "rolls" in pool:
+        pool["rolls"] = miscellaneous.number_provider(pool["rolls"])
+    if "bonus_rolls" in pool:
+        pool["bonus_rolls"] = miscellaneous.number_provider(pool["bonus_rolls"])
 
     return pool
 
