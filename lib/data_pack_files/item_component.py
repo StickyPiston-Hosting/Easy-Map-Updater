@@ -17,20 +17,25 @@ from lib import utils
 
 # Define functions
 
-def unpack(components: str):
+def unpack(components: str) -> dict[str, str | None]:
     if not components:
         return {}
-    output_block_states: dict[str, str] = {}
+    output_components: dict[str, str | None] = {}
     for entry in arguments.parse_with_quotes(components[1:], ",", True):
-        if "=" in entry:
-            output_block_states[utils.unquote(entry.split("=")[0].strip())] = nbt_tags.unpack(entry.split("=")[1].strip())
-    return output_block_states
+        output_components[utils.unquote(entry.split("=")[0].strip())] = (
+            nbt_tags.unpack(entry.split("=")[1].strip())
+            if "=" in entry else None
+        )
+    return output_components
 
 
 def pack(components: dict[str, Any]) -> str:
     component_strings: list[str] = []
     for component in components.keys():
-        component_strings.append(f'{component}={nbt_tags.pack(components[component])}')
+        if components[component] == None:
+            component_strings.append(component)
+        else:
+            component_strings.append(f'{component}={nbt_tags.pack(components[component])}')
     return f'[{",".join(component_strings)}]'
 
 
