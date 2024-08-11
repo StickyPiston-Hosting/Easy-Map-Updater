@@ -327,15 +327,15 @@ def predicate_item(contents: dict, version: int) -> dict:
                     container["items"]["contains"] = predicate_item(container["items"]["contains"], version)
 
         if "minecraft:enchantments" in predicates:
-            enchantments = predicates["minecraft:enchantments"]
-            if "enchantment" in enchantments:
-                enchantments["enchantments"] = enchantments["enchantment"]
-                del enchantments["enchantment"]
-            if isinstance(enchantments["enchantments"], str):
-                enchantments["enchantments"] = ids.enchantment(enchantments["enchantments"], version, [])
-            else:
-                for i in range(len(enchantments["enchantments"])):
-                    enchantments["enchantments"][i] = ids.enchantment(enchantments["enchantments"][i], version, [])
+            for enchantment in predicates["minecraft:enchantments"]:
+                if "enchantment" in enchantment:
+                    enchantment["enchantments"] = enchantment["enchantment"]
+                    del enchantment["enchantment"]
+                if isinstance(enchantment["enchantments"], str):
+                    enchantment["enchantments"] = ids.enchantment(enchantment["enchantments"], version, [])
+                else:
+                    for i in range(len(enchantment["enchantments"])):
+                        enchantment["enchantments"][i] = ids.enchantment(enchantment["enchantments"][i], version, [])
 
 
 
