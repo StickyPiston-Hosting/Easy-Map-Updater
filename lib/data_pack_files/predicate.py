@@ -13,6 +13,7 @@ from lib import json_manager
 from lib.data_pack_files import blocks
 from lib.data_pack_files import items
 from lib.data_pack_files import miscellaneous
+from lib.data_pack_files import ids
 from lib.data_pack_files import nbt_tags
 from lib.data_pack_files import nbt_to_json
 
@@ -136,6 +137,9 @@ def predicate(contents: dict[str, Any] | list[dict], version: int) -> dict[str, 
             del contents["looting_multiplier"]
         else:
             contents["enchanted_chance"] = contents["unenchanted_chance"]
+
+    if condition == "minecraft:table_bonus":
+        contents["enchantment"] = ids.enchantment(contents["enchantment"], version, [])
 
     if condition == "minecraft:time_check":
         value = contents["value"]
