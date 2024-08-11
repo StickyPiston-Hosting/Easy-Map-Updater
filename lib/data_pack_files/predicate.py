@@ -106,6 +106,24 @@ def predicate(contents: dict[str, Any] | list[dict], version: int) -> dict[str, 
     elif condition == "minecraft:match_tool":
         contents["predicate"] = predicate_item(contents["predicate"], version)
 
+    elif condition == "minecraft:random_chance_with_looting":
+        contents["condition"] = "minecraft:random_chance_with_enchanted_bonus"
+        contents["enchantment"] = "minecraft:looting"
+        if "chance" in contents:
+            contents["unenchanted_chance"] = contents["chance"]
+            del contents["chance"]
+        else:
+            contents["unenchanted_chance"] = 0.0
+        if "looting_multiplier" in contents:
+            contents["enchanted_chance"] = {
+                "type": "minecraft:linear",
+                "base": contents["unenchanted_chance"] + contents["looting_multiplier"],
+                "per_level_above_first": contents["looting_multiplier"],
+            }
+            del contents["looting_multiplier"]
+        else:
+            contents["enchanted_chance"] = contents["unenchanted_chance"]
+        
 
 
     # Update entity context
