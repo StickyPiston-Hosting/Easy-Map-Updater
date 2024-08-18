@@ -39,7 +39,7 @@ def pack(components: dict[str, Any]) -> str:
     return f'[{",".join(component_strings)}]'
 
 
-def conform(components: dict[str, Any]) -> dict[str, Any]:
+def conform(components: dict[str, Any], version: int, issues: list[dict[str, str | int]]) -> dict[str, Any]:
     # Apply namespace to all components
     for component in list(components.keys()):
         namespaced_component = miscellaneous.namespace(component)
@@ -53,6 +53,16 @@ def conform(components: dict[str, Any]) -> dict[str, Any]:
         attribute_modifiers = components["minecraft:attribute_modifiers"]
         if not isinstance(attribute_modifiers, dict):
             attribute_modifiers = {"modifiers": attribute_modifiers}
+        for attribute_modifier in attribute_modifiers["modifiers"]:
+            if "type" in attribute_modifier:
+                attribute_modifier["type"] = miscellaneous.attribute(attribute_modifier["type"], version, [])
+            if "name" in attribute_modifier:
+                del attribute_modifier["name"]
+            if "uuid" in attribute_modifier:
+                attribute_modifier["id"] = miscellaneous.namespace(
+                    utils.uuid_from_int_array([entry.value for entry in attribute_modifier["uuid"]])
+                )
+                del attribute_modifier["uuid"]
         components["minecraft:attribute_modifiers"] = attribute_modifiers
 
     if "minecraft:can_break" in components:
@@ -180,17 +190,20 @@ def extract(item_id: str, components: dict[str, Any] | None, nbt: dict[str, Any]
         for attribute_modifier in nbt["AttributeModifiers"]:
             attribute = {}
             if "AttributeName" in attribute_modifier:
-                attribute["type"] = attribute_modifier["AttributeName"]
+                attribute["type"] = miscellaneous.attribute(attribute_modifier["AttributeName"], version, issues)
             if "Slot" in attribute_modifier:
                 attribute["slot"] = attribute_modifier["Slot"]
             if "UUID" in attribute_modifier:
-                attribute["uuid"] = attribute_modifier["UUID"]
-            if "Name" in attribute_modifier:
-                attribute["name"] = attribute_modifier["Name"]
+                attribute["id"] = miscellaneous.namespace(
+                    utils.uuid_from_int_array([entry.value for entry in attribute_modifier["UUID"]])
+                )
             if "Operation" in attribute_modifier:
                 attribute["operation"] = ["add_value", "add_multiplied_base", "add_multiplied_total"][attribute_modifier["Operation"].value]
             if "Amount" in attribute_modifier:
                 attribute["amount"] = nbt_tags.TypeDouble(attribute_modifier["Amount"])
+            for key in ["id", "operation", "amount"]:
+                if key in attribute_modifier:
+                    attribute[key] = attribute_modifier[key]
             attribute_modifiers["modifiers"].append(attribute)
         del nbt["AttributeModifiers"]
 

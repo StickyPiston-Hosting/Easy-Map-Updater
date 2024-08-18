@@ -54,21 +54,30 @@ def attribute(name: str, version: int, issues: list[dict[str, str | int]]) -> st
 
     return name
 
-def attribute_modifier_operation(operation: str, version: int, issues: list[dict[str, str | int]]) -> str:
+def attribute_id(uuid: str, version: int, issues: list[dict[str, str | int]]) -> str:
+    return namespace(utils.uuid_from_int_array(utils.uuid_from_string(uuid)))
+
+def attribute_modifier_operation(operation: str | int | nbt_tags.TypeInt, version: int, issues: list[dict[str, str | int]]) -> str:
     # Assign version
     global pack_version
     pack_version = version
+
+    if isinstance(operation, nbt_tags.TypeInt):
+        operation = operation.value
 
     # Attribute modifier operations were changed in 1.20.5
     id_array = {
         "add": "add_value",
         "multiply_base": "add_multiplied_base",
-        "multiply": "add_multiplied_total"
+        "multiply": "add_multiplied_total",
+        0: "add_value",
+        1: "add_multiplied_base",
+        2: "add_multiplied_total"
     }
     if operation in id_array:
         operation = id_array[operation]
 
-    return operation
+    return str(operation)
 
 def banner_color(name: nbt_tags.TypeInt, version: int, issues: list[dict[str, str | int]]) -> str:
     if version <= 1202:

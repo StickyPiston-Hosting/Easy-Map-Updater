@@ -37,14 +37,22 @@
                 "modifier": {
                     "index": 4,
                     "branches": {
-                        "add": {
-                            "mapping": ["carry", "target_selector_single", "attribute", "carry", "carry", "carry", "carry", "carry", "attribute_modifier_operation"]
-                        },
+                        "add": [
+                            {
+                                "version": {"max": 2006},
+                                "mapping": ["carry", "target_selector_single", "attribute", "carry", "carry", "attribute_id", "carry", "attribute_modifier_operation"],
+                                "legend": [0, 1, 2, 3, 4, 5, 7, 8]
+                            },
+                            {
+                                "version": {"min": 2100},
+                                "mapping": ["carry", "target_selector_single", "attribute", "carry", "carry", "attribute_id", "carry", "attribute_modifier_operation"]
+                            }
+                        ],
                         "remove": {
-                            "mapping": ["carry", "target_selector_single", "attribute", "carry", "carry", "carry"]
+                            "mapping": ["carry", "target_selector_single", "attribute", "carry", "carry", "attribute_id"]
                         },
                         "value": {
-                            "mapping": ["carry", "target_selector_single", "attribute", "carry", "carry", "carry", "carry", "carry"]
+                            "mapping": ["carry", "target_selector_single", "attribute", "carry", "carry", "carry", "attribute_id", "carry"]
                         }
                     }
                 }

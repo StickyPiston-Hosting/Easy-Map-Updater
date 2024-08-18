@@ -5,9 +5,17 @@
         },
         "attribute": {
             "tags": {
-                "Base": { "data_type": "double" },
-                "Modifiers": { "list": { "source": "attribute_modifier" } },
+                "base": { "base_type": "double" },
+                "Base": {
+                    "rename": "base",
+                    "data_type": "double" 
+                },
+                "Modifiers": {
+                    "rename": "modifiers",
+                    "list": { "source": "attribute_modifier" }
+                },
                 "Name": {
+                    "rename": "id",
                     "data_type": "string",
                     "argument_type": "attribute"
                 }
@@ -15,44 +23,43 @@
         },
         "attribute_modifier": {
             "tags": {
-                "Amount": { "data_type": "double" },
+                "amount": { "data_type": "double" },
+                "Amount": {
+                    "rename": "amount",
+                    "data_type": "double"
+                },
                 "AttributeName": {
                     "data_type": "string",
                     "argument_type": "attribute"
                 },
                 "Name": {
-                    "data_type": "string",
-                    "argument_type": "attribute"
+                    "remove": true
                 },
-                "Operation": { "data_type": "int" },
+                "Operation": {
+                    "rename": "operation",
+                    "data_type": "string",
+                    "argument_type": "attribute_modifier_operation"
+                },
+                "UUID": {
+                    "remove": true,
+                    "edge_case": "attribute_id",
+                    "path": {
+                        "rename": ["id"]
+                    }
+                },
                 "UUIDLeast": {
                     "remove": true,
-                    "edge_case": {
-                        "case": "uuid_long",
-                        "least": "UUIDLeast",
-                        "most": "UUIDMost",
-                        "output": "UUID"
-                    },
+                    "edge_case": "attribute_id",
                     "path": {
-                        "rename": ["UUID", "[3]"]
+                        "rename": ["id"]
                     }
                 },
                 "UUIDMost": {
                     "remove": true,
-                    "edge_case": {
-                        "case": "uuid_long",
-                        "least": "UUIDLeast",
-                        "most": "UUIDMost",
-                        "output": "UUID"
-                    },
+                    "edge_case": "attribute_id",
                     "path": {
-                        "rename": ["UUID", "[1]"]
+                        "rename": ["id"]
                     }
-                }
-            },
-            "necessary_tags": {
-                "UUID": {
-                    "generator": "uuid"
                 }
             }
         },
@@ -326,7 +333,11 @@
                     "source": "item"
                 },
                 "ArmorItems": { "list": { "source": "item" } },
-                "Attributes": { "list": { "source": "attribute" } },
+                "attributes": { "list": { "source": "attribute" } },
+                "Attributes": {
+                    "rename": "attributes",
+                    "list": { "source": "attribute" }
+                },
                 "BeamTarget": {
                     "rename": "beam_target",
                     "data_type": "carry",

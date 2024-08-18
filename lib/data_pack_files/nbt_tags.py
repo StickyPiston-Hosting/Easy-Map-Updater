@@ -521,6 +521,8 @@ def edge_case(parent: dict, nbt, case: str | dict[str, str], source: str, object
         case_type = case
 
     # Process NBT based on case
+    if case_type == "attribute_id":
+        return edge_case_attribute_id(parent)
     if case_type == "banner_base":
         return edge_case_banner_base(parent, object_id, issues)
     if case_type == "block_entity":
@@ -542,7 +544,7 @@ def edge_case(parent: dict, nbt, case: str | dict[str, str], source: str, object
     if case_type == "item":
         return items.update_from_nbt(nbt, pack_version, issues)
     if case_type == "item_components":
-        return edge_case_item_components(nbt)
+        return edge_case_item_components(nbt, pack_version, issues)
     if case_type == "item_tag":
         return edge_case_item_tag(parent, nbt, object_id, pack_version, issues)
     if case_type == "mooshroom_stew":
@@ -567,6 +569,32 @@ def edge_case(parent: dict, nbt, case: str | dict[str, str], source: str, object
     if defaults.SEND_WARNINGS:
         log(f'WARNING: "{case_type}" case is not registered!')
     return nbt
+
+def edge_case_attribute_id(parent: dict[str, Any]):
+    if "UUID" in parent:
+        parent["id"] = miscellaneous.namespace(
+            utils.uuid_from_int_array([entry.value for entry in parent["UUID"]])
+        )
+
+    elif "UUIDLeast" in parent or "UUIDMost" in parent:
+        if "UUIDLeast" in parent:
+            least: int = parent["UUIDLeast"].value
+        else:
+            least = 0
+        if "UUIDMost" in parent:
+            most: int = parent["UUIDMost"].value
+        else:
+            most = 0
+        parent["id"] = miscellaneous.namespace(utils.uuid_from_int_array([
+            utils.int_range(most  // 4294967296),
+            utils.int_range(most  %  4294967296),
+            utils.int_range(least // 4294967296),
+            utils.int_range(least %  4294967296)
+        ]))
+
+    for key in ["UUID", "UUIDLeast", "UUIDMost"]:
+        if key in parent:
+            del parent[key]
 
 def edge_case_banner_base(parent: dict[str, TypeInt], object_id: str, issues: list[dict[str, str | int]]):
     if miscellaneous.namespace(object_id) == "minecraft:shield":
@@ -677,8 +705,8 @@ def edge_case_fuse(parent: dict, object_id: str):
         if miscellaneous.namespace(object_id) == "minecraft:creeper":
             del parent["fuse"]
 
-def edge_case_item_components(nbt: dict[str, Any]) -> dict[str, Any]:
-    return item_component.conform(nbt)
+def edge_case_item_components(nbt: dict[str, Any], version: int, issues: list[dict[str, str | int]]) -> dict[str, Any]:
+    return item_component.conform(nbt, version, issues)
 
 def edge_case_item_tag(parent: dict[str, Any], nbt: dict[str, Any], object_id: str, pack_version: int, issues: list[dict[str, str | int]]) -> dict[str, Any]:
     nbt = update_tags(parent, nbt, NBT_TREE["sources"]["item_tag"]["tags"], "item_tag", object_id, {}, issues)

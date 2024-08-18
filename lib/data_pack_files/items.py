@@ -243,7 +243,7 @@ def update(item: ItemInput, version: int, issues: list[dict[str, str | int]]) ->
 
     # Conform component format
     if components:
-        components = item_component.conform(components)
+        components = item_component.conform(components, version, issues)
 
     # Apply damage to items with durability
     if item_id in tables.ITEMS_WITH_DURABILITY and (data_value >= 1 or (data_value == 0 and read)):
