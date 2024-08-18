@@ -77,6 +77,13 @@ def create_pack(world: Path):
         "#minecraft:hoes",
         "minecraft:trident",
     ])
+    create_item_tag(folder_path, "minecraft:music_discs", [
+        "#minecraft:creeper_drop_music_discs",
+        "minecraft:music_disc_pigstep",
+        "minecraft:music_disc_otherside",
+        "minecraft:music_disc_5",
+        "minecraft:music_disc_relic"
+    ])
 
     # Create block tags
     folder_path = data_pack_path / "data" / "tag_replacements" / "tags" / "block"

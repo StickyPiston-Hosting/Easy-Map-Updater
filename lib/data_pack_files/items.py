@@ -336,6 +336,13 @@ def update_item_id(item_id: str | nbt_tags.TypeNumeric, components: dict | None,
                 easy_map_updater.MINECRAFT_PATH / "saves" / option_manager.get_map_name()
             )
 
+    if pack_version <= 2006:
+        if item_id == "#minecraft:music_discs":
+            item_id = "#tag_replacements:music_discs"
+            tag_replacements.create_pack(
+                easy_map_updater.MINECRAFT_PATH / "saves" / option_manager.get_map_name()
+            )
+
     return item_id
 
 def extract_riding_id(nbt: dict) -> str:
