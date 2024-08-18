@@ -32,9 +32,8 @@ def create_pack(world: Path):
     data_pack_folder = world / "datapacks"
     data_pack_folder.mkdir(exist_ok=True, parents=True)
     shutil.copy(PROGRAM_PATH / "ore_fixer.zip", data_pack_folder / "ore_fixer.zip")
-
-
             
     log("Ore fixer data pack created")
 
+    finalize.insert_data_pack(world, "file/ore_fixer.zip")
     finalize.log_data_packs(world)

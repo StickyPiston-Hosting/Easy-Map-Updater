@@ -76,4 +76,5 @@ def create_pack(world: Path, spawner_position_list: list[str]):
 
     log("Spawner position data pack created")
 
+    finalize.insert_data_pack(world, "file/spawner_position.zip")
     finalize.log_data_packs(world)

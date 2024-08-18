@@ -83,4 +83,5 @@ def create_pack(world: Path):
             
     log("Effect overflow data pack created")
 
+    finalize.insert_data_pack(world, "file/effect_overflow.zip")
     finalize.log_data_packs(world)

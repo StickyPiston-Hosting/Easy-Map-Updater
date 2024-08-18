@@ -35,4 +35,5 @@ def create_pack(world: Path):
             
     log("Area effect cloud killer data pack created")
 
+    finalize.insert_data_pack(world, "file/area_effect_cloud_killer.zip")
     finalize.log_data_packs(world)

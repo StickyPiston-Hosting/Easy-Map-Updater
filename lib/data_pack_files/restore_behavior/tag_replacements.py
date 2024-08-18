@@ -209,10 +209,10 @@ def create_pack(world: Path):
             # Create block tag if multiple block IDs were found (also ignoring all block properties)
             create_block_tag(folder_path, block, block_ids)
 
-
             
     log("Tag replacements data pack created")
 
+    finalize.insert_data_pack(world, "file/tag_replacements.zip")
     finalize.log_data_packs(world)
 
 

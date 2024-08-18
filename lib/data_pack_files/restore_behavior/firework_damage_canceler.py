@@ -68,4 +68,5 @@ def create_pack(world: Path):
             
     log("Firework damage canceler data pack created")
 
+    finalize.insert_data_pack(world, "file/firework_damage_canceler.zip")
     finalize.log_data_packs(world)

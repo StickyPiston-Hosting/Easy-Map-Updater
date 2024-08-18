@@ -32,9 +32,8 @@ def create_pack(world: Path):
     data_pack_folder = world / "datapacks"
     data_pack_folder.mkdir(exist_ok=True, parents=True)
     shutil.copy(PROGRAM_PATH / "unwaterloggable_leaves.zip", data_pack_folder / "unwaterloggable_leaves.zip")
-
-
             
     log("Unwaterloggable leaves data pack created")
 
+    finalize.insert_data_pack(world, "file/unwaterloggable_leaves.zip")
     finalize.log_data_packs(world)

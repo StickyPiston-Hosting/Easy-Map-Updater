@@ -118,4 +118,5 @@ def create_data_pack(world: Path, data_pack_path: Path):
             "function objective:reset_scores"
         )
 
+    finalize.insert_data_pack(world, f"file/{data_pack_path.name}")
     finalize.log_data_packs(world)

@@ -65,6 +65,7 @@ from lib.data_pack_files.restore_behavior import firework_damage_canceler
 from lib.data_pack_files.restore_behavior import unwaterloggable_leaves
 from lib.data_pack_files.restore_behavior import old_adventure_mode
 from lib.data_pack_files.restore_behavior import effect_overflow
+from lib.data_pack_files.restore_behavior import attribute_reset
 from lib.data_pack_files.admin_controls import admin_kickback
 from lib.region_files import command_blocks
 from lib.region_files import entity_extractor
@@ -113,6 +114,7 @@ class Action(Enum):
     DP_WATER_LEAVES = "dp.water_leaves"
     DP_ADVENTURE = "dp.adventure"
     DP_EFFECT = "dp.effect"
+    DP_ATTRIBUTE = "dp.attribute"
     DP_BREAK = "dp.break"
 
     WORLD_ORIGINAL = "world.original"
@@ -330,6 +332,7 @@ def action_reset():
         Action.DP_WATER_LEAVES.value:       { "show": False, "function": action_unwaterloggable_leaves, "name": "Create unwaterloggable leaves data pack" },
         Action.DP_ADVENTURE.value:          { "show": False, "function": action_old_adventure_mode, "name": "Create old adventure mode data pack" },
         Action.DP_EFFECT.value:             { "show": False, "function": action_effect_overflow, "name": "Create effect overflow data pack" },
+        Action.DP_ATTRIBUTE.value:          { "show": False, "function": action_attribute_reset, "name": "Create attribute reset data pack" },
 
         Action.CMD_READ.value:              { "show": False, "function": action_read_commands, "name": "Read command block data" },
         Action.CMD_UPDATE.value:            { "show": False, "function": action_update_commands, "name": "Update command block data" },
@@ -550,6 +553,10 @@ def action_update(): # Needs confirmation
     if update_progress["stage"] == 707:
         if version <= 1802:
             action_unwaterloggable_leaves()
+        next_update_progress()
+    if update_progress["stage"] == 708:
+        if version <= 2006:
+            action_attribute_reset()
         next_update_progress_section()
 
     # Finalize map
@@ -764,6 +771,11 @@ def action_effect_overflow():
     effect_overflow.create_pack(
         MINECRAFT_PATH / "saves" / option_manager.get_map_name()
     )
+
+def action_attribute_reset():
+    attribute_reset.create_pack(
+        MINECRAFT_PATH / "saves" / option_manager.get_map_name()
+    )    
 
 def action_stored_functions(manual: bool = True): # Needs confirmation
     data_pack.extract_stored_functions(
@@ -1119,6 +1131,8 @@ def action_fix_world(manual: bool = True): # Needs confirmation
             actions[Action.DP_WATER_LEAVES.value]["show"] = True
         if option_manager.get_version() <= 2004:
             actions[Action.DP_EFFECT.value]["show"] = True
+        if option_manager.get_version() <= 2006:
+            actions[Action.DP_ATTRIBUTE.value]["show"] = True
 
     return booleans
 

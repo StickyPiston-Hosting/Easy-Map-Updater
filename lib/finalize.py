@@ -10,7 +10,7 @@ import os
 import shutil
 import requests
 import json
-from typing import TypedDict
+from typing import TypedDict, cast
 from pathlib import Path
 from lib import defaults
 from lib import option_manager
@@ -509,6 +509,38 @@ def log_data_packs(world: Path):
 
     if vanilla_disabled:
         log("Vanilla data pack is disabled, consider fixing the disabled vanilla data pack")
+
+def insert_data_pack(world: Path, data_pack: str):
+    # Skip if datapacks don't exist
+    if not world.exists():
+        log("ERROR: World does not exist!")
+        return
+    if not (world / "datapacks").exists():
+        log("ERROR: World has no data packs!")
+        return
+    
+    # Open file
+    file_path = world / "level.dat"
+    file = NBT.NBTFile(file_path)
+
+    # Create NBT paths if they don't exist
+    if "Data" not in file:
+        file["Data"] = NBT.TAG_Compound()
+    if "DataPacks" not in file["Data"]:
+        file["Data"]["DataPacks"] = NBT.TAG_Compound()
+    data_packs_compound = file["Data"]["DataPacks"]
+    if "Enabled" not in data_packs_compound:
+        data_packs_compound["Enabled"] = NBT.TAG_List(NBT.TAG_String)
+    if "Disabled" not in data_packs_compound:
+        data_packs_compound["Disabled"] = NBT.TAG_List(NBT.TAG_String)
+
+    # Insert data pack just before a non-vanilla data pack
+    enabled_packs = cast(NBT.TAG_List, data_packs_compound["Enabled"])
+    for i in range(len(enabled_packs)):
+        if enabled_packs[i].value != "vanilla":
+            enabled_packs.insert(i, NBT.TAG_String(data_pack))
+    else:
+        enabled_packs.append(NBT.TAG_String(data_pack))
 
 
 

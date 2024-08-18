@@ -35,4 +35,5 @@ def create_pack(world: Path):
             
     log("Old adventure mode data pack created")
 
+    finalize.insert_data_pack(world, "file/old_adventure_mode.zip")
     finalize.log_data_packs(world)

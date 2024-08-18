@@ -1,0 +1,14 @@
+{
+    "criteria": {
+        "example": {
+            "trigger": "minecraft:changed_dimension",
+            "conditions": {
+                "from": "minecraft:the_end",
+                "to": "minecraft:overworld"
+            }
+        }
+    },
+    "rewards": {
+        "function": "attribute:leave_end"
+    }
+}
