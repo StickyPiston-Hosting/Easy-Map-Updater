@@ -535,6 +535,11 @@
                     "edge_case": "potion",
                     "path": { "rename": [ "potion_contents", "potion" ] }
                 },
+                "power": {
+                    "remove": true,
+                    "edge_case": "power",
+                    "path": { "rename": [ "acceleration_power" ] }
+                },
                 "Rotation": { "list": { "data_type": "float" } },
                 "SelectedItem": { "source": "item" },
                 "ShotAtAngle": { "data_type": "byte" },

@@ -6,6 +6,7 @@
 # Import things
 
 import json
+import math
 from typing import cast, Any
 from nbt import nbt as NBT
 from pathlib import Path
@@ -550,6 +551,8 @@ def edge_case(parent: dict, nbt, case: str | dict[str, str], source: str, object
         return edge_case_old_spawn_potential_entity(parent, nbt, object_id, issues)
     if case_type == "potion":
         return edge_case_potion(parent, object_id)
+    if case_type == "power":
+        return edge_case_power(parent)
     if case_type == "shot_from_crossbow":
         return edge_case_shot_from_crossbow(parent)
     if case_type == "sign_text":
@@ -726,6 +729,17 @@ def edge_case_potion(parent: dict, object_id: str):
         if "potion_contents" not in parent:
             parent["potion_contents"] = {}
         parent["potion_contents"]["potion"] = miscellaneous.namespace(parent["Potion"])
+
+def edge_case_power(parent: dict):
+    if "Motion" not in parent:
+        parent["Motion"] = TypeList([TypeDouble(0) for i in range(3)])
+    for i in range(3):
+        parent["Motion"][i] = TypeDouble(parent["Motion"][i].value + parent["power"][i].value)
+    parent["acceleration_power"] = TypeDouble(math.sqrt(
+        parent["power"][0].value*parent["power"][0].value +
+        parent["power"][1].value*parent["power"][1].value +
+        parent["power"][2].value*parent["power"][2].value
+    ))
 
 def edge_case_shot_from_crossbow(parent: dict):
     if parent["ShotFromCrossbow"].value == 1:
