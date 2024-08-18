@@ -5,6 +5,8 @@
 
 # Set default variables
 
+DISCORD_INVITE = "https://discord.gg/nrqhv6PcqQ"
+
 PACK_VERSION = 2006
 DATA_PACK_FORMAT = 41
 RESOURCE_PACK_FORMAT = 32
