@@ -480,6 +480,26 @@
                 "NoAI": { "data_type": "byte" },
                 "NoBasePlate": { "data_type": "byte" },
                 "NoGravity": { "data_type": "byte" },
+                "Offers": {
+                    "tags": {
+                        "Recipes": {
+                            "list": {
+                                "tags": {
+                                    "buy": { "source": "item" },
+                                    "buyB": { "source": "item" },
+                                    "demand": { "data_type": "int" },
+                                    "maxUses": { "data_type": "int" },
+                                    "priceMultiplier": { "data_type": "float" },
+                                    "rewardExp": { "data_type": "byte" },
+                                    "sell": { "source": "item" },
+                                    "specialPrice": { "data_type": "int" },
+                                    "uses": { "data_type": "int" },
+                                    "xp": { "data_type": "int" }
+                                }
+                            }
+                        }
+                    }
+                },
                 "Particle": {
                     "data_type": "carry",
                     "argument_type": "particle_nbt"
@@ -536,6 +556,10 @@
                     }
                 },
                 "Time": { "data_type": "int" },
+                "Trident": {
+                    "rename": "item",
+                    "source": "item"
+                },
                 "WanderTarget": {
                     "rename": "wander_target",
                     "data_type": "carry",
