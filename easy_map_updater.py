@@ -41,7 +41,7 @@ import traceback
 from typing import cast, TypedDict, Callable, Any
 from enum import Enum
 from pathlib import Path
-from lib.log import log
+from lib.log import log, get_log_path
 from lib import defaults
 from lib import utils
 from lib import finalize
@@ -224,7 +224,9 @@ def program():
         except Exception:
             save_session()
             print("")
-            log(f'ERROR:\n{traceback.format_exc()}', True)
+            log(f'ERROR:\n{traceback.format_exc()}')
+            log(f'Error logged to: {get_log_path().as_posix()}')
+            log(f'Please report the issue on the E.M.U. Discord server: {defaults.DISCORD_INVITE}', True)
 
         print("")
         save_session()
