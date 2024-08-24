@@ -54,11 +54,11 @@ def recipe(contents: dict[str, Any], version: int) -> dict[str, Any]:
 
     if "key" in contents:
         for key in contents["key"]:
-            if isinstance(contents[key], dict):
-                contents[key] = update_ingredient(contents[key])
-            elif isinstance(contents[key], list):
-                for i in range(len(contents[key])):
-                    contents[key][i] = update_ingredient(contents[key][i])
+            if isinstance(contents["key"][key], dict):
+                contents["key"][key] = update_ingredient(contents["key"][key])
+            elif isinstance(contents["key"][key], list):
+                for i in range(len(contents["key"][key])):
+                    contents["key"][key][i] = update_ingredient(contents["key"][key][i])
 
     for tag in ["template", "base", "addition"]:
         if tag in contents:
