@@ -169,7 +169,8 @@ def update_from_nbt(item: ItemInputFromNBT, version: int, issues: list[dict[str,
 
 class ItemInputFromJSON(TypedDict):
     id: str
-    components: dict | None
+    components: NotRequired[dict | None]
+    nbt: NotRequired[str | None]
 
 def update_from_json(item: ItemInputFromJSON, version: int, issues: list[dict[str, str | int]]) -> dict[str, Any]:
     # Assign version
@@ -179,12 +180,15 @@ def update_from_json(item: ItemInputFromJSON, version: int, issues: list[dict[st
     # Initialize parameters
     item_id = None
     components = None
+    nbt = None
 
     # Extract arguments
     if "id" in item:
         item_id = item["id"]
     if "components" in item:
         components = item["components"]
+    if "nbt" in item:
+        nbt = item["nbt"]
 
     # Update item
     new_item = update(
@@ -192,7 +196,7 @@ def update_from_json(item: ItemInputFromJSON, version: int, issues: list[dict[st
             "id": item_id,
             "components": nbt_tags.convert_from_json(components) if components else None,
             "data_value": -1,
-            "nbt": None,
+            "nbt": nbt_tags.unpack(nbt) if nbt else None,
             "read": False
         },
         pack_version, issues

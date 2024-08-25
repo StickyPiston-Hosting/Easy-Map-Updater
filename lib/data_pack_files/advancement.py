@@ -11,6 +11,7 @@ from typing import Any
 from lib import defaults
 from lib import json_manager
 from lib.data_pack_files import predicate
+from lib.data_pack_files import items
 from lib.data_pack_files import miscellaneous
 
 
@@ -60,6 +61,33 @@ def advancement(contents: dict[str, Any], version: int) -> dict[str, Any]:
             contents["sends_telemetry_event"] = True
         if contents["sends_telemetry_event"] in ["false", "False"]:
             contents["sends_telemetry_event"] = False
+
+    # Update display data
+    if "display" in contents:
+        display = contents["display"]
+
+        if "icon" in display:
+            icon = display["icon"]
+
+            if version <= 2004:
+                display["icon"] = items.update_from_json(
+                    {
+                        "id": icon["item"],
+                        "nbt": icon["nbt"] if "nbt" in icon else None
+                    },
+                    version,
+                    []
+                )
+
+            else:
+                count = icon["count"] if "count" in icon else None
+                display["icon"] = items.update_from_json(
+                    display["icon"],
+                    version,
+                    []
+                )
+                if count:
+                    display["icon"]["count"] = count
 
 
     return contents
