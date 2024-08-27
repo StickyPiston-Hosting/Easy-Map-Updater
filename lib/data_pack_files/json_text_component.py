@@ -488,19 +488,29 @@ def pack_mangled_compound(component: JSONTextComponentCompound) -> str:
     tags: list[str] = []
 
     for key in [
-        "text",
-        "translate", "fallback", "with",
+        "block",
+        "bold",
+        "clickEvent",
+        "color",
+        "entity",
+        "extra",
+        "fallback",
+        "font",
+        "hoverEvent",
+        "insertion",
+        "italic",
         "keybind",
+        "nbt",
+        "obfuscated",
         "score",
         "selector",
-        "nbt",
         "separator",
-        "entity", "block", "storage",
-        "extra",
-        "hoverEvent",
-        "insertion", "font", "obfuscated",
-        "clickEvent",
-        "italic", "underlined", "strikethrough", "color", "bold",
+        "storage",
+        "strikethrough",
+        "text",
+        "translate",
+        "underlined", 
+        "with",
     ]:
         if key in component:
             if key == "clickEvent":

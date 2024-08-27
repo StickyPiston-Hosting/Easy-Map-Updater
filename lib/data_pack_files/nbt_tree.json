@@ -660,12 +660,12 @@
                     "tags": {
                         "Name": {
                             "data_type": "string",
-                            "argument_type": "json_text_component"
+                            "argument_type": "json_text_component_mangled"
                         },
                         "Lore": {
                             "list": {
                                 "data_type": "string",
-                                "argument_type": "json_text_component"
+                                "argument_type": "json_text_component_mangled"
                             }
                         }
                     }
