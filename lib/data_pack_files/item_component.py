@@ -71,12 +71,15 @@ def conform(components: dict[str, Any], version: int, issues: list[dict[str, str
             can_break = {"predicates": nbt_tags.TypeList([can_break])}
         if "predicates" in can_break:
             for predicate in cast(nbt_tags.TypeList, can_break["predicates"]):
-                if "blocks" in predicate and isinstance(predicate["blocks"], nbt_tags.TypeList):
-                    if len(predicate["blocks"]) == 1:
-                        predicate["blocks"] = miscellaneous.namespace(predicate["blocks"][0])
+                if "blocks" in predicate:
+                    if isinstance(predicate["blocks"], nbt_tags.TypeList):
+                        if len(predicate["blocks"]) == 1:
+                            predicate["blocks"] = miscellaneous.namespace(predicate["blocks"][0])
+                        else:
+                            for i in range(len(predicate["blocks"])):
+                                predicate["blocks"][i] = miscellaneous.namespace(predicate["blocks"][i])
                     else:
-                        for i in range(len(predicate["blocks"])):
-                            predicate["blocks"] = miscellaneous.namespace(predicate["blocks"][i])
+                        predicate["blocks"] = miscellaneous.namespace(predicate["blocks"])
         components["minecraft:can_break"] = can_break
 
     if "minecraft:can_place_on" in components:
@@ -85,12 +88,15 @@ def conform(components: dict[str, Any], version: int, issues: list[dict[str, str
             can_place_on = {"predicates": nbt_tags.TypeList([can_place_on])}
         if "predicates" in can_place_on:
             for predicate in cast(nbt_tags.TypeList, can_place_on["predicates"]):
-                if "blocks" in predicate and isinstance(predicate["blocks"], nbt_tags.TypeList):
-                    if len(predicate["blocks"]) == 1:
-                        predicate["blocks"] = miscellaneous.namespace(predicate["blocks"][0])
+                if "blocks" in predicate:
+                    if isinstance(predicate["blocks"], nbt_tags.TypeList):
+                        if len(predicate["blocks"]) == 1:
+                            predicate["blocks"] = miscellaneous.namespace(predicate["blocks"][0])
+                        else:
+                            for i in range(len(predicate["blocks"])):
+                                predicate["blocks"][i] = miscellaneous.namespace(predicate["blocks"][i])
                     else:
-                        for i in range(len(predicate["blocks"])):
-                            predicate["blocks"] = miscellaneous.namespace(predicate["blocks"][i])
+                        predicate["blocks"] = miscellaneous.namespace(predicate["blocks"])
         components["minecraft:can_place_on"] = can_place_on
 
     if "minecraft:debug_stick_state" in components:
