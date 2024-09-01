@@ -767,12 +767,24 @@
             }
         }
     },
+    "2003": {
+        "minecraft": {
+            "textures": {
+                "block": {
+                    "grass.png": "short_grass.png"
+                }
+            }
+        }
+    },
     "2005": {
         "minecraft": {
             "textures": {
                 "gui": {
                     "options_background.png": "menu_background.png",
                     "light_dirt_background.png": "menu_list_background.png"
+                },
+                "item": {
+                    "scute.png": "turtle_scute.png"
                 },
                 "map": {
                     "map_icons.png": [
