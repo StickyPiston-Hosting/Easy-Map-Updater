@@ -42,6 +42,8 @@ def update(pack: Path, version: int):
         if not models_folder.exists():
             continue
         for model_path in models_folder.glob("**/*.json"):
+            if not model_path.is_file():
+                continue
             modified = False
             model_json, load_bool = json_manager.safe_load(model_path)
             if not load_bool:

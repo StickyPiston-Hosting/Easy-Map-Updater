@@ -28,6 +28,8 @@ def update(pack: Path):
             continue
 
         for file_path in folder.glob("**/*.json"):
+            if not file_path.is_file():
+                continue
             update_font(pack, file_path)
 
 def update_font(pack: Path, file_path: Path):

@@ -233,6 +233,8 @@ def extract_texture_list(pack: Path) -> list[str]:
     ]:
         if texture_path.exists():
             for texture in texture_path.glob("**/*.png"):
+                if not texture.is_file():
+                    continue
                 texture_list.append(f'minecraft:{texture.as_posix()[len(minecraft_texture_path.as_posix()) + 1:-4]}')
 
     # Add custom texture directories to list from block and item models
@@ -243,6 +245,8 @@ def extract_texture_list(pack: Path) -> list[str]:
     ]:
         if model_path.exists():
             for model in model_path.glob("**/*.json"):
+                if not model.is_file():
+                    continue
                 model_json, load_bool = json_manager.safe_load(model)
                 if not load_bool:
                     continue

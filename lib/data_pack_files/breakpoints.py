@@ -62,6 +62,8 @@ def get_function_names(data_pack_path: Path) -> dict[str, dict[str, Any]]:
         if not functions_path.exists():
             continue
         for function_path in functions_path.glob("**/*.mcfunction"):
+            if not function_path.is_file():
+                continue
             namespaced_id = get_namespaced_id(data_pack_path, function_path)
             if namespaced_id:
                 data_pack_dict[namespaced_id] = {"path": function_path, "breakable": False, "parents": {}, "children": {}}

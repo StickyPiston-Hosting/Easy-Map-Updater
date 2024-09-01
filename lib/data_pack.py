@@ -188,6 +188,8 @@ def update_namespaces(pack: Path, source_pack: Path):
 
 def update_functions(folder: Path, source_folder: Path, namespace: str):
     for source_file_path in source_folder.glob("**/*.mcfunction"):
+        if not source_file_path.is_file():
+            continue
         pack_subdir = source_file_path.as_posix()[len(source_folder.as_posix()) + 1:]
         file_path = folder / pack_subdir
         mcfunction.update(file_path, source_file_path, pack_version, namespace + ":" + pack_subdir.split(".")[0].replace("\\", "/"))
@@ -196,6 +198,8 @@ def update_functions(folder: Path, source_folder: Path, namespace: str):
 
 def update_advancements(folder: Path, source_folder: Path):
     for source_file_path in source_folder.glob("**/*.json"):
+        if not source_file_path.is_file():
+            continue
         pack_subdir = source_file_path.as_posix()[len(source_folder.as_posix()) + 1:]
         file_path = folder / pack_subdir
         try:
@@ -208,6 +212,8 @@ def update_advancements(folder: Path, source_folder: Path):
 
 def update_predicates(folder: Path, source_folder: Path):
     for source_file_path in source_folder.glob("**/*.json"):
+        if not source_file_path.is_file():
+            continue
         pack_subdir = source_file_path.as_posix()[len(source_folder.as_posix()) + 1:]
         file_path = folder / pack_subdir
         try:
@@ -220,6 +226,8 @@ def update_predicates(folder: Path, source_folder: Path):
 
 def update_loot_tables(folder: Path, source_folder: Path):
     for source_file_path in source_folder.glob("**/*.json"):
+        if not source_file_path.is_file():
+            continue
         pack_subdir = source_file_path.as_posix()[len(source_folder.as_posix()) + 1:]
         file_path = folder / pack_subdir
         try:
@@ -232,6 +240,8 @@ def update_loot_tables(folder: Path, source_folder: Path):
 
 def update_recipes(folder: Path, source_folder: Path):
     for source_file_path in source_folder.glob("**/*.json"):
+        if not source_file_path.is_file():
+            continue
         pack_subdir = source_file_path.as_posix()[len(source_folder.as_posix()) + 1:]
         file_path = folder / pack_subdir
         try:
@@ -244,6 +254,8 @@ def update_recipes(folder: Path, source_folder: Path):
 
 def update_item_modifiers(folder: Path, source_folder: Path):
     for source_file_path in source_folder.glob("**/*.json"):
+        if not source_file_path.is_file():
+            continue
         pack_subdir = source_file_path.as_posix()[len(source_folder.as_posix()) + 1:]
         file_path = folder / pack_subdir
         try:
@@ -256,6 +268,8 @@ def update_item_modifiers(folder: Path, source_folder: Path):
 
 def update_tags(folder: Path, source_folder: Path, tag_type: str):
     for source_file_path in source_folder.glob("**/*.json"):
+        if not source_file_path.is_file():
+            continue
         pack_subdir = source_file_path.as_posix()[len(source_folder.as_posix()) + 1:]
         file_path = folder / pack_subdir
         try:
@@ -340,6 +354,8 @@ def extract_stored_functions(world: Path, get_confirmation: bool):
             continue
         path_length = len(namespace.as_posix()) + 1
         for file_path in namespace.glob("**/*.mcfunction"):
+            if not file_path.is_file():
+                continue
             destination = data_pack / "data" / namespace.name.lower() / "function" / file_path.as_posix()[path_length:].lower()
             destination.parent.mkdir(exist_ok=True, parents=True)
             shutil.move(file_path, destination)
@@ -409,6 +425,8 @@ def extract_stored_advancements(world: Path, get_confirmation: bool):
             continue
         path_length = len(namespace.as_posix()) + 1
         for file_path in namespace.glob("**/*.json"):
+            if not file_path.is_file():
+                continue
             destination = data_pack / "data" / namespace.name.lower() / "advancement" / file_path.as_posix()[path_length:].lower()
             destination.parent.mkdir(exist_ok=True, parents=True)
             shutil.move(file_path, destination)

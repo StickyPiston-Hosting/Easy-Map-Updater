@@ -43,6 +43,8 @@ def get_texture_list(pack: Path) -> list[str]:
             continue
 
         for file_path in (namespace / "models").glob("**/*.json"):
+            if not file_path.is_file():
+                continue
             model_json, load_bool = json_manager.safe_load(file_path)
             if not load_bool:
                 continue

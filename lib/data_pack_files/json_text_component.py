@@ -378,6 +378,8 @@ def retrieve_translation_keys():
         if not lang_folder.exists():
             continue
         for file_path in lang_folder.glob("**/*.json"):
+            if not file_path.is_file():
+                continue
             contents, load_bool = json_manager.safe_load(file_path)
             if not load_bool:
                 continue
