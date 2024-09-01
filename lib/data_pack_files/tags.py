@@ -35,7 +35,7 @@ def update(file_path: Path, source_file_path: Path, version: int, tag_type: str)
     modified = False
     for i in range(len(contents["values"])):
         new_entry = contents["values"][i]
-        if tag_type == "blocks":
+        if tag_type == "block":
             new_entry = blocks.update(
                 {
                     "id": contents["values"][i],
@@ -46,7 +46,7 @@ def update(file_path: Path, source_file_path: Path, version: int, tag_type: str)
                 },
                 pack_version, []
             )["id"]
-        if tag_type == "items":
+        if tag_type in "item":
             new_entry = items.update(
                 {
                     "id": contents["values"][i],
