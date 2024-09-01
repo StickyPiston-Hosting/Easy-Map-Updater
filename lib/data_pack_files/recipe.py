@@ -84,6 +84,10 @@ def update_result(result: dict[str, Any] | str) -> dict[str, Any]:
     if isinstance(result, str):
         result = {"id": result}
 
+    if "item" in result:
+        result["id"] = result["item"]
+        del result["item"]
+
     if "id" in result:
         updated_item = items.update_from_json(
             {
