@@ -124,6 +124,7 @@ def conform(components: dict[str, Any], version: int, issues: list[dict[str, str
                 if enchantment != namespaced_enchantment:
                     levels[namespaced_enchantment] = levels[enchantment]
                     del levels[enchantment]
+                levels[namespaced_enchantment] = nbt_tags.TypeInt(min(max(levels[namespaced_enchantment].value, 0), 255))
         components["minecraft:enchantments"] = enchantments
 
     if "minecraft:potion_contents" in components:
