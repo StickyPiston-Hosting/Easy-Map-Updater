@@ -124,16 +124,19 @@
     },
     "1605": {
         "minecraft": {
-            "textures": {
-                "block": {
-                    "grass_path_side.png": "dirt_path_side.png",
-                    "grass_path_top.png": "dirt_path_top.png"
-                }
+            "blockstates": {
+                "grass_path.json": "dirt_path.json"
             },
             "models": {
                 "block": {
                     "grass_path_side.json": "dirt_path_side.json",
                     "grass_path_top.json": "dirt_path_top.json"
+                }
+            },
+            "textures": {
+                "block": {
+                    "grass_path_side.png": "dirt_path_side.png",
+                    "grass_path_top.png": "dirt_path_top.png"
                 }
             }
         }
@@ -769,6 +772,17 @@
     },
     "2003": {
         "minecraft": {
+            "blockstates": {
+                "grass.json": "short_grass.json"
+            },
+            "models": {
+                "block": {
+                    "grass.json": "short_grass.json"
+                },
+                "item": {
+                    "grass.json": "short_grass.json"
+                }
+            },
             "textures": {
                 "block": {
                     "grass.png": "short_grass.png"
@@ -778,6 +792,11 @@
     },
     "2005": {
         "minecraft": {
+            "models": {
+                "item": {
+                    "scute.json": "turtle_scute.json"
+                }
+            },
             "textures": {
                 "gui": {
                     "options_background.png": "menu_background.png",
