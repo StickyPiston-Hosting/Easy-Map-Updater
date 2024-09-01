@@ -22,6 +22,7 @@ FIXES = {
     "stats": True,
     "old_adventure_mode_items": True,
     "safe_nbt_interpret": True,
+    "post_fixes": True,
     "stats_options": {
         "block_stats_used": True,
         "block_positions_dynamic": False,

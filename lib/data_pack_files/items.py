@@ -309,7 +309,7 @@ def update_item_id(item_id: str | nbt_tags.TypeNumeric, components: dict | None,
                 else:
                     item_id = data_array[max(data_value, 0)]
 
-    if pack_version <= 1302:
+    if pack_version <= 1302 or defaults.FIXES["post_fixes"]:
         id_array = {
             "minecraft:cactus_green":     "minecraft:green_dye",
             "minecraft:dandelion_yellow": "minecraft:yellow_dye",
@@ -319,28 +319,33 @@ def update_item_id(item_id: str | nbt_tags.TypeNumeric, components: dict | None,
         if item_id in id_array:
             item_id = id_array[item_id]
 
-    if pack_version <= 1502:
+    if pack_version <= 1502 or defaults.FIXES["post_fixes"]:
         id_array = {
             "minecraft:zombie_pigman_spawn_egg": "minecraft:zombified_piglin_spawn_egg"
         }
         if item_id in id_array:
             item_id = id_array[item_id]
 
-    if pack_version <= 2002:
+    if pack_version <= 2002 or defaults.FIXES["post_fixes"]:
         id_array = {
             "minecraft:grass": "minecraft:short_grass"
         }
         if item_id in id_array:
             item_id = id_array[item_id]
 
-    if pack_version <= 2004:
+    if pack_version <= 2004 or defaults.FIXES["post_fixes"]:
+        id_array = {
+            "minecraft:scute": "minecraft:turtle_scute"
+        }
+        if item_id in id_array:
+            item_id = id_array[item_id]
         if item_id == "#minecraft:tools":
             item_id = "#tag_replacements:tools"
             tag_replacements.create_pack(
                 easy_map_updater.MINECRAFT_PATH / "saves" / option_manager.get_map_name()
             )
 
-    if pack_version <= 2006:
+    if pack_version <= 2006 or defaults.FIXES["post_fixes"]:
         if item_id == "#minecraft:music_discs":
             item_id = "#tag_replacements:music_discs"
             tag_replacements.create_pack(
