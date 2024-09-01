@@ -15,6 +15,13 @@ from lib.log import log
 # Define functions
 
 def is_num(string: str) -> bool:
+    # Check that at least one character is a number (to rule out NaN and infinity)
+    for char in string:
+        if char.isnumeric():
+            break
+    else:
+        return False
+
     # Check if the input is a number
     try:
         int(string)
