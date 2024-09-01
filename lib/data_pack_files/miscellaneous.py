@@ -433,9 +433,9 @@ def team_setting(name: str, version: int, issues: list[dict[str, str | int]]) ->
         name = id_array[name]
     return name
 
-def uuid_from_string(uuid: str, version: int, issues: list[dict[str, str | int]]) -> nbt_tags.TypeIntArray:
-    if isinstance(uuid, nbt_tags.TypeIntArray):
-        return uuid
+def uuid_from_string(uuid: str | nbt_tags.TypeIntArray, version: int, issues: list[dict[str, str | int]]) -> nbt_tags.TypeIntArray:
+    if not isinstance(uuid, str):
+        return nbt_tags.TypeIntArray(uuid)
     new_uuid = utils.uuid_from_string(uuid)
     return nbt_tags.TypeIntArray([
         nbt_tags.TypeInt(new_uuid[0]),

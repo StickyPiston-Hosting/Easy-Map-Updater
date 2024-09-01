@@ -749,7 +749,7 @@ def extract(item_id: str, components: dict[str, Any] | None, nbt: dict[str, Any]
             if "Name" in skull_owner:
                 profile["name"] = skull_owner["Name"]
             if "Id" in skull_owner:
-                profile["id"] = nbt_tags.TypeIntArray(skull_owner["Id"])
+                profile["id"] = miscellaneous.uuid_from_string(skull_owner["Id"], version, issues)
             if "Properties" in skull_owner:
                 if "properties" not in profile:
                     profile["properties"] = nbt_tags.TypeList([])

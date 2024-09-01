@@ -562,6 +562,8 @@ def edge_case(parent: dict, nbt, case: str | dict[str, str], source: str, object
         return edge_case_shot_from_crossbow(parent)
     if case_type == "sign_text":
         return edge_case_sign_text(parent, issues)
+    if case_type == "skull_owner":
+        return edge_case_skull_owner(nbt)
     if case_type == "spawn_data":
         return edge_case_spawn_data(nbt, object_id, issues)
     if case_type == "spawn_potential_entity":
@@ -780,6 +782,34 @@ def edge_case_shot_from_crossbow(parent: dict):
         }
     else:
         log(f'WARNING: Entity tag "ShotFromCrossbow:0b" was used, make sure it isn\'t being read')
+
+def edge_case_skull_owner(nbt: dict | str):
+    if isinstance(nbt, str):
+        return {"name": nbt}
+
+    if "Id" in nbt:
+        nbt["id"] = nbt["Id"]
+        del nbt["Id"]
+    if "id" in nbt:
+        nbt["id"] = miscellaneous.uuid_from_string(nbt["id"], pack_version, [])
+
+    if "Name" in nbt:
+        nbt["name"] = nbt["Name"]
+        del nbt["Name"]
+
+    if "Properties" in nbt:
+        nbt["properties"] = TypeList([])
+        if "textures" in nbt["Properties"]:
+            for texture in nbt["Properties"]["textures"]:
+                property = {"name": "textures"}
+                if "Value" in texture:
+                    property["value"] = texture["Value"]
+                if "Signature" in texture:
+                    property["signature"] = texture["Signature"]
+                nbt["properties"].append(property) 
+        del nbt["Properties"]
+
+    return nbt
 
 def edge_case_sign_text(parent: dict, issues: list[dict[str, str | int]]):
     # Prepare front text

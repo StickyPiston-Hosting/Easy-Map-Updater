@@ -178,8 +178,8 @@
                 "is_waxed": { "data_type": "byte" },
                 "Items": { "list": { "source": "item" } },
                 "Owner": {
-                    "rename": "SkullOwner",
-                    "source": "skull_owner"
+                    "rename": "profile",
+                    "edge_case": "skull_owner"
                 },
                 "Patterns": {
                     "rename": "patterns",
@@ -210,12 +210,16 @@
                 "secondary_effect": {
                     "data_type": "string",
                     "argument_type": "effect"
-                },"Secondary": {
+                },
+                "Secondary": {
                     "rename": "secondary_effect",
                     "data_type": "string",
                     "argument_type": "effect"
                 },
-                "SkullOwner": { "source": "skull_owner" },
+                "SkullOwner": {
+                    "rename": "profile",
+                    "edge_case": "skull_owner"
+                },
                 "SpawnData": { "edge_case": "spawn_data" },
                 "SpawnPotentials": {
                     "list": {
@@ -716,15 +720,6 @@
             },
             "path": {
                 "edge_case": "item_tag"
-            }
-        },
-        "skull_owner": {
-            "tags": {
-                "Id": {
-                    "data_type": "string",
-                    "output_data_type": "int_array",
-                    "argument_type": "uuid_from_string"
-                }
             }
         },
         "stew_effect": {
