@@ -288,8 +288,17 @@
                 "Ambient": { "rename": "ambient", "data_type": "byte", "remove": { "matches": 0 } },
                 "amplifier": { "data_type": "byte", "remove": { "matches": 0 } },
                 "Amplifier": { "rename": "amplifier", "data_type": "byte", "remove": { "matches": 0 } },
-                "duration": { "data_type": "int", "remove": { "matches": 0 } },
-                "Duration": { "rename": "duration", "data_type": "int", "remove": { "matches": 0 } },
+                "duration": {
+                    "data_type": "int",
+                    "argument_type": "effect_duration",
+                    "remove": { "matches": 0 }
+                },
+                "Duration": {
+                    "rename": "duration",
+                    "data_type": "int",
+                    "argument_type": "effect_duration",
+                    "remove": { "matches": 0 }
+                },
                 "hidden_effect": { "source": "effect" },
                 "HiddenEffect": { "rename": "hidden_effect", "source": "effect" },
                 "id": {

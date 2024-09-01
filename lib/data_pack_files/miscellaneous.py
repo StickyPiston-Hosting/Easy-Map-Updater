@@ -194,6 +194,11 @@ def difficulty(name: str, version: int, issues: list[dict[str, str | int]]) -> s
 def dimension(name: str, version: int, issues: list[dict[str, str | int]]) -> str:
     return name.lower()
 
+def effect_duration(duration: nbt_tags.TypeInt | str, version: int, issues: list[dict[str, str | int]]) -> nbt_tags.TypeInt:
+    if isinstance(duration, str):
+        return nbt_tags.TypeInt(-1)
+    return duration
+
 def effect_time(argument: str, version: int, issues: list[dict[str, str | int]]) -> str:
     if argument == "infinite":
         return argument

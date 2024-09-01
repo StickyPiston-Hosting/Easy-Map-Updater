@@ -564,6 +564,7 @@ ARGUMENT_FUNCTIONS: dict[str, tuple] = {
     "difficulty": ( miscellaneous.difficulty, None ),
     "dimension": ( miscellaneous.dimension, None ),
     "effect": ( ids.effect, None),
+    "effect_duration": ( miscellaneous.effect_duration, None),
     "effect_time": ( miscellaneous.effect_time, None),
     "enchantment": ( ids.enchantment, None ),
     "entity": ( entities.update, None),

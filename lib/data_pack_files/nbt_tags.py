@@ -481,26 +481,29 @@ def update_data(parent: dict, nbt, guide: dict, source: str, object: str, issues
     return apply_data_type(command.update_argument(nbt, argument_type, issues), output_data_type)
 
 def apply_data_type(nbt, data_type: str) -> Any:
-    if data_type == "byte":
-        return TypeByte(nbt)
-    if data_type == "short":
-        return TypeShort(nbt)
-    if data_type == "int":
-        return TypeInt(nbt)
-    if data_type == "long":
-        return TypeLong(nbt)
-    if data_type == "float":
-        return TypeFloat(nbt)
-    if data_type == "double":
-        return TypeDouble(nbt)
-    if data_type == "list":
-        return TypeList(nbt)
-    if data_type == "byte_array":
-        return TypeByteArray(nbt)
-    if data_type == "int_array":
-        return TypeIntArray(nbt)
-    if data_type == "long_array":
-        return TypeLongArray(nbt)
+    try:
+        if data_type == "byte":
+            return TypeByte(nbt)
+        if data_type == "short":
+            return TypeShort(nbt)
+        if data_type == "int":
+            return TypeInt(nbt)
+        if data_type == "long":
+            return TypeLong(nbt)
+        if data_type == "float":
+            return TypeFloat(nbt)
+        if data_type == "double":
+            return TypeDouble(nbt)
+        if data_type == "list":
+            return TypeList(nbt)
+        if data_type == "byte_array":
+            return TypeByteArray(nbt)
+        if data_type == "int_array":
+            return TypeIntArray(nbt)
+        if data_type == "long_array":
+            return TypeLongArray(nbt)
+    except:
+        return nbt
     return nbt
 
 def invert_riding(nbt: dict) -> dict:
