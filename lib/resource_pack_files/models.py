@@ -63,7 +63,7 @@ def update(pack: Path, version: int):
                 texture += ".png"
                 if texture.split(":")[0] != "minecraft":
                     continue
-                path = ["textures"] + texture.split(":")[1].split("/")
+                path = ["minecraft", "textures"] + texture.split(":")[1].split("/")
 
                 for file_version in FILE_LEGEND:
                     if pack_version > int(file_version):
@@ -86,10 +86,10 @@ def update(pack: Path, version: int):
                             target = target[0]
                         elif isinstance(target, dict):
                             continue
-                        new_texture = update_texture_name("/".join(path), target)
+                        new_texture = "minecraft:" + "/".join(update_texture_name("/".join(path), target).split("/")[2:])
                         
                         if texture != new_texture:
-                            model_json["textures"][key] = "minecraft:" + new_texture[new_texture.find("/") + 1:-4]
+                            model_json["textures"][key] = new_texture[:-4]
                             modified = True
 
                         break
