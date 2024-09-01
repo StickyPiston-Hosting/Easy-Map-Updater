@@ -466,7 +466,7 @@ def update_data(parent: dict, nbt, guide: dict, source: str, object: str, issues
         argument_type: str = guide["argument_type"]
 
     # Convert numeric types
-    nbt = apply_data_type(nbt, data_type)
+    nbt = apply_data_type(parent, nbt, data_type)
 
     # Put together parameters
     if "parameters" in guide:
@@ -475,12 +475,12 @@ def update_data(parent: dict, nbt, guide: dict, source: str, object: str, issues
             obj = nbt_paths.extract_nbt_from_path(parent, nbt_paths.unpack(guide["parameters"][key]))
             if obj != None:
                 parameters[key] = obj
-        return apply_data_type(command.update_argument(parameters, argument_type, issues), output_data_type)
+        return apply_data_type(parent, command.update_argument(parameters, argument_type, issues), output_data_type)
 
     # Convert based on argument type
-    return apply_data_type(command.update_argument(nbt, argument_type, issues), output_data_type)
+    return apply_data_type(parent, command.update_argument(nbt, argument_type, issues), output_data_type)
 
-def apply_data_type(nbt, data_type: str) -> Any:
+def apply_data_type(parent: dict, nbt, data_type: str) -> Any:
     try:
         if data_type == "byte":
             return TypeByte(nbt)
@@ -503,6 +503,7 @@ def apply_data_type(nbt, data_type: str) -> Any:
         if data_type == "long_array":
             return TypeLongArray(nbt)
     except:
+        log(f"Could not cast {pack(nbt)} as {data_type} from {pack(parent)}")
         return nbt
     return nbt
 
