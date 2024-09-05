@@ -1097,7 +1097,7 @@ def update_path(path_parts: list[str], version: int, issues: list[dict[str, str 
     if path_parts[1] == "LodestonePos":
         if len(path_parts) == 2:
             return ["components", "minecraft:lodestone_tracker", "target", "pos"]
-        return ["components", "minecraft:lodestone_tracker", "target", "pos", f'[{["x", "y", "z"].index(path_parts[2])}]']
+        return ["components", "minecraft:lodestone_tracker", "target", "pos", f'[{["X", "Y", "Z"].index(path_parts[2])}]']
 
     if path_parts[1] == "LodestoneTracked":
         return ["components", "minecraft:lodestone_tracker", "target", "tracked"]
