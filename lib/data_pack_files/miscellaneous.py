@@ -54,8 +54,10 @@ def attribute(name: str, version: int, issues: list[dict[str, str | int]]) -> st
 
     return name
 
-def attribute_id(uuid: str, version: int, issues: list[dict[str, str | int]]) -> str:
-    return namespace(utils.uuid_from_int_array(utils.uuid_from_string(uuid)))
+def attribute_id(value: str, version: int, issues: list[dict[str, str | int]]) -> str:
+    if version <= 2006:
+        return namespace(utils.uuid_from_int_array(utils.uuid_from_string(value)))
+    return namespace(value)
 
 def attribute_modifier_operation(operation: str | int | nbt_tags.TypeInt, version: int, issues: list[dict[str, str | int]]) -> str:
     # Assign version
