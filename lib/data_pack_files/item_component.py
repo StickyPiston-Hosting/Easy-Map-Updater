@@ -697,7 +697,7 @@ def extract(item_id: str, components: dict[str, Any] | None, nbt: dict[str, Any]
             for page in nbt["pages"]:
                 pages.append({"raw": page})
 
-        if item_id == "minecraft:written_book":
+        else:
             if "minecraft:written_book_content" not in components:
                 components["minecraft:written_book_content"] = {}
             written_book_content = components["minecraft:written_book_content"]
