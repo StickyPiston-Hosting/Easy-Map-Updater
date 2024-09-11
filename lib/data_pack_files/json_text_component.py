@@ -207,7 +207,7 @@ def update_compound(component: str | JSONTextComponentCompound, issues: list[dic
                 if component[key] not in tables.COLORS:
                     component[key] = "white"
             else:
-                component[key] = component[key][0: min(7, len(component[key]))] + "0"*max(0, 7-len(component[key]))
+                component[key] = component[key][0: min(7, len(component[key]))].upper() + "0"*max(0, 7-len(component[key]))
         if key == "selector":
             component[key] = target_selectors.update(component[key], pack_version, issues, False)
         if key in ["extra", "separator", "with"]:
