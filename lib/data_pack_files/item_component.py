@@ -6,6 +6,7 @@
 # Import things
 
 from typing import cast, Any
+from lib.data_pack_files import blocks
 from lib.data_pack_files import nbt_tags
 from lib.data_pack_files import arguments
 from lib.data_pack_files import miscellaneous
@@ -362,7 +363,13 @@ def extract(item_id: str, components: dict[str, Any] | None, nbt: dict[str, Any]
             if block.startswith("#"):
                 predicates.append({"blocks": block})
             else:
-                predicates[0]["blocks"].append(block)
+                if "[" in block:
+                    predicates.append({
+                        "blocks": block[:block.find("[")],
+                        "state": blocks.unpack_block_states(block[block.find("["):])
+                    })
+                else:
+                    predicates[0]["blocks"].append(block)
         if len(predicates[0]["blocks"]) == 0:
             predicates.pop(0)
         elif len(predicates[0]["blocks"]) == 1:
@@ -384,7 +391,13 @@ def extract(item_id: str, components: dict[str, Any] | None, nbt: dict[str, Any]
             if block.startswith("#"):
                 predicates.append({"blocks": block})
             else:
-                predicates[0]["blocks"].append(block)
+                if "[" in block:
+                    predicates.append({
+                        "blocks": block[:block.find("[")],
+                        "state": blocks.unpack_block_states(block[block.find("["):])
+                    })
+                else:
+                    predicates[0]["blocks"].append(block)
         if len(predicates[0]["blocks"]) == 0:
             predicates.pop(0)
         elif len(predicates[0]["blocks"]) == 1:

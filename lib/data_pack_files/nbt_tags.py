@@ -611,17 +611,17 @@ def edge_case_banner_base(parent: dict[str, TypeInt], object_id: str, issues: li
 def edge_case_can_place_on(nbt: list[str], issues: list[dict[str, str | int]]):
     new_list: list[str] = []
     for block in nbt:
-        new_block = cast(str, blocks.update(
+        new_block = blocks.update(
             {
-                "id": block,
+                "id": block[:block.find("[")] if "[" in block else block,
                 "data_value": -1,
-                "block_states": {},
+                "block_states": blocks.unpack_block_states(block[block.find("["):]) if "[" in block else {},
                 "nbt": {},
                 "read": True
             },
             pack_version, issues
-        )["id"])
-        new_list.append(new_block)
+        )
+        new_list.append(cast(str, new_block["id"]) + (blocks.pack_block_states(new_block["block_states"]) if new_block["block_states"] else ""))
     return TypeList(utils.deduplicate_list(new_list))
 
 def edge_case_color(parent: dict):
