@@ -24,7 +24,7 @@
                     "index": 4,
                     "branches": {
                         "get": {
-                            "mapping": ["carry", "target_selector_single", "attribute", "carry", "carry"]
+                            "mapping": ["carry", "target_selector_single", "attribute", "carry", "carry", "carry"]
                         },
                         "set": {
                             "mapping": ["carry", "target_selector_single", "attribute", "carry", "carry", "carry"]
@@ -32,7 +32,7 @@
                     }
                 },
                 "get": {
-                    "mapping": ["carry", "target_selector_single", "attribute", "carry"]
+                    "mapping": ["carry", "target_selector_single", "attribute", "carry", "carry"]
                 },
                 "modifier": {
                     "index": 4,
