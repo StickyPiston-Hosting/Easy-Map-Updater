@@ -1210,7 +1210,19 @@
             }
         },
         "return": {
-            "mapping": ["carry", "carry"]
+            "index": 1,
+            "branches": {
+                "fail": {
+                    "mapping": ["carry", "carry"]
+                },
+                "run": {
+                    "mapping": ["carry", "carry", "command"],
+                    "legend": [0, 1, {"argument": {"min": 2}, "execute": false}]
+                }
+            },
+            "else": {
+                "mapping": ["carry", "carry"]
+            }
         },
         "ride": {
             "mapping": ["carry", "target_selector_single", "carry", "target_selector_single"]
