@@ -677,10 +677,7 @@ def extract(item_id: str, components: dict[str, Any] | None, nbt: dict[str, Any]
         if "minecraft:lodestone_tracker" not in components:
             components["minecraft:lodestone_tracker"] = {}
         lodestone_tracker = components["minecraft:lodestone_tracker"]
-        if "target" not in lodestone_tracker:
-            lodestone_tracker["target"] = {}
-        target = lodestone_tracker["target"]
-        target["tracked"] = nbt_tags.TypeByte(nbt["LodestoneTracked"])
+        lodestone_tracker["tracked"] = nbt_tags.TypeByte(nbt["LodestoneTracked"])
         del nbt["LodestoneTracked"]
 
     if "map" in nbt:
