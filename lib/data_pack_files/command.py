@@ -32,6 +32,7 @@ from lib.data_pack_files.restore_behavior import firework_damage_canceler
 from lib.data_pack_files.restore_behavior import effect_overflow
 from lib.region_files import illegal_chunk
 from lib import defaults
+from lib import utils
 
 
 
@@ -66,7 +67,8 @@ def update(line: str, version: int, function_id: str) -> str:
         return command(line.strip()).strip()
     except Exception:
         log(f'A command from {namespaced_id} has thrown an error:\n\n{line.strip()}')
-        raise Exception
+        utils.log_error()
+        return line
 
 def command(line: str) -> str:
     # Return if blank

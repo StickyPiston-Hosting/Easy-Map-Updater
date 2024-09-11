@@ -19,6 +19,7 @@ from lib.resource_pack_files import remove_translucency
 from lib import json_manager
 from lib import finalize
 from lib import defaults
+from lib import utils
 
 
 
@@ -63,14 +64,17 @@ def update(pack: Path, version: int):
     if (pack / "assets").exists():
         shutil.rmtree(pack / "assets")
 
-    update_pack_mcmeta(og_pack, pack)
-    update_file_names(og_pack, pack)
-    atlas_logger.log_atlas(pack)
-    fonts.update(pack)
-    models.update(pack, pack_version)
-    finalize.delete_ds_store(pack)
-
-    log("Resource pack updated")
+    try:
+        update_pack_mcmeta(og_pack, pack)
+        update_file_names(og_pack, pack)
+        atlas_logger.log_atlas(pack)
+        fonts.update(pack)
+        models.update(pack, pack_version)
+        finalize.delete_ds_store(pack)
+        log("Resource pack updated")
+    except Exception:
+        log(f"An error occurred while updating the resource pack: {pack.as_posix()}")
+        utils.log_error()
 
 
 
@@ -258,11 +262,18 @@ def import_pack(world: Path, pack: Path, get_confirmation: bool):
                 return
 
     # Unpack archive
-    if pack.exists():
-        shutil.rmtree(pack)
-    shutil.unpack_archive(file, pack, "zip")
-    os.remove(file)
-    log("Resource pack imported")
+    try:
+        if pack.exists():
+            if pack.is_dir():
+                shutil.rmtree(pack)
+            else:
+                os.remove(pack)
+        shutil.unpack_archive(file, pack, "zip")
+        os.remove(file)
+        log("Resource pack imported")
+    except Exception:
+        log(f"An error occurred when importing the resource pack")
+        utils.log_error()
 
 def export_pack(world: Path, pack: Path, get_confirmation: bool):
     log("Exporting resource pack")
@@ -284,8 +295,12 @@ def export_pack(world: Path, pack: Path, get_confirmation: bool):
             return
 
     # Make archive
-    shutil.make_archive((world / "resources").as_posix(), "zip", pack)
-    log("Resource pack exported")
+    try:
+        shutil.make_archive((world / "resources").as_posix(), "zip", pack)
+        log("Resource pack exported")
+    except Exception:
+        log(f"An error occurred when exporting the resource pack: {pack.as_posix()}")
+        utils.log_error()
 
 
 

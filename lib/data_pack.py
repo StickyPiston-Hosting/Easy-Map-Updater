@@ -80,11 +80,15 @@ def update(world: Path, version: int):
     for data_pack in (source_world / "datapacks").iterdir():
         if data_pack.is_file():
             continue
-        update_data_pack(
-            world / "datapacks" / data_pack.name,
-            source_world / "datapacks" / data_pack.name,
-            data_pack.name
-        )
+        try:
+            update_data_pack(
+                world / "datapacks" / data_pack.name,
+                source_world / "datapacks" / data_pack.name,
+                data_pack.name
+            )
+        except Exception:
+            log(f"An error was thrown while updating the data pack: {data_pack.name}")
+            utils.log_error()
 
     # Log completion
     log("Data packs updated")
@@ -192,7 +196,11 @@ def update_functions(folder: Path, source_folder: Path, namespace: str):
             continue
         pack_subdir = source_file_path.as_posix()[len(source_folder.as_posix()) + 1:]
         file_path = folder / pack_subdir
-        mcfunction.update(file_path, source_file_path, pack_version, namespace + ":" + pack_subdir.split(".")[0].replace("\\", "/"))
+        try:
+            mcfunction.update(file_path, source_file_path, pack_version, namespace + ":" + pack_subdir.split(".")[0].replace("\\", "/"))
+        except Exception:
+            log(f"An error occurred while updating the function: {source_file_path.as_posix()}")
+            utils.log_error()
 
 
 
@@ -206,7 +214,7 @@ def update_advancements(folder: Path, source_folder: Path):
             advancement.update(file_path, source_file_path, pack_version)
         except Exception:
             log(f"ERROR: An error occurred when updating advancement: {source_file_path.as_posix()}")
-            raise Exception
+            utils.log_error()
 
 
 
@@ -220,7 +228,7 @@ def update_predicates(folder: Path, source_folder: Path):
             predicate.update(file_path, source_file_path, pack_version)
         except Exception:
             log(f"ERROR: An error occurred when updating predicate: {source_file_path.as_posix()}")
-            raise Exception
+            utils.log_error()
 
 
 
@@ -234,7 +242,7 @@ def update_loot_tables(folder: Path, source_folder: Path):
             loot_table.update(file_path, source_file_path, pack_version)
         except Exception:
             log(f"ERROR: An error occurred when updating loot table: {source_file_path.as_posix()}")
-            raise Exception
+            utils.log_error()
 
 
 
@@ -248,7 +256,7 @@ def update_recipes(folder: Path, source_folder: Path):
             recipe.update(file_path, source_file_path, pack_version)
         except Exception:
             log(f"ERROR: An error occurred when updating recipe: {source_file_path.as_posix()}")
-            raise Exception
+            utils.log_error()
 
 
 
@@ -262,7 +270,7 @@ def update_item_modifiers(folder: Path, source_folder: Path):
             item_modifier.update(file_path, source_file_path, pack_version)
         except Exception:
             log(f"ERROR: An error occurred when updating item modifier: {source_file_path.as_posix()}")
-            raise Exception
+            utils.log_error()
 
 
 
@@ -276,7 +284,7 @@ def update_tags(folder: Path, source_folder: Path, tag_type: str):
             tags.update(file_path, source_file_path, pack_version, tag_type)
         except Exception:
             log(f"ERROR: An error occurred when updating tag: {source_file_path.as_posix()}")
-            raise Exception
+            utils.log_error()
         
 
 

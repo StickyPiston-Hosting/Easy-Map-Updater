@@ -5,10 +5,12 @@
 
 # Import things
 
+import traceback
 from nbt import nbt as NBT
 import random
 random.seed()
-from lib.log import log
+from lib import defaults
+from lib.log import log, get_log_path
 
 
 
@@ -225,3 +227,11 @@ def get_version_string(version: int) -> str:
     if version%100 == 0:
         return f'1.{version//100%100}'
     return f'1.{version//100%100}.{version%100}'
+
+
+
+def log_error():
+    print("")
+    log(f'ERROR:\n{traceback.format_exc()}')
+    log(f'Error logged to: {get_log_path().as_posix()}')
+    log(f'Please report the issue on the E.M.U. Discord server: {defaults.DISCORD_INVITE}', True)

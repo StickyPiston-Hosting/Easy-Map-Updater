@@ -225,10 +225,7 @@ def program():
             actions[action]["function"]()
         except Exception:
             save_session()
-            print("")
-            log(f'ERROR:\n{traceback.format_exc()}')
-            log(f'Error logged to: {get_log_path().as_posix()}')
-            log(f'Please report the issue on the E.M.U. Discord server: {defaults.DISCORD_INVITE}', True)
+            utils.log_error()
 
         print("")
         save_session()

@@ -96,7 +96,10 @@ def read_commands_from_region(world: Path, file_path: Path, list_name: str) -> s
     commands: list[str] = []
 
     log(f" Reading {file_path.name}")
-    region_file = region.RegionFile(file_path)
+    try:
+        region_file = region.RegionFile(file_path)
+    except:
+        return
     chunk_metadata: region.ChunkMetadata
     for chunk_metadata in region_file.get_metadata():
         try:
