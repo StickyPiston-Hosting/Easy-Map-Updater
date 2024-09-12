@@ -9,6 +9,7 @@ from pathlib import Path
 import json
 from lib.log import log
 from lib import defaults
+from lib import utils
 from lib import finalize
 from lib import option_manager
 
@@ -41,82 +42,74 @@ def insert_objective(name: str, criteria: str, id_list: list[str]):
     # Insert commands into functions
     function_path = data_pack_path / "data" / "objective" / "function"
 
-    with (function_path / "load.mcfunction").open("r", encoding="utf-8") as file:
-        contents = file.read().split("\n")
+    contents = utils.safe_file_read(function_path / "load.mcfunction").split("\n")
     for object_id in id_list:
         command = f'scoreboard objectives add OBJ.{criteria.split(":")[0][10:]}.{object_id[10:]} {criteria}{object_id[10:]}'
         if command not in contents:
             contents.append(command)
-    with (function_path / "load.mcfunction").open("w", encoding="utf-8", newline="\n") as file:
-        file.write("\n".join(contents))
+    utils.safe_file_write(function_path / "load.mcfunction", "\n".join(contents))
 
-    with (function_path / "push_scores.mcfunction").open("r", encoding="utf-8") as file:
-        contents = file.read().split("\n")
+    contents = utils.safe_file_read(function_path / "push_scores.mcfunction").split("\n")
     for object_id in id_list:
         command = f'execute as @a[scores={{OBJ.{criteria.split(":")[0][10:]}.{object_id[10:]}=1..}}] run scoreboard players operation @s {name} += @s OBJ.{criteria.split(":")[0][10:]}.{object_id[10:]}'
         if command not in contents:
             contents.append(command)
-    with (function_path / "push_scores.mcfunction").open("w", encoding="utf-8", newline="\n") as file:
-        file.write("\n".join(contents))
+    utils.safe_file_write(function_path / "push_scores.mcfunction", "\n".join(contents))
 
-    with (function_path / "reset_scores.mcfunction").open("r", encoding="utf-8") as file:
-        contents = file.read().split("\n")
+    contents = utils.safe_file_read(function_path / "reset_scores.mcfunction").split("\n")
     for object_id in id_list:
         command = f'scoreboard players set @a OBJ.{criteria.split(":")[0][10:]}.{object_id[10:]} 0'
         if command not in contents:
             contents.append(command)
-    with (function_path / "reset_scores.mcfunction").open("w", encoding="utf-8", newline="\n") as file:
-        file.write("\n".join(contents))
+    utils.safe_file_write(function_path / "reset_scores.mcfunction", "\n".join(contents))
 
 
 
 def create_data_pack(world: Path, data_pack_path: Path):
     data_pack_path.mkdir(exist_ok=True, parents=True)
-    with (data_pack_path / "pack.mcmeta").open("w", encoding="utf-8", newline="\n") as file:
-        json.dump(
+    utils.safe_file_write(data_pack_path / "pack.mcmeta",
+        json.dumps(
             {
         	    "pack": {
         	    	"pack_format": PACK_FORMAT,
         	    	"description": "Adds scoreboard objectives to handle block and item IDs splitting."
         	    }
             },
-            file,
             indent=4
         )
+    )
         
     function_tag_path = data_pack_path / "data" / "minecraft" / "tags" / "function"
     function_tag_path.mkdir(exist_ok=True, parents=True)
-    with (function_tag_path / "load.json").open("w", encoding="utf-8", newline="\n") as file:
-        json.dump(
+    utils.safe_file_write(function_tag_path / "load.json",
+        json.dumps(
             {
                 "values": [
                     "objective:load"
                 ]
             },
-            file,
             indent=4
         )
-    with (function_tag_path / "tick.json").open("w", encoding="utf-8", newline="\n") as file:
-        json.dump(
+    )
+    utils.safe_file_write(function_tag_path / "tick.json",
+        json.dumps(
             {
                 "values": [
                     "objective:tick"
                 ]
             },
-            file,
             indent=4
         )
+    )
 
     function_path = data_pack_path / "data" / "objective" / "function"
     function_path.mkdir(exist_ok=True, parents=True)
     for function_name in ["load", "push_scores", "reset_scores"]:
-        with (function_path / f"{function_name}.mcfunction").open("w", encoding="utf-8", newline="\n") as file:
-            file.write("")
-    with (function_path / "tick.mcfunction").open("w", encoding="utf-8", newline="\n") as file:
-        file.write(
-            "function objective:push_scores\n"
-            "function objective:reset_scores"
-        )
+        utils.safe_file_write(function_path / f"{function_name}.mcfunction", "")
+    utils.safe_file_write(function_path / "tick.mcfunction",
+        "function objective:push_scores\n"
+        "function objective:reset_scores"
+    )
 
     finalize.insert_data_pack(world, f"file/{data_pack_path.name}")
     finalize.log_data_packs(world)

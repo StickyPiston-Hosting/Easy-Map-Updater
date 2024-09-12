@@ -9,6 +9,7 @@ import json
 from typing import Any
 from pathlib import Path
 from lib import json_manager
+from lib import utils
 from lib.log import log
 from lib import defaults
 
@@ -95,8 +96,7 @@ def update(pack: Path, version: int):
                         break
 
             if modified:
-                with model_path.open("w", encoding="utf-8", newline="\n") as file:
-                    json.dump(model_json, file)
+                utils.safe_file_write(model_path, json.dumps(model_json))
 
 def update_texture_name(subdir: str, target: str) -> str:
     path = Path(subdir)

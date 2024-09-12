@@ -124,8 +124,7 @@ def update_pack_mcmeta(pack: Path, source_pack: Path):
                     if cast(str, path_filter["path"]).startswith(folder_pair[0]):
                         path_filter["path"] = folder_pair[1] + path_filter["path"][len(folder_pair[0]):]
 
-    with (pack / "pack.mcmeta").open("w", encoding="utf-8", newline="\n") as file:
-        json.dump(contents, file, indent=4)
+    utils.safe_file_write(pack / "pack.mcmeta", json.dumps(contents, indent=4))
 
 
 
@@ -345,17 +344,17 @@ def extract_stored_functions(world: Path, get_confirmation: bool):
     
     data_pack = world / "datapacks" / "stored_functions"
     (data_pack / "data").mkdir(exist_ok=True, parents=True)
-    with (data_pack / "pack.mcmeta").open("w", encoding="utf-8", newline="\n") as file:
-        json.dump(
+    utils.safe_file_write(data_pack / "pack.mcmeta",
+        json.dumps(
             {
             	"pack": {
             		"pack_format": PACK_FORMAT,
             		"description": "Stores functions which were originally stored in 1.12 worlds."
             	}
             },
-            file,
             indent=4
         )
+    )
 
     for namespace in (world / "data" / "functions").iterdir():
         if not namespace.is_dir():
@@ -380,16 +379,16 @@ def extract_stored_functions(world: Path, get_confirmation: bool):
             if ticking_function:
                 tick_json = data_pack / "data" / "minecraft" / "tags" / "function" / "tick.json"
                 tick_json.parent.mkdir(exist_ok=True, parents=True)
-                with tick_json.open("w", encoding="utf-8", newline="\n") as file:
-                    json.dump(
+                utils.safe_file_write(tick_json,
+                    json.dumps(
                         {
                         	"values": [
                                 ticking_function
                             ]
                         },
-                        file,
                         indent=4
                     )
+                )
 
     log("Stored functions extracted")
 
@@ -416,17 +415,17 @@ def extract_stored_advancements(world: Path, get_confirmation: bool):
     
     data_pack = world / "datapacks" / "stored_advancements"
     (data_pack / "data").mkdir(exist_ok=True, parents=True)
-    with (data_pack / "pack.mcmeta").open("w", encoding="utf-8", newline="\n") as file:
-        json.dump(
+    utils.safe_file_write(data_pack / "pack.mcmeta",
+        json.dumps(
             {
             	"pack": {
             		"pack_format": PACK_FORMAT,
             		"description": "Stores advancements which were originally stored in 1.12 worlds."
             	}
             },
-            file,
             indent=4
         )
+    )
 
     for namespace in (world / "data" / "advancements").iterdir():
         if not namespace.is_dir():
@@ -516,8 +515,7 @@ def disable_folder(world: Path, folder: str, get_confirmation: bool):
             )
 
         # Save file
-        with file_path.open("w", encoding="utf-8", newline="\n") as file:
-            json.dump(contents, file, indent=4)
+        utils.safe_file_write(file_path, json.dumps(contents, indent=4))
 
     # Log
     log(f"{folder.capitalize()} disabled")
@@ -538,8 +536,8 @@ def fix_disabled_vanilla(world: Path):
         log("ERROR: Vanilla disabler already exists!")
         return
     (world / "datapacks" / "vanilla_disabler").mkdir(parents=True, exist_ok=True)
-    with (world / "datapacks" / "vanilla_disabler" / "pack.mcmeta").open("w", encoding="utf-8", newline="\n") as file:
-        json.dump(
+    utils.safe_file_write(world / "datapacks" / "vanilla_disabler" / "pack.mcmeta",
+        json.dumps(
             {
             	"pack": {
             		"pack_format": PACK_FORMAT,
@@ -602,9 +600,9 @@ def fix_disabled_vanilla(world: Path):
             	    ]
             	}
             },
-            file,
             indent=4
         )
+    )
 
     # Open level.dat
     file = NBT.NBTFile(world / "level.dat")
@@ -831,8 +829,7 @@ def merge_file(folders: list[str], file_path_a: Path, file_path_b: Path):
             return
 
         # Write to file
-        with file_path_a.open("w", encoding="utf-8", newline="\n") as file:
-            json.dump(json_manager.merge(contents_a, contents_b), file, indent=4)
+        utils.safe_file_write(file_path_a, json.dumps(json_manager.merge(contents_a, contents_b), indent=4))
         return
 
     # Overwrite file

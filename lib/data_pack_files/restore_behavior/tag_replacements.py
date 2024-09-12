@@ -10,6 +10,7 @@ from typing import cast
 from pathlib import Path
 from lib.log import log
 from lib import defaults
+from lib import utils
 from lib import finalize
 from lib.data_pack_files import tables
 
@@ -42,17 +43,17 @@ def create_pack(world: Path):
         return
     data_pack_path.mkdir(exist_ok=True, parents=True)
 
-    with (data_pack_path / "pack.mcmeta").open("w", encoding="utf-8", newline="\n") as file:
-        json.dump(
+    utils.safe_file_write(data_pack_path / "pack.mcmeta",
+        json.dumps(
             {
             	"pack": {
             		"pack_format": PACK_FORMAT,
             		"description": "Adds block and item tags to account for the flattening of 1.13."
             	}
             },
-            file,
             indent=4
         )
+    )
 
     # Create item tags
     folder_path = data_pack_path / "data" / "tag_replacements" / "tags" / "item"
@@ -230,14 +231,14 @@ def create_item_tag(folder_path: Path, object_id: str, object_list: list[str]):
         #log(f'"#tag_replacements:{object_id[10:]}": {object_list}'.replace("'", '"'))
         log(f'"{object_list[0]}": "#tag_replacements:{object_id[10:]}"')
     file_path = folder_path / (object_id[10:] + ".json")
-    with file_path.open("w", encoding="utf-8", newline="\n") as file:
-        json.dump(
+    utils.safe_file_write(file_path,
+        json.dumps(
             {
                 "values": object_list
             },
-            file,
             indent=4
         )
+    )
 
 def create_block_tag(folder_path: Path, object_id: str, object_list: list[str]):
     if SEND_PYTHON:
@@ -245,11 +246,11 @@ def create_block_tag(folder_path: Path, object_id: str, object_list: list[str]):
     #log(f'"#tag_replacements:{object_id[10:]}": {object_list}'.replace("'", '"'))
     #log(f'"{object_list[0]}": "#tag_replacements:{object_id[10:]}"')
     file_path = folder_path / (object_id[10:] + ".json")
-    with file_path.open("w", encoding="utf-8", newline="\n") as file:
-        json.dump(
+    utils.safe_file_write(file_path,
+        json.dumps(
             {
                 "values": object_list
             },
-            file,
             indent=4
         )
+    )

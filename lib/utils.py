@@ -6,6 +6,7 @@
 # Import things
 
 import traceback
+from pathlib import Path
 from nbt import nbt as NBT
 import random
 random.seed()
@@ -235,3 +236,35 @@ def log_error():
     log(f'ERROR:\n{traceback.format_exc()}')
     log(f'Error logged to: {get_log_path().as_posix()}')
     log(f'Please report the issue on the E.M.U. Discord server: {defaults.DISCORD_INVITE}', True)
+
+
+
+FILE_ENCODINGS = [
+    "utf-8",
+    "cp1252",
+]
+
+def safe_file_read(file_path: Path) -> str:
+    for file_encoding in FILE_ENCODINGS:
+        try:
+            with file_path.open("r", encoding=file_encoding) as file:
+                return file.read()
+        except:
+            continue
+
+    log(f"Could not read file, returning empty string: {file_path.as_posix()}")
+    return ""
+
+def safe_file_write(file_path: Path, contents: str):
+    for file_encoding in FILE_ENCODINGS:
+        try:
+            if file_path.exists():
+                with file_path.open("r",encoding=file_encoding) as file:
+                    file.read()
+            with file_path.open("w", encoding=file_encoding, newline="\n") as file:
+                file.write(contents)
+            return
+        except:
+            continue
+
+    log(f"Could not write to file: {file_path.as_posix()}")

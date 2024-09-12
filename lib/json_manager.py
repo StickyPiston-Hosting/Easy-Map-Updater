@@ -59,8 +59,8 @@ def merge_list(a: list, b: list) -> list:
 
 def safe_load(file_path: Path) -> tuple[dict, bool]:
     try:
-        with file_path.open("r", encoding="utf-8") as file:
-            return json.loads(file.read().encode(encoding="utf-8", errors="backslashreplace")), True
+        contents = utils.safe_file_read(file_path)
+        return json.loads(contents.encode(encoding="utf-8", errors="backslashreplace")), True
     except (json.JSONDecodeError, FileNotFoundError):
         log(f'ERROR: Invalid JSON file at: {file_path.as_posix()[len(MINECRAFT_PATH.as_posix()):]}')
         return {}, False

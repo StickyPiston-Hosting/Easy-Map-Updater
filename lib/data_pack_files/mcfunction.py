@@ -9,6 +9,7 @@ from pathlib import Path
 from lib.log import log
 from lib.data_pack_files import command
 from lib import defaults
+from lib import utils
 
 
 
@@ -33,13 +34,11 @@ def update(file_path: Path, source_file_path: Path, version: int, function_id: s
         log(f"Function: {namespaced_id}")
 
     # Read file
-    with source_file_path.open("r", encoding="utf-8") as file:
-        contents = file.read()
+    contents = utils.safe_file_read(source_file_path)
 
     # Write to new location
     file_path.parent.mkdir(parents=True, exist_ok=True)
-    with file_path.open("w", encoding="utf-8", newline="\n") as file:
-        file.write(mcfunction(contents))
+    utils.safe_file_write(file_path, mcfunction(contents))
 
 def mcfunction(contents: str) -> str:
     # Split up the lines

@@ -9,6 +9,7 @@ import json
 from pathlib import Path
 from lib.log import log
 from lib import json_manager
+from lib import utils
 from lib.resource_pack_files import miscellaneous
 
 
@@ -78,5 +79,4 @@ def update_font(pack: Path, file_path: Path):
 
     contents["providers"] = new_providers
 
-    with file_path.open("w", encoding="utf-8", newline="\n") as file:
-        json.dump(contents, file, indent=4)
+    utils.safe_file_write(file_path, json.dumps(contents, indent=4))

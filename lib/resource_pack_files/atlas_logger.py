@@ -8,6 +8,7 @@
 import json
 from pathlib import Path
 from lib import json_manager
+from lib import utils
 from lib.log import log
 from lib.resource_pack_files import miscellaneous
 
@@ -92,5 +93,4 @@ def create_atlas_file(pack: Path, textures: list[str]):
 
     folder = pack / "assets" / "minecraft" / "atlases"
     folder.mkdir(parents=True, exist_ok=True)
-    with (folder / "blocks.json").open("w", encoding="utf-8", newline="\n") as file:
-        json.dump({"sources": sources}, file, indent=4)
+    utils.safe_file_write(folder / "blocks.json", json.dumps({"sources": sources}, indent=4))

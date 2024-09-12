@@ -84,8 +84,7 @@ def update_pack_mcmeta(og_pack: Path, pack: Path):
         return
     if contents["pack"]["pack_format"] < PACK_FORMAT:
         contents["pack"]["pack_format"] = PACK_FORMAT
-    with (pack / "pack.mcmeta").open("w", encoding="utf-8", newline="\n") as file:
-        json.dump(contents, file, indent=4)
+    utils.safe_file_write(pack / "pack.mcmeta", json.dumps(contents, indent=4))
 
 
 
@@ -216,8 +215,7 @@ def update_file_name(og_namespace: Path, namespace: Path, subdir: str, target: s
         )
 
     if metadata:
-        with (metadata_path).open("w", encoding="utf-8", newline="\n") as file:
-            json.dump(metadata, file, indent=4)
+        utils.safe_file_write(metadata_path, json.dumps(metadata, indent=4))
 
 
 
@@ -337,10 +335,8 @@ def purge_vanilla_assets(pack: Path):
 
             # Compare files
             if file_path.suffix in defaults.TEXT_FILE_FORMATS:
-                with file_path.open("r", encoding="utf-8") as file:
-                    contents = file.read()
-                with vanilla_file_path.open("r", encoding="utf-8") as file:
-                    vanilla_contents = file.read()
+                contents = utils.safe_file_read(file_path)
+                vanilla_contents = utils.safe_file_read(vanilla_file_path)
                 if contents == vanilla_contents:
                     duplicate_files += 1
                     os.remove(file_path)

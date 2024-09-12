@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import cast, Any
 from lib.log import log
 from lib import defaults
+from lib import utils
 from lib import json_manager
 from lib.data_pack_files import ids
 from lib.data_pack_files import miscellaneous
@@ -42,8 +43,7 @@ def update(file_path: Path, source_file_path: Path, version: int):
 
     # Write to new location
     file_path.parent.mkdir(parents=True, exist_ok=True)
-    with file_path.open("w", encoding="utf-8", newline="\n") as file:
-        json.dump(item_modifier(contents, version), file, indent=4)
+    utils.safe_file_write(file_path, json.dumps(item_modifier(contents, version), indent=4))
 
 
 

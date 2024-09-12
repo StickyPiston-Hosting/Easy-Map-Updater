@@ -9,6 +9,7 @@ import json
 from pathlib import Path
 from lib.log import log
 from lib import defaults
+from lib import utils
 from lib import finalize
 
 
@@ -33,46 +34,44 @@ def create_pack(world: Path, spawner_position_list: list[str]):
     data_pack_path = world / "datapacks" / "spawner_position"
     data_pack_path.mkdir(exist_ok=True, parents=True)
 
-    with (data_pack_path / "pack.mcmeta").open("w", encoding="utf-8", newline="\n") as file:
-        json.dump(
+    utils.safe_file_write(data_pack_path / "pack.mcmeta",
+        json.dumps(
             {
             	"pack": {
             		"pack_format": PACK_FORMAT,
             		"description": "Teleports freshly-spawned mobs to their encoded positions."
             	}
             },
-            file,
             indent=4
         )
+    )
 
     tag_path = data_pack_path / "data" / "minecraft" / "tags" / "function"
     tag_path.mkdir(exist_ok=True, parents=True)
 
-    with (tag_path / "tick.json").open("w", encoding="utf-8", newline="\n") as file:
-        json.dump(
+    utils.safe_file_write(tag_path / "tick.json",
+        json.dumps(
             {
                 "values": [
                     "spawner_position:tick"
                 ]
             },
-            file,
             indent=4
         )
+    )
 
     function_path = data_pack_path / "data" / "spawner_position" / "function" / "tick.mcfunction"
     function_path.parent.mkdir(exist_ok=True, parents=True)
 
     contents: list[str] = []
     if function_path.exists():
-        with function_path.open("r", encoding="utf-8") as file:
-            contents = file.read().split("\n")
+        contents = utils.safe_file_read(function_path).split("\n")
     
     for command in spawner_position_list:
         if command not in contents:
             contents.append(command)
 
-    with function_path.open("w", encoding="utf-8", newline="\n") as file:
-        file.write("\n".join(contents))
+    utils.safe_file_write(function_path, "\n".join(contents))
 
     log("Spawner position data pack created")
 

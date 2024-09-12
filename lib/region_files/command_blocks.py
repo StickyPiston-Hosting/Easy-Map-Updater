@@ -68,10 +68,8 @@ def read_commands(world: Path):
                     commands.append(region_output)
 
     # Write results to file
-    with (PROGRAM_PATH / "commands.mcfunction").open("w", encoding="utf-8", newline="\n") as file:
-        file.write("\n".join(commands))
-    with (PROGRAM_PATH / "commands_original.mcfunction").open("w", encoding="utf-8", newline="\n") as file:
-        file.write("\n".join(commands))
+    utils.safe_file_write(PROGRAM_PATH / "commands.mcfunction", "\n".join(commands))
+    utils.safe_file_write(PROGRAM_PATH / "commands_original.mcfunction", "\n".join(commands))
 
     log("Command block data read")
 
@@ -237,8 +235,7 @@ def write_commands(world: Path, get_confirmation: bool):
             return
 
     # Extract commands from file
-    with (PROGRAM_PATH / "commands.mcfunction").open("r", encoding="utf-8") as file:
-        commands = file.read().split("\n")
+    commands = utils.safe_file_read(PROGRAM_PATH / "commands.mcfunction").split("\n")
     region_change = False
     chunk_change = False
     init_bool = False
@@ -352,8 +349,7 @@ def update_commands(version: int):
         return
 
     # Read commands
-    with (PROGRAM_PATH / "commands_original.mcfunction").open("r", encoding="utf-8") as file:
-        contents = file.read()
+    contents = utils.safe_file_read(PROGRAM_PATH / "commands_original.mcfunction")
 
     # Split up the lines
     lines = contents.split("\n")
@@ -397,12 +393,10 @@ def update_commands(version: int):
         # Write line to list
         lines[line_index] = line
 
-    with (PROGRAM_PATH / "commands.mcfunction").open("w", encoding="utf-8", newline="\n") as file:
-        file.write("\n".join(lines))
+    utils.safe_file_write(PROGRAM_PATH / "commands.mcfunction", "\n".join(lines))
     function_path = MINECRAFT_PATH / "saves" / "Testing World" / "datapacks" / "Test Data Pack" / "data" / "test" / "function"
     if function_path.exists():
-        with (function_path / "commands.mcfunction").open("w", encoding="utf-8", newline="\n") as file:
-            file.write("\n".join(lines))
+        utils.safe_file_write(function_path / "commands.mcfunction", "\n".join(lines))
 
     log("Command block data updated")
 
@@ -484,16 +478,14 @@ def extract_commands(world: Path):
 
         init_bool = True
 
-    with (PROGRAM_PATH / "command_chain.mcfunction").open("w", encoding="utf-8", newline="\n") as file:
-        file.write("\n".join(extracted_commands))
+    utils.safe_file_write(PROGRAM_PATH / "command_chain.mcfunction", "\n".join(extracted_commands))
 
     log("Command block chain extracted")
 
 
 
 def compile_command_data(source: str) -> dict[str, dict[tuple[int, int, int], CommandGuide]]:
-    with (PROGRAM_PATH / source).open("r", encoding="utf-8") as file:
-        commands = file.read().split("\n")
+    commands = utils.safe_file_read(PROGRAM_PATH / source).split("\n")
 
     command_data: dict[str, dict[tuple[int, int, int], CommandGuide]] = {}
     guide = cast(CommandGuide, {"coordinates": "", "region": "", "chunk_x": None, "chunk_z": None, "list": None, "index": None, "tag": None})

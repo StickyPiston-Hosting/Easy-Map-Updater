@@ -555,9 +555,7 @@ def convert_line_endings_folder(folder: Path):
         if defaults.DEBUG_MODE:
             print(file_path.as_posix())
         try:
-            with file_path.open("r", encoding="utf-8") as file:
-               contents = file.read()
-            with file_path.open("w", encoding="utf-8", newline="\n") as file:
-               file.write(contents)
+            contents = utils.safe_file_read(file_path)
+            utils.safe_file_write(file_path, contents)
         except:
             continue

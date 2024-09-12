@@ -10,6 +10,7 @@ import hashlib
 from pathlib import Path
 from lib.log import log
 from lib import defaults
+from lib import utils
 from lib import option_manager
 
 
@@ -34,65 +35,62 @@ def create_function(commands: str) -> str:
     data_pack_path.mkdir(exist_ok=True, parents=True)
 
     # Prepare pack.mcmeta
-    with (data_pack_path / "pack.mcmeta").open("w", encoding="utf-8", newline="\n") as file:
-        json.dump(
+    utils.safe_file_write(data_pack_path / "pack.mcmeta",
+        json.dumps(
             {
             	"pack": {
             		"pack_format": PACK_FORMAT,
             		"description": "Adds functions which are useful for emulating old command behavior."
             	}
             },
-            file,
             indent=4
         )
+    )
 
     # Prepare load function
     file_path = data_pack_path / "data" / "minecraft" / "tags" / "function" / "load.json"
     file_path.parent.mkdir(exist_ok=True, parents=True)
-    with file_path.open("w", encoding="utf-8", newline="\n") as file:
-        json.dump(
+    utils.safe_file_write(file_path,
+        json.dumps(
             {
                 "values": [
                     "help:load"
                 ]
             },
-            file,
             indent=4
         )
+    )
     file_path = data_pack_path / "data" / "help" / "function" / "load.mcfunction"
     file_path.parent.mkdir(exist_ok=True, parents=True)
-    with file_path.open("w", encoding="utf-8", newline="\n") as file:
-        file.write(
-            "# Create scoreboard objectives\n\n"
-            "scoreboard objectives add help.value dummy"
-        )
+    utils.safe_file_write(file_path,
+        "# Create scoreboard objectives\n\n"
+        "scoreboard objectives add help.value dummy"
+    )
 
     # Prepare tick function
     file_path = data_pack_path / "data" / "minecraft" / "tags" / "function" / "tick.json"
     file_path.parent.mkdir(exist_ok=True, parents=True)
-    with file_path.open("w", encoding="utf-8", newline="\n") as file:
-        json.dump(
+    utils.safe_file_write(file_path,
+        json.dumps(
             {
                 "values": [
                     "help:tick"
                 ]
             },
-            file,
             indent=4
         )
+    )
     file_path = data_pack_path / "data" / "help" / "function" / "tick.mcfunction"
     file_path.parent.mkdir(exist_ok=True, parents=True)
-    with file_path.open("w", encoding="utf-8", newline="\n") as file:
-        file.write(
-            "# Remove motion modified tag\n\n"
-            "tag @e remove help.motion_modified"
-        )
+    utils.safe_file_write(file_path,
+        "# Remove motion modified tag\n\n"
+        "tag @e remove help.motion_modified"
+    )
 
     # Create function
     function_name = hashlib.sha256(commands.encode("utf-8")).hexdigest()
     function_path = data_pack_path / "data" / "help" / "function" / f"{function_name}.mcfunction"
     function_path.parent.mkdir(exist_ok=True, parents=True)
-    with function_path.open("w", encoding="utf-8", newline="\n") as file:
-        file.write(commands)
+    utils.safe_file_write(function_path, commands)
 
     return f"function help:{function_name}COMMAND_HELPER"

@@ -9,6 +9,7 @@ import json
 from pathlib import Path
 from typing import cast, Any
 from lib import defaults
+from lib import utils
 from lib import json_manager
 from lib.data_pack_files import blocks
 from lib.data_pack_files import items
@@ -38,8 +39,7 @@ def update(file_path: Path, source_file_path: Path, version: int):
 
     # Write to new location
     file_path.parent.mkdir(parents=True, exist_ok=True)
-    with file_path.open("w", encoding="utf-8", newline="\n") as file:
-        json.dump(predicate(contents, version), file, indent=4)
+    utils.safe_file_write(file_path, json.dumps(predicate(contents, version), indent=4))
 
 
 
