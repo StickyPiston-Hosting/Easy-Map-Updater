@@ -169,6 +169,12 @@ def item_modifier(contents: dict[str, Any] | list, version: int, object_id: str 
             for modifier in contents["modifiers"]:
                 if "amount" in modifier:
                     modifier["amount"] = miscellaneous.number_provider(modifier["amount"])
+                if "id" in modifier:
+                    modifier["id"] = miscellaneous.namespace(modifier["id"])
+                else:
+                    modifier["id"] = miscellaneous.namespace(utils.uuid_from_int_array(utils.new_uuid()))
+                if "name" in modifier:
+                    del modifier["name"]
                 if "operation" in modifier:
                     id_array = {
                         "addition": "add_value",
