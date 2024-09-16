@@ -416,7 +416,8 @@ def extract(item_id: str, components: dict[str, Any] | None, nbt: dict[str, Any]
             components["minecraft:charged_projectiles"] = nbt_tags.TypeList([])
         charged_projectiles = components["minecraft:charged_projectiles"]
         for charged_projectile in nbt["ChargedProjectiles"]:
-            charged_projectiles.append(charged_projectile)
+            if "id" in charged_projectile:
+                charged_projectiles.append(charged_projectile)
         del nbt["ChargedProjectiles"]
 
     if "CustomModelData" in nbt:
