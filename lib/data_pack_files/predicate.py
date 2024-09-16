@@ -363,8 +363,8 @@ def predicate_location(contents: dict, version: int) -> dict:
 
     if "fluid" in contents:
         if "fluid" in contents["fluid"]:
-            contents["fluid"]["fluids"] = miscellaneous.namespace(contents["fluid"])
-            del contents["fluid"]
+            contents["fluid"]["fluids"] = miscellaneous.namespace(contents["fluid"]["fluid"])
+            del contents["fluid"]["fluid"]
 
         if "tag" in contents["fluid"]:
             if "fluids" not in contents["fluid"]:
