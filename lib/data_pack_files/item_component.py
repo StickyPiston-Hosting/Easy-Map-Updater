@@ -207,6 +207,8 @@ def extract(item_id: str, components: dict[str, Any] | None, nbt: dict[str, Any]
                 )
             if "Operation" in attribute_modifier:
                 attribute["operation"] = ["add_value", "add_multiplied_base", "add_multiplied_total"][attribute_modifier["Operation"].value]
+            else:
+                attribute["operation"] = "add_value"
             if "Amount" in attribute_modifier:
                 attribute["amount"] = nbt_tags.TypeDouble(attribute_modifier["Amount"])
             for key in ["id", "operation", "amount"]:
