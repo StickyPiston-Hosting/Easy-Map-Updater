@@ -207,8 +207,14 @@ def predicate_entity(contents: dict, version: int) -> dict:
     if "location" in contents:
         contents["location"] = predicate_location(contents["location"], version)
 
+    if "movement_affected_by" in contents:
+        contents["movement_affected_by"] = predicate_location(contents["movement_affected_by"], version)
+
     if "nbt" in contents:
         contents["nbt"] = nbt_tags.update(contents["nbt"], version, [], "entity")
+
+    if "stepping_on" in contents:
+        contents["stepping_on"] = predicate_location(contents["stepping_on"], version)
 
     if "passenger" in contents:
         contents["passenger"] = predicate_entity(contents["passenger"], version)
@@ -357,7 +363,7 @@ def predicate_location(contents: dict, version: int) -> dict:
 
         if "tag" in contents["block"]:
             if "blocks" not in contents["block"]:
-                contents["block"]["blocks"] = miscellaneous.namespace(contents["block"]["tag"])
+                contents["block"]["blocks"] = "#" + miscellaneous.namespace(contents["block"]["tag"])
             del contents["block"]["tag"]
 
 
@@ -368,7 +374,7 @@ def predicate_location(contents: dict, version: int) -> dict:
 
         if "tag" in contents["fluid"]:
             if "fluids" not in contents["fluid"]:
-                contents["fluid"]["fluids"] = miscellaneous.namespace(contents["fluid"]["tag"])
+                contents["fluid"]["fluids"] = "#" + miscellaneous.namespace(contents["fluid"]["tag"])
             del contents["fluid"]["tag"]
 
     if "structure" in contents:

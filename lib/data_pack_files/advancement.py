@@ -103,12 +103,20 @@ def update_criterion(criterion: dict[str, Any]):
     if "conditions" in criterion:
 
         # Update all variations of the entity predicate
-        for key in ["bystander", "entity", "lightning", "player", "projectile", "source", "villager"]:
+        for key in ["bystander", "child", "entity", "lightning", "parent", "player", "projectile", "shooter", "source", "villager", "zombie"]:
             if key in criterion["conditions"]:
                 if isinstance(criterion["conditions"][key], dict):
                     predicate.predicate_entity(criterion["conditions"][key], pack_version)
                 if isinstance(criterion["conditions"][key], list):
                     for entity in criterion["conditions"][key]:
+                        predicate.predicate(entity, pack_version)
+
+        if "victims" in criterion["conditions"]:
+            for victim in criterion["conditions"]["victims"]:
+                if isinstance(victim, dict):
+                    predicate.predicate_entity(victim, pack_version)
+                if isinstance(victim, list):
+                    for entity in victim:
                         predicate.predicate(entity, pack_version)
 
 
@@ -126,15 +134,23 @@ def update_criterion(criterion: dict[str, Any]):
 
 
         # Update item predicates
-        if "item" in criterion["conditions"]:
-            if isinstance(criterion["conditions"]["item"], dict):
-                predicate.predicate_item(criterion["conditions"]["item"], pack_version)
+        for key in ["item", "rod"]:
+            if key in criterion["conditions"]:
+                if isinstance(criterion["conditions"][key], dict):
+                    predicate.predicate_item(criterion["conditions"][key], pack_version)
 
-        if "items" in criterion["conditions"]:
-            if isinstance(criterion["conditions"]["items"], list):
-                for item in criterion["conditions"]["items"]:
-                    predicate.predicate_item(item, pack_version)
+        for key in ["ingredients", "items"]:
+            if key in criterion["conditions"]:
+                if isinstance(criterion["conditions"][key], list):
+                    for item in criterion["conditions"][key]:
+                        predicate.predicate_item(item, pack_version)
 
-        if "rod" in criterion["conditions"]:
-            if isinstance(criterion["conditions"]["rod"], dict):
-                predicate.predicate_item(criterion["conditions"]["rod"], pack_version)
+
+        # Update location predicate
+        if "start_position" in criterion["conditions"]:
+            predicate.predicate_location(criterion["conditions"]["start_position"], pack_version)
+
+        if "location" in criterion["conditions"]:
+            if isinstance(criterion["conditions"]["location"], list):
+                for location in criterion["conditions"]["location"]:
+                    predicate.predicate(location, pack_version)
