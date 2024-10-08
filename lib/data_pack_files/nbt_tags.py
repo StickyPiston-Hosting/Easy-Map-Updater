@@ -40,6 +40,10 @@ class TypeNumeric:
         return str(self.value) + self.suffix
 
     def num(self, value, num_type: str):
+        if isinstance(value, str):
+            for char in ["b", "B", "s", "S", "l", "L", "f", "F", "d", "D"]:
+                if value.endswith(char):
+                    value = value[:-1]
         if num_type == "int":
             return int(value)
         return float(value)
