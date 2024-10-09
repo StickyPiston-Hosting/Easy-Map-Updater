@@ -32,9 +32,6 @@
                     "data_type": "string",
                     "argument_type": "attribute"
                 },
-                "Name": {
-                    "remove": true
-                },
                 "Operation": {
                     "rename": "operation",
                     "data_type": "string",
