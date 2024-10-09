@@ -716,7 +716,7 @@ def edge_case_fuse(parent: dict, object_id: str):
             del parent["fuse"]
 
 def edge_case_item_components(nbt: dict[str, Any], version: int, issues: list[dict[str, str | int]]) -> dict[str, Any]:
-    return item_component.conform(nbt, version, issues)
+    return item_component.conform_components(item_component.ItemComponents.unpack_from_dict(nbt, False), version, issues).pack_to_dict()
 
 def edge_case_item_tag(parent: dict[str, Any], nbt: dict[str, Any], object_id: str, pack_version: int, issues: list[dict[str, str | int]]) -> dict[str, Any]:
     nbt = update_tags(parent, nbt, NBT_TREE["sources"]["item_tag"]["tags"], "item_tag", object_id, {}, issues)
@@ -878,16 +878,18 @@ def edge_case_uuid_long(parent: dict, case: dict[str, str]):
 
 
 
-def convert_to_lib_format(nbt: dict | TypeList | TypeNumeric | str) -> NBT.TAG:
+def convert_to_lib_format(nbt: dict | list | TypeList | TypeNumeric | str) -> NBT.TAG:
     if isinstance(nbt, dict):
         return convert_to_lib_format_compound(nbt)
     if isinstance(nbt, TypeList):
+        return convert_to_lib_format_nbt_list(nbt)
+    if isinstance(nbt, list):
         return convert_to_lib_format_list(nbt)
     if isinstance(nbt, TypeNumeric):
         return convert_to_lib_format_numeric(nbt)
     if isinstance(nbt, str):
         return convert_to_lib_format_string(nbt)
-    log("ERROR: convert_to_lib_format: NBT type not determined!")
+    log(f"ERROR: convert_to_lib_format: NBT type not determined: {nbt}")
     
 def convert_to_lib_format_compound(nbt: dict[str, Any]) -> NBT.TAG_Compound:
     output_nbt = NBT.TAG_Compound()
@@ -895,7 +897,7 @@ def convert_to_lib_format_compound(nbt: dict[str, Any]) -> NBT.TAG_Compound:
         output_nbt[key] = convert_to_lib_format(nbt[key])
     return output_nbt
 
-def convert_to_lib_format_list(nbt: TypeList) -> Any:
+def convert_to_lib_format_nbt_list(nbt: TypeList) -> Any:
     if isinstance(nbt, TypeByteArray):
         output = NBT.TAG_Byte_Array()
         output.value = cast(bytearray, [ int(nbt[i].value) for i in range(len(nbt)) ])
@@ -912,6 +914,15 @@ def convert_to_lib_format_list(nbt: TypeList) -> Any:
         else:
             output = NBT.TAG_List(NBT.TAG_Compound)
         output.tags = data
+    return output
+
+def convert_to_lib_format_list(nbt: list) -> Any:
+    data = [ convert_to_lib_format(nbt[i]) for i in range(len(nbt)) ]
+    if data:
+        output = NBT.TAG_List(type(data[0]))
+    else:
+        output = NBT.TAG_List(NBT.TAG_Compound)
+    output.tags = data
     return output
 
 def convert_to_lib_format_numeric(nbt: TypeNumeric) -> Any:

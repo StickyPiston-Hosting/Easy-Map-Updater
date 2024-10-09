@@ -105,7 +105,7 @@
             },
             {
                 "version": {"min": 1300},
-                "mapping": ["carry", "target_selector", "item", "carry"]
+                "mapping": ["carry", "target_selector", "item_read", "carry"]
             }
         ],
         "clone": [
@@ -541,12 +541,12 @@
                                 "index": 3,
                                 "branches": {
                                     "block": {
-                                        "mapping": ["carry", "carry", "carry", "carry", "coordinate", "coordinate", "coordinate", "slot", "item", "carry", "command"],
-                                        "legend": [0, 1, 2, 3, 4, 5, 6, 7, {"id": 8, "read": true}, "run", {"argument": {"min": 9}, "execute": true}]
+                                        "mapping": ["carry", "carry", "carry", "carry", "coordinate", "coordinate", "coordinate", "slot", "item_read", "carry", "command"],
+                                        "legend": [0, 1, 2, 3, 4, 5, 6, 7, 8, "run", {"argument": {"min": 9}, "execute": true}]
                                     },
                                     "entity": {
-                                        "mapping": ["carry", "carry", "carry", "carry", "target_selector", "slot", "item", "carry", "command"],
-                                        "legend": [0, 1, 2, 3, 4, 5, {"id": 6, "read": true}, "run", {"argument": {"min": 7}, "execute": true}]
+                                        "mapping": ["carry", "carry", "carry", "carry", "target_selector", "slot", "item_read", "carry", "command"],
+                                        "legend": [0, 1, 2, 3, 4, 5, 6, "run", {"argument": {"min": 7}, "execute": true}]
                                     }
                                 }
                             },

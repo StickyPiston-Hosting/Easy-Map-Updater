@@ -17,6 +17,7 @@ from lib.data_pack_files import miscellaneous
 from lib.data_pack_files import ids
 from lib.data_pack_files import nbt_tags
 from lib.data_pack_files import nbt_to_json
+from lib.data_pack_files import item_component
 
 
 
@@ -292,7 +293,7 @@ def predicate_item(contents: dict, version: int) -> dict:
                     {
                         "id": contents["items"][index],
                         "data_value": -1,
-                        "components": {},
+                        "components": item_component.ItemComponents([]),
                         "nbt": {},
                         "read": True
                     },
@@ -303,7 +304,7 @@ def predicate_item(contents: dict, version: int) -> dict:
                 {
                     "id": contents["items"],
                     "data_value": -1,
-                    "components": {},
+                    "components": item_component.ItemComponents([]),
                     "nbt": {},
                     "read": True
                 },

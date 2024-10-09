@@ -6,52 +6,231 @@
 # Import things
 
 from typing import cast, Any
-from lib.data_pack_files import blocks
-from lib.data_pack_files import nbt_tags
-from lib.data_pack_files import arguments
-from lib.data_pack_files import miscellaneous
 from lib.log import log
 from lib import defaults
 from lib import utils
 
 
 
+# Define classes
+
+class ItemComponent:
+    key: str
+    value: Any
+    negated: bool
+    separator: str | None
+
+    def __init__(self, key: str, value: Any, negated: bool, separator: str | None):
+        self.key = key
+        self.value = value
+        self.negated = negated
+        self.separator = separator
+
+    @staticmethod
+    def unpack(component: str):
+        component = component.strip()
+
+        # Determine whether component is negated
+        negated: bool = component.startswith("!")
+        if negated:
+            component = component[1:]
+
+        # Determine if component is defined using an equal sign or a tilda
+        for separator in ["=", "~"]:
+            parts = arguments.parse_with_quotes(component, separator, True)
+            if len(parts) > 1:
+                return ItemComponent(
+                    utils.unquote(parts[0].strip()),
+                    nbt_tags.unpack(parts[1].strip()),
+                    negated,
+                    separator
+                )
+
+        return ItemComponent(
+            utils.unquote(component),
+            None,
+            negated,
+            None
+        )
+
+    def pack(self) -> str:
+        negated_string = "!" if self.negated else ""
+        if self.separator:
+            return f"{negated_string}{self.key}{self.separator}{nbt_tags.pack(self.value)}"
+        return f"{negated_string}{self.key}"
+    
+    def set_namespace(self):
+        self.key = miscellaneous.namespace(self.key)
+
+
+class ItemComponentAlternatives:
+    alternatives: list[ItemComponent]
+
+    def __init__(self, alternatives: list[ItemComponent]):
+        self.alternatives = alternatives
+
+    @staticmethod
+    def unpack(parts: list[str]):
+        alternatives: list[ItemComponent] = []
+        for part in parts:
+            alternatives.append(ItemComponent.unpack(part))
+        return ItemComponentAlternatives(alternatives)
+    
+    def pack(self) -> str:
+        parts: list[str] = []
+        for alternative in self.alternatives:
+            parts.append(alternative.pack())
+        return "|".join(parts)
+    
+    def set_namespace(self):
+        for alternative in self.alternatives:
+            alternative.set_namespace()
+
+
+class ItemComponents:
+    components: list[ItemComponent | ItemComponentAlternatives]
+
+    def __init__(self, components: list[ItemComponent | ItemComponentAlternatives]):
+        self.components = components
+
+    @staticmethod
+    def unpack(components_string: str):
+        if not components_string:
+            return ItemComponents([])
+
+        components: list[ItemComponent | ItemComponentAlternatives] = []
+        parts = arguments.parse_with_quotes(components_string[1:], ",", True)
+        for part in parts:
+            alternatives = arguments.parse_with_quotes(part, "|", True)
+            if len(alternatives) > 1:
+                components.append(ItemComponentAlternatives.unpack(alternatives))
+            else:
+                components.append(ItemComponent.unpack(part))
+
+        return ItemComponents(components)
+    
+    @staticmethod
+    def unpack_from_dict(components_dict: dict[str, Any] | None, read: bool):
+        partial_match_components = [
+            "minecraft:attribute_modifiers",
+            "minecraft:bundle_contents",
+            "minecraft:container",
+            "minecraft:custom_data",
+            "minecraft:damage",
+            "minecraft:firework_explosion",
+            "minecraft:fireworks",
+            "minecraft:jukebox_playable",
+            "minecraft:trim",
+            "minecraft:writable_book_content",
+            "minecraft:written_book_content",
+        ]
+        if not components_dict:
+            return ItemComponents([])
+        components: list[ItemComponent | ItemComponentAlternatives] = []
+        for key in components_dict:
+            components.append(ItemComponent(key, components_dict[key], False, "~" if (read and key in partial_match_components and isinstance(components_dict[key], dict)) else "="))
+        return ItemComponents(components)
+
+    def pack(self) -> str:
+        components: list[str] = []
+        for component in self.components:
+            components.append(component.pack())
+        return f"[{",".join(components)}]"
+    
+    def pack_to_dict(self) -> dict[str, Any]:
+        components_dict: dict[str, Any] = {}
+        for component in self.components:
+            if isinstance(component, ItemComponent):
+                components_dict[component.key] = component.value
+        return components_dict
+    
+    def has_components(self) -> bool:
+        return len(self.components) > 0
+    
+    def set_namespaces(self):
+        for component in self.components:
+            component.set_namespace()
+
+    def __getitem__(self, key: str) -> Any:
+        for component in self.components:
+            if isinstance(component, ItemComponent) and component.key == key:
+                return component.value
+                
+    def __setitem__(self, key: str, value: Any):
+        for component in self.components:
+            if isinstance(component, ItemComponent) and component.key == key:
+                component.value = value
+                return
+        self.components.append(ItemComponent(key, value, False, "="))
+
+    def __contains__(self, key: str) -> bool:
+        for component in self.components:
+            if isinstance(component, ItemComponent) and component.key == key:
+                return True
+        return False
+
+
+# Import more stuff to prevent circular loading issues
+
+from lib.data_pack_files import blocks
+from lib.data_pack_files import nbt_tags
+from lib.data_pack_files import arguments
+from lib.data_pack_files import miscellaneous
+
+
+
 # Define functions
 
-def unpack(components: str) -> dict[str, str | None]:
-    if not components:
-        return {}
-    output_components: dict[str, str | None] = {}
-    for entry in arguments.parse_with_quotes(components[1:], ",", True):
-        output_components[utils.unquote(entry.split("=")[0].strip())] = (
-            nbt_tags.unpack(entry.split("=")[1].strip())
-            if "=" in entry else None
-        )
-    return output_components
+# def unpack(components: str) -> dict[str, str | None]:
+#     if not components:
+#         return {}
+#     output_components: dict[str, str | None] = {}
+#     for entry in arguments.parse_with_quotes(components[1:], ",", True):
+#         output_components[utils.unquote(entry.split("=")[0].strip())] = (
+#             nbt_tags.unpack(entry.split("=")[1].strip())
+#             if "=" in entry else None
+#         )
+#     return output_components
 
 
-def pack(components: dict[str, Any]) -> str:
-    component_strings: list[str] = []
-    for component in components.keys():
-        if components[component] == None:
-            component_strings.append(component)
-        else:
-            component_strings.append(f'{component}={nbt_tags.pack(components[component])}')
-    return f'[{",".join(component_strings)}]'
+# def pack(components: dict[str, Any], read: bool) -> str:
+#     partial_match_components = [
+#         "minecraft:attribute_modifiers",
+#         "minecraft:custom_data",
+#     ]
+#     component_strings: list[str] = []
+#     for component in components.keys():
+#         if components[component] == None:
+#             component_strings.append(component)
+#         else:
+#             component_strings.append(f"{component}{"~" if read and component in partial_match_components else "="}{nbt_tags.pack(components[component])}")
+#     return f"[{",".join(component_strings)}]"
 
 
-def conform(components: dict[str, Any], version: int, issues: list[dict[str, str | int]]) -> dict[str, Any]:
+def conform_components(components: ItemComponents, version: int, issues: list[dict[str, str | int]]) -> ItemComponents:
     # Apply namespace to all components
-    for component in list(components.keys()):
-        namespaced_component = miscellaneous.namespace(component)
-        if component != namespaced_component:
-            components[namespaced_component] = components[component]
-            del components[component]
+    components.set_namespaces()
 
 
     # Adjust formatting of components
-    if "minecraft:attribute_modifiers" in components:
-        attribute_modifiers = components["minecraft:attribute_modifiers"]
+    for component in components.components:
+        if isinstance(component, ItemComponent):
+            conform_component(component, version)
+        else:
+            for alternative in component.alternatives:
+                conform_component(alternative, version)
+
+
+    return components
+
+
+def conform_component(component: ItemComponent, version: int):
+
+    if component.value is None:
+        return
+
+    if component.key == "minecraft:attribute_modifiers":
+        attribute_modifiers = component.value
         if not isinstance(attribute_modifiers, dict):
             attribute_modifiers = {"modifiers": attribute_modifiers}
         for attribute_modifier in attribute_modifiers["modifiers"]:
@@ -64,10 +243,10 @@ def conform(components: dict[str, Any], version: int, issues: list[dict[str, str
                     utils.uuid_from_int_array([entry.value for entry in attribute_modifier["uuid"]])
                 )
                 del attribute_modifier["uuid"]
-        components["minecraft:attribute_modifiers"] = attribute_modifiers
+        component.value = attribute_modifiers
 
-    if "minecraft:can_break" in components:
-        can_break: dict[str, Any] = components["minecraft:can_break"]
+    if component.key == "minecraft:can_break":
+        can_break: dict[str, Any] = component.value
         if "predicates" not in can_break and "show_in_tooltip" not in can_break:
             can_break = {"predicates": nbt_tags.TypeList([can_break])}
         if "predicates" in can_break:
@@ -81,10 +260,10 @@ def conform(components: dict[str, Any], version: int, issues: list[dict[str, str
                                 predicate["blocks"][i] = miscellaneous.namespace(predicate["blocks"][i])
                     else:
                         predicate["blocks"] = miscellaneous.namespace(predicate["blocks"])
-        components["minecraft:can_break"] = can_break
+        component.value = can_break
 
-    if "minecraft:can_place_on" in components:
-        can_place_on: dict[str, Any] = components["minecraft:can_place_on"]
+    if component.key == "minecraft:can_place_on":
+        can_place_on: dict[str, Any] = component.value
         if "predicates" not in can_place_on and "show_in_tooltip" not in can_place_on:
             can_place_on = {"predicates": nbt_tags.TypeList([can_place_on])}
         if "predicates" in can_place_on:
@@ -98,24 +277,24 @@ def conform(components: dict[str, Any], version: int, issues: list[dict[str, str
                                 predicate["blocks"][i] = miscellaneous.namespace(predicate["blocks"][i])
                     else:
                         predicate["blocks"] = miscellaneous.namespace(predicate["blocks"])
-        components["minecraft:can_place_on"] = can_place_on
+        component.value = can_place_on
 
-    if "minecraft:debug_stick_state" in components:
-        debug_stick_state: dict[str, str] = components["minecraft:debug_stick_state"]
+    if component.key == "minecraft:debug_stick_state":
+        debug_stick_state: dict[str, str] = component.value
         for block in list(debug_stick_state.keys()):
             namespaced_block = miscellaneous.namespace(block)
             if block != namespaced_block:
                 debug_stick_state[namespaced_block] = debug_stick_state[block]
                 del debug_stick_state[block]
 
-    if "minecraft:dyed_color" in components:
-        dyed_color = components["minecraft:dyed_color"]
+    if component.key == "minecraft:dyed_color":
+        dyed_color = component.value
         if not isinstance(dyed_color, dict):
             dyed_color = {"rgb": dyed_color}
-        components["minecraft:dyed_color"] = dyed_color
+        component.value = dyed_color
 
-    if "minecraft:enchantments" in components:
-        enchantments: dict[str, Any] = components["minecraft:enchantments"]
+    if component.key == "minecraft:enchantments":
+        enchantments: dict[str, Any] = component.value
         if "levels" not in enchantments and "show_in_tooltip" not in enchantments:
             enchantments = {"levels": enchantments}
         if "levels" in enchantments:
@@ -126,22 +305,22 @@ def conform(components: dict[str, Any], version: int, issues: list[dict[str, str
                     levels[namespaced_enchantment] = levels[enchantment]
                     del levels[enchantment]
                 levels[namespaced_enchantment] = nbt_tags.TypeInt(min(max(levels[namespaced_enchantment].value, 0), 255))
-        components["minecraft:enchantments"] = enchantments
+        component.value = enchantments
 
-    if "minecraft:potion_contents" in components:
-        potion_contents = components["minecraft:potion_contents"]
+    if component.key == "minecraft:potion_contents":
+        potion_contents = component.value
         if not isinstance(potion_contents, dict):
             potion_contents = {"potion": potion_contents}
-        components["minecraft:potion_contents"] = potion_contents
+        component.value = potion_contents
 
-    if "minecraft:profile" in components:
-        profile = components["minecraft:profile"]
+    if component.key == "minecraft:profile":
+        profile = component.value
         if not isinstance(profile, dict):
             profile = {"name": profile}
-        components["minecraft:profile"] = profile
+        component.value = profile
 
-    if "minecraft:stored_enchantments" in components:
-        stored_enchantments: dict[str, Any] = components["minecraft:stored_enchantments"]
+    if component.key == "minecraft:stored_enchantments":
+        stored_enchantments: dict[str, Any] = component.value
         if "levels" not in stored_enchantments and "show_in_tooltip" not in stored_enchantments:
             stored_enchantments = {"levels": stored_enchantments}
         if "levels" in stored_enchantments:
@@ -151,10 +330,10 @@ def conform(components: dict[str, Any], version: int, issues: list[dict[str, str
                 if stored_enchantment != namespaced_stored_enchantment:
                     levels[namespaced_stored_enchantment] = levels[stored_enchantment]
                     del levels[stored_enchantment]
-        components["minecraft:stored_enchantments"] = stored_enchantments
+        component.value = stored_enchantments
 
-    if "minecraft:writable_book_content" in components:
-        writable_book_content = components["minecraft:writable_book_content"]
+    if component.key == "minecraft:writable_book_content":
+        writable_book_content = component.value
         if "pages" not in writable_book_content:
             writable_book_content["pages"] = nbt_tags.TypeList([])
         pages = writable_book_content["pages"]
@@ -163,8 +342,8 @@ def conform(components: dict[str, Any], version: int, issues: list[dict[str, str
             if isinstance(page, str):
                 pages[index] = {"raw": page}
 
-    if "minecraft:written_book_content" in components:
-        written_book_content = components["minecraft:written_book_content"]
+    if component.key == "minecraft:written_book_content":
+        written_book_content = component.value
         if "pages" not in written_book_content:
             written_book_content["pages"] = nbt_tags.TypeList([])
         pages = written_book_content["pages"]
@@ -174,7 +353,6 @@ def conform(components: dict[str, Any], version: int, issues: list[dict[str, str
                 pages[index] = {"raw": page}
 
 
-    return components
 
 
 def extract(item_id: str, components: dict[str, Any] | None, nbt: dict[str, Any], version: int, issues: list[dict[str, str | int]]) -> dict[str, Any]:
@@ -199,6 +377,8 @@ def extract(item_id: str, components: dict[str, Any] | None, nbt: dict[str, Any]
             attribute = {}
             if "AttributeName" in attribute_modifier:
                 attribute["type"] = miscellaneous.attribute(attribute_modifier["AttributeName"], version, issues)
+            elif "Name" in attribute_modifier:
+                attribute["type"] = miscellaneous.attribute(attribute_modifier["Name"], version, issues)
             if "Slot" in attribute_modifier:
                 attribute["slot"] = attribute_modifier["Slot"]
             if "UUID" in attribute_modifier:

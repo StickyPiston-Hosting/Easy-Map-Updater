@@ -12,6 +12,7 @@ from lib.data_pack_files import items
 from lib.data_pack_files import blocks
 from lib.data_pack_files import entities
 from lib.data_pack_files import tables
+from lib.data_pack_files import item_component
 from lib.data_pack_files.restore_behavior import scoreboard_objective_splitter
 from lib import defaults
 
@@ -103,7 +104,7 @@ def scoreboard_objective_criteria(objective: dict[str, str], version: int, issue
                 return block_stats[stat] + block_id[10:]
             
             elif stat in item_stats:
-                item_id = cast(str, items.update({"id": object_id, "data_value": -1, "components": {}, "nbt": {}, "read": True}, pack_version, issues)["id"])
+                item_id = cast(str, items.update({"id": object_id, "data_value": -1, "components": item_component.ItemComponents([]), "nbt": {}, "read": True}, pack_version, issues)["id"])
                 if item_id in tables.ITEM_TAG_REPLACEMENTS:
                     scoreboard_objective_splitter.insert_objective(name, item_stats[stat], tables.ITEM_TAG_REPLACEMENTS[item_id])
                     return "dummy"

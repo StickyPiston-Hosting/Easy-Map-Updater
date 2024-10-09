@@ -15,6 +15,7 @@ from lib.data_pack_files import items
 from lib.data_pack_files import miscellaneous
 from lib.data_pack_files import predicate
 from lib.data_pack_files import item_modifier
+from lib.data_pack_files import item_component
 
 
 
@@ -134,7 +135,7 @@ def update_entry(entry: LootTableEntry, version: int) -> LootTableEntry:
                     {
                         "id": entry["name"],
                         "data_value": -1,
-                        "components": {},
+                        "components": item_component.ItemComponents([]),
                         "nbt": {},
                         "read": True
                     },

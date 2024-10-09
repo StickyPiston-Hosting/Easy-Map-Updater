@@ -38,7 +38,17 @@ class ItemInputFromCommand(TypedDict):
 
 class ItemOutputFromCommand(TypedDict):
     id: str
-    components: dict
+    components: item_component.ItemComponents
+
+def update_from_command_read(item: str | ItemInputFromCommand, version: int, issues: list[dict[str, str | int]]) -> str:
+    if isinstance(item, dict):
+        item["read"] = True
+    else:
+        item = cast(ItemInputFromCommand, {
+            "id": item,
+            "read": True,
+        })
+    return update_from_command(item, version, issues)
 
 def update_from_command(item: str | ItemInputFromCommand, version: int, issues: list[dict[str, str | int]]) -> str:
     # Assign version
@@ -86,7 +96,7 @@ def update_from_command(item: str | ItemInputFromCommand, version: int, issues: 
     new_item = cast(ItemOutputFromCommand, update(
         {
             "id": item_id,
-            "components": item_component.unpack(components),
+            "components": item_component.ItemComponents.unpack(components),
             "data_value": data_value,
             "nbt": nbt_tags.unpack(nbt),
             "read": read
@@ -95,8 +105,8 @@ def update_from_command(item: str | ItemInputFromCommand, version: int, issues: 
     ))
 
     # Return item
-    if new_item["components"]:
-        return new_item["id"] + item_component.pack(new_item["components"])
+    if new_item["components"].has_components():
+        return new_item["id"] + new_item["components"].pack()
     return new_item["id"]
 
 
@@ -144,7 +154,7 @@ def update_from_nbt(item: ItemInputFromNBT, version: int, issues: list[dict[str,
     new_item = update(
         {
             "id": item_id,
-            "components": components,
+            "components": item_component.ItemComponents.unpack_from_dict(components, read),
             "data_value": data_value,
             "nbt": nbt,
             "read": read
@@ -156,8 +166,8 @@ def update_from_nbt(item: ItemInputFromNBT, version: int, issues: list[dict[str,
     export_item: dict[str, Any] = {}
     if "id" in new_item and new_item["id"] != None:
         export_item["id"] = new_item["id"]
-    if "components" in new_item and new_item["components"] != None:
-        export_item["components"] = new_item["components"]
+    if new_item["components"].has_components():
+        export_item["components"] = new_item["components"].pack_to_dict()
     if count >= 0:
         export_item["count"] = nbt_tags.TypeInt(count)
     if slot != None:
@@ -194,7 +204,7 @@ def update_from_json(item: ItemInputFromJSON, version: int, issues: list[dict[st
     new_item = update(
         {
             "id": item_id,
-            "components": nbt_tags.convert_from_json(components) if components else None,
+            "components": item_component.ItemComponents.unpack_from_dict(nbt_tags.convert_from_json(components) if components else None, False),
             "data_value": -1,
             "nbt": nbt_tags.unpack(nbt) if nbt else None,
             "read": False
@@ -204,7 +214,7 @@ def update_from_json(item: ItemInputFromJSON, version: int, issues: list[dict[st
 
     return {
         "id": new_item["id"],
-        "components": nbt_to_json.convert_item_components_to_json(new_item["components"]) if new_item["components"] else None,
+        "components": nbt_to_json.convert_item_components_to_json(new_item["components"].pack_to_dict()) if new_item["components"].has_components() else None,
     }
 
 
@@ -212,13 +222,13 @@ def update_from_json(item: ItemInputFromJSON, version: int, issues: list[dict[st
 class ItemInput(TypedDict):
     id: str | nbt_tags.TypeNumeric | None
     data_value: int
-    components: dict | None
+    components: item_component.ItemComponents
     nbt: dict | None
     read: bool
 
 class ItemOutput(TypedDict):
     id: str | None
-    components: dict | None
+    components: item_component.ItemComponents
 
 def update(item: ItemInput, version: int, issues: list[dict[str, str | int]]) -> ItemOutput:
     # Assign version
@@ -243,16 +253,13 @@ def update(item: ItemInput, version: int, issues: list[dict[str, str | int]]) ->
 
     # Update NBT
     if nbt:
-        components = cast(dict[str, Any], nbt_tags.direct_update(nbt, pack_version, issues, "item_tag", old_item_id or "minecraft:stone"))
+        components = item_component.ItemComponents.unpack_from_dict(nbt_tags.direct_update(nbt, pack_version, issues, "item_tag", old_item_id or "minecraft:stone"), read)
 
     # Conform component format
-    if components:
-        components = item_component.conform(components, version, issues)
+    components = item_component.conform_components(components, version, issues)
 
     # Apply damage to items with durability
     if item_id in tables.ITEMS_WITH_DURABILITY and (data_value >= 1 or (data_value == 0 and read)):
-        if components == None or components == "":
-            components = {}
         components["minecraft:damage"] = nbt_tags.TypeInt(data_value)
 
     # Apply pre-1.8 adventure mode fixes
@@ -266,12 +273,16 @@ def update(item: ItemInput, version: int, issues: list[dict[str, str | int]]) ->
 
 
 
-def update_item_id(item_id: str | nbt_tags.TypeNumeric, components: dict | None, data_value: int, nbt: dict | None, read: bool, issues: list[dict[str, str | int]]) -> str:
+def update_item_id(item_id: str | nbt_tags.TypeNumeric, components: item_component.ItemComponents | None, data_value: int, nbt: dict | None, read: bool, issues: list[dict[str, str | int]]) -> str:
     # Convert if a numeric
     if not isinstance(item_id, str):
         item_id, data_value = cast(tuple[str, int], numeric_ids.update_block_item(int(item_id.value), data_value))
     elif item_id.isnumeric():
         item_id, data_value = cast(tuple[str, int], numeric_ids.update_block_item(int(item_id), data_value))
+
+    # Return if an asterisk
+    if item_id == "*":
+        return item_id
 
     # Apply namespace to name
     item_id = miscellaneous.namespace(item_id)
@@ -364,9 +375,7 @@ def extract_riding_id(nbt: dict) -> str:
     
 
 
-def insert_old_adventure_mode_tags(components: dict | None, item_id: str) -> dict:
-    if components == None or components == "":
-        components = {}
+def insert_old_adventure_mode_tags(components: item_component.ItemComponents, item_id: str) -> item_component.ItemComponents:
     if "minecraft:custom_data" not in components:
         components["minecraft:custom_data"] = {}
     components["minecraft:custom_data"]["adventure"] = nbt_tags.TypeByte(1)

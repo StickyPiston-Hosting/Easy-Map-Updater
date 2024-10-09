@@ -12,6 +12,7 @@ from lib import utils
 from lib import json_manager
 from lib.data_pack_files import blocks
 from lib.data_pack_files import items
+from lib.data_pack_files import item_component
 
 
 
@@ -52,7 +53,7 @@ def update(file_path: Path, source_file_path: Path, version: int, tag_type: str)
                 {
                     "id": contents["values"][i],
                     "data_value": -1,
-                    "components": {},
+                    "components": item_component.ItemComponents([]),
                     "nbt": {},
                     "read": True
                 },

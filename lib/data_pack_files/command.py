@@ -582,6 +582,7 @@ ARGUMENT_FUNCTIONS: dict[str, tuple] = {
     "hangable_facing": ( miscellaneous.hangable_facing, None ),
     "int_coordinate": ( miscellaneous.int_coordinate, None ),
     "item": ( items.update_from_command, None ),
+    "item_read": ( items.update_from_command_read, None ),
     "join_text": ( miscellaneous.join_text, None ),
     "json_text_component": ( json_text_component.update, False ),
     "json_text_component_merge": ( json_text_component.update_merge, False ),
