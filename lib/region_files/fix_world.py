@@ -21,6 +21,7 @@ from lib.data_pack_files import tables
 from lib.data_pack_files import miscellaneous
 from lib.data_pack_files.restore_behavior import spawner_bossbar
 from lib.data_pack_files.restore_behavior import spawner_position
+from lib.region_files import structure
 
 
 
@@ -90,6 +91,10 @@ def fix(world: Path, source_world: Path, version: int, get_confirmation: bool) -
                 source_dimension = source_dimension_namespace / dimension.name
                 fix_region_folder(dimension / "region", source_dimension / "region", "custom")
                 fix_entity_folder(dimension / "entities", source_dimension / "entities", "custom")
+
+    # Fix structures
+    log("Fixing structures")
+    fix_structures(world, source_world)
     
     # Fix scoreboard objectives
     log("Fixing scoreboard.dat")
@@ -197,7 +202,11 @@ def fix_region_file(file_path: Path, source_file_path: Path, dimension: str):
             if block_entity["id"].value == "minecraft:command_block":
 
                 if "LastOutput" in block_entity:
-                    block_entity["LastOutput"] = NBT.TAG_String(json_text_component.update(block_entity["LastOutput"].value, pack_version, [], False))
+                    try:
+                        block_entity["LastOutput"] = NBT.TAG_String(json_text_component.update(block_entity["LastOutput"].value, pack_version, [], False))
+                    except Exception:
+                        log(f"ERROR: An error occurred while updating a JSON text component: {block_entity["LastOutput"].value}")
+                        utils.log_error()
 
                 if "auto" not in block_entity:
                     block_entity["auto"] = NBT.TAG_Byte(0)
@@ -941,6 +950,38 @@ def fix_effect(effect: NBT.TAG_Compound) -> NBT.TAG_Compound:
     if "HiddenEffect" in effect:
         effect["hidden_effect"] = fix_effect(effect["HiddenEffect"])
     return effect
+
+
+
+def fix_structures(world: Path, source_world: Path):
+    generated_folder = world / "generated"
+    source_generated_folder = source_world / "generated"
+
+    if not source_generated_folder.exists():
+        return
+    
+    for namespace in source_generated_folder.iterdir():
+        if not namespace.is_dir():
+            continue
+        folder = generated_folder / namespace.name / "structures"
+        source_folder = namespace / "structures"
+        if source_folder.exists():
+            fix_structure_folder(folder, source_folder, namespace.name)
+
+
+
+def fix_structure_folder(folder: Path, source_folder: Path, namespace: str):
+    for source_file_path in source_folder.glob("**/*.nbt"):
+        if not source_file_path.is_file():
+            continue
+        pack_subdir = source_file_path.as_posix()[len(source_folder.as_posix()) + 1:]
+        file_path = folder / pack_subdir
+        log(f" Fixing structure {namespace}:{pack_subdir[:-4]}")
+        try:
+            structure.update(file_path, source_file_path, pack_version)
+        except Exception:
+            log(f"ERROR: An error occurred when updating structure: {source_file_path.as_posix()}")
+            utils.log_error()
 
 
 

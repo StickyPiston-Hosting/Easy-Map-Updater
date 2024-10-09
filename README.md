@@ -198,6 +198,7 @@ After the map has been updated and finalized, these actions will help package it
 - `debug.item_modifier`: Updates an item modifier from a JSON file for testing purposes.
 - `debug.predicate`: Updates a predicate from a JSON file for testing purposes.
 - `debug.recipe`: Updates a recipe from a JSON file for testing purposes.
+- `debug.structure`: Updates a structure from an NBT file for testing purposes. The output will be created next to the input with `_updated` added to the end of the name.
 
 
 ## Contact and contribution

@@ -72,6 +72,7 @@ from lib.region_files import entity_extractor
 from lib.region_files import fix_world
 from lib.region_files import stats_scanner
 from lib.region_files import illegal_chunk
+from lib.region_files import structure
 
 
 
@@ -154,6 +155,7 @@ class Action(Enum):
     DEBUG_ITEM_MODIFIER = "debug.item_modifier"
     DEBUG_PREDICATE = "debug.predicate"
     DEBUG_RECIPE = "debug.recipe"
+    DEBUG_STRUCTURE = "debug.structure"
 
 
 
@@ -367,6 +369,7 @@ def action_reset():
         Action.DEBUG_ITEM_MODIFIER.value:   { "show": False,  "function": action_update_item_modifier, "name": "Update item modifier from file (for testing)" },
         Action.DEBUG_PREDICATE.value:       { "show": False,  "function": action_update_predicate, "name": "Update predicate from file (for testing)" },
         Action.DEBUG_RECIPE.value:          { "show": False,  "function": action_update_recipe, "name": "Update recipe from file (for testing)" },
+        Action.DEBUG_STRUCTURE.value:       { "show": False,  "function": action_update_structure, "name": "Update structure from file (for testing)" },
     }
 
 def action_show_all_actions():
@@ -1229,7 +1232,7 @@ def action_update_json_text_component():
         log(f'New component: {json_text_component.update(test_component, option_manager.get_version(), [], False)}')
         print("")
 
-def retrieve_json_file_contents(message: str) -> Any:
+def retrieve_file_path(message: str) -> Path | None:
     while True:
         path_input = input(message)
         if not path_input:
@@ -1241,6 +1244,13 @@ def retrieve_json_file_contents(message: str) -> Any:
         if not file_path.exists():
             print("ERROR: File does not exist!")
             continue
+        return file_path
+
+def retrieve_json_file_contents(message: str) -> Any:
+    while True:
+        file_path = retrieve_file_path(message)
+        if not file_path:
+            return
         contents, load_bool = json_manager.safe_load(file_path)
         if not load_bool:
             print("ERROR: File could not be loaded!")
@@ -1306,6 +1316,20 @@ def action_update_recipe():
         print("")
         log(json.dumps(contents, indent=4))
         print("")
+
+def action_update_structure():
+    while True:
+        source_file_path = retrieve_file_path("Structure file path to update (leave blank to exit): ")
+        if not source_file_path:
+            return
+        name_segments = source_file_path.name.split(".")
+        name, extension = (".".join(name_segments[:-1]), name_segments[-1]) if len(name_segments) > 1 else (".".join(name_segments), "")
+        file_path = source_file_path.parent / f"{name}_updated.{extension if extension else "nbt"}"
+        structure.update(file_path, source_file_path, option_manager.get_version())
+        print("")
+        log(f"Structure updated: {file_path.as_posix()}")
+        print("")
+
 
 
 

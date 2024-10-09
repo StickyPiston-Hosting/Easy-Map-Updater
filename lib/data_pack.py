@@ -20,6 +20,7 @@ from lib.data_pack_files import recipe
 from lib.data_pack_files import item_modifier
 from lib.data_pack_files import mcfunction
 from lib.data_pack_files import tags
+from lib.region_files import structure
 from lib import finalize
 from lib import json_manager
 from lib import defaults
@@ -187,6 +188,12 @@ def update_namespaces(pack: Path, source_pack: Path):
         if source_folder.exists():
             update_tags(folder, source_folder, "item")
 
+        # Update structures
+        folder = pack / "data" / namespace.name / "structure"
+        source_folder = namespace / "structure"
+        if source_folder.exists():
+            update_structures(folder, source_folder, namespace.name)
+
 
 
 def update_functions(folder: Path, source_folder: Path, namespace: str):
@@ -198,7 +205,7 @@ def update_functions(folder: Path, source_folder: Path, namespace: str):
         try:
             mcfunction.update(file_path, source_file_path, pack_version, namespace + ":" + pack_subdir.split(".")[0].replace("\\", "/"))
         except Exception:
-            log(f"An error occurred while updating the function: {source_file_path.as_posix()}")
+            log(f"ERROR: An error occurred while updating the function: {source_file_path.as_posix()}")
             utils.log_error()
 
 
@@ -283,6 +290,21 @@ def update_tags(folder: Path, source_folder: Path, tag_type: str):
             tags.update(file_path, source_file_path, pack_version, tag_type)
         except Exception:
             log(f"ERROR: An error occurred when updating tag: {source_file_path.as_posix()}")
+            utils.log_error()
+
+
+
+def update_structures(folder: Path, source_folder: Path, namespace: str):
+    for source_file_path in source_folder.glob("**/*.nbt"):
+        if not source_file_path.is_file():
+            continue
+        pack_subdir = source_file_path.as_posix()[len(source_folder.as_posix()) + 1:]
+        file_path = folder / pack_subdir
+        log(f" Fixing structure {namespace}:{pack_subdir[:-4]}")
+        try:
+            structure.update(file_path, source_file_path, pack_version)
+        except Exception:
+            log(f"ERROR: An error occurred when updating structure: {source_file_path.as_posix()}")
             utils.log_error()
         
 
