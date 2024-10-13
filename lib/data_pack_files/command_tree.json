@@ -703,6 +703,17 @@
                 }
             }
         ],
+        "fillbiome": {
+            "index": 4,
+            "branches": {
+                "replace": {
+                    "mapping": ["carry", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "biome", "carry", "biome"]
+                }
+            },
+            "else": {
+                "mapping": ["carry", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "biome"]
+            }
+        },
         "forceload": {
             "index": 1,
             "branches": {
@@ -840,6 +851,32 @@
             "defaults": {
                 "1": "@s"
             }
+        },
+        "locate": [
+            {
+                "version": {"max": 1802},
+                "mapping": ["carry", "carry", "structure"],
+                "legend": [0, "structure", 2]
+            },
+            {
+                "version": {"min": 1900},
+                "index": 1,
+                "branches": {
+                    "biome": {
+                        "mapping": ["carry", "carry", "biome"]
+                    },
+                    "poi": {
+                        "mapping": ["carry", "carry", "poi"]
+                    },
+                    "structure": {
+                        "mapping": ["carry", "carry", "structure"]
+                    }
+                }
+            }
+        ],
+        "locatebiome": {
+            "mapping": ["carry", "carry", "biome"],
+            "legend": ["locate", "biome", 1]
         },
         "loot": {
             "index": 1,

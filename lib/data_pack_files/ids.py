@@ -174,6 +174,8 @@ def enchantment(name: str | int | nbt_tags.TypeNumeric, version: int, issues: li
         else:
             name = "minecraft:protection"
 
+    name = miscellaneous.namespace(name)
+
     # Update enchantment names for 1.20.5
     id_array = {
         "minecraft:sweeping": "minecraft:sweeping_edge"
@@ -181,7 +183,15 @@ def enchantment(name: str | int | nbt_tags.TypeNumeric, version: int, issues: li
     if name in id_array:
         name = id_array[name]
 
-    return miscellaneous.namespace(name)
+    return name
+
+def poi(name: str, version: int, issues: list[dict[str, str | int]]) -> str:
+    global pack_version
+    pack_version = version
+
+    name = miscellaneous.namespace(name)
+
+    return name
 
 def scoreboard_objective_criteria(objective: dict[str, str], version: int, issues: list[dict[str, str | int]]) -> str:
     global pack_version
@@ -272,5 +282,13 @@ def sound_event(name: str, version: int, issues: list[dict[str, str | int]]) -> 
         id_array = tables.SOUND_EVENTS_1_12
         if name in id_array:
             name = id_array[name]
+
+    return name
+
+def structure(name: str, version: int, issues: list[dict[str, str | int]]) -> str:
+    global pack_version
+    pack_version = version
+
+    name = miscellaneous.namespace(name)
 
     return name
