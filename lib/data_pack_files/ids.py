@@ -26,6 +26,119 @@ pack_version = defaults.PACK_VERSION
 
 # Define functions
 
+def biome(name: str, version: int, issues: list[dict[str, str | int]]) -> str:
+    global pack_version
+    pack_version = version
+
+    name = miscellaneous.namespace(name)
+
+    # Update biome names for 1.13
+    if version <= 1202:
+        id_array = {
+            "minecraft:beaches": "minecraft:beach",
+            "minecraft:cold_beach": "minecraft:snowy_beach",
+            "minecraft:extreme_hills_with_trees": "minecraft:wooded_mountains",
+            "minecraft:extreme_hills": "minecraft:mountains",
+            "minecraft:forest_hills": "minecraft:wooded_hills",
+            "minecraft:hell": "minecraft:nether",
+            "minecraft:ice_flats": "minecraft:snowy_tundra",
+            "minecraft:ice_mountains": "minecraft:snowy_mountains",
+            "minecraft:mesa_clear_rock": "minecraft:badlands_plateau",
+            "minecraft:mesa_rock": "minecraft:wooded_badlands_plateau",
+            "minecraft:mesa": "minecraft:badlands",
+            "minecraft:mushroom_island_shore": "minecraft:mushroom_field_shore",
+            "minecraft:mushroom_island": "minecraft:mushroom_fields",
+            "minecraft:mutated_birch_forest_hills": "minecraft:tall_birch_hills",
+            "minecraft:mutated_birch_forest": "minecraft:tall_birch_forest",
+            "minecraft:mutated_desert": "minecraft:desert_lakes",
+            "minecraft:mutated_extreme_hills_with_trees": "minecraft:modified_gravelly_mountains",
+            "minecraft:mutated_extreme_hills": "minecraft:gravelly_mountains",
+            "minecraft:mutated_forest": "minecraft:flower_forest",
+            "minecraft:mutated_ice_flats": "minecraft:ice_spikes",
+            "minecraft:mutated_jungle_edge": "minecraft:modified_jungle_edge",
+            "minecraft:mutated_jungle": "minecraft:modified_jungle",
+            "minecraft:mutated_mesa_clear_rock": "minecraft:modified_badlands_plateau",
+            "minecraft:mutated_mesa_rock": "minecraft:modified_wooded_badlands_plateau",
+            "minecraft:mutated_mesa": "minecraft:eroded_badlands",
+            "minecraft:mutated_plains": "minecraft:sunflower_plains",
+            "minecraft:mutated_redwood_taiga_hills": "minecraft:giant_spruce_taiga_hills",
+            "minecraft:mutated_redwood_taiga": "minecraft:giant_spruce_taiga",
+            "minecraft:mutated_roofed_forest": "minecraft:dark_forest_hills",
+            "minecraft:mutated_savanna_rock": "minecraft:shattered_savanna_plateau",
+            "minecraft:mutated_savanna": "minecraft:shattered_savanna",
+            "minecraft:mutated_swampland": "minecraft:swamp_hills",
+            "minecraft:mutated_taiga_cold": "minecraft:snowy_taiga_mountains",
+            "minecraft:mutated_taiga": "minecraft:taiga_mountains",
+            "minecraft:redwood_taiga_hills": "minecraft:giant_tree_taiga_hills",
+            "minecraft:redwood_taiga": "minecraft:giant_tree_taiga",
+            "minecraft:roofed_forest": "minecraft:dark_forest",
+            "minecraft:savanna_rock": "minecraft:savanna_plateau",
+            "minecraft:sky": "minecraft:the_end",
+            "minecraft:smaller_extreme_hills": "minecraft:mountain_edge",
+            "minecraft:stone_beach": "minecraft:stone_shore",
+            "minecraft:swampland": "minecraft:swamp",
+            "minecraft:taiga_cold_hills": "minecraft:snowy_taiga_hills",
+            "minecraft:taiga_cold": "minecraft:snowy_taiga",
+            "minecraft:void": "minecraft:the_void",
+        }
+        if name in id_array:
+            name = id_array[name]
+
+    # Update biome names for 1.16
+    id_array = {
+        "minecraft:nether": "minecraft:nether_wastes",
+    }
+    if name in id_array:
+        name = id_array[name]
+
+    # Update biome names for 1.18
+    id_array = {
+        "minecraft:giant_spruce_taiga": "minecraft:old_growth_spruce_taiga",
+        "minecraft:giant_tree_taiga": "minecraft:old_growth_pine_taiga",
+        "minecraft:gravelly_mountains": "minecraft:windswept_gravelly_hills",
+        "minecraft:jungle_edge": "minecraft:sparse_jungle",
+        "minecraft:mountains": "minecraft:windswept_hills",
+        "minecraft:shattered_savanna": "minecraft:windswept_savanna",
+        "minecraft:snowy_tundra": "minecraft:snowy_plains",
+        "minecraft:stone_shore": "minecraft:stony_shore",
+        "minecraft:tall_birch_forest": "minecraft:old_growth_birch_forest",
+        "minecraft:wooded_badlands_plateau": "minecraft:wooded_badlands",
+        "minecraft:wooded_mountains": "minecraft:windswept_forest",
+
+        # The following biomes were removed, and so are being replaced with the nearest biome
+
+        "minecraft:badlands_plateau": "minecraft:badlands",
+        "minecraft:bamboo_jungle_hills": "minecraft:bamboo_jungle",
+        "minecraft:birch_forest_hills": "minecraft:birch_forest",
+        "minecraft:dark_forest_hills": "minecraft:dark_forest",
+        "minecraft:deep_warm_ocean": "minecraft:warm_ocean",
+        "minecraft:desert_hills": "minecraft:desert",
+        "minecraft:desert_lakes": "minecraft:desert",
+        "minecraft:giant_spruce_taiga_hills": "minecraft:old_growth_spruce_taiga",
+        "minecraft:giant_tree_taiga_hills": "minecraft:old_growth_pine_taiga",
+        "minecraft:modified_gravelly_mountains": "minecraft:windswept_gravelly_hills",
+        "minecraft:jungle_hills": "minecraft:jungle",
+        "minecraft:modified_badlands_plateau": "minecraft:badlands",
+        "minecraft:modified_jungle": "minecraft:jungle",
+        "minecraft:modified_jungle_edge": "minecraft:jungle",
+        "minecraft:modified_wooded_badlands_plateau": "minecraft:wooded_badlands",
+        "minecraft:mountain_edge": "minecraft:windswept_hills",
+        "minecraft:mushroom_field_shore": "minecraft:mushroom_fields",
+        "minecraft:shattered_savanna_plateau": "minecraft:windswept_savanna",
+        "minecraft:snowy_mountains": "minecraft:snowy_plains",
+        "minecraft:snowy_taiga_hills": "minecraft:snowy_taiga",
+        "minecraft:snowy_taiga_mountains": "minecraft:snowy_taiga",
+        "minecraft:swamp_hills": "minecraft:swamp",
+        "minecraft:taiga_hills": "minecraft:taiga",
+        "minecraft:taiga_mountains": "minecraft:taiga",
+        "minecraft:tall_birch_hills": "minecraft:old_growth_birch_forest",
+        "minecraft:wooded_hills": "minecraft:forest",
+    }
+    if name in id_array:
+        name = id_array[name]
+
+    return name
+
 def effect(name: int | str | nbt_tags.TypeNumeric, version: int, issues: list[dict[str, str | int]]) -> str:
     global pack_version
     pack_version = version

@@ -354,8 +354,15 @@ def predicate_location(contents: dict, version: int) -> dict:
     global pack_version
     pack_version = version
 
+    if "biomes" in contents:
+        if isinstance(contents["biomes"], list):
+            for i in range(len(contents["biomes"])):
+                contents["biomes"][i] = ids.biome(contents["biomes"][i], version, [])
+        else:
+            contents["biomes"] = ids.biome(contents["biomes"], version, [])
+
     if "biome" in contents:
-        contents["biomes"] = contents["biome"]
+        contents["biomes"] = [ids.biome(contents["biome"], version, [])]
         del contents["biome"]
 
     if "block" in contents:
