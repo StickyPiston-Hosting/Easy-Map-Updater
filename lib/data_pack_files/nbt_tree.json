@@ -109,6 +109,7 @@
                         }
                     }
                 },
+                "Book": { "source": "item" },
                 "Color": {
                     "remove": true,
                     "edge_case": "sign_text",
