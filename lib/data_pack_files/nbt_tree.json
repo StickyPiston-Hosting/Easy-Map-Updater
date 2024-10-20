@@ -432,6 +432,7 @@
                     "rename": "effects",
                     "list": { "source": "effect" }
                 },
+                "EnderItems": { "list": { "source": "item" } },
                 "Equipment": {
                     "remove": true,
                     "edge_case": "equipment"
