@@ -437,6 +437,7 @@
                     "remove": true,
                     "edge_case": "equipment"
                 },
+                "explosion_power": { "data_type": "float" },
                 "Facing": {
                     "data_type": "int",
                     "argument_type": "hangable_facing"
