@@ -52,6 +52,12 @@ def attribute(name: str, version: int, issues: list[dict[str, str | int]]) -> st
     if name in id_array:
         name = id_array[name]
 
+    # Attribute IDs had their prefixes removed in 1.21.2
+    for prefix in ["generic.", "player.", "zombie."]:
+        if name.split(":")[-1].startswith(prefix):
+            name = f"{name.split(":")[0]}:{name.split(":")[-1][len(prefix):]}"
+            break
+
     return name
 
 def attribute_id(value: str, version: int, issues: list[dict[str, str | int]]) -> str:
