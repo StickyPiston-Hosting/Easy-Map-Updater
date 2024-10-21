@@ -45,24 +45,29 @@ def recipe(contents: dict[str, Any], version: int) -> dict[str, Any]:
     if "type" in contents:
         contents["type"] = miscellaneous.namespace(contents["type"])
 
-    if "ingredient" in contents:
-        if isinstance(contents["ingredient"], dict):
-            contents["ingredient"] = update_ingredient(contents["ingredient"])
-        elif isinstance(contents["ingredient"], list):
-            for i in range(len(contents["ingredient"])):
-                contents["ingredient"][i] = update_ingredient(contents["ingredient"][i])
+    for key in ["addition", "base", "ingredient", "template"]:
+        if key in contents:
+            if isinstance(contents[key], dict | str):
+                contents[key] = update_ingredient(contents[key])
+            elif isinstance(contents[key], list):
+                for i in range(len(contents[key])):
+                    contents[key][i] = update_ingredient(contents[key][i])
+
+    if "ingredients" in contents and isinstance(contents["ingredients"], list):
+        for i in range(len(contents["ingredients"])):
+            if isinstance(contents["ingredients"][i], dict | str):
+                contents["ingredients"][i] = update_ingredient(contents["ingredients"][i])
+            elif isinstance(contents["ingredients"][i], list):
+                for j in range(len(contents["ingredients"][i])):
+                    contents["ingredients"][i][j] = update_ingredient(contents["ingredients"][i][j])
 
     if "key" in contents:
         for key in contents["key"]:
-            if isinstance(contents["key"][key], dict):
+            if isinstance(contents["key"][key], dict | str):
                 contents["key"][key] = update_ingredient(contents["key"][key])
             elif isinstance(contents["key"][key], list):
                 for i in range(len(contents["key"][key])):
                     contents["key"][key][i] = update_ingredient(contents["key"][key][i])
-
-    for tag in ["template", "base", "addition"]:
-        if tag in contents:
-            contents[tag] = update_ingredient(contents[tag])
 
     if "result" in contents:
         contents["result"] = update_result(contents["result"])
@@ -70,14 +75,18 @@ def recipe(contents: dict[str, Any], version: int) -> dict[str, Any]:
     return contents
 
 
-def update_ingredient(ingredient: dict[str, Any]) -> dict[str, Any]:
-    if "item" in ingredient:
-        ingredient["item"] = items.update_from_command(ingredient["item"], pack_version, [])
+def update_ingredient(ingredient: dict[str, Any] | str) -> str:
+    if isinstance(ingredient, dict):
+        if "item" in ingredient:
+            return items.update_from_command("minecraft:barrier" if ingredient["item"] == "minecraft:air" else ingredient["item"], pack_version, [])
 
-    if "tag" in ingredient:
-        ingredient["tag"] = items.update_from_command(ingredient["tag"], pack_version, [])
-
-    return ingredient
+        if "tag" in ingredient:
+            return items.update_from_command(f"#{ingredient["tag"]}", pack_version, [])
+        
+        return "minecraft:stone"
+        
+    else:
+        return items.update_from_command("minecraft:barrier" if ingredient == "minecraft:air" else ingredient, pack_version, [])
 
 
 def update_result(result: dict[str, Any] | str) -> dict[str, Any]:
@@ -97,7 +106,7 @@ def update_result(result: dict[str, Any] | str) -> dict[str, Any]:
             pack_version,
             []
         )
-        result["id"] = updated_item["id"]
+        result["id"] = "minecraft:barrier" if updated_item["id"] == "minecraft:air" else updated_item["id"]
         if updated_item["components"]:
             result["components"] = updated_item["components"]
 
