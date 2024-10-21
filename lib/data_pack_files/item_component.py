@@ -173,39 +173,15 @@ class ItemComponents:
 # Import more stuff to prevent circular loading issues
 
 from lib.data_pack_files import blocks
+from lib.data_pack_files import items
 from lib.data_pack_files import nbt_tags
 from lib.data_pack_files import arguments
 from lib.data_pack_files import miscellaneous
+from lib.data_pack_files import ids
 
 
 
 # Define functions
-
-# def unpack(components: str) -> dict[str, str | None]:
-#     if not components:
-#         return {}
-#     output_components: dict[str, str | None] = {}
-#     for entry in arguments.parse_with_quotes(components[1:], ",", True):
-#         output_components[utils.unquote(entry.split("=")[0].strip())] = (
-#             nbt_tags.unpack(entry.split("=")[1].strip())
-#             if "=" in entry else None
-#         )
-#     return output_components
-
-
-# def pack(components: dict[str, Any], read: bool) -> str:
-#     partial_match_components = [
-#         "minecraft:attribute_modifiers",
-#         "minecraft:custom_data",
-#     ]
-#     component_strings: list[str] = []
-#     for component in components.keys():
-#         if components[component] == None:
-#             component_strings.append(component)
-#         else:
-#             component_strings.append(f"{component}{"~" if read and component in partial_match_components else "="}{nbt_tags.pack(components[component])}")
-#     return f"[{",".join(component_strings)}]"
-
 
 def conform_components(components: ItemComponents, version: int, issues: list[dict[str, str | int]]) -> ItemComponents:
     # Apply namespace to all components
@@ -254,12 +230,12 @@ def conform_component(component: ItemComponent, version: int):
                 if "blocks" in predicate:
                     if isinstance(predicate["blocks"], nbt_tags.TypeList):
                         if len(predicate["blocks"]) == 1:
-                            predicate["blocks"] = miscellaneous.namespace(predicate["blocks"][0])
+                            predicate["blocks"] = blocks.update_from_command(predicate["blocks"][0], version, [])
                         else:
                             for i in range(len(predicate["blocks"])):
-                                predicate["blocks"][i] = miscellaneous.namespace(predicate["blocks"][i])
+                                predicate["blocks"][i] = blocks.update_from_command(predicate["blocks"][i], version, [])
                     else:
-                        predicate["blocks"] = miscellaneous.namespace(predicate["blocks"])
+                        predicate["blocks"] = blocks.update_from_command(predicate["blocks"], version, [])
         component.value = can_break
 
     if component.key == "minecraft:can_place_on":
@@ -271,20 +247,20 @@ def conform_component(component: ItemComponent, version: int):
                 if "blocks" in predicate:
                     if isinstance(predicate["blocks"], nbt_tags.TypeList):
                         if len(predicate["blocks"]) == 1:
-                            predicate["blocks"] = miscellaneous.namespace(predicate["blocks"][0])
+                            predicate["blocks"] = blocks.update_from_command(predicate["blocks"][0], version, [])
                         else:
                             for i in range(len(predicate["blocks"])):
-                                predicate["blocks"][i] = miscellaneous.namespace(predicate["blocks"][i])
+                                predicate["blocks"][i] = blocks.update_from_command(predicate["blocks"][i], version, [])
                     else:
-                        predicate["blocks"] = miscellaneous.namespace(predicate["blocks"])
+                        predicate["blocks"] = blocks.update_from_command(predicate["blocks"], version, [])
         component.value = can_place_on
 
     if component.key == "minecraft:debug_stick_state":
         debug_stick_state: dict[str, str] = component.value
         for block in list(debug_stick_state.keys()):
-            namespaced_block = miscellaneous.namespace(block)
-            if block != namespaced_block:
-                debug_stick_state[namespaced_block] = debug_stick_state[block]
+            updated_block = blocks.update_from_command(block, version, [])
+            if block != updated_block:
+                debug_stick_state[updated_block] = debug_stick_state[block]
                 del debug_stick_state[block]
 
     if component.key == "minecraft:dyed_color":
@@ -300,11 +276,11 @@ def conform_component(component: ItemComponent, version: int):
         if "levels" in enchantments:
             levels = enchantments["levels"]
             for enchantment in list(levels.keys()):
-                namespaced_enchantment = miscellaneous.namespace(enchantment)
-                if enchantment != namespaced_enchantment:
-                    levels[namespaced_enchantment] = levels[enchantment]
+                updated_enchantment = ids.enchantment(enchantment, version, [])
+                if enchantment != updated_enchantment:
+                    levels[updated_enchantment] = levels[enchantment]
                     del levels[enchantment]
-                levels[namespaced_enchantment] = nbt_tags.TypeInt(min(max(levels[namespaced_enchantment].value, 0), 255))
+                levels[updated_enchantment] = nbt_tags.TypeInt(min(max(levels[updated_enchantment].value, 0), 255))
         component.value = enchantments
 
     if component.key == "minecraft:potion_contents":
@@ -319,6 +295,15 @@ def conform_component(component: ItemComponent, version: int):
             profile = {"name": profile}
         component.value = profile
 
+    if component.key == "minecraft:repairable":
+        repairable: dict[str, str | nbt_tags.TypeList] = component.value
+        if "items" in repairable:
+            if isinstance(repairable["items"], nbt_tags.TypeList):
+                for i in range(len(repairable["items"])):
+                    repairable["items"][i] = items.update_from_command(repairable["items"][i], version, [])
+            else:
+                repairable["items"] = items.update_from_command(repairable["items"], version, [])
+
     if component.key == "minecraft:stored_enchantments":
         stored_enchantments: dict[str, Any] = component.value
         if "levels" not in stored_enchantments and "show_in_tooltip" not in stored_enchantments:
@@ -326,9 +311,9 @@ def conform_component(component: ItemComponent, version: int):
         if "levels" in stored_enchantments:
             levels = stored_enchantments["levels"]
             for stored_enchantment in list(levels.keys()):
-                namespaced_stored_enchantment = miscellaneous.namespace(stored_enchantment)
-                if stored_enchantment != namespaced_stored_enchantment:
-                    levels[namespaced_stored_enchantment] = levels[stored_enchantment]
+                updated_stored_enchantment = ids.enchantment(stored_enchantment, version, [])
+                if stored_enchantment != updated_stored_enchantment:
+                    levels[updated_stored_enchantment] = levels[stored_enchantment]
                     del levels[stored_enchantment]
         component.value = stored_enchantments
 
