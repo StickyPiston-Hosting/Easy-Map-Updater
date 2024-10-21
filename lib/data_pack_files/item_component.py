@@ -188,6 +188,26 @@ def conform_components(components: ItemComponents, version: int, issues: list[di
     components.set_namespaces()
 
 
+    # minecraft:food component got extracted out in 1.21.2
+    if version <= 2101 and "minecraft:food" in components:
+        food: dict[str, Any] = components["minecraft:food"]
+        consumable = {}
+        if "eat_seconds" in food:
+            consumable["consume_seconds"] = food["eat_seconds"]
+            del food["eat_seconds"]
+        if "effects" in food:
+            on_consume_effect = {
+                "type": "minecraft:apply_effects",
+                "effects": food["effects"],
+            }
+            consumable["on_consume_effects"] = nbt_tags.TypeList([on_consume_effect])
+            del food["effects"]
+        components["minecraft:consumable"] = consumable
+        if "using_converts_to" in food:
+            components["minecraft:use_remainder"] = food["using_converts_to"]
+            del food["using_converts_to"]
+
+
     # Adjust formatting of components
     for component in components.components:
         if isinstance(component, ItemComponent):
@@ -255,6 +275,24 @@ def conform_component(component: ItemComponent, version: int):
                         predicate["blocks"] = blocks.update_from_command(predicate["blocks"], version, [])
         component.value = can_place_on
 
+    if component.key == "minecraft:consumable":
+        consumable: dict[str, Any] = component.value
+        if "on_consume_effects" in consumable:
+            for on_consume_effect in consumable["on_consume_effects"]:
+                if "type" not in on_consume_effect:
+                    continue
+                on_consume_effect["type"] = miscellaneous.namespace(on_consume_effect["type"])
+                if on_consume_effect["type"] == "minecraft:apply_effects":
+                    if "effects" in on_consume_effect:
+                        for effect in on_consume_effect["effects"]:
+                            if "id" in effect:
+                                effect["id"] = ids.effect(effect["id"], version, [])
+                if on_consume_effect["type"] == "minecraft:remove_effects":
+                    if "effects" in on_consume_effect:
+                        for i in range(len(on_consume_effect["effects"])):
+                            on_consume_effect["effects"][i] = ids.effect(on_consume_effect["effects"][i], version, [])
+
+
     if component.key == "minecraft:debug_stick_state":
         debug_stick_state: dict[str, str] = component.value
         for block in list(debug_stick_state.keys()):
@@ -316,6 +354,9 @@ def conform_component(component: ItemComponent, version: int):
                     levels[updated_stored_enchantment] = levels[stored_enchantment]
                     del levels[stored_enchantment]
         component.value = stored_enchantments
+
+    if component.key == "minecraft:use_remainder":
+        component.value = items.update_from_nbt(component.value, version, [])
 
     if component.key == "minecraft:writable_book_content":
         writable_book_content = component.value
