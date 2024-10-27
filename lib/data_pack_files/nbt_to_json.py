@@ -7,6 +7,7 @@
 
 from typing import cast, Any
 from lib.data_pack_files import nbt_tags
+from lib.data_pack_files import miscellaneous
 
 
 
@@ -188,10 +189,34 @@ def conform_item_components_to_json(components: dict[str, Any]) -> dict[str, Any
             if key in bucket_entity_data:
                 bucket_entity_data[key] = bool(bucket_entity_data[key])
 
+    if "minecraft:consumable" in components:
+        consumable = components["minecraft:consumable"]
+        if "has_consume_particles" in consumable:
+            consumable["has_consume_particles"] = bool(consumable["has_consume_particles"])
+        if "on_consume_effects" in consumable:
+            for consume_effect in consumable["on_consume_effects"]:
+                if "id" not in consume_effect:
+                    continue
+                consume_effect["id"] = miscellaneous.namespace(consume_effect["id"])
+                if consume_effect["id"] == "minecraft:apply_effects" and "effects" in consume_effect:
+                    for effect in consume_effect["effects"]:
+                        conform_item_component_effect_to_json(effect)
+
     if "minecraft:container" in components:
         for item in components["minecraft:container"]:
             if "item" in item:
                 item["item"] = conform_item_to_json(item["item"])
+
+    if "minecraft:death_protection" in components:
+        death_protection = components["minecraft:death_protection"]
+        if "death_effects" in death_protection:
+            for death_effect in death_protection["death_effects"]:
+                if "id" not in death_effect:
+                    continue
+                death_effect["id"] = miscellaneous.namespace(death_effect["id"])
+                if death_effect["id"] == "minecraft:apply_effects" and "effects" in death_effect:
+                    for effect in death_effect["effects"]:
+                        conform_item_component_effect_to_json(effect)
 
     if "minecraft:enchantment_glint_override" in components:
         components["minecraft:enchantment_glint_override"] = bool(components["minecraft:enchantment_glint_override"])
@@ -199,13 +224,24 @@ def conform_item_components_to_json(components: dict[str, Any]) -> dict[str, Any
     if "minecraft:entity_data" in components:
         components["minecraft:entity_data"] = conform_entity_to_json(components["minecraft:entity_data"])
 
+    if "minecraft:equippable" in components:
+        equippable = components["minecraft:equippable"]
+        for key in [
+            "dispensable",
+            "swappable",
+            "damage_on_hurt",
+        ]:
+            if key in equippable:
+                equippable[key] = bool(equippable[key])
+
     if "minecraft:firework_explosion" in components:
+        firework_explosion = components["minecraft:firework_explosion"]
         for key in [
             "has_trail",
             "has_twinkle",
         ]:
-            if key in components["minecraft:firework_explosion"]:
-                components["minecraft:firework_explosion"][key] = bool(components["minecraft:firework_explosion"][key])
+            if key in firework_explosion:
+                firework_explosion[key] = bool(firework_explosion[key])
                 
     if "minecraft:fireworks" in components:
         if "explosions" in components["minecraft:fireworks"]:
@@ -221,32 +257,16 @@ def conform_item_components_to_json(components: dict[str, Any]) -> dict[str, Any
         food = components["minecraft:food"]
         if "can_always_eat" in food:
             food["can_always_eat"] = bool(food["can_always_eat"])
-        if "using_converts_to" in food:
-            food["using_converts_to"] = conform_item_to_json(food["using_converts_to"])
-        if "effects" in food:
-            for effect in food["effects"]:
-                for key in [
-                    "ambient",
-                    "show_particles",
-                    "show_icon",
-                ]:
-                    if key in effect:
-                        effect[key] = bool(effect[key])
 
     if "minecraft:lodestone_tracker" in components:
-        if "tracked" in components["minecraft:lodestone_tracker"]:
-            components["minecraft:lodestone_tracker"]["tracked"] = bool(components["minecraft:lodestone_tracker"]["tracked"])
+        lodestone_tracker = components["minecraft:lodestone_tracker"]
+        if "tracked" in lodestone_tracker:
+            lodestone_tracker["tracked"] = bool(lodestone_tracker["tracked"])
 
     if "minecraft:potion_contents" in components:
         if "custom_effects" in components["minecraft:potion_contents"]:
             for effect in components["minecraft:potion_contents"]["custom_effects"]:
-                for key in [
-                    "ambient",
-                    "show_particles",
-                    "show_icon",
-                ]:
-                    if key in effect:
-                        effect[key] = bool(effect[key])
+                conform_item_component_effect_to_json(effect)
 
     if "minecraft:tool" in components:
         if "rules" in components["minecraft:tool"]:
@@ -254,9 +274,25 @@ def conform_item_components_to_json(components: dict[str, Any]) -> dict[str, Any
                 if "correct_for_drops" in rule:
                     rule["correct_for_drops"] = bool(rule["correct_for_drops"])
 
+    if "minecraft:use_remainder" in components:
+        components["minecraft:use_remainder"] = conform_item_to_json(components["minecraft:use_remainder"])
+
     if "minecraft:written_book_content" in components:
         if "resolved" in components["minecraft:written_book_content"]:
             components["minecraft:written_book_content"]["resolved"] = bool(components["minecraft:written_book_content"]["resolved"])
 
 
     return components
+
+
+
+def conform_item_component_effect_to_json(effect: dict[str, Any]) -> dict[str, Any]:
+    for key in [
+        "ambient",
+        "show_particles",
+        "show_icon",
+    ]:
+        if key in effect:
+            effect[key] = bool(effect[key])
+
+    return effect
