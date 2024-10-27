@@ -12,6 +12,9 @@ from lib import utils
 from lib.data_pack_files import nbt_tags
 from lib.data_pack_files import target_selectors
 from lib.data_pack_files import tables
+from lib.data_pack_files.restore_behavior import loot_table_replacements
+from lib import option_manager
+import easy_map_updater
 
 
 
@@ -323,6 +326,12 @@ def loot_table(name: str, version: int, issues: list[dict[str, str | int]]) -> s
 
     if pack_version <= 1202 and defaults.SEND_WARNINGS:
         log("WARNING: Loot tables are not handled for 1.12!")
+
+    if name == "minecraft:empty":
+        name = "loot_table_replacements:empty"
+        loot_table_replacements.create_pack(
+            easy_map_updater.MINECRAFT_PATH / "saves" / option_manager.get_map_name()
+        )
 
     return namespace(name)
 

@@ -42,13 +42,16 @@ def update(file_path: Path, source_file_path: Path, version: int):
 
 
 
-class LootTable(TypedDict):
+class LootTable(TypedDict("LootTable", {"type": str})):
     functions: list
     pools: "list[LootTablePool]"
 
 def loot_table(contents: LootTable, version: int) -> LootTable:
     global pack_version
     pack_version = version
+
+    if "type" in contents:
+        contents["type"] = miscellaneous.namespace(contents["type"])
 
     # Update item modifiers
     if "functions" in contents:
