@@ -175,6 +175,7 @@ class ItemComponents:
 from lib.data_pack_files import blocks
 from lib.data_pack_files import items
 from lib.data_pack_files import nbt_tags
+from lib.data_pack_files import json_text_component
 from lib.data_pack_files import arguments
 from lib.data_pack_files import miscellaneous
 from lib.data_pack_files import ids
@@ -292,6 +293,8 @@ def conform_component(component: ItemComponent, version: int):
                         for i in range(len(on_consume_effect["effects"])):
                             on_consume_effect["effects"][i] = ids.effect(on_consume_effect["effects"][i], version, [])
 
+    if component.key == "minecraft:custom_name":
+        component.value = json_text_component.update(component.value, version, [], True)
 
     if component.key == "minecraft:debug_stick_state":
         debug_stick_state: dict[str, str] = component.value
@@ -320,6 +323,9 @@ def conform_component(component: ItemComponent, version: int):
                     del levels[enchantment]
                 levels[updated_enchantment] = nbt_tags.TypeInt(min(max(levels[updated_enchantment].value, 0), 255))
         component.value = enchantments
+
+    if component.key == "minecraft:item_name":
+        component.value = json_text_component.update(component.value, version, [], True)
 
     if component.key == "minecraft:potion_contents":
         potion_contents = component.value
