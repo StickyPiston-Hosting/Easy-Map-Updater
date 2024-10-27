@@ -100,6 +100,12 @@ def update_criterion(criterion: dict[str, Any]):
     if "trigger" in criterion:
         criterion["trigger"] = miscellaneous.namespace(criterion["trigger"])
 
+        if criterion["trigger"] == "minecraft:killed_by_crossbow":
+            criterion["trigger"] = "minecraft:killed_by_arrow"
+            if "conditions" not in criterion:
+                criterion["conditions"] = {}
+            criterion["conditions"]["fired_from_weapon"] = {"items": "minecraft:crossbow"}
+
     # Update conditions
     if "conditions" in criterion:
 
@@ -135,7 +141,7 @@ def update_criterion(criterion: dict[str, Any]):
 
 
         # Update item predicates
-        for key in ["item", "rod"]:
+        for key in ["fired_from_weapon", "item", "rod"]:
             if key in criterion["conditions"]:
                 if isinstance(criterion["conditions"][key], dict):
                     predicate.predicate_item(criterion["conditions"][key], pack_version)
