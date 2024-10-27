@@ -770,7 +770,7 @@
             }
         }
     },
-    "2003": {
+    "2002": {
         "minecraft": {
             "blockstates": {
                 "grass.json": "short_grass.json"
@@ -790,7 +790,7 @@
             }
         }
     },
-    "2005": {
+    "2004": {
         "minecraft": {
             "models": {
                 "item": {
@@ -842,6 +842,109 @@
                         {"path": "map_decorations/jungle_temple.png", "slice": [0, 16, 8, 8, 128, 128]},
                         {"path": "map_decorations/swamp_hut.png", "slice": [8, 16, 8, 8, 128, 128]}
                     ]
+                }
+            }
+        }
+    },
+    "2101": {
+        "minecraft": {
+            "textures": {
+                "entity": {
+                    "horse": {
+                        "armor": {
+                            "horse_armor_diamond.png": "././equipment/horse_body/diamond.png",
+                            "horse_armor_gold.png": "././equipment/horse_body/gold.png",
+                            "horse_armor_iron.png": "././equipment/horse_body/iron.png",
+                            "horse_armor_leather.png": "././equipment/horse_body/leather.png"
+                        }
+                    },
+                    "llama": {
+                        "decor": {
+                            "black.png": "././equipment/llama_body/black.png",
+                            "blue.png": "././equipment/llama_body/blue.png",
+                            "brown.png": "././equipment/llama_body/brown.png",
+                            "cyan.png": "././equipment/llama_body/cyan.png",
+                            "gray.png": "././equipment/llama_body/gray.png",
+                            "green.png": "././equipment/llama_body/green.png",
+                            "light_blue.png": "././equipment/llama_body/light_blue.png",
+                            "light_gray.png": "././equipment/llama_body/light_gray.png",
+                            "lime.png": "././equipment/llama_body/lime.png",
+                            "magenta.png": "././equipment/llama_body/magenta.png",
+                            "orange.png": "././equipment/llama_body/orange.png",
+                            "pink.png": "././equipment/llama_body/pink.png",
+                            "purple.png": "././equipment/llama_body/purple.png",
+                            "red.png": "././equipment/llama_body/red.png",
+                            "trader_llama.png": "././equipment/llama_body/trader_llama.png",
+                            "white.png": "././equipment/llama_body/white.png",
+                            "yellow.png": "././equipment/llama_body/yellow.png"
+                        }
+                    },
+                    "wolf": {
+                        "wolf_armor.png": "./equipment/wolf_body/armadillo_scute.png",
+                        "wolf_armor_overlay.png": "./equipment/wolf_body/armadillo_scute_overlay.png"
+                    },
+                    "elytra.png": "equipment/wings/elytra.png"
+                },
+                "models": {
+                    "armor": {
+                        "chainmail_layer_1.png": "././entity/equipment/humanoid/chainmail.png",
+                        "chainmail_layer_2.png": "././entity/equipment/humanoid_leggings/chainmail.png",
+                        "diamond_layer_1.png": "././entity/equipment/humanoid/diamond.png",
+                        "diamond_layer_2.png": "././entity/equipment/humanoid_leggings/diamond.png",
+                        "gold_layer_1.png": "././entity/equipment/humanoid/gold.png",
+                        "gold_layer_2.png": "././entity/equipment/humanoid_leggings/gold.png",
+                        "iron_layer_1.png": "././entity/equipment/humanoid/iron.png",
+                        "iron_layer_2.png": "././entity/equipment/humanoid_leggings/iron.png",
+                        "leather_layer_1.png": "././entity/equipment/humanoid/leather.png",
+                        "leather_layer_1_overlay.png": "././entity/equipment/humanoid/leather_overlay.png",
+                        "leather_layer_2.png": "././entity/equipment/humanoid_leggings/leather.png",
+                        "leather_layer_2_overlay.png": "././entity/equipment/humanoid_leggings/leather_overlay.png",
+                        "netherite_layer_1.png": "././entity/equipment/humanoid/netherite.png",
+                        "netherite_layer_2.png": "././entity/equipment/humanoid_leggings/netherite.png",
+                        "turtle_layer_1.png": "././entity/equipment/humanoid/turtle_scute.png"
+                    }
+                },
+                "trims": {
+                    "models": {
+                        "armor": {
+                            "bolt.png": "././entity/humanoid/bolt.png",
+                            "bolt_leggings.png": "././entity/humanoid_leggings/bolt.png",
+                            "coast.png": "././entity/humanoid/coast.png",
+                            "coast_leggings.png": "././entity/humanoid_leggings/coast.png",
+                            "dune.png": "././entity/humanoid/dune.png",
+                            "dune_leggings.png": "././entity/humanoid_leggings/dune.png",
+                            "eye.png": "././entity/humanoid/eye.png",
+                            "eye_leggings.png": "././entity/humanoid_leggings/eye.png",
+                            "flow.png": "././entity/humanoid/flow.png",
+                            "flow_leggings.png": "././entity/humanoid_leggings/flow.png",
+                            "host.png": "././entity/humanoid/host.png",
+                            "host_leggings.png": "././entity/humanoid_leggings/host.png",
+                            "raiser.png": "././entity/humanoid/raiser.png",
+                            "raiser_leggings.png": "././entity/humanoid_leggings/raiser.png",
+                            "rib.png": "././entity/humanoid/rib.png",
+                            "rib_leggings.png": "././entity/humanoid_leggings/rib.png",
+                            "sentry.png": "././entity/humanoid/sentry.png",
+                            "sentry_leggings.png": "././entity/humanoid_leggings/sentry.png",
+                            "shaper.png": "././entity/humanoid/shaper.png",
+                            "shaper_leggings.png": "././entity/humanoid_leggings/shaper.png",
+                            "silence.png": "././entity/humanoid/silence.png",
+                            "silence_leggings.png": "././entity/humanoid_leggings/silence.png",
+                            "snout.png": "././entity/humanoid/snout.png",
+                            "snout_leggings.png": "././entity/humanoid_leggings/snout.png",
+                            "spire.png": "././entity/humanoid/spire.png",
+                            "spire_leggings.png": "././entity/humanoid_leggings/spire.png",
+                            "tide.png": "././entity/humanoid/tide.png",
+                            "tide_leggings.png": "././entity/humanoid_leggings/tide.png",
+                            "vex.png": "././entity/humanoid/vex.png",
+                            "vex_leggings.png": "././entity/humanoid_leggings/vex.png",
+                            "ward.png": "././entity/humanoid/ward.png",
+                            "ward_leggings.png": "././entity/humanoid_leggings/ward.png",
+                            "wayfinder.png": "././entity/humanoid/wayfinder.png",
+                            "wayfinder_leggings.png": "././entity/humanoid_leggings/wayfinder.png",
+                            "wild.png": "././entity/humanoid/wild.png",
+                            "wild_leggings.png": "././entity/humanoid_leggings/wild.png"
+                        }
+                    }
                 }
             }
         }
