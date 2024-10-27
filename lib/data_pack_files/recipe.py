@@ -45,7 +45,7 @@ def recipe(contents: dict[str, Any], version: int) -> dict[str, Any]:
     if "type" in contents:
         contents["type"] = miscellaneous.namespace(contents["type"])
 
-    for key in ["addition", "base", "ingredient", "template"]:
+    for key in ["addition", "base", "ingredient", "input", "material", "template"]:
         if key in contents:
             if isinstance(contents[key], dict | str):
                 contents[key] = update_ingredient(contents[key])
@@ -70,7 +70,7 @@ def recipe(contents: dict[str, Any], version: int) -> dict[str, Any]:
                     contents["key"][key][i] = update_ingredient(contents["key"][key][i])
 
     if "result" in contents:
-        contents["result"] = update_result(contents["result"])
+        contents["result"] = update_result(contents["result"], contents["type"] if "type" in contents else "")
 
     return contents
 
@@ -89,8 +89,10 @@ def update_ingredient(ingredient: dict[str, Any] | str) -> str:
         return items.update_from_command("minecraft:barrier" if ingredient == "minecraft:air" else ingredient, pack_version, [])
 
 
-def update_result(result: dict[str, Any] | str) -> dict[str, Any]:
+def update_result(result: dict[str, Any] | str, recipe_type: str) -> dict[str, Any] | str:
     if isinstance(result, str):
+        if recipe_type == "minecraft:crafting_transmute":
+            return items.update_from_command(result, pack_version, [])
         result = {"id": result}
 
     if "item" in result:
