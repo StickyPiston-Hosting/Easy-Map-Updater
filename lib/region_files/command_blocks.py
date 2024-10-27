@@ -31,7 +31,7 @@ MINECRAFT_PATH = PROGRAM_PATH.parent
 
 # Define functions
 
-class CommandGuide(TypedDict("JSONTextComponentCompound", {"list": str})):
+class CommandGuide(TypedDict("CommandGuide", {"list": str})):
     coordinates: str
     region: str
     chunk_x: int
