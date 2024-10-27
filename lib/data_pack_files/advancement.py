@@ -44,8 +44,9 @@ def advancement(contents: dict[str, Any], version: int) -> dict[str, Any]:
     pack_version = version
 
     # Update criteria
-    for criterion_name in contents["criteria"]:
-        update_criterion(contents["criteria"][criterion_name])
+    if "criteria" in contents:
+        for criterion_name in contents["criteria"]:
+            update_criterion(contents["criteria"][criterion_name])
 
     # Enforce booleans
     if "display" in contents:
