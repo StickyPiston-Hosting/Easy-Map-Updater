@@ -220,7 +220,7 @@ def create_pack(world: Path):
             
     log("Tag replacements data pack created")
 
-    finalize.insert_data_pack(world, "file/tag_replacements.zip")
+    finalize.insert_data_pack(world, "file/tag_replacements")
     finalize.log_data_packs(world)
 
 
