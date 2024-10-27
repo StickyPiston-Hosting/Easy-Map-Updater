@@ -324,6 +324,10 @@ def conform_component(component: ItemComponent, version: int):
                 levels[updated_enchantment] = nbt_tags.TypeInt(min(max(levels[updated_enchantment].value, 0), 255))
         component.value = enchantments
 
+    if component.key == "minecraft:fire_resistant":
+        component.key = "minecraft:damage_resistant"
+        component.value = {"types": "#minecraft:is_fire"}
+
     if component.key == "minecraft:item_name":
         component.value = json_text_component.update(component.value, version, [], True)
 
