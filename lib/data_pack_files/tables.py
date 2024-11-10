@@ -4418,6 +4418,30 @@ BLOCK_TAG_REPLACEMENT_KEYS = {
     "minecraft:white_wool": "#tag_replacements:wool"
 }
 
+BOAT_TYPES = {
+    "oak": "minecraft:oak_boat",
+    "spruce": "minecraft:spruce_boat",
+    "birch": "minecraft:birch_boat",
+    "jungle": "minecraft:jungle_boat",
+    "acacia": "minecraft:acacia_boat",
+    "dark_oak": "minecraft:dark_oak_boat",
+    "mangrove": "minecraft:mangrove_boat",
+    "cherry": "minecraft:cherry_boat",
+    "bamboo": "minecraft:bamboo_raft",
+}
+
+CHEST_BOAT_TYPES = {
+    "oak": "minecraft:oak_chest_boat",
+    "spruce": "minecraft:spruce_chest_boat",
+    "birch": "minecraft:birch_chest_boat",
+    "jungle": "minecraft:jungle_chest_boat",
+    "acacia": "minecraft:acacia_chest_boat",
+    "dark_oak": "minecraft:dark_oak_chest_boat",
+    "mangrove": "minecraft:mangrove_chest_boat",
+    "cherry": "minecraft:cherry_chest_boat",
+    "bamboo": "minecraft:bamboo_chest_raft",
+}
+
 COLORS = [
     "black",
     "dark_blue",

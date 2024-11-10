@@ -217,6 +217,22 @@ def create_pack(world: Path):
             # Create block tag if multiple block IDs were found (also ignoring all block properties)
             create_block_tag(folder_path, block, block_ids)
 
+    # Create entity tags
+    folder_path = data_pack_path / "data" / "tag_replacements" / "tags" / "entity_type"
+    folder_path.mkdir(exist_ok=True, parents=True)
+
+    create_generic_tag(folder_path, "minecraft:chest_boat", [
+        "minecraft:oak_chest_boat",
+        "minecraft:spruce_chest_boat",
+        "minecraft:birch_chest_boat",
+        "minecraft:jungle_chest_boat",
+        "minecraft:acacia_chest_boat",
+        "minecraft:cherry_chest_boat",
+        "minecraft:dark_oak_chest_boat",
+        "minecraft:mangrove_chest_boat",
+        "minecraft:bamboo_chest_raft",
+    ])
+
             
     log("Tag replacements data pack created")
 
@@ -245,6 +261,17 @@ def create_block_tag(folder_path: Path, object_id: str, object_list: list[str]):
         log(f'"{object_id}": {{"Name": "#tag_replacements:{object_id[10:]}"}},')
     #log(f'"#tag_replacements:{object_id[10:]}": {object_list}'.replace("'", '"'))
     #log(f'"{object_list[0]}": "#tag_replacements:{object_id[10:]}"')
+    file_path = folder_path / (object_id[10:] + ".json")
+    utils.safe_file_write(file_path,
+        json.dumps(
+            {
+                "values": object_list
+            },
+            indent=4
+        )
+    )
+
+def create_generic_tag(folder_path: Path, object_id: str, object_list: list[str]):
     file_path = folder_path / (object_id[10:] + ".json")
     utils.safe_file_write(file_path,
         json.dumps(

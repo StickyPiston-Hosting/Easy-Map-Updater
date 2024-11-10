@@ -589,6 +589,10 @@
                     "rename": "item",
                     "source": "item"
                 },
+                "Type": {
+                    "remove": true,
+                    "edge_case": "boat_type"
+                },
                 "WanderTarget": {
                     "rename": "wander_target",
                     "data_type": "carry",

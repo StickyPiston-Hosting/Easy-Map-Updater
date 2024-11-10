@@ -11,8 +11,12 @@ from lib.data_pack_files import arguments
 from lib.data_pack_files import nbt_tags
 from lib.data_pack_files import entities
 from lib.data_pack_files import miscellaneous
+from lib.data_pack_files import tables
+from lib.data_pack_files.restore_behavior import tag_replacements
 from lib import defaults
 from lib import utils
+from lib import option_manager
+import easy_map_updater
 
 
 
@@ -89,6 +93,10 @@ def update_arguments(selector: str, nbt: str, imposed_limit: bool, issues: list[
 
     # Get arguments
     selector_arguments = unpack_arguments(selector[3:-1])
+
+    # Special handling for boat update in 1.21.2
+    if pack_version <= 2101 and "type" in selector_arguments:
+        handle_boat_split(cast(dict, selector_arguments))
 
     # Update arguments
     for argument_type in list(selector_arguments.keys()):
@@ -180,13 +188,17 @@ def pack_arguments(in_arguments: dict[str, str | dict | list], nested: bool = Fa
         # Iterate through efficient arguments
         for argument_type in ["type", "gamemode", "level", "x", "y", "z", "dx", "dy", "dz", "distance", "tag", "scores", "sort", "limit"]:
             if argument_type in in_arguments:
-                out_arguments.append(pack_argument(argument_type, in_arguments[argument_type]))
+                packed_argument = pack_argument(argument_type, in_arguments[argument_type])
+                if packed_argument:
+                    out_arguments.append(packed_argument)
                 del in_arguments[argument_type]
 
         # Iterate through inefficient arguments
         for argument_type in ["predicate", "nbt"]:
             if argument_type in in_arguments:
-                last_out_arguments.append(pack_argument(argument_type, in_arguments[argument_type]))
+                packed_argument = pack_argument(argument_type, in_arguments[argument_type])
+                if packed_argument:
+                    last_out_arguments.append(packed_argument)
                 del in_arguments[argument_type]
 
     # Get the rest of them
@@ -235,8 +247,12 @@ def update_argument(selector_type: str, selector_arguments: dict[str, str | dict
 
     # Process list-based arguments (arguments which can occur multiple times)
     if isinstance(value, list):
-        for i in range(len(value)):
-            cast(list, selector_arguments[argument_type])[i] = update_argument_list(argument_type, value[i], selector_arguments, issues)
+        updated_list = []
+        for entry in value:
+            updated_argument = update_argument_list(argument_type, entry, selector_arguments, issues)
+            if updated_argument is not None:
+                updated_list.append(updated_argument)
+        selector_arguments[argument_type] = updated_list
         return
     
     # Convert range arguments
@@ -306,7 +322,7 @@ def update_argument(selector_type: str, selector_arguments: dict[str, str | dict
     if defaults.SEND_WARNINGS:
         log(f'WARNING: Target selector argument "{argument_type}" is not registered!')
 
-def update_argument_list(argument_type: str, value: str, selector_arguments: dict[str, str | dict | list], issues: list[dict[str, str | int]]) -> str:
+def update_argument_list(argument_type: str, value: str, selector_arguments: dict[str, str | dict | list], issues: list[dict[str, str | int]]) -> str | None:
     if argument_type == "gamemode":
         return miscellaneous.gamemode(value, pack_version, issues)
 
@@ -318,9 +334,12 @@ def update_argument_list(argument_type: str, value: str, selector_arguments: dic
         if "type" in selector_arguments and not selector_arguments["type"][0].startswith("!"):
             nbt_input["object_id"] = entities.update(selector_arguments["type"][0], pack_version, issues)
 
+        updated_nbt = nbt_tags.update(nbt_input, pack_version, issues, "entity")
+        if updated_nbt == "{}":
+            return None
         if value.startswith("!"):
-            return "!" + nbt_tags.update(nbt_input, pack_version, issues, "entity")
-        return nbt_tags.update(nbt_input, pack_version, issues, "entity")
+            return "!" + updated_nbt
+        return updated_nbt
 
     if argument_type == "type":
         if value.startswith("!"):
@@ -370,3 +389,78 @@ def update_range(new_value: str, old_value: str, range_type: str) -> str:
     if not value_b:
         return value_a + ".."
     return value_a + ".." + value_b
+
+
+
+def handle_boat_split(selector_arguments: dict[str, list[str]]):
+    # Get list of all boat types
+    boat_type = ""
+    negated_boat_types: list[str] = []
+    if "nbt" in selector_arguments:
+        for nbt_string in selector_arguments["nbt"]:
+            negated = nbt_string.startswith("!")
+            if negated:
+                nbt_string = nbt_string[1:]
+            unpacked_nbt = cast(dict[str, str], nbt_tags.unpack(nbt_string))
+            if "Type" in unpacked_nbt:
+                if negated:
+                    negated_boat_types.append(unpacked_nbt["Type"])
+                else:
+                    boat_type = unpacked_nbt["Type"]
+
+    # Apply boat type information to entity types
+    create_chest_boat_tag = False
+    added_entity_types: list[str] = []
+    for i in range(len(selector_arguments["type"])):
+        entity_type = miscellaneous.namespace(selector_arguments["type"][i])
+        negated = entity_type.startswith("!")
+        if negated:
+            entity_type = entity_type[1:]
+        if entity_type not in ["minecraft:boat", "minecraft:chest_boat"]:
+            continue
+        if negated:
+            if entity_type == "minecraft:boat":
+                selector_arguments["type"][i] = "!#minecraft:boat"
+                continue
+            if entity_type == "minecraft:chest_boat":
+                selector_arguments["type"][i] = "!#tag_replacements:chest_boat"
+                create_chest_boat_tag = True
+                continue
+
+        # If there is an explicit boat type definition, the entity type will be set according to that
+        # Otherwise it will be the tag with each of the negated boat types canceled out
+        if boat_type:
+            if entity_type == "minecraft:boat":
+                id_array = tables.BOAT_TYPES
+                if boat_type in id_array:
+                    selector_arguments["type"][i] = id_array[boat_type]
+                continue
+            if entity_type == "minecraft:chest_boat":
+                id_array = tables.CHEST_BOAT_TYPES
+                if boat_type in id_array:
+                    selector_arguments["type"][i] = id_array[boat_type]
+                continue
+
+        else:
+            if entity_type == "minecraft:boat":
+                selector_arguments["type"][i] = "#minecraft:boat"
+                id_array = tables.BOAT_TYPES
+                for negated_boat_type in negated_boat_types:
+                    if negated_boat_type in id_array:
+                        added_entity_types.append("!" + id_array[negated_boat_type])
+                continue
+            if entity_type == "minecraft:chest_boat":
+                selector_arguments["type"][i] = "#tag_replacements:chest_boat"
+                create_chest_boat_tag = True
+                id_array = tables.CHEST_BOAT_TYPES
+                for negated_boat_type in negated_boat_types:
+                    if negated_boat_type in id_array:
+                        added_entity_types.append("!" + id_array[negated_boat_type])
+                continue
+
+    selector_arguments["type"].extend(added_entity_types)
+
+    if create_chest_boat_tag:
+        tag_replacements.create_pack(
+            easy_map_updater.MINECRAFT_PATH / "saves" / option_manager.get_map_name()
+        )

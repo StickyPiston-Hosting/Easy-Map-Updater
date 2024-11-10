@@ -162,6 +162,7 @@ from lib.data_pack_files import miscellaneous
 from lib.data_pack_files import ids
 from lib.data_pack_files import nbt_paths
 from lib.data_pack_files import item_component
+from lib.data_pack_files import tables
 
 
 
@@ -535,6 +536,8 @@ def edge_case(parent: dict, nbt, case: str | dict[str, str], source: str, object
         return edge_case_banner_base(parent, object_id, issues)
     if case_type == "block_entity":
         return blocks.update_from_nbt(cast(blocks.BlockInputFromNBT, parent), pack_version, issues)
+    if case_type == "boat_type":
+        return edge_case_boat_type(parent)
     if case_type == "can_place_on":
         return edge_case_can_place_on(nbt, issues)
     if case_type == "color":
@@ -611,6 +614,25 @@ def edge_case_banner_base(parent: dict[str, TypeInt], object_id: str, issues: li
         parent["Base"] = miscellaneous.banner_color_numeric(parent["Base"], pack_version)
     else:
         del parent["Base"]
+
+def edge_case_boat_type(parent: dict[str, str]):
+    if "id" not in parent:
+        return
+    entity_id = miscellaneous.namespace(parent["id"])
+
+    boat_type = "oak"
+    if "Type" in parent:
+        boat_type = parent["Type"]
+
+    if entity_id in ["minecraft:boat", "minecraft:oak_boat"]:
+        id_array = tables.BOAT_TYPES
+        if boat_type in id_array:
+            parent["id"] = id_array[boat_type]
+
+    if entity_id in ["minecraft:chest_boat", "minecraft:oak_chest_boat"]:
+        id_array = tables.CHEST_BOAT_TYPES
+        if boat_type in id_array:
+            parent["id"] = id_array[boat_type]
 
 def edge_case_can_place_on(nbt: list[str], issues: list[dict[str, str | int]]):
     new_list: list[str] = []

@@ -369,6 +369,14 @@ def command_string(command: str, version: int, issues: list[dict[str, str | int]
 
 
 def fix_helper_edge_case(argument_list: list[str], old_argument_list: list[str], issues: list[dict[str, str | int]]) -> str:
+    # Remove empty NBT from summon command
+    if (
+        len(argument_list) >= 6 and
+        argument_list[0] == "summon" and
+        argument_list[5] == "{}"
+    ):
+        argument_list.pop(5)
+
     # Fix comparator block updates (FIND VERSION WHERE IT IS NECESSARY)
     if (
         pack_version <= 1202 and
