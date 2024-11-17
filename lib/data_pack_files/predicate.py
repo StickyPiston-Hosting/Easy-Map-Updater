@@ -11,13 +11,16 @@ from typing import cast, Any
 from lib import defaults
 from lib import utils
 from lib import json_manager
+from lib.log import log
 from lib.data_pack_files import blocks
 from lib.data_pack_files import items
+from lib.data_pack_files import entities
 from lib.data_pack_files import miscellaneous
 from lib.data_pack_files import ids
 from lib.data_pack_files import nbt_tags
 from lib.data_pack_files import nbt_to_json
 from lib.data_pack_files import item_component
+from lib.data_pack_files import tables
 
 
 
@@ -198,7 +201,7 @@ def predicate_entity(contents: dict, version: int) -> dict:
     # Player type-specific
     if "player" in contents:
         contents["type_specific"] = contents["player"]
-        contents["type_specific"]["type"] = "player"
+        contents["type_specific"]["type"] = "minecraft:player"
         del contents["player"]
 
     if "equipment" in contents:
@@ -224,14 +227,74 @@ def predicate_entity(contents: dict, version: int) -> dict:
     if "vehicle" in contents:
         contents["vehicle"] = predicate_entity(contents["vehicle"], version)
 
+    # Apply namespace to entity types
+    if "type" in contents:
+        if isinstance(contents["type"], str):
+            contents["type"] = miscellaneous.namespace(contents["type"])
+        else:
+            for i in range(len(contents["type"])):
+                contents["type"][i] = miscellaneous.namespace(contents["type"][i])
+
     if "type_specific" in contents:
-        if contents["type_specific"]["type"] == "lightning":
+        contents["type_specific"]["type"] = miscellaneous.namespace(contents["type_specific"]["type"])
+        entity_type = contents["type_specific"]["type"]
+
+        if entity_type == "minecraft:boat":
+            variant = contents["type_specific"]["variant"]
+
+            if "type" not in contents:
+                contents["type"] = [
+                    tables.BOAT_TYPES[variant],
+                    tables.CHEST_BOAT_TYPES[variant]
+                ]
+
+            else:
+                if isinstance(contents["type"], str):
+                    if contents["type"] == "minecraft:boat":
+                        contents["type"] = tables.BOAT_TYPES[variant]
+                    elif contents["type"] == "minecraft:chest_boat":
+                        contents["type"] = tables.CHEST_BOAT_TYPES[variant]
+                    else:
+                        if contents["type"].startswith("#"):
+                            log(f"WARNING: Entity tag {contents["type"]} is being usurped by boat types in entity predicate")
+                        contents["type"] = [
+                            tables.BOAT_TYPES[variant],
+                            tables.CHEST_BOAT_TYPES[variant]
+                        ]
+
+                else:
+                    if "minecraft:boat" in contents["type"] and "minecraft:chest_boat" in contents["type"]:
+                        contents["type"] = [
+                            tables.BOAT_TYPES[variant],
+                            tables.CHEST_BOAT_TYPES[variant]
+                        ]
+                    elif "minecraft:boat" in contents["type"]:
+                        contents["type"] = tables.BOAT_TYPES[variant]
+                    elif "minecraft:chest_boat" in contents["type"]:
+                        contents["type"] = tables.CHEST_BOAT_TYPES[variant]
+                    else:
+                        contents["type"] = [
+                            tables.BOAT_TYPES[variant],
+                            tables.CHEST_BOAT_TYPES[variant]
+                        ]
+
+            del contents["type_specific"]
+
+        elif entity_type == "minecraft:lightning":
             if "entity_struck" in contents["type_specific"]:
                 contents["type_specific"]["entity_struck"] = predicate_entity(contents["type_specific"]["entity_struck"], version)
 
-        if contents["type_specific"]["type"] == "player":
+        elif entity_type == "minecraft:player":
             if "looking_at" in contents["type_specific"]:
                 contents["type_specific"]["looking_at"] = predicate_entity(contents["type_specific"]["looking_at"], version)
+
+    # Update entity types
+    if "type" in contents:
+        if isinstance(contents["type"], str):
+            contents["type"] = entities.update({"id": contents["type"], "read": True}, version, [])
+        else:
+            for i in range(len(contents["type"])):
+                contents["type"][i] = entities.update({"id": contents["type"][i], "read": True}, version, [])
 
     return contents
 

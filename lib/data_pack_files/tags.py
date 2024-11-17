@@ -11,6 +11,7 @@ from lib import defaults
 from lib import utils
 from lib import json_manager
 from lib.data_pack_files import blocks
+from lib.data_pack_files import entities
 from lib.data_pack_files import items
 from lib.data_pack_files import item_component
 
@@ -48,7 +49,12 @@ def update(file_path: Path, source_file_path: Path, version: int, tag_type: str)
                 },
                 pack_version, []
             )["id"]
-        if tag_type in "item":
+        if tag_type == "entity_type":
+            new_entry = entities.update(
+                {"id": contents["values"][i], "read": True},
+                pack_version, []
+            )
+        if tag_type == "item":
             new_entry = items.update(
                 {
                     "id": contents["values"][i],

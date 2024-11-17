@@ -9,7 +9,10 @@ from typing import cast
 from lib.data_pack_files import nbt_tags
 from lib.data_pack_files import miscellaneous
 from lib.data_pack_files import tables
+from lib.data_pack_files.restore_behavior import tag_replacements
 from lib import defaults
+from lib import option_manager
+import easy_map_updater
 
 
 
@@ -21,7 +24,7 @@ pack_version = defaults.PACK_VERSION
 
 # Define functions
 
-def update(entity: str | dict[str, str], version: int, issues: list[dict[str, str | int]]) -> str:
+def update(entity: str | dict[str, str | bool], version: int, issues: list[dict[str, str | int]]) -> str:
     # Assign version
     global pack_version
     pack_version = version
@@ -29,17 +32,20 @@ def update(entity: str | dict[str, str], version: int, issues: list[dict[str, st
     # Initialize parameters
     entity_id = "minecraft:pig"
     nbt = ""
+    read = False
 
     # Extract arguments if a dict
     if isinstance(entity, dict):
         if "id" in entity:
-            entity_id: str = entity["id"]
+            entity_id = cast(str, entity["id"])
         if "nbt" in entity:
-            nbt: str = entity["nbt"]
+            nbt = cast(str, entity["nbt"])
+        if "read" in entity:
+            read = cast(bool, entity["read"])
     else:
         entity_id = entity
 
-    boat_type = "oak"
+    boat_type: str | None = None
     if nbt != "":
         unpacked_nbt: dict = cast(dict, nbt_tags.unpack(nbt))
         
@@ -67,15 +73,27 @@ def update(entity: str | dict[str, str], version: int, issues: list[dict[str, st
         
     # In 1.21.2, boat IDs were split up
     if pack_version <= 2101:
-        if entity_id == "minecraft:boat":
-            id_array = tables.BOAT_TYPES
-            if boat_type in id_array:
-                entity_id = id_array[boat_type]
+        if read and boat_type is None:
+            if entity_id == "minecraft:boat":
+                entity_id = "#minecraft:boats"
+            elif entity_id == "minecraft:chest_boat":
+                entity_id = "#tag_replacements:chest_boat"
+                tag_replacements.create_pack(
+                    easy_map_updater.MINECRAFT_PATH / "saves" / option_manager.get_map_name()
+                )
 
-        if entity_id == "minecraft:chest_boat":
-            id_array = tables.CHEST_BOAT_TYPES
-            if boat_type in id_array:
-                entity_id = id_array[boat_type]
+        else:
+            boat_type = boat_type or "oak"
+
+            if entity_id == "minecraft:boat":
+                id_array = tables.BOAT_TYPES
+                if boat_type in id_array:
+                    entity_id = id_array[boat_type]
+
+            elif entity_id == "minecraft:chest_boat":
+                id_array = tables.CHEST_BOAT_TYPES
+                if boat_type in id_array:
+                    entity_id = id_array[boat_type]
 
     return entity_id.lower()
 
