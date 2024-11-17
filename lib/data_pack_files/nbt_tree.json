@@ -175,6 +175,11 @@
                 },
                 "is_waxed": { "data_type": "byte" },
                 "Items": { "list": { "source": "item" } },
+                "Lock": {
+                    "rename": "lock",
+                    "edge_case": "lock"
+                },
+                "lock": { "source": "item" },
                 "Owner": {
                     "rename": "profile",
                     "edge_case": "skull_owner"

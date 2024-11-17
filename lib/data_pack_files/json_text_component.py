@@ -560,3 +560,49 @@ def pack_mangled_hover_event_contents(component: JSONTextComponentCompound, acti
         return pack_mangled_compound_primitive(cast(dict, component), ["type", "id", "name"])
     
     return '""'
+
+
+
+def convert_lock_string(string: str) -> str:
+    # Unpack string
+    unpacked_component = json_manager.unpack(string)
+
+    # Extract raw string
+    raw_string = extract_raw_string(unpacked_component)
+
+    # Replace escapable characters 
+    raw_string = raw_string.replace('"', "_DQ_").replace("'", "_SQ_").replace("\\", "_BS_")
+
+    return pack_mangled(cast(JSONTextComponentCompound, {"extra": [raw_string], "text": "EMU"}))
+
+
+def extract_raw_string(component: str | dict | list) -> str:
+    if isinstance(component, dict):
+        return extract_raw_string_compound(component)
+    if isinstance(component, list):
+        return extract_raw_string_list(component)
+    return component
+
+def extract_raw_string_compound(component: dict) -> str:
+    raw_string = ""
+    for key in [
+        "text",
+        "selector",
+        # Keybind and translate should never be used in a key to open a locked container
+        # They will remain unsupported until further notice
+        "keybind",
+        "translate",
+    ]:
+        if key in component:
+            raw_string += component[key]
+
+    if "extra" in component:
+        raw_string += extract_raw_string_list(component["extra"])
+    
+    return raw_string
+
+def extract_raw_string_list(component: list) -> str:
+    raw_string = ""
+    for entry in component:
+        raw_string += extract_raw_string(entry)
+    return raw_string

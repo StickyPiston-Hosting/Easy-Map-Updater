@@ -558,6 +558,8 @@ def edge_case(parent: dict, nbt, case: str | dict[str, str], source: str, object
         return edge_case_item_components(nbt, pack_version, issues)
     if case_type == "item_tag":
         return edge_case_item_tag(parent, nbt, object_id, pack_version, issues)
+    if case_type == "lock":
+        return edge_case_lock(nbt)
     if case_type == "mooshroom_stew":
         return edge_case_mooshroom_stew(parent, pack_version, issues)
     if case_type == "old_spawn_potential_entity":
@@ -743,6 +745,13 @@ def edge_case_item_components(nbt: dict[str, Any], version: int, issues: list[di
 def edge_case_item_tag(parent: dict[str, Any], nbt: dict[str, Any], object_id: str, pack_version: int, issues: list[dict[str, str | int]]) -> dict[str, Any]:
     nbt = update_tags(parent, nbt, NBT_TREE["sources"]["item_tag"]["tags"], "item_tag", object_id, {}, issues)
     return item_component.extract(object_id, parent["components"] if "components" in parent else {}, nbt, pack_version, issues)
+
+def edge_case_lock(nbt: str) -> dict:
+    return {
+        "components": {
+            "minecraft:item_name": json_text_component.convert_lock_string(nbt)
+        }
+    }
 
 def edge_case_mooshroom_stew(parent: dict, pack_version: int, issues: list[dict[str, str | int]]):
     parent["stew_effects"] = TypeList([{}])

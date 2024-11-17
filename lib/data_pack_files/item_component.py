@@ -218,6 +218,12 @@ def conform_components(components: ItemComponents, version: int, issues: list[di
                 conform_component(alternative, version)
 
 
+    # In 1.21.2, container locks got converted into item predicates
+    # The raw character data of the custom name will be extracted out into the item name for comparison
+    if version <= 2101 and "minecraft:custom_name" in components:
+        components["minecraft:item_name"] = json_text_component.convert_lock_string(components["minecraft:custom_name"])
+
+
     return components
 
 
@@ -721,6 +727,7 @@ def extract(item_id: str, components: dict[str, Any] | None, nbt: dict[str, Any]
         
         if "Name" in display:
             components["minecraft:custom_name"] = display["Name"]
+            components["minecraft:item_name"] = json_text_component.convert_lock_string(display["Name"])
         
         if "Lore" in display:
             components["minecraft:lore"] = display["Lore"]
