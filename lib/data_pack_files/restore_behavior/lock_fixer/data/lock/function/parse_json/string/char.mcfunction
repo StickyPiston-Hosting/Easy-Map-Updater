@@ -8,10 +8,10 @@ execute if data storage lock:data {char:"'"} run scoreboard players set #char_ty
 execute if data storage lock:data {char:'"'} run scoreboard players set #char_type lock.value 2
 execute if data storage lock:data {char:"\\"} run scoreboard players set #char_type lock.value 3
 
-execute if score #char_type lock.value matches 0 run data modify storage lock:data chars append from storage lock:data char
-execute if score #char_type lock.value matches 1 run data modify storage lock:data chars append value "_SQ_"
-execute if score #char_type lock.value matches 2 if score #is_escaped lock.value matches 1 run data modify storage lock:data chars append value "_DQ_"
-execute if score #char_type lock.value matches 3 if score #is_escaped lock.value matches 1 run data modify storage lock:data chars append value "_BS_"
+execute if score #char_type lock.value matches 0 run data modify storage lock:data segments append from storage lock:data char
+execute if score #char_type lock.value matches 1 run data modify storage lock:data segments append value "_SQ_"
+execute if score #char_type lock.value matches 2 if score #is_escaped lock.value matches 1 run data modify storage lock:data segments append value "_DQ_"
+execute if score #char_type lock.value matches 3 if score #is_escaped lock.value matches 1 run data modify storage lock:data segments append value "_BS_"
 
 
 
@@ -32,4 +32,4 @@ execute unless score #char_type lock.value matches 3 run scoreboard players set 
 
 # Recurse string
 
-function lock:convert_string/string/char
+function lock:parse_json/string/char

@@ -1,6 +1,6 @@
 # Check if character is a child object
 
-function lock:convert_string/type
+function lock:parse_json/type
 data modify storage lock:data child set from storage lock:data stack[-1].child
 
 
@@ -19,4 +19,4 @@ execute if data storage lock:data {child:0b,char:"]"} run return 1
 
 # Recurse list
 
-function lock:convert_string/list/char
+function lock:parse_json/list/char

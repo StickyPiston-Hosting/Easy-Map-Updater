@@ -35,12 +35,18 @@ spawner_position_list: list[str] = []
 uuid_dict: dict[str, str] = {}
 uuid_list: list[str] = []
 
+class FixWorldFlags(TypedDict):
+    spawner_bossbar: bool
+    locked_containers: bool
+
+flags: FixWorldFlags = {
+    "spawner_bossbar": False,
+    "locked_containers": False,
+}
+
 
 
 # Define functions
-
-class FixWorldFlags(TypedDict):
-    spawner_bossbar: bool
 
 def fix(world: Path, source_world: Path, version: int, get_confirmation: bool) -> FixWorldFlags:
     log("Fixing world data")
@@ -49,9 +55,20 @@ def fix(world: Path, source_world: Path, version: int, get_confirmation: bool) -
     global pack_version
     pack_version = version
 
-    # Initialize flags
-    flags: FixWorldFlags = {
+    # Reset globals values
+    global spawner_bossbar_list
+    global spawner_position_list
+    global uuid_dict
+    global uuid_list
+    global flags
+
+    spawner_bossbar_list = NBT.TAG_List(type=NBT.TAG_Compound)
+    spawner_position_list = []
+    uuid_dict = {}
+    uuid_list = []
+    flags = {
         "spawner_bossbar": False,
+        "locked_containers": False,
     }
 
     # Check for errors
@@ -407,6 +424,18 @@ def fix_block_entity(block_entity: NBT.TAG_Compound):
 
     if "CustomName" in block_entity:
         block_entity["CustomName"] = NBT.TAG_String(json_text_component.update(block_entity["CustomName"].value, pack_version, [], True))
+
+    if "lock" in block_entity:
+        if pack_version <= 2101:
+            if "components" in block_entity["lock"]:
+                components = block_entity["lock"]["components"]
+                if "minecraft:custom_name" in components:
+                    components["minecraft:item_name"] = NBT.TAG_String(json_text_component.convert_lock_string(components["minecraft:custom_name"].value))
+                    del components["minecraft:custom_name"]
+                    flags["locked_containers"] = True
+
+        else:
+            fix_item(block_entity["lock"])
 
 
 
@@ -779,6 +808,13 @@ def fix_item(item: NBT.TAG_Compound, is_from_spawner: bool = False):
             # Handle custom name
             if "minecraft:custom_name" in item_components:
                 item_components["minecraft:custom_name"] = NBT.TAG_String(json_text_component.update(item_components["minecraft:custom_name"].value, pack_version, [], False))
+
+                # Handle lock logic
+                if pack_version <= 2101:
+                    if "minecraft:custom_data" not in item_components:
+                        item_components["minecraft:custom_data"] = NBT.TAG_Compound()
+                    item_components["minecraft:custom_data"]["emu_lock_name"] = NBT.TAG_String(item_components["minecraft:custom_name"].value)
+                    item_components["minecraft:item_name"] = NBT.TAG_String(json_text_component.convert_lock_string(item_components["minecraft:custom_name"].value))
 
             # Handle lore
             if "minecraft:lore" in item_components:

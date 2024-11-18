@@ -28,8 +28,7 @@ MINECRAFT_PATH = EASY_MAP_UPDATER_PATH.parent
 def cancel_damage(command: list[str]) -> str:
     world = MINECRAFT_PATH / "saves" / option_manager.get_map_name()
     data_pack_path = world / "datapacks" / "firework_damage_canceler.zip"
-    data_pack_path.parent.mkdir(exist_ok=True, parents=True)
-    if not data_pack_path.exists():
+    if world.exists() and not data_pack_path.exists():
         create_pack(world)
 
     # Get wait time

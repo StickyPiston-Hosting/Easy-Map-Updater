@@ -163,6 +163,7 @@ from lib.data_pack_files import ids
 from lib.data_pack_files import nbt_paths
 from lib.data_pack_files import item_component
 from lib.data_pack_files import tables
+from lib.data_pack_files.restore_behavior import lock_fixer
 
 
 
@@ -747,6 +748,7 @@ def edge_case_item_tag(parent: dict[str, Any], nbt: dict[str, Any], object_id: s
     return item_component.extract(object_id, parent["components"] if "components" in parent else {}, nbt, pack_version, issues)
 
 def edge_case_lock(nbt: str) -> dict:
+    lock_fixer.fix_locks()
     return {
         "components": {
             "minecraft:item_name": json_text_component.convert_lock_string(nbt)

@@ -27,12 +27,15 @@ MINECRAFT_PATH = EASY_MAP_UPDATER_PATH.parent
 # Define functions
 
 def create_function(commands: str) -> str:
+    # Prepare data pack path
+    world = data_pack_path = MINECRAFT_PATH / "saves" / option_manager.get_map_name()
+    if not world.exists():
+        return f"function help:helper_function_requires_world"
+    data_pack_path = world / "datapacks" / "command_helper"
+    data_pack_path.mkdir(exist_ok=True, parents=True)
+
     if defaults.DEBUG_MODE:
         log("Command helper data pack was modified")
-
-    # Prepare data pack path
-    data_pack_path = MINECRAFT_PATH / "saves" / option_manager.get_map_name() / "datapacks" / "command_helper"
-    data_pack_path.mkdir(exist_ok=True, parents=True)
 
     # Prepare pack.mcmeta
     utils.safe_file_write(data_pack_path / "pack.mcmeta",

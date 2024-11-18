@@ -1,6 +1,6 @@
 # Check if character is a child object
 
-function lock:convert_string/type
+function lock:parse_json/type
 data modify storage lock:data child set from storage lock:data stack[-1].child
 
 
@@ -15,7 +15,7 @@ execute if data storage lock:data {child:1b} run data modify storage lock:data s
 
 execute store result score #length lock.value if data storage lock:data stack[-1].key_value[]
 execute if score #length lock.value matches 2.. run data modify storage lock:data macro.key set from storage lock:data stack[-1].key_value[0].value
-execute if score #length lock.value matches 2.. run function lock:convert_string/compound/insert with storage lock:data macro
+execute if score #length lock.value matches 2.. run function lock:parse_json/compound/insert with storage lock:data macro
 execute if score #length lock.value matches 2.. run data modify storage lock:data stack[-1].key_value set value []
 
 
@@ -28,4 +28,4 @@ execute if data storage lock:data {child:0b,char:"}"} run return 1
 
 # Recurse compound
 
-function lock:convert_string/compound/char
+function lock:parse_json/compound/char

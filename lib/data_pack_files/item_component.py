@@ -222,6 +222,9 @@ def conform_components(components: ItemComponents, version: int, issues: list[di
     # The raw character data of the custom name will be extracted out into the item name for comparison
     if version <= 2101 and "minecraft:custom_name" in components:
         components["minecraft:item_name"] = json_text_component.convert_lock_string(components["minecraft:custom_name"])
+        if "minecraft:custom_data" not in components:
+            components["minecraft:custom_data"] = {}
+        components["minecraft:custom_data"]["emu_lock_name"] = components["minecraft:custom_name"]
 
 
     return components

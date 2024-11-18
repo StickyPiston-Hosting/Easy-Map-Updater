@@ -66,6 +66,7 @@ from lib.data_pack_files.restore_behavior import unwaterloggable_leaves
 from lib.data_pack_files.restore_behavior import old_adventure_mode
 from lib.data_pack_files.restore_behavior import effect_overflow
 from lib.data_pack_files.restore_behavior import attribute_reset
+from lib.data_pack_files.restore_behavior import lock_fixer
 from lib.data_pack_files.admin_controls import admin_kickback
 from lib.region_files import command_blocks
 from lib.region_files import entity_extractor
@@ -116,6 +117,7 @@ class Action(Enum):
     DP_ADVENTURE = "dp.adventure"
     DP_EFFECT = "dp.effect"
     DP_ATTRIBUTE = "dp.attribute"
+    DP_LOCK_FIXER = "dp.lock_fixer"
     DP_BREAK = "dp.break"
 
     WORLD_ORIGINAL = "world.original"
@@ -188,6 +190,7 @@ def default_update_progress() -> UpdateProgressDefinition:
         },
         "fix_world_flags": {
             "spawner_bossbar": False,
+            "locked_containers": False,
         },
     }
 update_progress: UpdateProgressDefinition = default_update_progress()
@@ -332,6 +335,7 @@ def action_reset():
         Action.DP_ADVENTURE.value:          { "show": False, "function": action_old_adventure_mode, "name": "Create old adventure mode data pack" },
         Action.DP_EFFECT.value:             { "show": False, "function": action_effect_overflow, "name": "Create effect overflow data pack" },
         Action.DP_ATTRIBUTE.value:          { "show": False, "function": action_attribute_reset, "name": "Create attribute reset data pack" },
+        Action.DP_LOCK_FIXER.value:         { "show": False, "function": action_lock_fixer, "name": "Create lock fixer data pack" },
 
         Action.CMD_READ.value:              { "show": False, "function": action_read_commands, "name": "Read command block data" },
         Action.CMD_UPDATE.value:            { "show": False, "function": action_update_commands, "name": "Update command block data" },
@@ -557,6 +561,10 @@ def action_update(): # Needs confirmation
     if update_progress["stage"] == 708:
         if version <= 2006:
             action_attribute_reset()
+        next_update_progress()
+    if update_progress["stage"] == 709:
+        if version <= 2101 and progress_flags["locked_containers"]:
+            action_lock_fixer()
         next_update_progress_section()
 
     # Finalize map
@@ -775,7 +783,12 @@ def action_effect_overflow():
 def action_attribute_reset():
     attribute_reset.create_pack(
         MINECRAFT_PATH / "saves" / option_manager.get_map_name()
-    )    
+    )
+
+def action_lock_fixer():
+    lock_fixer.create_pack(
+        MINECRAFT_PATH / "saves" / option_manager.get_map_name()
+    ) 
 
 def action_stored_functions(manual: bool = True): # Needs confirmation
     data_pack.extract_stored_functions(

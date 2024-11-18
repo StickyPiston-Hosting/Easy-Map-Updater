@@ -1,8 +1,8 @@
 # Prepare macro parameters
 
-data modify storage lock:data macro.c0 set from storage lock:data chars[0]
+data modify storage lock:data macro.c0 set from storage lock:data segments[0]
 
-data remove storage lock:data chars[0]
+data remove storage lock:data segments[0]
 
 scoreboard players remove #length lock.value 1
 

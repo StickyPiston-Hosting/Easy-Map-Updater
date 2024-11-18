@@ -1,7 +1,7 @@
 # Extract characters from the string and construct the list
 
 data modify storage lock:data stack append value {list:[]}
-function lock:convert_string/list/char
+function lock:parse_json/list/char
 
 
 

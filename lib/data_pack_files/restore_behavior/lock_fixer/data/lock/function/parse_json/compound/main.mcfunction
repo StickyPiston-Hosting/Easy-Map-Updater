@@ -1,7 +1,7 @@
 # Extract characters from the string and construct the compound
 
 data modify storage lock:data stack append value {compound:{},key_value:[]}
-function lock:convert_string/compound/char
+function lock:parse_json/compound/char
 
 
 
