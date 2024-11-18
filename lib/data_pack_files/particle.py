@@ -5,9 +5,10 @@
 
 # Import things
 
-from typing import Any
+from typing import Any, cast
 from lib.data_pack_files import blocks
 from lib.data_pack_files import items
+from lib.data_pack_files import item_component
 from lib.data_pack_files import nbt_tags
 from lib.data_pack_files import miscellaneous
 from lib.data_pack_files import tables
@@ -84,169 +85,133 @@ def update(particle: str | dict[str, str], version: int, issues: list[dict[str, 
     global pack_version
     pack_version = version
 
-    # Initialize variables
-    particle_id = "minecraft:cloud"
-    block = ""
-    item = ""
-    color_r = ""
-    color_g = ""
-    color_b = ""
-    from_color_r = ""
-    from_color_g = ""
-    from_color_b = ""
-    to_color_r = ""
-    to_color_g = ""
-    to_color_b = ""
-    scale = ""
-    roll = ""
-    delay = ""
-    arrival_in_ticks = ""
-    pos_x = ""
-    pos_y = ""
-    pos_z = ""
+    # Prepare particle data
+    particle_data: dict[str, Any] = {
+        "type": "minecraft:cloud"
+    }
 
     # Extract arguments if a dict
     if isinstance(particle, dict):
         if "particle" in particle:
-            particle_id = miscellaneous.namespace(particle["particle"])
+            particle_data["type"] = miscellaneous.namespace(particle["particle"])
         if "block" in particle:
             block = particle["block"]
+            if "[" in block:
+                block_id = block[:block.find("[")]
+                block_states = block[block.find("["):]
+            else:
+                block_id = block
+                block_states = ""
+            particle_data["block_state"] = {}
+            particle_data["block_state"]["Name"] = block_id
+            if block_states:
+                particle_data["block_state"]["Properties"] = blocks.unpack_block_states(block_states)
         if "item" in particle:
             item = particle["item"]
+            if "[" in item:
+                item_id = item[:item.find("[")]
+                components = item[item.find("["):]
+            else:
+                item_id = item
+                components = ""
+            particle_data["item"] = {}
+            particle_data["item"]["id"] = item_id
+            if components:
+                particle_data["item"]["components"] = item_component.ItemComponents.unpack(components).pack_to_dict()
 
         if "color_r" in particle:
-            color_r = particle["color_r"]
-        if "color_g" in particle:
-            color_g = particle["color_g"]
-        if "color_b" in particle:
-            color_b = particle["color_b"]
+            particle_data["color"] = nbt_tags.TypeList([
+                nbt_tags.TypeFloat(particle["color_r"]),
+                nbt_tags.TypeFloat(particle["color_g"]),
+                nbt_tags.TypeFloat(particle["color_b"]),
+            ])
+
         if "from_color_r" in particle:
-            from_color_r = particle["from_color_r"]
-        if "from_color_g" in particle:
-            from_color_g = particle["from_color_g"]
-        if "from_color_b" in particle:
-            from_color_b = particle["from_color_b"]
+            particle_data["from_color"] = nbt_tags.TypeList([
+                nbt_tags.TypeFloat(particle["from_color_r"]),
+                nbt_tags.TypeFloat(particle["from_color_g"]),
+                nbt_tags.TypeFloat(particle["from_color_b"]),
+            ])
+
         if "to_color_r" in particle:
-            to_color_r = particle["to_color_r"]
-        if "to_color_g" in particle:
-            to_color_g = particle["to_color_g"]
-        if "to_color_b" in particle:
-            to_color_b = particle["to_color_b"]
+            particle_data["to_color"] = nbt_tags.TypeList([
+                nbt_tags.TypeFloat(particle["to_color_r"]),
+                nbt_tags.TypeFloat(particle["to_color_g"]),
+                nbt_tags.TypeFloat(particle["to_color_b"]),
+            ])
 
         if "scale" in particle:
-            scale = particle["scale"]
-
+            particle_data["scale"] = nbt_tags.TypeFloat(particle["scale"])
         if "roll" in particle:
-            roll = particle["roll"]
+            particle_data["roll"] = nbt_tags.TypeFloat(particle["roll"])
         if "delay" in particle:
-            delay = particle["delay"]
+            particle_data["delay"] = nbt_tags.TypeInt(particle["delay"])
         if "arrival_in_ticks" in particle:
-            arrival_in_ticks = particle["arrival_in_ticks"]
+            particle_data["arrival_in_ticks"] = nbt_tags.TypeInt(particle["arrival_in_ticks"])
 
         if "pos_x" in particle:
-            pos_x = particle["pos_x"]
-        if "pos_y" in particle:
-            pos_y = particle["pos_y"]
-        if "pos_z" in particle:
-            pos_z = particle["pos_z"]
+            if "destination" not in particle_data:
+                particle_data["destination"] = {}
+            particle_data["destination"]["type"] = "block"
+            particle_data["destination"]["pos"] = nbt_tags.TypeList([
+                nbt_tags.TypeInt(particle["pos_x"]),
+                nbt_tags.TypeInt(particle["pos_y"]),
+                nbt_tags.TypeInt(particle["pos_z"]),
+            ])
+
     else:
-        particle_id = miscellaneous.namespace(particle)
+        # Extract particle data if in string form
+        if "{" in particle:
+            particle_data = nbt_tags.unpack(particle[particle.index("{"):])
+            particle_data["type"] = miscellaneous.namespace(particle[:particle.index("{")])
+        else:
+            particle_data["type"] = miscellaneous.namespace(particle)
 
 
 
     # Convert ID based on version
     if pack_version <= 1202:
         for substring in ["minecraft:blockcrack_", "minecraft:blockdust_", "minecraft:iconcrack_"]:
-            if substring in particle_id:
-                particle_id = substring[:len(substring) - 1]
+            if substring in particle_data["type"]:
+                particle_data["type"] = substring[:len(substring) - 1]
 
         id_array = tables.PARTICLE_IDS
-        if particle_id in id_array:
-            particle_id = id_array[particle_id]
+        if particle_data["type"] in id_array:
+            particle_data["type"] = id_array[particle_data["type"]]
 
 
 
     # Update block and item if they are set
-    if block:
-        block = blocks.update_from_command(block, version, issues)
-    if item:
-        item = items.update_from_command(item, version, issues)
+    if "block_state" in particle_data:
+        block_state = particle_data["block_state"]
+        block = blocks.update({
+            "id": block_state["Name"],
+            "data_value": 0,
+            "block_states": block_state["Properties"] if "Properties" in block_state else {},
+            "nbt": None,
+            "read": False,
+        }, pack_version, [])
+        block_state["Name"] = block["id"]
+        if block["block_states"]:
+            block_state["Properties"] = block["block_states"]
+        elif "Properties" in block_state:
+            del block_state["Properties"]
 
-
-
-    # Pack particle
-    particle_data: dict[str, Any] = {
-        "type": particle_id
-    }
-
-    if block:
-        if "[" in block:
-            block_states = block[block.find("["):]
-            block_id = block[:block.find("[")]
-        else:
-            block_id = block
-            block_states = ""
-        particle_data["block_state"] = {}
-        particle_data["block_state"]["Name"] = block_id
-        if block_states:
-            particle_data["block_state"]["Properties"] = blocks.unpack_block_states(block_states)
-
-    if item:
-        if "[" in item:
-            item_id = item[:item.find("[")]
-        else:
-            item_id = item
-        particle_data["item"] = item_id
-
-    if color_r:
-        particle_data["color"] = nbt_tags.TypeList([
-            nbt_tags.TypeFloat(color_r),
-            nbt_tags.TypeFloat(color_g),
-            nbt_tags.TypeFloat(color_b),
-        ])
-
-    if from_color_r:
-        particle_data["from_color"] = nbt_tags.TypeList([
-            nbt_tags.TypeFloat(from_color_r),
-            nbt_tags.TypeFloat(from_color_g),
-            nbt_tags.TypeFloat(from_color_b),
-        ])
-
-    if to_color_r:
-        particle_data["to_color"] = nbt_tags.TypeList([
-            nbt_tags.TypeFloat(to_color_r),
-            nbt_tags.TypeFloat(to_color_g),
-            nbt_tags.TypeFloat(to_color_b),
-        ])
-
-    if scale:
-        particle_data["scale"] = nbt_tags.TypeFloat(scale)
-    if roll:
-        particle_data["roll"] = nbt_tags.TypeFloat(roll)
-    if delay:
-        particle_data["delay"] = nbt_tags.TypeInt(delay)
-    if arrival_in_ticks:
-        particle_data["arrival_in_ticks"] = nbt_tags.TypeInt(arrival_in_ticks)
-
-    if pos_x:
-        particle_data["pos"] = nbt_tags.TypeList([
-            nbt_tags.TypeFloat(pos_x),
-            nbt_tags.TypeFloat(pos_y),
-            nbt_tags.TypeFloat(pos_z),
-        ])
+    if "item" in particle_data:
+        item = items.update_from_nbt(cast(items.ItemInputFromNBT, particle_data["item"]), version, issues)
 
     
 
     # Handle entity effects
     if pack_version <= 2004:
-        if particle_id == "minecraft:entity_effect":
+        if particle_data["type"] == "minecraft:entity_effect":
             particle_data["color"] = nbt_tags.TypeList([
                 nbt_tags.TypeFloat(0),
                 nbt_tags.TypeFloat(0),
                 nbt_tags.TypeFloat(0),
                 nbt_tags.TypeFloat(1),
             ])
-        elif particle_id == "minecraft:ambient_entity_effect":
+        elif particle_data["type"] == "minecraft:ambient_entity_effect":
             particle_id = "minecraft:entity_effect"
             particle_data["type"] = particle_id
             particle_data["color"] = nbt_tags.TypeList([
