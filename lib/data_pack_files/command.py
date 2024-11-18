@@ -28,6 +28,7 @@ from lib.data_pack_files.command_helpers import door_modifier
 from lib.data_pack_files.command_helpers import falling_block_handler
 from lib.data_pack_files.command_helpers import sign_merge_handler
 from lib.data_pack_files.command_helpers import safe_nbt_interpret
+from lib.data_pack_files.command_helpers import teleport_dismount
 from lib.data_pack_files.restore_behavior import firework_damage_canceler
 from lib.data_pack_files.restore_behavior import effect_overflow
 from lib.region_files import illegal_chunk
@@ -385,6 +386,18 @@ def fix_helper_edge_case(argument_list: list[str], old_argument_list: list[str],
         argument_list[4].split("{")[0].split("[")[0] == "minecraft:comparator"
     ):
         return block_update_mitigator.handle_comparator_setblock(argument_list)
+    
+    # Fix pre-1.21.2 bugs
+    if pack_version <= 2101:
+        # Fix pre-1.21.2 teleports not dismounting riders
+        if (
+            len(argument_list) > 5 and
+            argument_list[0] in ["tp", "teleport"] and
+            argument_list[2] == "~" and
+            argument_list[3] == "~" and
+            argument_list[4] == "~"
+        ):
+            return teleport_dismount.handle_teleport(argument_list)
     
     # Fix pre-1.20.5 bugs
     if pack_version <= 2004:

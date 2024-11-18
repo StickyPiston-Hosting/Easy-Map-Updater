@@ -1264,6 +1264,25 @@
         "ride": {
             "mapping": ["carry", "target_selector_single", "carry", "target_selector_single"]
         },
+        "rotate": {
+            "index": 2,
+            "branches": {
+                "facing": {
+                    "index": 3,
+                    "branches": {
+                        "entity": {
+                            "mapping": ["carry", "target_selector_single", "carry", "carry", "target_selector_single", "carry"]
+                        }
+                    },
+                    "else": {
+                        "mapping": ["carry", "target_selector_single", "carry", "coordinate", "coordinate", "coordinate"]
+                    }
+                }
+            },
+            "else": {
+                "mapping": ["carry", "target_selector_single", "yaw", "pitch"]
+            }
+        },
         "say": {
             "mapping": ["carry", "say_text"],
             "legend": [0, {"say_text": {"min": 1}}]
