@@ -538,6 +538,15 @@ def fix_helper_edge_case(argument_list: list[str], old_argument_list: list[str],
     ):
         return "#" + " ".join(argument_list)
     
+    # Move comment hash back through an execute chain
+    if (
+        len(argument_list) > 2 and
+        argument_list[0] == "execute" and
+        argument_list[-1].startswith("#")
+    ):
+        argument_list[-1] = argument_list[-1][1:]
+        return "#" + " ".join(argument_list)
+    
 
 
     # Process issues list
