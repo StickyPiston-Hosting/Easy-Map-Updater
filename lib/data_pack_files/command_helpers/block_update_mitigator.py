@@ -40,9 +40,7 @@ def handle_comparator_setblock(command: list[str]) -> str:
             f'execute positioned {command[1]} {command[2]} {command[3]} positioned {offset} if block ~ ~ ~ minecraft:command_block run data merge block ~ ~ ~ {{SuccessCount:0}}\n'
             f'execute positioned {command[1]} {command[2]} {command[3]} positioned {offset} if block ~ ~ ~ minecraft:chain_command_block run data merge block ~ ~ ~ {{SuccessCount:0}}\n'
             f'execute positioned {command[1]} {command[2]} {command[3]} positioned {offset} if block ~ ~ ~ minecraft:repeating_command_block run data merge block ~ ~ ~ {{SuccessCount:0}}\n'
-            f'execute store success score #success help.value run {" ".join(command)}\n'
-            f'execute if score #success help.value matches 0 run return 0\n'
-            f'return 1'
+            f'return run {" ".join(command)}'
         )
     else:
         return " ".join(command)

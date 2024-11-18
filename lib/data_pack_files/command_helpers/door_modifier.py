@@ -31,7 +31,5 @@ def handle_doors(command: list[str]) -> str:
         f'execute if score #boolean help.value matches 1 positioned {command[1]} {command[2]} {command[3]} run fill ~ ~ ~ ~ ~{offset} ~ minecraft:air\n'
         f'execute if score #boolean help.value matches 1 positioned {command[1]} {command[2]} {command[3]} run setblock ~ ~{offset} ~ {block_id}{blocks.pack_block_states(block_states)}\n'
 
-        f'execute store success score #success help.value run {" ".join(command)}\n'
-        f'execute if score #success help.value matches 0 run return 0\n'
-        f'return 1'
+        f'return run {" ".join(command)}'
     )

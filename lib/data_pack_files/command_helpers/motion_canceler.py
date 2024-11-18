@@ -6,6 +6,7 @@
 # Import things
 
 from lib.data_pack_files import command_helper
+from lib.data_pack_files.command_helpers import teleport_dismount
 
 
 
@@ -40,11 +41,15 @@ def handle_teleport(command: list[str]) -> str:
         selector = command[selector_index]
         command[selector_index] = "@s"
 
+    # Modify command using teleport dismount fix
+    index = command.index("teleport")
+    command_string = " ".join(command[:index]) + teleport_dismount.handle_teleport(command[index:])
+
     function_call = command_helper.create_function(
-        f'execute if entity @s[type=!minecraft:player,tag=help.motion_modified] run data modify storage help:data Motion set from entity @s Motion\n'
-        f'execute store success score #success help.value run {" ".join(command).replace("as @s ", "")}\n'
-        f'execute if entity @s[type=!minecraft:player,tag=help.motion_modified] run data modify entity @s Motion set from storage help:data Motion\n'
-        f'execute if score #success help.value matches 0 run return 0\n'
+        f'execute if entity @s[type=!minecraft:player,tag=help.motion_modified] run data modify storage help:data Motion set from entity @s Motion\n' +
+        f'execute store success score #success help.value run {command_string}\n'.replace("as @s ", "").replace(" run execute", "") +
+        f'execute if entity @s[type=!minecraft:player,tag=help.motion_modified] run data modify entity @s Motion set from storage help:data Motion\n' +
+        f'execute if score #success help.value matches 0 run return 0\n' +
         f'return 1'
     )
     return f'execute as {selector} run {function_call}'

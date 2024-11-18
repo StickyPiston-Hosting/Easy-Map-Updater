@@ -392,10 +392,7 @@ def fix_helper_edge_case(argument_list: list[str], old_argument_list: list[str],
         # Fix pre-1.21.2 teleports not dismounting riders
         if (
             len(argument_list) > 5 and
-            argument_list[0] in ["tp", "teleport"] and
-            argument_list[2] == "~" and
-            argument_list[3] == "~" and
-            argument_list[4] == "~"
+            argument_list[0] in ["tp", "teleport"]
         ):
             return teleport_dismount.handle_teleport(argument_list)
     
