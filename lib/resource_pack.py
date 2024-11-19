@@ -143,79 +143,84 @@ def update_file_names(og_pack: Path, pack: Path):
 def update_file_name(og_namespace: Path, namespace: Path, subdir: str, target: str | dict[str, Any]):
     path = Path(subdir)
 
-    if subdir in [
-        "realms/textures/gui/realms/expires_soon_icon.png"
-    ]:
-        log(f'WARNING: Edge case file found: {subdir}')
+    if defaults.DEBUG_MODE:
+        log(f"Updating {(og_namespace / subdir).as_posix()}")
 
-    slice_data = None
-    clip_data = None
-    metadata = None
-    if isinstance(target, str):
-        target_path = target.replace("*", path.name).split("/")
-    elif isinstance(target, dict):
-        target_path = target["path"].replace("*", path.name).split("/")
-        if "slice" in target:
-            slice_data = cast(list[int], target["slice"])
-        if "clip" in target:
-            clip_data = cast(list[int], target["clip"])
-        if "metadata" in target:
-            metadata = cast(dict[str, Any], target["metadata"])
+    try:
 
-    path = path.parent
-    for target_folder in target_path:
-        if target_folder == ".":
-            path = path.parent
+        if subdir in [
+            "realms/textures/gui/realms/expires_soon_icon.png"
+        ]:
+            log(f'WARNING: Edge case file found: {subdir}')
+
+        slice_data = None
+        clip_data = None
+        metadata = None
+        if isinstance(target, str):
+            target_path = target.replace("*", path.name).split("/")
+        elif isinstance(target, dict):
+            target_path = target["path"].replace("*", path.name).split("/")
+            if "slice" in target:
+                slice_data = cast(list[int], target["slice"])
+            if "clip" in target:
+                clip_data = cast(list[int], target["clip"])
+            if "metadata" in target:
+                metadata = cast(dict[str, Any], target["metadata"])
+
+        path = path.parent
+        for target_folder in target_path:
+            if target_folder == ".":
+                path = path.parent
+            else:
+                path = path / target_folder
+        (namespace / path).parent.mkdir(exist_ok=True, parents=True)
+
+        if slice_data:
+            image = Image.open(og_namespace / subdir, "r", ["png"])
+            ax = min(int( (slice_data[0]                )*image.size[0]//slice_data[4] ), image.size[0] - 1)
+            ay = min(int( (slice_data[1]                )*image.size[1]//slice_data[5] ), image.size[1] - 1)
+            bx = max(int( (slice_data[0] + slice_data[2])*image.size[0]//slice_data[4] ), ax + 1)
+            by = max(int( (slice_data[1] + slice_data[3])*image.size[1]//slice_data[5] ), ay + 1)
+            cropped_image = image.crop((ax, ay, bx, by))
+            if defaults.DEBUG_MODE:
+                log(f"Original dimensions: {image.size[0]}, {image.size[1]} - Cropped dimensions: {cropped_image.size[0]}, {cropped_image.size[1]}")
+            cropped_image.save(namespace / path, "png")
+        elif clip_data:
+            image = Image.open(og_namespace / subdir, "r", ["png"])
+            if image.mode != "RGBA":
+                image = image.convert("RGBA")
+            alpha = image.split()[-1]
+
+            mask = Image.new("L", image.size, color = 255)
+            draw = ImageDraw.Draw(mask)
+            ax = min(int( (clip_data[0]               )*image.size[0]//clip_data[4] ), image.size[0] - 1)
+            ay = min(int( (clip_data[1]               )*image.size[1]//clip_data[5] ), image.size[1] - 1)
+            bx = max(int( (clip_data[0] + clip_data[2])*image.size[0]//clip_data[4] ) - 1, ax + 1)
+            by = max(int( (clip_data[1] + clip_data[3])*image.size[1]//clip_data[5] ) - 1, ay + 1) 
+            draw.rectangle((ax, ay, bx, by), fill = 0)
+            alpha = ImageChops.subtract(alpha, mask)
+
+            image.putalpha(alpha)
+            image.save(namespace / path, "png")
         else:
-            path = path / target_folder
-    (namespace / path).parent.mkdir(exist_ok=True, parents=True)
+            shutil.copyfile(
+                og_namespace / subdir,
+                namespace / path
+            )
 
-    if slice_data:
-        image = Image.open(og_namespace / subdir, "r", ["png"])
-        cropped_image = image.crop((
-            int( (slice_data[0]                )*image.size[0]//slice_data[4] ),
-            int( (slice_data[1]                )*image.size[1]//slice_data[5] ),
-            int( (slice_data[0] + slice_data[2])*image.size[0]//slice_data[4] ),
-            int( (slice_data[1] + slice_data[3])*image.size[1]//slice_data[5] ) 
-        ))
-        cropped_image.save(namespace / path, "png")
-    elif clip_data:
-        image = Image.open(og_namespace / subdir, "r", ["png"])
-        if image.mode != "RGBA":
-            image = image.convert("RGBA")
-        alpha = image.split()[-1]
+        og_metadata_path = (og_namespace / subdir).parent / f'{(og_namespace / subdir).name}.mcmeta'
+        metadata_path = (namespace / path).parent / f'{path.name}.mcmeta'
+        if og_metadata_path.exists():
+            shutil.copyfile(
+                og_metadata_path,
+                metadata_path
+            )
 
-        mask = Image.new("L", image.size, color = 255)
-        draw = ImageDraw.Draw(mask)
-        draw.rectangle(
-            (
-                int( (clip_data[0]               )*image.size[0]//clip_data[4] ),
-                int( (clip_data[1]               )*image.size[1]//clip_data[5] ),
-                int( (clip_data[0] + clip_data[2])*image.size[0]//clip_data[4] ) - 1,
-                int( (clip_data[1] + clip_data[3])*image.size[1]//clip_data[5] ) - 1 
-            ),
-            fill = 0
-        )
-        alpha = ImageChops.subtract(alpha, mask)
+        if metadata:
+            utils.safe_file_write(metadata_path, json.dumps(metadata, indent=4))
 
-        image.putalpha(alpha)
-        image.save(namespace / path, "png")
-    else:
-        shutil.copyfile(
-            og_namespace / subdir,
-            namespace / path
-        )
-
-    og_metadata_path = (og_namespace / subdir).parent / f'{(og_namespace / subdir).name}.mcmeta'
-    metadata_path = (namespace / path).parent / f'{path.name}.mcmeta'
-    if og_metadata_path.exists():
-        shutil.copyfile(
-            og_metadata_path,
-            metadata_path
-        )
-
-    if metadata:
-        utils.safe_file_write(metadata_path, json.dumps(metadata, indent=4))
+    except:
+        log(f"An error occurred when updating {(og_namespace / subdir).as_posix()}")
 
 
 
