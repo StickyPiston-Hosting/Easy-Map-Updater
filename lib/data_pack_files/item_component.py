@@ -826,7 +826,15 @@ def extract(item_id: str, components: dict[str, Any] | None, nbt: dict[str, Any]
         if "minecraft:bundle_contents" not in components:
             components["minecraft:bundle_contents"] = nbt_tags.TypeList([])
         bundle_contents = components["minecraft:bundle_contents"]
-        bundle_contents.extend(nbt["Items"])
+        for item in nbt["Items"]:
+            bundle_contents_entry: dict[str, Any] = {}
+            if "id" in item:
+                bundle_contents_entry["id"] = miscellaneous.namespace(item["id"])
+            if "count" in item:
+                bundle_contents_entry["count"] = nbt_tags.TypeInt(item["count"])
+            if "components" in item:
+                bundle_contents_entry["components"] = item["components"]
+            bundle_contents.append(bundle_contents_entry)
         del nbt["Items"]
 
     if "LodestoneDimension" in nbt:
