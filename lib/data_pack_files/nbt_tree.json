@@ -719,6 +719,7 @@
                         "Flight": { "data_type": "byte" }
                     }
                 },
+                "Items": { "list": { "source": "item" } },
                 "pages": {
                     "list": {
                         "data_type": "string",
