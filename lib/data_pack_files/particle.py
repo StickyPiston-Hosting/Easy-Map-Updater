@@ -223,6 +223,12 @@ def update(particle: str | dict[str, str], version: int, issues: list[dict[str, 
 
 
 
+    # Clamp values
+    if "scale" in particle_data:
+        particle_data["scale"] = nbt_tags.TypeFloat(min(max(particle_data["scale"].value, 0.01), 4.0))
+
+
+
     return particle_data
 
 
