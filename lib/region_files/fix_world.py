@@ -807,7 +807,7 @@ def fix_item(item: NBT.TAG_Compound, is_from_spawner: bool = False):
 
             # Handle custom name
             if "minecraft:custom_name" in item_components:
-                item_components["minecraft:custom_name"] = NBT.TAG_String(json_text_component.update(item_components["minecraft:custom_name"].value, pack_version, [], False))
+                item_components["minecraft:custom_name"] = NBT.TAG_String(json_text_component.update(item_components["minecraft:custom_name"].value, pack_version, [], True))
 
                 # Handle lock logic
                 if pack_version <= 2101:
@@ -820,7 +820,7 @@ def fix_item(item: NBT.TAG_Compound, is_from_spawner: bool = False):
             if "minecraft:lore" in item_components:
                 lore = item_components["minecraft:lore"]
                 for i in range(len(lore)):
-                    lore[i] = NBT.TAG_String(json_text_component.update(lore[i].value, pack_version, [], False))
+                    lore[i] = NBT.TAG_String(json_text_component.update(lore[i].value, pack_version, [], True))
 
             # Handle written book pages
             if "minecraft:written_book_contents" in item_components:
