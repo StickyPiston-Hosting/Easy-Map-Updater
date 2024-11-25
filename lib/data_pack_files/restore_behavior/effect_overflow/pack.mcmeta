@@ -1,6 +1,6 @@
 {
     "pack": {
-        "pack_format": 48,
+        "pack_format": 57,
         "description": "Brings back pre-1.20.5 behavior of overflowed status effects having interesting consequences."
     }
 }
