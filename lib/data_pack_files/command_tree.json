@@ -26,6 +26,9 @@
                         "get": {
                             "mapping": ["carry", "target_selector_single", "attribute", "carry", "carry", "carry"]
                         },
+                        "reset": {
+                            "mapping": ["carry", "target_selector_single", "attribute", "carry", "carry", "carry"]
+                        },
                         "set": {
                             "mapping": ["carry", "target_selector_single", "attribute", "carry", "carry", "carry"]
                         }
