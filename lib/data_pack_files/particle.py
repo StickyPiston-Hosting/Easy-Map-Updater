@@ -229,6 +229,12 @@ def update(particle: str | dict[str, str], version: int, issues: list[dict[str, 
 
 
 
+    # Add duration to trail
+    if particle_data["type"] == "minecraft:trail" and "duration" not in particle_data:
+        particle_data["duration"] = nbt_tags.TypeInt(30)
+
+
+
     return particle_data
 
 
