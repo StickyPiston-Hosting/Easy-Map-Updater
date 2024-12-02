@@ -5,6 +5,7 @@
 
 # Import things
 
+import math
 from pathlib import Path
 from typing import cast, TypedDict, NotRequired, Any
 from lib import utils
@@ -173,6 +174,7 @@ class JSONTextComponentCompound(TypedDict("JSONTextComponentCompound", {"with": 
     storage: NotRequired[str]
     extra: list
     separator: Any
+    shadow_color: int | list[int]
 
 def update_component(component: str | list | JSONTextComponentCompound, version: int, issues: list[dict[str, str | int]]) -> str | list | JSONTextComponentCompound:
     global pack_version
@@ -507,6 +509,7 @@ def pack_mangled_compound(component: JSONTextComponentCompound) -> str:
         "score",
         "selector",
         "separator",
+        "shadow_color",
         "storage",
         "strikethrough",
         "text",
@@ -523,6 +526,8 @@ def pack_mangled_compound(component: JSONTextComponentCompound) -> str:
                 tags.append(f'"{key}":{pack_mangled_hover_event(component[key])}')
             elif key == "score":
                 tags.append(f'"{key}":{pack_mangled_compound_primitive(component[key], ["name", "objective"])}')
+            elif key == "shadow_color":
+                tags.append(f'"{key}":{pack_mangled_shadow_color(component[key])}')
             else:
                 tags.append(f'"{key}":{pack_mangled_component(component[key])}')
     
@@ -560,6 +565,16 @@ def pack_mangled_hover_event_contents(component: JSONTextComponentCompound, acti
         return pack_mangled_compound_primitive(cast(dict, component), ["type", "id", "name"])
     
     return '""'
+
+def pack_mangled_shadow_color(component: int | list[int]) -> str:
+    if isinstance(component, list):
+        converted = [0,0,0,0]
+        for i in range(min(len(component), 4)):
+            # This formula is based on an analysis of data collected from the game
+            converted[i] = int(math.floor(255*component[i]))
+        return str(utils.int_range(converted[2] + converted[1]*256 + converted[0]*65536 + converted[3]*16777216))
+
+    return str(component)
 
 
 

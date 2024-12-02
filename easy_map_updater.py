@@ -402,6 +402,9 @@ def action_update(): # Needs confirmation
         log("Action canceled")
         return
     
+    # Reset flags
+    json_text_component.translation_keys_retrieved = False
+    
     # Get confirmation for starting in the middle
     if update_progress["stage"] > 0:
         confirm = input("The map was partially updated. Do you wish to resume where it last stopped? (Y/N): ")
