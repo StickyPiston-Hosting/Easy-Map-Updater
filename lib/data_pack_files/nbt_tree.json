@@ -443,6 +443,7 @@
                     "edge_case": "equipment"
                 },
                 "explosion_power": { "data_type": "float" },
+                "explosion_speed_factor": { "data_type": "float" },
                 "Facing": {
                     "data_type": "int",
                     "argument_type": "hangable_facing"
@@ -590,6 +591,10 @@
                     }
                 },
                 "Time": { "data_type": "int" },
+                "TNTFuse": {
+                    "rename": "fuse",
+                    "data_type": "int"
+                },
                 "Trident": {
                     "rename": "item",
                     "source": "item"
