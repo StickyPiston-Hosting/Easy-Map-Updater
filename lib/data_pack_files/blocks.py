@@ -13,8 +13,11 @@ from lib.data_pack_files import numeric_ids
 from lib.data_pack_files import arguments
 from lib.data_pack_files import items
 from lib.data_pack_files import tables
+from lib.data_pack_files.restore_behavior import tag_replacements
 from lib import defaults
 from lib import utils
+from lib import option_manager
+import easy_map_updater
 
 
 
@@ -462,5 +465,12 @@ def update_block_id(block_id: str | nbt_tags.TypeNumeric, data_value: int | str,
         }
         if block_id in id_array:
             block_id = id_array[block_id]
+
+    if pack_version <= 2103 or defaults.FIXES["post_fixes"]:
+        if block_id == "#minecraft:tall_flowers":
+            block_id = "#tag_replacements:tall_flowers"
+            tag_replacements.create_pack(
+                easy_map_updater.MINECRAFT_PATH / "saves" / option_manager.get_map_name()
+            )
 
     return (block_id, block_states, nbt)

@@ -85,6 +85,24 @@ def create_pack(world: Path):
         "minecraft:music_disc_5",
         "minecraft:music_disc_relic"
     ])
+    create_item_tag(folder_path, "minecraft:flowers", [
+        "#minecraft:small_flowers",
+        "#tag_replacement:tall_flowers",
+        "minecraft:flowering_azalea_leaves",
+        "minecraft:flowering_azalea",
+        "minecraft:mangrove_propagule",
+        "minecraft:cherry_leaves",
+        "minecraft:pink_petals",
+        "minecraft:chorus_flower",
+        "minecraft:spore_blossom"
+    ])
+    create_item_tag(folder_path, "minecraft:tall_flowers", [
+        "minecraft:sunflower",
+        "minecraft:lilac",
+        "minecraft:peony",
+        "minecraft:rose_bush",
+        "minecraft:pitcher_plant"
+    ])
 
     # Create block tags
     folder_path = data_pack_path / "data" / "tag_replacements" / "tags" / "block"
@@ -216,6 +234,13 @@ def create_pack(world: Path):
         else:
             # Create block tag if multiple block IDs were found (also ignoring all block properties)
             create_block_tag(folder_path, block, block_ids)
+    create_block_tag(folder_path, "minecraft:tall_flowers", [
+        "minecraft:sunflower",
+        "minecraft:lilac",
+        "minecraft:peony",
+        "minecraft:rose_bush",
+        "minecraft:pitcher_plant"
+    ])
 
     # Create entity tags
     folder_path = data_pack_path / "data" / "tag_replacements" / "tags" / "entity_type"

@@ -363,6 +363,19 @@ def update_item_id(item_id: str | nbt_tags.TypeNumeric, components: item_compone
                 easy_map_updater.MINECRAFT_PATH / "saves" / option_manager.get_map_name()
             )
 
+    if pack_version <= 2103 or defaults.FIXES["post_fixes"]:
+        if item_id == "#minecraft:flowers":
+            item_id = "#tag_replacements:flowers"
+            tag_replacements.create_pack(
+                easy_map_updater.MINECRAFT_PATH / "saves" / option_manager.get_map_name()
+            )
+
+        if item_id == "#minecraft:tall_flowers":
+            item_id = "#tag_replacements:tall_flowers"
+            tag_replacements.create_pack(
+                easy_map_updater.MINECRAFT_PATH / "saves" / option_manager.get_map_name()
+            )
+
     return item_id
 
 def extract_riding_id(nbt: dict) -> str:
