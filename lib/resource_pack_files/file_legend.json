@@ -948,5 +948,54 @@
                 }
             }
         }
+    },
+    "2103": {
+        "minecraft": {
+            "textures": {
+                "gui": {
+                    "container": {
+                        "brewing_stand.png": [
+                            {"path": "./sprites/container/slot/brewing_fuel.png", "slice": [17, 17, 16, 16, 256, 256]},
+                            {"path": "./sprites/container/slot/potion.png", "slice": [79, 58, 16, 16, 256, 256]},
+                            {"path": "brewing_stand.png"}
+                        ]
+                    },
+                    "sprites": {
+                        "container": {
+                            "horse": {
+                                "armor_slot.png": {"path": "./slot/horse_armor.png", "slice": [1, 1, 16, 16, 18, 18]},
+                                "llama_armor_slot.png": {"path": "./llama_armor.png", "slice": [1, 1, 16, 16, 18, 18]},
+                                "saddle_slot.png": {"path": "./saddle.png", "slice": [1, 1, 16, 16, 18, 18]}
+                            },
+                            "loom": {
+                                "banner_slot.png": "./slot/banner.png",
+                                "pattern_slot.png": "./slot/banner_pattern.png",
+                                "dye_slot.png": "./slot/dye.png"
+                            }
+                        }
+                    }
+                },
+                "item": {
+                    "empty_armor_slot_helmet.png": "./gui/sprites/container/slot/helmet.png",
+                    "empty_armor_slot_chestplate.png": "./gui/sprites/container/slot/chestplate.png",
+                    "empty_armor_slot_leggings.png": "./gui/sprites/container/slot/leggings.png",
+                    "empty_armor_slot_boots.png": "./gui/sprites/container/slot/boots.png",
+                    "empty_slot_sword.png": "./gui/sprites/container/slot/sword.png",
+                    "empty_slot_pickaxe.png": "./gui/sprites/container/slot/pickaxe.png",
+                    "empty_slot_axe.png": "./gui/sprites/container/slot/axe.png",
+                    "empty_slot_shovel.png": "./gui/sprites/container/slot/shovel.png",
+                    "empty_slot_hoe.png": "./gui/sprites/container/slot/hoe.png",
+                    "empty_slot_smithing_template_armor_trim.png": "./gui/sprites/container/slot/smithing_template_armor_trim.png",
+                    "empty_slot_smithing_template_netherite.png": "./gui/sprites/container/slot/smithing_template_netherite.png",
+                    "empty_slot_amethyst_shard.png": "./gui/sprites/container/slot/amethyst_shard.png",
+                    "empty_slot_diamond.png": "./gui/sprites/container/slot/diamond.png",
+                    "empty_slot_emerald.png": "./gui/sprites/container/slot/emerald.png",
+                    "empty_slot_ingot.png": "./gui/sprites/container/slot/ingot.png",
+                    "empty_slot_lapis_lazuli.png": "./gui/sprites/container/slot/lapis_lazuli.png",
+                    "empty_slot_quartz.png": "./gui/sprites/container/slot/quartz.png",
+                    "empty_slot_redstone_dust.png": "./gui/sprites/container/slot/redstone_dust.png"
+                }
+            }
+        }
     }
 }
