@@ -268,3 +268,11 @@ def safe_file_write(file_path: Path, contents: str):
             continue
 
     log(f"Could not write to file: {file_path.as_posix()}")
+
+
+
+def remove_extension(path: str) -> str:
+    path_parts = path.split(".")
+    if len(path_parts) == 1:
+        return path_parts[0]
+    return ".".join(path_parts[:-1])
