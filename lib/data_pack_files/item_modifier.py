@@ -61,6 +61,36 @@ def item_modifier(contents: dict[str, Any] | list, version: int, object_id: str 
                 output.extend(entry)
             else:
                 output.append(entry)
+
+        # Consolidate custom data overwrites
+        set_custom_data_index = -1
+        custom_data_array: list[dict] = []
+        for i in range(len(output)-1, -1, -1):
+            entry = output[i]
+            
+            if entry["function"] == "minecraft:set_custom_data":
+                custom_data_array.append(nbt_tags.unpack(entry["tag"]))
+                set_custom_data_index = i
+                output.pop(i)
+
+            if entry["function"] == "minecraft:set_components" and "minecraft:custom_data" in entry["components"]:
+                custom_data_array.append(nbt_tags.convert_from_json(entry["components"]["minecraft:custom_data"]))
+                del entry["components"]["minecraft:custom_data"]
+
+        custom_data = {}
+        for entry in custom_data_array:
+            custom_data = nbt_tags.merge_nbt(custom_data, entry)
+
+        if custom_data:
+            modifier = {
+                "function": "minecraft:set_custom_data",
+                "tag": nbt_tags.pack(custom_data)
+            }
+            if set_custom_data_index == -1:
+                output.append(modifier)
+            else:
+                output.insert(set_custom_data_index, modifier)
+
         return output
 
 

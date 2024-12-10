@@ -1117,3 +1117,15 @@ def convert_from_json_float(nbt: float) -> TypeDecimal:
 
 def convert_from_json_string(nbt: str) -> str:
     return nbt
+
+
+
+def merge_nbt(base: dict, addition: dict) -> dict:
+    for key in addition:
+        if key not in base:
+            base[key] = addition[key]
+        elif isinstance(base[key], dict) and isinstance(addition[key], dict):
+            base[key] = merge_nbt(base[key], addition[key])
+        else:
+            base[key] = addition[key]
+    return base
