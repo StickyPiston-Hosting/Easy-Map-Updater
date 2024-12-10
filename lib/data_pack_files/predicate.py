@@ -321,6 +321,11 @@ def predicate_item(contents: dict, version: int) -> dict:
             contents["predicates"]["minecraft:enchantments"].append(enchantment)
         del contents["enchantments"]
 
+    if "components" in contents:
+        item_components = item_component.ItemComponents.unpack_from_dict(nbt_tags.convert_from_json(contents["components"]), False)
+        updated_item_components = item_component.conform_components(item_components, version, []).pack_to_dict()
+        contents["components"] = nbt_to_json.convert_item_components_to_json(updated_item_components)
+
     if "nbt" in contents:
         updated_data = cast(dict[str, Any], nbt_tags.direct_update(nbt_tags.unpack(contents["nbt"]), version, [], "item_tag", ""))
         if "minecraft:custom_data" in updated_data:

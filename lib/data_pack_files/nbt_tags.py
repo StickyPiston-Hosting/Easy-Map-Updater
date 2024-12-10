@@ -1074,6 +1074,8 @@ def convert_to_json_numeric(nbt: TypeNumeric) -> Any:
         return float(nbt.value)
     if isinstance(nbt, TypeDouble):
         return float(nbt.value)
+    if isinstance(nbt, TypeDecimal):
+        return float(nbt.value)
     log("ERROR: convert_to_json_numeric: Numeric type not determined!")
 
 

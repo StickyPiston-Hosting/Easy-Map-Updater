@@ -21,6 +21,7 @@ from lib.data_pack_files import predicate
 from lib.data_pack_files import json_text_component
 from lib.data_pack_files import loot_table
 from lib.data_pack_files import items
+from lib.data_pack_files import item_component
 
 
 
@@ -185,6 +186,12 @@ def item_modifier(contents: dict[str, Any] | list, version: int, object_id: str 
                     }
                     if modifier["operation"] in id_array:
                         modifier["operation"] = id_array[modifier["operation"]]
+
+    if function_id == "minecraft:set_components":
+        if "components" in contents:
+            item_components = item_component.ItemComponents.unpack_from_dict(nbt_tags.convert_from_json(contents["components"]), False)
+            updated_item_components = item_component.conform_components(item_components, version, []).pack_to_dict()
+            contents["components"] = nbt_to_json.convert_item_components_to_json(updated_item_components)
 
     if function_id == "minecraft:set_contents":
         if "entries" in contents:
