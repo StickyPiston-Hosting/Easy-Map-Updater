@@ -38,9 +38,6 @@ def create_pack(world: Path):
 
     # Create data pack
     data_pack_path = world / "datapacks" / "tag_replacements"
-    if data_pack_path.exists():
-        log("Tag replacements data pack already exists")
-        return
     data_pack_path.mkdir(exist_ok=True, parents=True)
 
     utils.safe_file_write(data_pack_path / "pack.mcmeta",
@@ -87,7 +84,7 @@ def create_pack(world: Path):
     ])
     create_item_tag(folder_path, "minecraft:flowers", [
         "#minecraft:small_flowers",
-        "#tag_replacement:tall_flowers",
+        "#tag_replacements:tall_flowers",
         "minecraft:flowering_azalea_leaves",
         "minecraft:flowering_azalea",
         "minecraft:mangrove_propagule",
@@ -229,7 +226,7 @@ def create_pack(world: Path):
                 "minecraft:zombie_wall_head",
                 "minecraft:player_wall_head",
                 "minecraft:creeper_wall_head",
-                "minecraft:ender_dragon_wall_head"
+                "minecraft:dragon_wall_head"
             ])
             create_block_tag(folder_path, "minecraft:floor_skull", [
                 "minecraft:skeleton_skull",
@@ -245,7 +242,7 @@ def create_pack(world: Path):
                 "minecraft:zombie_wall_head",
                 "minecraft:player_wall_head",
                 "minecraft:creeper_wall_head",
-                "minecraft:ender_dragon_wall_head"
+                "minecraft:dragon_wall_head"
             ])
         elif len(block_ids) == 1:
             if SEND_PYTHON:

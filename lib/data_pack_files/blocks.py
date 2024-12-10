@@ -396,7 +396,7 @@ def update_block_id(block_id: str | nbt_tags.TypeNumeric, data_value: int | str,
                             2: "minecraft:zombie_wall_head",
                             3: "minecraft:player_wall_head",
                             4: "minecraft:creeper_wall_head",
-                            5: "minecraft:ender_dragon_wall_head"
+                            5: "minecraft:dragon_wall_head"
                         }
                         if nbt["SkullType"].value in id_array:
                             block_id = id_array[nbt["SkullType"].value]

@@ -4192,7 +4192,7 @@ BLOCK_TAG_REPLACEMENTS = {
         "minecraft:zombie_wall_head",
         "minecraft:player_wall_head",
         "minecraft:creeper_wall_head",
-        "minecraft:ender_dragon_wall_head"
+        "minecraft:dragon_wall_head"
     ],
     "#tag_replacements:floor_skull": [
         "minecraft:skeleton_skull",
@@ -4208,7 +4208,7 @@ BLOCK_TAG_REPLACEMENTS = {
         "minecraft:zombie_wall_head",
         "minecraft:player_wall_head",
         "minecraft:creeper_wall_head",
-        "minecraft:ender_dragon_wall_head"
+        "minecraft:dragon_wall_head"
     ],
     "#tag_replacements:sponge": [
         "minecraft:sponge",
