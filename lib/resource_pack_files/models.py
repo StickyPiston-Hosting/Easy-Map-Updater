@@ -178,6 +178,7 @@ def extract_overrides(model_json: dict, namespaced_id: str, modified: bool) -> b
 
 
 def change_block_model_reference(namespaced_id: str) -> str:
+    namespaced_id = miscellaneous.namespace(namespaced_id)
     model_path = pack_path / "assets" / "minecraft" / "models" / f"{namespaced_id.split(":")[1]}.json"
     if namespaced_id in model_tables.BLOCK_MODEL_REPLACEMENTS and not model_path.exists():
         return model_tables.BLOCK_MODEL_REPLACEMENTS[namespaced_id]
@@ -198,6 +199,8 @@ def create_item_definition_for_block_reference(namespaced_id: str):
 
 def create_item_definitions(pack: Path):
     for namespaced_id in overrides_array:
+        if defaults.DEBUG_MODE:
+            log(f"Converting: {namespaced_id}")
         item_definition = convert_overrides(overrides_array[namespaced_id], namespaced_id)
         file_path = pack / "assets" / namespaced_id.split(":")[0] / "items" / f"{"/".join(namespaced_id.split(":")[1].split("/")[1:])}.json"
         file_path.parent.mkdir(parents=True, exist_ok=True)
@@ -257,6 +260,8 @@ def convert_overrides(overrides: list[dict], namespaced_id: str, predicate_index
     # Return first override if the predicate checks fail
     if "model" in overrides[0]:
         model_id = miscellaneous.namespace(cast(str, overrides[0]["model"]))
+        if namespaced_id == model_id:
+            return get_base_model_definition(namespaced_id, namespaced_id)
         if model_id in overrides_array:
             return convert_overrides(overrides_array[model_id], model_id)
         return get_base_model_definition(namespaced_id, model_id)
