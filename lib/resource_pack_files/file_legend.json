@@ -951,6 +951,14 @@
     },
     "2103": {
         "minecraft": {
+            "models": {
+                "equipment": {
+                    "*": "././equipment/*"
+                },
+                "item": {
+                    "broken_elytra.json": "elytra_broken.json"
+                }
+            },
             "textures": {
                 "gui": {
                     "container": {
@@ -976,6 +984,7 @@
                     }
                 },
                 "item": {
+                    "broken_elytra.png": "elytra_broken.png",
                     "empty_armor_slot_helmet.png": "./gui/sprites/container/slot/helmet.png",
                     "empty_armor_slot_chestplate.png": "./gui/sprites/container/slot/chestplate.png",
                     "empty_armor_slot_leggings.png": "./gui/sprites/container/slot/leggings.png",
