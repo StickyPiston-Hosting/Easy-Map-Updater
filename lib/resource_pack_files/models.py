@@ -28,6 +28,7 @@ with (PROGRAM_PATH / "file_legend.json").open("r", encoding="utf-8") as file:
     FILE_LEGEND: dict[str, Any] = json.load(file)
 
 overrides_array: dict[str, list[dict]] = {}
+builtin_models: list[str] = []
 
 
 
@@ -42,9 +43,11 @@ def update(pack: Path, version: int):
     global pack_path
     pack_path = pack
 
-    # Reset overrides list
+    # Reset globals
     global overrides_array
     overrides_array = {}
+    global builtin_models
+    builtin_models = []
 
     process_models(pack)
     if pack_version <= 2103:
@@ -98,6 +101,9 @@ def process_model(model_path: Path, namespace: str, model_type_folder: Path):
             if model_json["parent"] != updated_parent:
                 model_json["parent"] = updated_parent
                 modified = True
+
+    if "parent" in model_json and miscellaneous.namespace(model_json["parent"]).startswith("minecraft:builtin"):
+        builtin_models.append(namespaced_id)
 
     if modified:
         utils.safe_file_write(model_path, json.dumps(model_json))
@@ -284,9 +290,7 @@ def filter_overrides_by_predicate(overrides: list[dict], namespaced_id: str, pre
 
         for override in overrides:
             if "predicate" not in override or predicate not in override["predicate"]:
-                # If the predicate is undefined, it needs to be accessible from all lists
                 on_false.append(override)
-                on_true.append(override)
                 continue
             value = cast(int, override["predicate"][predicate])
             if value == 0:
@@ -319,14 +323,11 @@ def filter_overrides_by_predicate(overrides: list[dict], namespaced_id: str, pre
 
         for override in overrides:
             if "predicate" not in override or predicate not in override["predicate"]:
-                # If the predicate is undefined, it needs to be accessible from all lists
                 fallback.append(override)
-                for entry in entries:
-                    entries[entry].append(override)
                 continue
             value = float(override["predicate"][predicate])
             if value not in entries:
-                entries[value] = fallback.copy()
+                entries[value] = []
             entries[value].append(override)
 
         item = {
@@ -405,8 +406,6 @@ def filter_overrides_by_predicate(overrides: list[dict], namespaced_id: str, pre
 
         for override in overrides:
             if "predicate" not in override or predicate not in override["predicate"]:
-                # If the predicate is undefined, it needs to be accessible from all lists
-                full.append(override)
                 fallback.append(override)
                 continue
             value = float(override["predicate"][predicate])
@@ -434,8 +433,6 @@ def filter_overrides_by_predicate(overrides: list[dict], namespaced_id: str, pre
 
         for override in overrides:
             if "predicate" not in override or predicate not in override["predicate"]:
-                # If the predicate is undefined, it needs to be accessible from all lists
-                left_handed.append(override)
                 fallback.append(override)
                 continue
             value = cast(int, override["predicate"][predicate])
@@ -462,14 +459,11 @@ def filter_overrides_by_predicate(overrides: list[dict], namespaced_id: str, pre
 
         for override in overrides:
             if "predicate" not in override or predicate not in override["predicate"]:
-                # If the predicate is undefined, it needs to be accessible from all lists
                 fallback.append(override)
-                for entry in entries:
-                    entries[entry].append(override)
                 continue
             value = float(override["predicate"][predicate])
             if value not in entries:
-                entries[value] = fallback.copy()
+                entries[value] = []
             entries[value].append(override)
 
         item = {
@@ -493,14 +487,11 @@ def filter_overrides_by_predicate(overrides: list[dict], namespaced_id: str, pre
 
         for override in overrides:
             if "predicate" not in override or predicate not in override["predicate"]:
-                # If the predicate is undefined, it needs to be accessible from all lists
                 fallback.append(override)
-                for entry in entries:
-                    entries[entry].append(override)
                 continue
             value = float(override["predicate"][predicate])
             if value not in entries:
-                entries[value] = fallback.copy()
+                entries[value] = []
             entries[value].append(override)
 
         item = {
@@ -541,9 +532,6 @@ def filter_overrides_by_predicate(overrides: list[dict], namespaced_id: str, pre
 
         for override in overrides:
             if "predicate" not in override or predicate not in override["predicate"]:
-                # If the predicate is undefined, it needs to be accessible from all lists
-                arrow.append(override)
-                rocket.append(override)
                 fallback.append(override)
                 continue
             value = cast(int, override["predicate"][predicate])
@@ -587,6 +575,11 @@ def get_base_model_definition(namespaced_id: str, model_id: str) -> dict:
         model_type = model_tables.SPECIAL_MODELS[namespaced_id]
 
         if model_type in ["minecraft:conduit", "minecraft:decorated_pot", "minecraft:shield", "minecraft:trident"]:
+            if model_id not in builtin_models:
+                return {
+                    "type": "minecraft:model",
+                    "model": model_id
+                }
             return {
                 "type": "minecraft:special",
                 "base": model_id,
