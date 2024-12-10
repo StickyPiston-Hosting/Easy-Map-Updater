@@ -169,6 +169,8 @@ def item_modifier(contents: dict[str, Any] | list, version: int, object_id: str 
             for modifier in contents["modifiers"]:
                 if "amount" in modifier:
                     modifier["amount"] = miscellaneous.number_provider(modifier["amount"])
+                if "attribute" in modifier:
+                    modifier["attribute"] = miscellaneous.attribute(modifier["attribute"], version, [])
                 if "id" in modifier:
                     modifier["id"] = miscellaneous.namespace(modifier["id"])
                 else:
