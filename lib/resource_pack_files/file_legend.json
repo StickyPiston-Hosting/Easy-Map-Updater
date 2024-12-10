@@ -989,6 +989,7 @@
                     "empty_armor_slot_chestplate.png": "./gui/sprites/container/slot/chestplate.png",
                     "empty_armor_slot_leggings.png": "./gui/sprites/container/slot/leggings.png",
                     "empty_armor_slot_boots.png": "./gui/sprites/container/slot/boots.png",
+                    "empty_armor_slot_shield.png": "./gui/sprites/container/slot/shield.png",
                     "empty_slot_sword.png": "./gui/sprites/container/slot/sword.png",
                     "empty_slot_pickaxe.png": "./gui/sprites/container/slot/pickaxe.png",
                     "empty_slot_axe.png": "./gui/sprites/container/slot/axe.png",
