@@ -5,10 +5,13 @@
 
 # Import things
 
+import json
 from typing import cast, Any
 from lib.log import log
 from lib import defaults
 from lib import utils
+from lib import option_manager
+import easy_map_updater
 
 
 
@@ -348,6 +351,28 @@ def conform_component(component: ItemComponent, version: int):
     if component.key == "minecraft:fire_resistant":
         component.key = "minecraft:damage_resistant"
         component.value = {"types": "#minecraft:is_fire"}
+
+    if component.key == "minecraft:item_model" and version <= 2103:
+        resource_pack_path = easy_map_updater.MINECRAFT_PATH / "resourcepacks" / option_manager.get_resource_pack()
+        if not resource_pack_path.exists():
+            log(f"WARNING: Resource pack must exist to update component minecraft:item_model")
+        else:
+            item_model = miscellaneous.namespace(cast(str, component.value))
+            updated_item_model = item_model.replace(":", "/")
+            item_definition_path = resource_pack_path / "assets" / "emu" / "items" / f"{updated_item_model}.json"
+            item_definition_path.parent.mkdir(parents=True, exist_ok=True)
+            with item_definition_path.open("w", encoding="utf-8", newline="\n") as file:
+                json.dump(
+                    {
+                        "model": {
+                            "type": "minecraft:model",
+                            "model": item_model
+                        }
+                    },
+                    file,
+                    indent=4
+                )
+            component.value = f"emu:{updated_item_model}"
 
     if component.key == "minecraft:item_name":
         component.value = json_text_component.update(component.value, version, [], True)
