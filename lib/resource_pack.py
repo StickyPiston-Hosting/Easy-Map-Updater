@@ -16,6 +16,7 @@ from lib.resource_pack_files import atlas_logger
 from lib.resource_pack_files import fonts
 from lib.resource_pack_files import models
 from lib.resource_pack_files import remove_translucency
+from lib.resource_pack_files import shaders
 from lib import json_manager
 from lib import finalize
 from lib import defaults
@@ -67,9 +68,10 @@ def update(pack: Path, version: int):
     try:
         update_pack_mcmeta(og_pack, pack)
         update_file_names(og_pack, pack)
-        atlas_logger.log_atlas(pack)
         fonts.update(pack)
         models.update(pack, pack_version)
+        atlas_logger.log_atlas(pack)
+        shaders.update(pack, pack_version)
         finalize.delete_ds_store(pack)
         log("Resource pack updated")
     except Exception:
