@@ -208,7 +208,17 @@ def item_modifier(contents: dict[str, Any] | list, version: int, object_id: str 
         contents["count"] = miscellaneous.number_provider(contents["count"])
 
     if function_id == "minecraft:set_custom_model_data":
-        contents["value"] = miscellaneous.number_provider(contents["value"])
+        if "value" in contents:
+            contents["floats"] = {
+                "values": [contents["value"]],
+                "mode": "replace_all"
+            }
+            del contents["value"]
+
+        for key in ["colors", "floats"]:
+            if key in contents:
+                for i in range(len(contents[key]["values"])):
+                    contents[key]["values"][i] = miscellaneous.number_provider(contents[key]["values"][i])
 
     if function_id == "minecraft:set_damage":
         contents["damage"] = miscellaneous.number_provider(contents["damage"])

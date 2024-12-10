@@ -227,6 +227,13 @@ def conform_components(components: ItemComponents, version: int, issues: list[di
         components["minecraft:custom_data"]["emu_lock_name"] = components["minecraft:custom_name"]
 
 
+    # In 1.21.4, custom model data was rewritten
+    if version <= 2104 and "minecraft:custom_model_data" in components:
+        components["minecraft:custom_model_data"] = {
+            "floats": nbt_tags.TypeList([nbt_tags.TypeFloat(components["minecraft:custom_model_data"].value)])
+        }
+
+
     return components
 
 
@@ -401,6 +408,23 @@ def conform_component(component: ItemComponent, version: int):
             page = pages[index]
             if isinstance(page, str):
                 pages[index] = {"raw": page}
+
+
+
+def conform_component_paths(path_parts: list[str], version: int, issues: list[dict[str, str | int]]) -> list[str]:
+    
+    if defaults.DEBUG_MODE:
+        log(f'Path: {path_parts}')
+
+    if len(path_parts) < 2:
+        return path_parts
+    
+    if version <= 2103:
+        if path_parts[1] == "minecraft:custom_model_data":
+            return ["components", "minecraft:custom_model_data", "floats", "[0]"]
+        
+    
+    return path_parts
 
 
 
@@ -1208,7 +1232,7 @@ def update_path(path_parts: list[str], version: int, issues: list[dict[str, str 
         return ["components", "minecraft:charged_projectiles"] + path_parts[2:]
 
     if path_parts[1] == "CustomModelData":
-        return ["components", "minecraft:custom_model_data"]
+        return ["components", "minecraft:custom_model_data", "floats", "[0]"]
 
     if path_parts[1] == "CustomPotionColor":
         return ["components", "minecraft:potion_contents", "custom_color"]

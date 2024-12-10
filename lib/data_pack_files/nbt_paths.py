@@ -173,6 +173,9 @@ def edge_case(path_parts: list[str], case_type: str, source: str, issues: list[d
         path_parts = search_tags(path_parts, NBT_TREE["sources"]["item_tag"]["tags"], source, issues)
         return item_component.update_path(path_parts, pack_version, issues)
     
+    if case_type == "item_components":
+        return item_component.conform_component_paths(path_parts, pack_version, issues)    
+    
     if case_type == "shot_from_crossbow":
         log(f'WARNING: Entity tag "ShotFromCrossbow" used in an NBT path and was converted to "weapon.id", check that its use is valid')
         return ["weapon", "id"]

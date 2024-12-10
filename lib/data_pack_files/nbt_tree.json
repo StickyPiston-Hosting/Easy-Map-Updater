@@ -658,7 +658,10 @@
                     "data_type": "string",
                     "argument_type": "item"
                 },
-                "components": { "edge_case": "item_components" },
+                "components": {
+                    "edge_case": "item_components",
+                    "path": { "edge_case": "item_components" }
+                },
                 "count": { "data_type": "int" },
                 "Count": {
                     "rename": "count",

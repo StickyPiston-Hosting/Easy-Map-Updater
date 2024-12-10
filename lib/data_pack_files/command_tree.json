@@ -706,16 +706,16 @@
                         "index": 3,
                         "branches": {
                             "block": {
-                                "mapping": ["carry", "carry", "carry", "carry", "coordinate", "coordinate", "coordinate", "block_nbt_path", "carry", "carry", "carry", "command"],
-                                "legend": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, "run", {"argument": {"min": 10}, "execute": true}]
+                                "mapping": ["carry", "carry", "carry", "carry", "coordinate", "coordinate", "coordinate", "block_nbt_path", "nbt_type", "carry", "carry", "command"],
+                                "legend": [0, 1, 2, 3, 4, 5, 6, 7, {"data_type": 8, "path": 7, "source": "block"}, 9, "run", {"argument": {"min": 10}, "execute": true}]
                             },
                             "bossbar": {
                                 "mapping": ["carry", "carry", "carry", "carry", "carry", "carry", "carry", "command"],
                                 "legend": [0, 1, 2, 3, 4, 5, "run", {"argument": {"min": 6}, "execute": true}]
                             },
                             "entity": {
-                                "mapping": ["carry", "carry", "carry", "carry", "target_selector_single", "entity_nbt_path", "carry", "carry", "carry", "command"],
-                                "legend": [0, 1, 2, 3, 4, 5, 6, 7, "run", {"argument": {"min": 8}, "execute": true}]
+                                "mapping": ["carry", "carry", "carry", "carry", "target_selector_single", "entity_nbt_path", "nbt_type", "carry", "carry", "command"],
+                                "legend": [0, 1, 2, 3, 4, 5, {"data_type": 6, "path": 5, "source": "entity"}, 7, "run", {"argument": {"min": 8}, "execute": true}]
                             },
                             "score": {
                                 "mapping": ["carry", "carry", "carry", "carry", "target_selector", "carry", "carry", "command"],

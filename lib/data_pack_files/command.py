@@ -14,6 +14,7 @@ from lib.data_pack_files import target_selectors
 from lib.data_pack_files import nbt_tags
 from lib.data_pack_files import nbt_paths
 from lib.data_pack_files import nbt_tags_from_path
+from lib.data_pack_files import nbt_types_from_path
 from lib.data_pack_files import ids
 from lib.data_pack_files import items
 from lib.data_pack_files import blocks
@@ -618,6 +619,7 @@ ARGUMENT_FUNCTIONS: dict[str, tuple] = {
     "loot_table": ( miscellaneous.loot_table, None ),
     "nbt": ( nbt_tags.update, "arbitrary" ),
     "nbt_path": ( nbt_paths.update, "arbitrary" ),
+    "nbt_type": ( nbt_types_from_path.update, None ),
     "particle": ( particle.update_from_command, None ),
     "particle_mode": ( miscellaneous.particle_mode, None ),
     "particle_nbt": ( particle.update_from_nbt, None ),
