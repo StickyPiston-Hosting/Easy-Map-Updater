@@ -10,6 +10,13 @@
                     "rename": "base",
                     "data_type": "double" 
                 },
+                "id": {
+                    "data_type": "string",
+                    "argument_type": "attribute"
+                },
+                "modifiers": {
+                    "list": { "source": "attribute_modifier" }
+                },
                 "Modifiers": {
                     "rename": "modifiers",
                     "list": { "source": "attribute_modifier" }
@@ -31,6 +38,10 @@
                 "AttributeName": {
                     "data_type": "string",
                     "argument_type": "attribute"
+                },
+                "operation": {
+                    "data_type": "string",
+                    "argument_type": "attribute_modifier_operation"
                 },
                 "Operation": {
                     "rename": "operation",
