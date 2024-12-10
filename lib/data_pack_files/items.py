@@ -376,6 +376,12 @@ def update_item_id(item_id: str | nbt_tags.TypeNumeric, components: item_compone
                 easy_map_updater.MINECRAFT_PATH / "saves" / option_manager.get_map_name()
             )
 
+        if item_id == "#minecraft:trim_templates":
+            item_id = "#tag_replacements:trim_templates"
+            tag_replacements.create_pack(
+                easy_map_updater.MINECRAFT_PATH / "saves" / option_manager.get_map_name()
+            )
+
     return item_id
 
 def extract_riding_id(nbt: dict) -> str:
