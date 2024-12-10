@@ -110,6 +110,10 @@
                     }
                 },
                 "Book": { "source": "item" },
+                "BurnTime": {
+                    "rename": "lit_time_remaining",
+                    "data_type": "short"
+                },
                 "Color": {
                     "remove": true,
                     "edge_case": "sign_text",
@@ -122,6 +126,14 @@
                     "argument_type": "command_string"
                 },
                 "CommandStats": { "source": "command_stats" },
+                "CookTime": {
+                    "rename": "cooking_time_spent",
+                    "data_type": "short"
+                },
+                "CookTimeTotal": {
+                    "rename": "cooking_total_time",
+                    "data_type": "short"
+                },
                 "CustomName": {
                     "data_type": "string",
                     "argument_type": "json_text_component_mangled"
