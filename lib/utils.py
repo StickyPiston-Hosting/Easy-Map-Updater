@@ -5,6 +5,7 @@
 
 # Import things
 
+import math
 import traceback
 from pathlib import Path
 from nbt import nbt as NBT
@@ -191,6 +192,12 @@ def nbt_list_remove(nbt_list: NBT.TAG_List, value):
 
 def int_range(x: int):
     return (x + 2147483648)%4294967296 - 2147483648
+
+def cast_int(x: str) -> int:
+    try:
+        return int(x)
+    except:
+        return int(math.floor(float(x)))
 
 
 

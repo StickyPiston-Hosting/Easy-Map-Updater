@@ -46,7 +46,7 @@ class TypeNumeric:
                 if value.endswith(char):
                     value = value[:-1]
         if num_type == "int":
-            return int(value)
+            return utils.cast_int(value)
         return float(value)
 
 class TypeByte(TypeNumeric):
