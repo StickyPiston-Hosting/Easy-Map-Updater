@@ -182,6 +182,7 @@ def fix_region_file(file_path: Path, source_file_path: Path, dimension: str):
             continue
         if defaults.DEBUG_MODE:
             print(f"  Fixing chunk {chunk_metadata.x}, {chunk_metadata.z}")
+        chunk["DataVersion"] = NBT.TAG_Int(defaults.DATA_VERSION)
         block_entities: NBT.TAG_List = chunk["block_entities"]
         if block_entities == None or len(block_entities) == 0:
             continue
@@ -465,6 +466,7 @@ def fix_entity_file(file_path: Path, source_file_path: Path, dimension: str):
             continue
         if "Entities" not in chunk:
             continue
+        chunk["DataVersion"] = NBT.TAG_Int(defaults.DATA_VERSION)
         entities: NBT.TAG_List = chunk["Entities"]
         if entities == None or len(entities) == 0:
             continue
