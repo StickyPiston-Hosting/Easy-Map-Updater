@@ -183,6 +183,8 @@ def update(particle: str | dict[str, str], version: int, issues: list[dict[str, 
 
     # Update block and item if they are set
     if "block_state" in particle_data:
+        if isinstance(particle_data["block_state"], str):
+            particle_data["block_state"] = cast(dict, {"Name": particle_data["block_state"]})
         block_state = particle_data["block_state"]
         block = blocks.update({
             "id": block_state["Name"],
