@@ -1309,6 +1309,18 @@
                 "mapping": ["carry", "sound_event", "carry", "target_selector", "carry", "carry", "carry", "carry", "carry", "carry"]
             }
         ],
+        "random": {
+            "index": 1,
+            "branches": {
+                "reset": {
+                    "mapping": ["carry", "carry", "carry", "carry", "carry", "carry"]
+                },
+                "roll": {
+                    "mapping": ["carry", "carry", "carry", "carry"]
+                },
+                "value": "roll"
+            }
+        },
         "recipe": {
             "index": 3,
             "branches": {
