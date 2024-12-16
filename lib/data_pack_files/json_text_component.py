@@ -83,7 +83,7 @@ def update_string(string: str) -> list[dict[str, str | bool] | str] | str:
 
     # Iterate through string
     after_first = False
-    for section in string[1:-1].split("§"):
+    for section in string.split("§"):
         # Process section sign
         if after_first:
             # Change color
