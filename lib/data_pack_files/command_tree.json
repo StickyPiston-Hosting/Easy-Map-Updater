@@ -1215,12 +1215,12 @@
                 "branches": {
                     "blockcrack": {
                         "mapping": ["carry", "particle", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "carry", "carry", "particle_mode", "target_selector"],
-                        "legend": [0, {"particle": 1, "block": 12}, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+                        "legend": [0, {"particle": 1, "block": 12, "data": 13}, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
                     },
                     "blockdust": "blockcrack",
                     "iconcrack": {
                         "mapping": ["carry", "particle", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "carry", "carry", "particle_mode", "target_selector"],
-                        "legend": [0, {"particle": 1, "item": 12}, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+                        "legend": [0, {"particle": 1, "item": 12, "data": 13}, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
                     }
                 },
                 "else": {

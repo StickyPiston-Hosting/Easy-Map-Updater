@@ -106,6 +106,8 @@ def update(particle: str | dict[str, str], version: int, issues: list[dict[str, 
             particle_data["block_state"]["Name"] = block_id
             if block_states:
                 particle_data["block_state"]["Properties"] = blocks.unpack_block_states(block_states)
+            if "data" in particle:
+                particle_data["block_state"]["data"] = int(particle["data"])
         if "item" in particle:
             item = particle["item"]
             if "[" in item:
@@ -118,6 +120,8 @@ def update(particle: str | dict[str, str], version: int, issues: list[dict[str, 
             particle_data["item"]["id"] = item_id
             if components:
                 particle_data["item"]["components"] = item_component.ItemComponents.unpack(components).pack_to_dict()
+            if "data" in particle:
+                particle_data["item"]["Damage"] = nbt_tags.TypeInt(int(particle["data"]))
 
         if "color_r" in particle:
             particle_data["color"] = nbt_tags.TypeList([
@@ -188,7 +192,7 @@ def update(particle: str | dict[str, str], version: int, issues: list[dict[str, 
         block_state = particle_data["block_state"]
         block = blocks.update({
             "id": block_state["Name"],
-            "data_value": 0,
+            "data_value": block_state["data"] if "data" in block_state else 0,
             "block_states": block_state["Properties"] if "Properties" in block_state else {},
             "nbt": None,
             "read": False,
@@ -198,9 +202,11 @@ def update(particle: str | dict[str, str], version: int, issues: list[dict[str, 
             block_state["Properties"] = block["block_states"]
         elif "Properties" in block_state:
             del block_state["Properties"]
+        if "data" in block_state:
+            del block_state["data"]
 
     if "item" in particle_data:
-        item = items.update_from_nbt(cast(items.ItemInputFromNBT, particle_data["item"]), version, issues)
+        particle_data["item"] = items.update_from_nbt(cast(items.ItemInputFromNBT, particle_data["item"]), version, issues)
 
     
 
