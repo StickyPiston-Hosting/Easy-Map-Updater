@@ -60,6 +60,7 @@ def update(entity: str | dict[str, str | bool], version: int, issues: list[dict[
     entity_id = miscellaneous.namespace(entity_id)
 
     if pack_version <= 1202:
+        entity_id = entity_id.lower()
         id_array = tables.ENTITY_IDS
         if entity_id in id_array:
             entity_id = id_array[entity_id]
