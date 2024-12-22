@@ -212,10 +212,10 @@ def update_from_json(item: ItemInputFromJSON, version: int, issues: list[dict[st
         pack_version, issues
     )
 
-    return {
-        "id": new_item["id"],
-        "components": nbt_to_json.convert_item_components_to_json(new_item["components"].pack_to_dict()) if new_item["components"].has_components() else None,
-    }
+    result: dict[str, Any] = {"id": new_item["id"]}
+    if new_item["components"].has_components():
+        result["components"] = nbt_to_json.convert_item_components_to_json(new_item["components"].pack_to_dict())
+    return result
 
 
 

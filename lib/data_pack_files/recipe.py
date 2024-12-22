@@ -109,7 +109,7 @@ def update_result(result: dict[str, Any] | str, recipe_type: str) -> dict[str, A
             []
         )
         result["id"] = "minecraft:barrier" if updated_item["id"] == "minecraft:air" else updated_item["id"]
-        if updated_item["components"]:
+        if "components" in updated_item:
             result["components"] = updated_item["components"]
 
     return result
