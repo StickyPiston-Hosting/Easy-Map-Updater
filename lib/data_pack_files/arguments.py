@@ -8,14 +8,14 @@
 def parse(string: str, separator: str, allow_single_quotes: bool) -> list[str]:
     # Process string based on the presence of quotes
     if '"' in string:
-        return parse_with_quotes(string, separator, allow_single_quotes, "")
+        return parse_with_quotes(string, separator, allow_single_quotes)
     if allow_single_quotes and "'" in string:
-        return parse_with_quotes(string, separator, allow_single_quotes, "")
+        return parse_with_quotes(string, separator, allow_single_quotes)
     if separator == "":
-        return parse_with_quotes(string, separator, allow_single_quotes, "")
+        return parse_with_quotes(string, separator, allow_single_quotes)
     return parse_without_quotes(string, separator)
 
-def parse_with_quotes(string: str, separator: str, allow_single_quotes: bool, spare_separator: str = "") -> list[str]:
+def parse_with_quotes(string: str, separator: str | list[str], allow_single_quotes: bool, spare_separator: str | list[str] = []) -> list[str]:
     # Initialize variables
     arguments: list[str] = []
     argument = ""
@@ -24,16 +24,21 @@ def parse_with_quotes(string: str, separator: str, allow_single_quotes: bool, sp
     char_escaped = False
     string_type = ""
 
+    if isinstance(separator, str):
+        separator = [separator]
+    if isinstance(spare_separator, str):
+        spare_separator = [spare_separator]
+
     # Iterate through string
     for char in string:
         # Manage end separator
-        if char == spare_separator and bracket_count == 0 and not in_string:
+        if char in spare_separator and bracket_count == 0 and not in_string:
             if argument:
                 arguments.append(argument)
             argument = ""
 
         # Check separator conditions
-        if char == separator and bracket_count == 0 and not in_string:
+        if char in separator and bracket_count == 0 and not in_string:
             if argument:
                 arguments.append(argument)
             argument = ""
@@ -70,8 +75,8 @@ def parse_with_quotes(string: str, separator: str, allow_single_quotes: bool, sp
             in_string = True
             string_type = "double"
 
-        # Add argument if separator is empty string
-        if separator == "" and bracket_count == 0 and not in_string:
+        # Add argument if separator list contains empty string
+        if "" in separator and bracket_count == 0 and not in_string:
             arguments.append(argument)
             argument = ""
 

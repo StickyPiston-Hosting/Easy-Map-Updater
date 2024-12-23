@@ -1151,6 +1151,12 @@ def update_path(path_parts: list[str], version: int, issues: list[dict[str, str 
     if len(path_parts) < 2:
         return path_parts
     
+    if path_parts[1].startswith("{"):
+        updated_nbt = nbt_tags.update(path_parts[1], version, issues, "item_tag")
+        updated_path = update_path(path_parts[:1] + path_parts[2:], version, issues)
+        updated_path.insert(1, updated_nbt)
+        return updated_path
+    
     if path_parts[1] == "Age":
         return ["components", "minecraft:bucket_entity_data", "Age"]
 

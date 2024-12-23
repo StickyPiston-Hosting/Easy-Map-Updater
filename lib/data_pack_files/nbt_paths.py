@@ -96,6 +96,9 @@ def modify_path(path_parts: list[str], guide: dict, source: str, issues: list[di
 def search_tags(path_parts: list[str], guide: dict, source: str, issues: list[dict[str, str | int]]) -> list[str]:
     if len(path_parts) < 2:
         return path_parts
+    if path_parts[1].startswith("{"):
+        path_parts[1] = nbt_tags.update_with_guide(path_parts[1], pack_version, issues, source, guide, "tags")
+        return path_parts[:1] + search_tags(path_parts[1:], guide, source, issues)
     if path_parts[1] in guide:
         return path_parts[:1] + branch(path_parts[1:], guide[path_parts[1]], source, issues)
     return path_parts
@@ -110,7 +113,7 @@ def search_list(path_parts: list[str], guide: dict, source: str, issues: list[di
 
 
 def unpack(path: str) -> list[str]:
-    path_parts = arguments.parse_with_quotes(path, ".", True, "[")
+    path_parts = arguments.parse_with_quotes(path, ".", True, ["[", "{"])
     for i in range(len(path_parts)):
         path_parts[i] = utils.unpack_string_check(path_parts[i])
     return path_parts
@@ -118,7 +121,7 @@ def unpack(path: str) -> list[str]:
 def pack(path_parts: list[str]) -> str:
     path = ""
     for part in path_parts:
-        if not part.startswith("["):
+        if not part.startswith("[") and not part.startswith("{"):
             if ":" in part:
                 part = utils.pack_string(part, True)
             if path:
@@ -143,6 +146,11 @@ def build_nbt_from_path(nbt, path_parts: list[str]) -> tuple[dict[str, Any], lis
         nested_nbt, new_path_parts = build_nbt_from_path(nested_nbt, path_parts[:-1])
         return nested_nbt, new_path_parts + [index]
     
+    if path_parts[-1].startswith("{"):
+        nested_nbt = nbt_tags.unpack(path_parts[-1])
+        nested_nbt, new_path_parts = build_nbt_from_path(nbt_tags.merge_nbt(nested_nbt, nbt), path_parts[:-1])
+        return nested_nbt, new_path_parts
+    
     nested_nbt = {path_parts[-1]: nbt}
     nested_nbt, new_path_parts = build_nbt_from_path(nested_nbt, path_parts[:-1])
     return nested_nbt, new_path_parts + [path_parts[-1]]
@@ -162,6 +170,9 @@ def extract_nbt_from_path(nbt, path_parts: list[str]):
         if index < len(nbt):
             return extract_nbt_from_path(nbt[index], path_parts[1:])
         return
+    
+    if path_parts[0].startswith("{"):
+        return extract_nbt_from_path(nbt, path_parts[1:])
     
     if path_parts[0] in nbt:
         return extract_nbt_from_path(nbt[path_parts[0]], path_parts[1:])
