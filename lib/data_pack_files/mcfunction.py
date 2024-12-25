@@ -38,15 +38,35 @@ def update(file_path: Path, source_file_path: Path, version: int, function_id: s
 
     # Write to new location
     file_path.parent.mkdir(parents=True, exist_ok=True)
-    utils.safe_file_write(file_path, mcfunction(contents))
+    utils.safe_file_write(file_path, mcfunction(contents, version))
 
-def mcfunction(contents: str) -> str:
+def mcfunction(contents: str, version: int) -> str:
+    global pack_version
+    pack_version = version
+
     # Split up the lines
     lines = contents.split("\n")
 
+    # Condense lines which are split up
+    lines: list[str] = []
+    line_break = False
+    for line in contents.split("\n"):
+        line = line.strip()
+        if not line_break:
+            lines.append(line)
+        else:
+            lines[-1] += line
+        if line.endswith("\\"):
+            if not line_break and not line.startswith("#"):
+                line_break = True
+        else:
+            line_break = False
+        if line_break:
+            lines[-1] = lines[-1][:-1]
+
     # Iterate and convert the lines
     for line_index in range(len(lines)):
-        line = lines[line_index].strip()
+        line = lines[line_index]
 
         # Skip line if it is blank or a comment
         if not line:

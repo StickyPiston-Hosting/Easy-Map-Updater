@@ -194,6 +194,7 @@ After the map has been updated and finalized, these actions will help package it
 - `debug`: Toggles debug mode for printing extra data during the update process.
 - `debug.cmd`: Updates a single command in the prompt for testing purposes.
 - `debug.json`: Updates a JSON text component in the prompt for testing purposes.
+- `debug.function`: Updates a function file for testing purposes.
 - `debug.advancement`: Updates an advancement from a JSON file for testing purposes.
 - `debug.loot_table`: Updates a loot table from a JSON file for testing purposes.
 - `debug.item_modifier`: Updates an item modifier from a JSON file for testing purposes.

@@ -52,6 +52,7 @@ from lib import json_manager
 from lib.data_pack_files import command
 from lib.data_pack_files import json_text_component
 from lib.data_pack_files import breakpoints
+from lib.data_pack_files import mcfunction
 from lib.data_pack_files import advancement
 from lib.data_pack_files import item_modifier
 from lib.data_pack_files import loot_table
@@ -152,6 +153,7 @@ class Action(Enum):
     DEBUG = "debug"
     DEBUG_CMD = "debug.cmd"
     DEBUG_JSON = "debug.json"
+    DEBUG_FUNCTION = "debug.function"
     DEBUG_ADVANCEMENT = "debug.advancement"
     DEBUG_LOOT_TABLE = "debug.loot_table"
     DEBUG_ITEM_MODIFIER = "debug.item_modifier"
@@ -366,14 +368,15 @@ def action_reset():
         Action.EXIT.value:                  { "show": True,  "function": action_exit, "name": "Exit program" },
 
         Action.DEBUG.value:                 { "show": False, "function": action_toggle_debug_mode, "name": "Toggle debug mode" },
-        Action.DEBUG_CMD.value:             { "show": False,  "function": action_update_single_command, "name": "Update single command (for testing)" },
-        Action.DEBUG_JSON.value:            { "show": False,  "function": action_update_json_text_component, "name": "Update JSON text component (for testing)" },
-        Action.DEBUG_ADVANCEMENT.value:     { "show": False,  "function": action_update_advancement, "name": "Update advancement from file (for testing)" },
-        Action.DEBUG_LOOT_TABLE.value:      { "show": False,  "function": action_update_loot_table, "name": "Update loot table from file (for testing)" },
-        Action.DEBUG_ITEM_MODIFIER.value:   { "show": False,  "function": action_update_item_modifier, "name": "Update item modifier from file (for testing)" },
-        Action.DEBUG_PREDICATE.value:       { "show": False,  "function": action_update_predicate, "name": "Update predicate from file (for testing)" },
-        Action.DEBUG_RECIPE.value:          { "show": False,  "function": action_update_recipe, "name": "Update recipe from file (for testing)" },
-        Action.DEBUG_STRUCTURE.value:       { "show": False,  "function": action_update_structure, "name": "Update structure from file (for testing)" },
+        Action.DEBUG_CMD.value:             { "show": False, "function": action_update_single_command, "name": "Update single command (for testing)" },
+        Action.DEBUG_JSON.value:            { "show": False, "function": action_update_json_text_component, "name": "Update JSON text component (for testing)" },
+        Action.DEBUG_FUNCTION.value:        { "show": False, "function": action_update_function, "name": "Update function (for testing)" },
+        Action.DEBUG_ADVANCEMENT.value:     { "show": False, "function": action_update_advancement, "name": "Update advancement from file (for testing)" },
+        Action.DEBUG_LOOT_TABLE.value:      { "show": False, "function": action_update_loot_table, "name": "Update loot table from file (for testing)" },
+        Action.DEBUG_ITEM_MODIFIER.value:   { "show": False, "function": action_update_item_modifier, "name": "Update item modifier from file (for testing)" },
+        Action.DEBUG_PREDICATE.value:       { "show": False, "function": action_update_predicate, "name": "Update predicate from file (for testing)" },
+        Action.DEBUG_RECIPE.value:          { "show": False, "function": action_update_recipe, "name": "Update recipe from file (for testing)" },
+        Action.DEBUG_STRUCTURE.value:       { "show": False, "function": action_update_structure, "name": "Update structure from file (for testing)" },
     }
 
 def action_show_all_actions():
@@ -1261,6 +1264,19 @@ def retrieve_file_path(message: str) -> Path | None:
             print("ERROR: File does not exist!")
             continue
         return file_path
+    
+def action_update_function():
+    while True:
+        file_path = retrieve_file_path("Function file path to update (leave blank to exit): ")
+        if not file_path:
+            break
+        contents = utils.safe_file_read(file_path)
+        contents = mcfunction.mcfunction(contents, option_manager.get_version())
+        print("")
+        log("Updated function:")
+        print("")
+        log(contents)
+        print("")
 
 def retrieve_json_file_contents(message: str) -> Any:
     while True:
