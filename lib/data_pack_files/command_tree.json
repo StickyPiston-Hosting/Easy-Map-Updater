@@ -61,6 +61,17 @@
                 }
             }
         },
+        "ban": {
+            "mapping": ["carry", "target_selector", "join_text"],
+            "legend": [0, 1, {"join_text": {"min": 2}}]
+        },
+        "ban-ip": {
+            "mapping": ["carry", "target_selector", "join_text"],
+            "legend": [0, 1, {"join_text": {"min": 2}}]
+        },
+        "banlist": {
+            "mapping": ["carry", "carry"]
+        },
         "blockdata": {
             "mapping": ["carry", "carry", "carry", "coordinate", "coordinate", "coordinate", "block_nbt"],
             "legend": ["data", "merge", "block", 1, 2, 3, 4]
@@ -498,8 +509,22 @@
                 }
             }
         },
+        "debug": {
+            "index": 1,
+            "branches": {
+                "function": {
+                    "mapping": ["carry", "carry", "function"]
+                }
+            },
+            "else": {
+                "mapping": ["carry", "carry"]
+            }
+        },
         "defaultgamemode": {
             "mapping": ["carry", "gamemode"]
+        },
+        "deop": {
+            "mapping": ["carry", "target_selector"]
         },
         "difficulty": {
             "mapping": ["carry", "difficulty"]
@@ -874,6 +899,9 @@
                 { "version": {"max": 1202}, "legend": [0, 1, {"id": 2, "data_value": 4, "nbt": 5}, 3] }
             ]
         },
+        "help": {
+            "mapping": ["carry", "carry"]
+        },
         "item": {
             "index": 1,
             "branches": {
@@ -933,11 +961,21 @@
                 }
             }
         },
+        "jfr": {
+            "mapping": ["carry", "carry"]
+        },
+        "kick": {
+            "mapping": ["carry", "target_selector", "join_text"],
+            "legend": [0, 1, {"join_text": {"min": 2}}]
+        },
         "kill": {
             "mapping": ["carry", "target_selector"],
             "defaults": {
                 "1": "@s"
             }
+        },
+        "list": {
+            "mapping": ["carry", "carry"]
         },
         "locate": [
             {
@@ -1190,6 +1228,19 @@
             "mapping": ["carry", "say_text"],
             "legend": [0, {"say_text": {"min": 1}}]
         },
+        "msg": {
+            "mapping": ["carry", "target_selector", "join_text"],
+            "legend": [0, 1, {"join_text": {"min": 2}}]
+        },
+        "op": {
+            "mapping": ["carry", "target_selector"]
+        },
+        "pardon": {
+            "mapping": ["carry", "target_selector"]
+        },
+        "pardon-ip": {
+            "mapping": ["carry", "carry"]
+        },
         "particle": [
             {
                 "version": {"max": 809},
@@ -1281,6 +1332,9 @@
                 "mapping": ["carry", "particle", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "carry", "carry", "particle_mode", "target_selector"]
             }
         ],
+        "perf": {
+            "mapping": ["carry", "carry"]
+        },
         "place": {
             "index": 1,
             "branches": {
@@ -1309,6 +1363,9 @@
                 "mapping": ["carry", "sound_event", "carry", "target_selector", "carry", "carry", "carry", "carry", "carry", "carry"]
             }
         ],
+        "publish": {
+            "mapping": ["carry", "carry", "gamemode", "carry"]
+        },
         "random": {
             "index": 1,
             "branches": {
@@ -1331,6 +1388,9 @@
             "else": {
                 "mapping": ["carry", "carry", "target_selector", "recipe"]
             }
+        },
+        "reload": {
+            "mapping": ["carry"]
         },
         "replaceitem": {
             "index": 1,
@@ -1381,6 +1441,15 @@
             "else": {
                 "mapping": ["carry", "target_selector_single", "yaw", "pitch"]
             }
+        },
+        "save-all": {
+            "mapping": ["carry", "carry"]
+        },
+        "save-off": {
+            "mapping": ["carry"]
+        },
+        "save-on": {
+            "mapping": ["carry"]
         },
         "say": {
             "mapping": ["carry", "say_text"],
@@ -1524,6 +1593,9 @@
                 }
             }
         },
+        "seed": {
+            "mapping": ["carry"]
+        },
         "setblock": [
             {
                 "version": {"max": 1202},
@@ -1535,6 +1607,9 @@
                 "mapping": ["carry", "coordinate", "coordinate", "coordinate", "block", "setblock_mode"]
             }
         ],
+        "setidletimeout": {
+            "mapping": ["carry", "carry"]
+        },
         "setworldspawn": {
             "mapping": ["carry", "coordinate", "coordinate", "coordinate", "coordinate"]
         },
@@ -1558,6 +1633,9 @@
         "stats": {
             "mapping": ["carry", "carry", "say_text"],
             "legend": ["tell", "Nobody", {"say_text": {"min": 0}}]
+        },
+        "stop": {
+            "mapping": ["carry"]
         },
         "stopsound": {
             "mapping": ["carry", "target_selector", "carry", "sound_event"]
@@ -1586,6 +1664,10 @@
                 }
             },
             "else": "add"
+        },
+        "teammsg": {
+            "mapping": ["carry", "join_text"],
+            "legend": [0, {"join_text": {"min": 1}}]
         },
         "teleport": [
             {
@@ -1627,11 +1709,28 @@
             }
         ],
         "tell": {
-            "mapping": ["carry", "join_text"],
-            "legend": [0, {"join_text": {"min": 1}}]
+            "mapping": ["carry", "target_selector", "join_text"],
+            "legend": [0, 1, {"join_text": {"min": 2}}]
         },
         "tellraw": {
             "mapping": ["carry", "target_selector", "json_text_component"]
+        },
+        "tick": {
+            "index": 1,
+            "branches": {
+                "rate": {
+                    "mapping": ["carry", "carry", "carry"]
+                },
+                "step": {
+                    "mapping": ["carry", "carry", "carry"]
+                },
+                "sprint": {
+                    "mapping": ["carry", "carry", "carry"]
+                }
+            },
+            "else": {
+                "mapping": ["carry", "carry"]
+            }
         },
         "testfor": {
             "mapping": ["carry", "carry", "carry", "target_selector"],
@@ -1664,6 +1763,10 @@
                 "actionbar": "title",
                 "reset": "clear"
             }
+        },
+        "tm": {
+            "mapping": ["carry", "join_text"],
+            "legend": [0, {"join_text": {"min": 1}}]
         },
         "tp": [
             {
@@ -1733,11 +1836,30 @@
                 ]
             }
         ],
+        "transfer": {
+            "mapping": ["carry", "carry", "carry", "target_selector"]
+        },
         "trigger": {
             "mapping": ["carry", "carry", "carry", "carry"]
         },
+        "w": {
+            "mapping": ["carry", "target_selector", "join_text"],
+            "legend": [0, 1, {"join_text": {"min": 2}}]
+        },
         "weather": {
             "mapping": ["carry", "carry", "carry"]
+        },
+        "whitelist": {
+            "index": 1,
+            "branches": {
+                "add": {
+                    "mapping": ["carry", "carry", "target_selector"]
+                },
+                "remove": "add"
+            },
+            "else": {
+                "mapping": ["carry", "carry"]
+            }
         },
         "worldborder": {
             "index": 1,
