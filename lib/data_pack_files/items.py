@@ -337,6 +337,13 @@ def update_item_id(item_id: str | nbt_tags.TypeNumeric, components: item_compone
         if item_id in id_array:
             item_id = id_array[item_id]
 
+    if pack_version <= 1605 or defaults.FIXES["post_fixes"]:
+        id_array = {
+            "minecraft:grass_path": "minecraft:dirt_path"
+        }
+        if item_id in id_array:
+            item_id = id_array[item_id]
+
     if pack_version <= 2002 or defaults.FIXES["post_fixes"]:
         id_array = {
             "minecraft:grass": "minecraft:short_grass"
