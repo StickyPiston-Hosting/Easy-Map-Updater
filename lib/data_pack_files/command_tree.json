@@ -1439,7 +1439,7 @@
                 }
             },
             "else": {
-                "mapping": ["carry", "target_selector_single", "yaw", "pitch"]
+                "mapping": ["carry", "target_selector_single", "coordinate", "coordinate"]
             }
         },
         "save-all": {
