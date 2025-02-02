@@ -569,6 +569,8 @@ def edge_case(parent: dict, nbt, case: str | dict[str, str], source: str, object
         return edge_case_potion(parent, object_id)
     if case_type == "power":
         return edge_case_power(parent)
+    if case_type == "recipes":
+        return edge_case_recipes(nbt, issues)
     if case_type == "shot_from_crossbow":
         return edge_case_shot_from_crossbow(parent)
     if case_type == "sign_text":
@@ -811,6 +813,16 @@ def edge_case_power(parent: dict):
         parent["power"][1].value*parent["power"][1].value +
         parent["power"][2].value*parent["power"][2].value
     ))
+
+def edge_case_recipes(nbt: list, issues: list[dict[str, str | int]]):
+    for i in range(len(nbt)):
+        entry: str | dict = nbt[i]
+        if isinstance(entry, dict):
+            if "id" in entry:
+                entry = entry["id"]
+            else:
+                entry = "minecraft:stick"
+        nbt[i] = items.update_from_command(cast(str, entry), pack_version, issues)
 
 def edge_case_shot_from_crossbow(parent: dict):
     if parent["ShotFromCrossbow"].value == 1:

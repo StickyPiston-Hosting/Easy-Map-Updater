@@ -757,6 +757,7 @@
                         "argument_type": "json_text_component"
                     }
                 },
+                "Recipes": { "edge_case": "recipes" },
                 "Unbreakable": { "data_type": "byte" }
             },
             "path": {
