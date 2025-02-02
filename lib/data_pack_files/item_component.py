@@ -353,26 +353,7 @@ def conform_component(component: ItemComponent, version: int):
         component.value = {"types": "#minecraft:is_fire"}
 
     if component.key == "minecraft:item_model" and version <= 2103:
-        resource_pack_path = easy_map_updater.MINECRAFT_PATH / "resourcepacks" / option_manager.get_resource_pack()
-        if not resource_pack_path.exists():
-            log(f"WARNING: Resource pack must exist to update component minecraft:item_model")
-        else:
-            item_model = miscellaneous.namespace(cast(str, component.value))
-            updated_item_model = item_model.replace(":", "/")
-            item_definition_path = resource_pack_path / "assets" / "emu" / "items" / f"{updated_item_model}.json"
-            item_definition_path.parent.mkdir(parents=True, exist_ok=True)
-            with item_definition_path.open("w", encoding="utf-8", newline="\n") as file:
-                json.dump(
-                    {
-                        "model": {
-                            "type": "minecraft:model",
-                            "model": item_model
-                        }
-                    },
-                    file,
-                    indent=4
-                )
-            component.value = f"emu:{updated_item_model}"
+        component.value = conform_item_model_component(component.value)
 
     if component.key == "minecraft:item_name":
         component.value = json_text_component.update(component.value, version, [], True)
@@ -433,6 +414,31 @@ def conform_component(component: ItemComponent, version: int):
             page = pages[index]
             if isinstance(page, str):
                 pages[index] = {"raw": page}
+
+
+
+def conform_item_model_component(value: str) -> str:
+    resource_pack_path = easy_map_updater.MINECRAFT_PATH / "resourcepacks" / option_manager.get_resource_pack()
+    if not resource_pack_path.exists():
+        log(f"WARNING: Resource pack must exist to update component minecraft:item_model")
+    else:
+        item_model = miscellaneous.namespace(value)
+        updated_item_model = item_model.replace(":", "/")
+        item_definition_path = resource_pack_path / "assets" / "emu" / "items" / f"{updated_item_model}.json"
+        item_definition_path.parent.mkdir(parents=True, exist_ok=True)
+        with item_definition_path.open("w", encoding="utf-8", newline="\n") as file:
+            json.dump(
+                {
+                    "model": {
+                        "type": "minecraft:model",
+                        "model": item_model.replace(":", ":item/")
+                    }
+                },
+                file,
+                indent=4
+            )
+        value = f"emu:{updated_item_model}"
+    return value
 
 
 

@@ -15,6 +15,7 @@ from lib import utils
 from lib.log import log
 from lib.data_pack_files import nbt_tags
 from lib.data_pack_files import items
+from lib.data_pack_files import item_component
 from lib.data_pack_files import json_text_component
 from lib.data_pack_files import ids
 from lib.data_pack_files import tables
@@ -716,7 +717,7 @@ def fix_entity_recursive_passenger(entity: NBT.TAG_Compound, is_from_spawner: bo
         if tag in entity:
             for item in entity[tag]:
                 fix_item(item, is_from_spawner)
-    for tag in ["ArmorItem", "Item", "SaddleItem"]:
+    for tag in ["ArmorItem", "Item", "item", "SaddleItem"]:
         if tag in entity:
             fix_item(entity[tag], is_from_spawner)
     if "Offers" in entity:
@@ -830,6 +831,10 @@ def fix_item(item: NBT.TAG_Compound, is_from_spawner: bool = False):
                     pages: NBT.TAG_List = item_components["minecraft:written_book_contents"]["pages"]
                     for i in range(len(pages)):
                         pages[i] = NBT.TAG_String(json_text_component.update(pages[i].value, pack_version, [], False))
+
+            # Handle item model
+            if pack_version <= 2103 and "minecraft:item_model" in item_components:
+                item_components["minecraft:item_model"].value = item_component.conform_item_model_component(item_components["minecraft:item_model"].value)
 
             # Handle block entity data
             if "minecraft:block_entity_data" in item_components:
