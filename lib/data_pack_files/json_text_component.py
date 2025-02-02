@@ -240,6 +240,8 @@ def update_click_event(component: dict[str, str]) -> dict[str, str]:
     if "value" not in component or "action" not in component:
         return component
 
+    component["value"] = str(component["value"])
+
     if component["action"] == "run_command":
         component["value"] = "/" + command.update(component["value"], pack_version, "JSON Text Component")
     
