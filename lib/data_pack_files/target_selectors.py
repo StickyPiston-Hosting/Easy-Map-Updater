@@ -271,7 +271,7 @@ def update_argument(selector_type: str, selector_arguments: dict[str, str | dict
     
     # Convert old scores
     if (
-        defaults.FIXES["broken_score_references"] and
+        option_manager.FIXES["broken_score_references"] and
         pack_version <= 1202 and
         "score_" not in argument_type and
         (argument_type != argument_type.lower() or "_min" in argument_type)

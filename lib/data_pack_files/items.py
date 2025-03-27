@@ -263,7 +263,7 @@ def update(item: ItemInput, version: int, issues: list[dict[str, str | int]]) ->
         components["minecraft:damage"] = nbt_tags.TypeInt(data_value)
 
     # Apply pre-1.8 adventure mode fixes
-    if pack_version <= 710 and defaults.FIXES["old_adventure_mode_items"] and not read:
+    if pack_version <= 710 and option_manager.FIXES["old_adventure_mode_items"] and not read:
         components = insert_old_adventure_mode_tags(components, item_id or "minecraft:stone")
 
     return {
@@ -286,6 +286,8 @@ def update_item_id(item_id: str | nbt_tags.TypeNumeric, components: item_compone
 
     # Apply namespace to name
     item_id = miscellaneous.namespace(item_id)
+
+    post_fixes = option_manager.FIXES["post_fixes"]
 
     # Convert item ID
     if pack_version <= 1202:
@@ -320,7 +322,7 @@ def update_item_id(item_id: str | nbt_tags.TypeNumeric, components: item_compone
                 else:
                     item_id = data_array[max(data_value, 0)]
 
-    if pack_version <= 1302 or defaults.FIXES["post_fixes"]:
+    if pack_version <= 1302 or post_fixes:
         id_array = {
             "minecraft:cactus_green":     "minecraft:green_dye",
             "minecraft:dandelion_yellow": "minecraft:yellow_dye",
@@ -330,28 +332,28 @@ def update_item_id(item_id: str | nbt_tags.TypeNumeric, components: item_compone
         if item_id in id_array:
             item_id = id_array[item_id]
 
-    if pack_version <= 1502 or defaults.FIXES["post_fixes"]:
+    if pack_version <= 1502 or post_fixes:
         id_array = {
             "minecraft:zombie_pigman_spawn_egg": "minecraft:zombified_piglin_spawn_egg"
         }
         if item_id in id_array:
             item_id = id_array[item_id]
 
-    if pack_version <= 1605 or defaults.FIXES["post_fixes"]:
+    if pack_version <= 1605 or post_fixes:
         id_array = {
             "minecraft:grass_path": "minecraft:dirt_path"
         }
         if item_id in id_array:
             item_id = id_array[item_id]
 
-    if pack_version <= 2002 or defaults.FIXES["post_fixes"]:
+    if pack_version <= 2002 or post_fixes:
         id_array = {
             "minecraft:grass": "minecraft:short_grass"
         }
         if item_id in id_array:
             item_id = id_array[item_id]
 
-    if pack_version <= 2004 or defaults.FIXES["post_fixes"]:
+    if pack_version <= 2004 or post_fixes:
         id_array = {
             "minecraft:scute": "minecraft:turtle_scute"
         }
@@ -363,14 +365,14 @@ def update_item_id(item_id: str | nbt_tags.TypeNumeric, components: item_compone
                 easy_map_updater.MINECRAFT_PATH / "saves" / option_manager.get_map_name()
             )
 
-    if pack_version <= 2006 or defaults.FIXES["post_fixes"]:
+    if pack_version <= 2006 or post_fixes:
         if item_id == "#minecraft:music_discs":
             item_id = "#tag_replacements:music_discs"
             tag_replacements.create_pack(
                 easy_map_updater.MINECRAFT_PATH / "saves" / option_manager.get_map_name()
             )
 
-    if pack_version <= 2103 or defaults.FIXES["post_fixes"]:
+    if pack_version <= 2103 or post_fixes:
         if item_id == "#minecraft:flowers":
             item_id = "#tag_replacements:flowers"
             tag_replacements.create_pack(

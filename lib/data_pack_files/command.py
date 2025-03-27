@@ -9,6 +9,7 @@ import json
 from typing import cast, Any
 from pathlib import Path
 from lib.log import log
+from lib import option_manager
 from lib.data_pack_files import arguments
 from lib.data_pack_files import target_selectors
 from lib.data_pack_files import nbt_tags
@@ -128,7 +129,7 @@ def parsed_command(argument_list: list[str], display_command: bool) -> str:
     argument_list[0] = remove_slash(argument_list[0])
 
     # Flag stats command
-    if argument_list[0] == "stats" and not defaults.FIXES["stats"]:
+    if argument_list[0] == "stats" and not option_manager.FIXES["stats"]:
         log("WARNING: Stats fixer not enabled but stats have been found!")
 
     # Initialize issues list
@@ -381,6 +382,7 @@ def fix_helper_edge_case(argument_list: list[str], old_argument_list: list[str],
 
     # Fix comparator block updates (FIND VERSION WHERE IT IS NECESSARY)
     if (
+        option_manager.FIXES["command_helper"]["mitigate_block_update"] and
         pack_version <= 1202 and
         argument_list[0] == "setblock" and
         len(argument_list) > 4 and
@@ -392,6 +394,7 @@ def fix_helper_edge_case(argument_list: list[str], old_argument_list: list[str],
     if pack_version <= 2101:
         # Fix pre-1.21.2 teleports not dismounting riders
         if (
+            option_manager.FIXES["command_helper"]["teleport_dismount"] and
             len(argument_list) > 5 and
             argument_list[0] in ["tp", "teleport"]
         ):
@@ -400,7 +403,7 @@ def fix_helper_edge_case(argument_list: list[str], old_argument_list: list[str],
     # Fix pre-1.20.5 bugs
     if pack_version <= 2004:
         # Fix pre-1.20.5 handling of effects
-        if argument_list[0] == "effect":
+        if argument_list[0] == "effect" and option_manager.FIXES["command_helper"]["effect_overflow"]:
             if (
                 len(argument_list) >= 4 and
                 argument_list[1] == "give" and
@@ -423,6 +426,7 @@ def fix_helper_edge_case(argument_list: list[str], old_argument_list: list[str],
     if pack_version <= 1904:
         # Fix pre-1.20 handling of /data merge on signs
         if (
+            option_manager.FIXES["command_helper"]["sign_nbt_merge"] and
             len(argument_list) >= 7 and
             argument_list[0] == "data" and
             argument_list[1] == "merge" and
@@ -437,6 +441,7 @@ def fix_helper_edge_case(argument_list: list[str], old_argument_list: list[str],
     if pack_version <= 1702:
         # Fix pre-1.18 handling of falling blocks removing blocks and not spawning Time:0 versions
         if (
+            option_manager.FIXES["command_helper"]["time_0_falling_block"] and
             len(argument_list) >= 6 and
             argument_list[0] == "summon" and
             argument_list[1] == "minecraft:falling_block"
@@ -451,7 +456,11 @@ def fix_helper_edge_case(argument_list: list[str], old_argument_list: list[str],
         
     # Fix pre-1.16 bugs
     if pack_version <= 1502:
-        if len(argument_list) >= 5 and argument_list[0] == "setblock":
+        if (
+            option_manager.FIXES["command_helper"]["illegal_block_states"] and
+            len(argument_list) >= 5 and 
+            argument_list[0] == "setblock"
+        ):
             block = argument_list[4].split("{")[0].split("[")
             # Fix pre-1.16 handling of illegal block states
             if (
@@ -477,6 +486,7 @@ def fix_helper_edge_case(argument_list: list[str], old_argument_list: list[str],
     
     # Fix pre-1.13 testfor handling of SuccessCount
     if (
+        option_manager.FIXES["command_helper"]["command_block_testfor"] and
         pack_version <= 1202 and
         len(argument_list) == 4 and
         argument_list[0] == "execute" and
@@ -487,11 +497,11 @@ def fix_helper_edge_case(argument_list: list[str], old_argument_list: list[str],
 
     # Fix pre-1.12 block NBT modifications
     if pack_version <= 1102:
-        if argument_list[0] == "setblock":
+        if argument_list[0] == "setblock" and option_manager.FIXES["command_helper"]["block_nbt_modifier"]:
             if len(argument_list) > 4 and "{" in argument_list[4]:
                 return block_nbt_modifier.handle_setblock(argument_list)
 
-        if argument_list[0] == "fill":
+        if argument_list[0] == "fill" and option_manager.FIXES["command_helper"]["block_nbt_modifier"]:
             if len(argument_list) > 7 and "{" in argument_list[7]:
                 return block_nbt_modifier.handle_fill(argument_list)
             
@@ -499,6 +509,7 @@ def fix_helper_edge_case(argument_list: list[str], old_argument_list: list[str],
     if pack_version <= 1002:
         # Fix pre-1.11 fireworks damaging players
         if (
+            option_manager.FIXES["command_helper"]["cancel_firework_damage"] and
             argument_list[0] == "summon" and
             argument_list[1] == "minecraft:firework_rocket"
         ):
@@ -519,6 +530,7 @@ def fix_helper_edge_case(argument_list: list[str], old_argument_list: list[str],
     # Fix pre-1.10 teleport canceling motion
     if pack_version <= 904:
         if (
+            option_manager.FIXES["command_helper"]["teleport_motion_cancel"] and
             len(argument_list) >= 9 and
             argument_list[0] == "execute" and
             argument_list[4] == "data" and
@@ -528,6 +540,7 @@ def fix_helper_edge_case(argument_list: list[str], old_argument_list: list[str],
         ):
             return motion_canceler.handle_motion_modification(argument_list)
         if (
+            option_manager.FIXES["command_helper"]["teleport_motion_cancel"] and
             (argument_list[0] == "execute" and "teleport" in argument_list) or
             argument_list[0] == "teleport"
         ):
@@ -535,8 +548,9 @@ def fix_helper_edge_case(argument_list: list[str], old_argument_list: list[str],
     
     # Fix pre-1.9 clone breaking blocks
     if (
+        option_manager.FIXES["command_helper"]["mitigate_block_update"] and
         pack_version <= 809 and
-        defaults.FIXES["clean_clone"] and
+        option_manager.FIXES["command_helper"]["clean_clone"] and
         argument_list[0] == "clone"
     ):
         return block_update_mitigator.handle_clean_clone(argument_list)
@@ -566,7 +580,7 @@ def fix_helper_edge_case(argument_list: list[str], old_argument_list: list[str],
         if issue["type"] == "safe_nbt_interpret":
             safe_nbt_interpret_issues.append(issue)
 
-    if len(safe_nbt_interpret_issues) > 0:
+    if len(safe_nbt_interpret_issues) > 0 and option_manager.FIXES["command_helper"]["safe_nbt_interpret"]:
         return safe_nbt_interpret.handle_interpret(argument_list, safe_nbt_interpret_issues)
 
 

@@ -13,6 +13,7 @@ from pathlib import Path
 from lib.log import log
 from lib import defaults
 from lib import utils
+from lib import option_manager
 
 
 
@@ -390,7 +391,7 @@ def update_tags(parent: dict, nbt: dict, guide: dict, source: str, object_id: st
     # Iterate through tags
     key: str
     for key in list(nbt.keys()):
-        if source in ["block", "entity"] and key == "CommandStats" and not defaults.FIXES["stats"]:
+        if source in ["block", "entity"] and key == "CommandStats" and not option_manager.FIXES["stats"]:
             log("WARNING: Stats fixer not enabled but stats have been found!")
         if key in guide and key in nbt:
             if (

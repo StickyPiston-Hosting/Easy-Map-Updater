@@ -209,6 +209,7 @@ def program():
 
     # Initialize variables
     option_manager.get_options()
+    option_manager.FIXES = option_manager.get_fixes()
     action_reset()
     load_session()
     save_session()
@@ -394,6 +395,7 @@ def action_update(): # Needs confirmation
     og_world: Path = MINECRAFT_PATH / "saves" / f'{option_manager.get_map_name()}_original'
     source_world: Path = MINECRAFT_PATH / "saves" / f'{option_manager.get_map_name()}_source'
     resource_pack: Path = MINECRAFT_PATH / "resourcepacks" / option_manager.get_resource_pack()
+    option_manager.FIXES = option_manager.get_fixes()
     if not world.exists():
         log("ERROR: World does not exist!")
         return

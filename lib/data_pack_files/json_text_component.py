@@ -318,7 +318,7 @@ def update_nbt(component: JSONTextComponentCompound, issues: list[dict[str, str 
     if (
         pack_version <= 2002 and
         "interpret" in component and component["interpret"] and
-        defaults.FIXES["safe_nbt_interpret"] and
+        option_manager.FIXES["command_helper"]["safe_nbt_interpret"] and
         not component["nbt"].startswith("safe_nbt_interpret")
     ):
         # Get latest index

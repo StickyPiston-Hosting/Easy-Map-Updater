@@ -239,6 +239,8 @@ def update_block_id(block_id: str | nbt_tags.TypeNumeric, data_value: int | str,
     # Apply namespace to name
     block_id = miscellaneous.namespace(block_id)
 
+    post_fixes = option_manager.FIXES["post_fixes"]
+
     # Convert block ID
     if pack_version <= 809:
         # Handle command block edge case
@@ -412,7 +414,7 @@ def update_block_id(block_id: str | nbt_tags.TypeNumeric, data_value: int | str,
             if block_id == "minecraft:command_block":
                 block_states = {}
 
-    if pack_version <= 1302 or defaults.FIXES["post_fixes"]:
+    if pack_version <= 1302 or post_fixes:
         id_array = {
             "minecraft:sign":             "minecraft:oak_sign",
             "minecraft:wall_sign":        "minecraft:oak_wall_sign"
@@ -420,7 +422,7 @@ def update_block_id(block_id: str | nbt_tags.TypeNumeric, data_value: int | str,
         if block_id in id_array:
             block_id = id_array[block_id]
 
-    if pack_version <= 1502 or defaults.FIXES["post_fixes"]:
+    if pack_version <= 1502 or post_fixes:
         # Handle wall block states
         if block_id in [
             "minecraft:andesite_wall",
@@ -445,28 +447,28 @@ def update_block_id(block_id: str | nbt_tags.TypeNumeric, data_value: int | str,
                     if block_states[block_state] == "true":
                         block_states[block_state] = "low"
 
-    if pack_version <= 1605 or defaults.FIXES["post_fixes"]:
+    if pack_version <= 1605 or post_fixes:
         id_array = {
             "minecraft:grass_path": "minecraft:dirt_path"
         }
         if block_id in id_array:
             block_id = id_array[block_id]
 
-    if pack_version <= 1802 or defaults.FIXES["post_fixes"]:
+    if pack_version <= 1802 or post_fixes:
         id_array = {
             "#minecraft:carpets": "#minecraft:wool_carpets"
         }
         if block_id in id_array:
             block_id = id_array[block_id]
 
-    if pack_version <= 2002 or defaults.FIXES["post_fixes"]:
+    if pack_version <= 2002 or post_fixes:
         id_array = {
             "minecraft:grass": "minecraft:short_grass"
         }
         if block_id in id_array:
             block_id = id_array[block_id]
 
-    if pack_version <= 2103 or defaults.FIXES["post_fixes"]:
+    if pack_version <= 2103 or post_fixes:
         if block_id == "#minecraft:tall_flowers":
             block_id = "#tag_replacements:tall_flowers"
             tag_replacements.create_pack(

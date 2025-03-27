@@ -10,6 +10,7 @@ import json
 from typing import cast, TypedDict, NotRequired
 from nbt import nbt as NBT
 from nbt import region
+from lib import option_manager
 from lib.data_pack_files import command
 from lib.data_pack_files import nbt_tags
 from lib.data_pack_files import target_selectors
@@ -372,15 +373,16 @@ def update_commands(version: int):
 
         # Apply simplistic stat update
         if "CommandStats" in comment_info and pack_version >= 800 and pack_version <= 1202:
+            stats_options = option_manager.FIXES["stats_options"]
             if (
-                defaults.FIXES["stats"] and
-                defaults.FIXES["stats_options"]["block_stats_used"] and
-                not defaults.FIXES["stats_options"]["block_positions_dynamic"] and
-                not defaults.FIXES["stats_options"]["commands_written_to_sensitive_position"] and
-                not defaults.FIXES["stats_options"]["commands_written_to_arbitrary_position"] and
-                not defaults.FIXES["stats_options"]["entity_stats_used"] and
-                not defaults.FIXES["stats_options"]["entity_types_dynamic"] and
-                not defaults.FIXES["stats_options"]["complex_stat_usage"]
+                option_manager.FIXES["stats"] and
+                stats_options["block_stats_used"] and
+                not stats_options["block_positions_dynamic"] and
+                not stats_options["commands_written_to_sensitive_position"] and
+                not stats_options["commands_written_to_arbitrary_position"] and
+                not stats_options["entity_stats_used"] and
+                not stats_options["entity_types_dynamic"] and
+                not stats_options["complex_stat_usage"]
             ):
                 key: str
                 used_stat = ""

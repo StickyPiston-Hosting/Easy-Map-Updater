@@ -13,6 +13,7 @@ from nbt import region
 from lib import defaults
 from lib import utils
 from lib.log import log
+from lib import option_manager
 from lib.data_pack_files import nbt_tags
 from lib.data_pack_files import items
 from lib.data_pack_files import item_component
@@ -213,7 +214,7 @@ def fix_region_file(file_path: Path, source_file_path: Path, dimension: str):
                 continue
             if "keepPacked" not in block_entity:
                 block_entity["keepPacked"] = NBT.TAG_Byte(0)
-            if "CommandStats" in block_entity and not defaults.FIXES["stats"]:
+            if "CommandStats" in block_entity and not option_manager.FIXES["stats"]:
                 log("WARNING: Stats fixer not enabled but stats have been found!")
 
             fix_block_entity(block_entity)
@@ -481,7 +482,7 @@ def fix_entity_file(file_path: Path, source_file_path: Path, dimension: str):
 
             # Fix pre-1.9 NoAI horses
             if (
-                defaults.FIXES["no_ai_horse_movement"] and
+                option_manager.FIXES["no_ai_horse_movement"] and
                 pack_version <= 809 and
                 entity["id"].value == "minecraft:horse" and
                 "NoAI" in entity and
@@ -598,7 +599,7 @@ def fix_entity_recursive_passenger(entity: NBT.TAG_Compound, is_from_spawner: bo
             entity["VillagerData"]["level"] = NBT.TAG_Int(2)
 
 
-    if "CommandStats" in entity and not defaults.FIXES["stats"]:
+    if "CommandStats" in entity and not option_manager.FIXES["stats"]:
         log("WARNING: Stats fixer not enabled but stats have been found!")
 
     if "UUID" in entity:
@@ -850,7 +851,7 @@ def fix_item(item: NBT.TAG_Compound, is_from_spawner: bool = False):
 
 
         # Handle old adventure mode
-        if pack_version <= 710 and defaults.FIXES["old_adventure_mode_items"]:
+        if pack_version <= 710 and option_manager.FIXES["old_adventure_mode_items"]:
             item_id = item["id"].value
             insert_old_adventure_mode_components(item, item_id)
 
