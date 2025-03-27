@@ -48,7 +48,7 @@ class WorldScan(TypedDict):
     advancements: bool
     recipes: bool
 
-def scan_world(world: Path, resource_pack: Path) -> WorldScan:
+def scan_world(world: Path, resource_pack: Path, request_version_override: bool) -> WorldScan:
     log("Scanning world")
 
     # Initialize booleans
@@ -95,7 +95,8 @@ def scan_world(world: Path, resource_pack: Path) -> WorldScan:
     else:
         version_name = "Unknown"
         version = 809
-    option_manager.set_version(version)
+    if request_version_override:
+        option_manager.set_version(version)
 
     # Check if there are stored functions
     if (world / "data" / "functions").exists():
@@ -138,9 +139,16 @@ def scan_world(world: Path, resource_pack: Path) -> WorldScan:
                 booleans["recipes"] = True
 
     if version_name == "Unknown":
-        version_name, version = utils.get_version_from_user("Version ID not found, please enter world version: ", False)
+        version_name, version = utils.get_version_from_user("Version ID not found, please enter source version: ", False)
         option_manager.set_version(version)
-    log(f'Version: {version_name} - {version}')
+        log(f'Version: {version_name} - {version}')
+    elif request_version_override:
+        temp_version_name, temp_version = utils.get_version_from_user(f"\nDetected source version: {version_name}\nEnter source version override, or leave empty to use detected source version: ", True)
+        if temp_version > 0:
+            version_name = temp_version_name
+            version = temp_version
+            option_manager.set_version(version)
+        log(f'Version: {version_name} - {version}')
 
     log("World scanned")
     return booleans

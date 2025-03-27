@@ -434,7 +434,8 @@ def action_update(): # Needs confirmation
     if update_progress["stage"] == 100:
         world_scan = finalize.scan_world(
             world,
-            resource_pack
+            resource_pack,
+            True
         )
         scan_again = False
         for key in world_scan:
@@ -454,7 +455,8 @@ def action_update(): # Needs confirmation
         if scan_again:
             world_scan = finalize.scan_world(
                 world,
-                resource_pack
+                resource_pack,
+                False
             )
             for key in world_scan:
                 progress_scan[key] = world_scan[key]
@@ -636,7 +638,8 @@ def next_update_progress_section():
 def action_scan_world():
     world_scan = finalize.scan_world(
         MINECRAFT_PATH / "saves" / option_manager.get_map_name(),
-        MINECRAFT_PATH / "resourcepacks" / option_manager.get_resource_pack()
+        MINECRAFT_PATH / "resourcepacks" / option_manager.get_resource_pack(),
+        True
     )
 
     if not world_scan["world"]:
