@@ -223,7 +223,7 @@ def conform_components(components: ItemComponents, version: int, issues: list[di
 
     # In 1.21.2, container locks got converted into item predicates
     # The raw character data of the custom name will be extracted out into the item name for comparison
-    if version <= 2101 and "minecraft:custom_name" in components:
+    if version <= 2101 and "minecraft:custom_name" in components and option_manager.FIXES["lock_fixer"]:
         components["minecraft:item_name"] = json_text_component.convert_lock_string(components["minecraft:custom_name"])
         if "minecraft:custom_data" not in components:
             components["minecraft:custom_data"] = {}
@@ -313,7 +313,7 @@ def conform_component(component: ItemComponent, version: int):
                             on_consume_effect["effects"][i] = ids.effect(on_consume_effect["effects"][i], version, [])
 
     if component.key == "minecraft:custom_name":
-        component.value = json_text_component.update(component.value, version, [], True)
+        component.value = json_text_component.update(component.value, version, [], {"mangled": True, "pack": False})
 
     if component.key == "minecraft:debug_stick_state":
         debug_stick_state: dict[str, str] = component.value
@@ -356,7 +356,7 @@ def conform_component(component: ItemComponent, version: int):
         component.value = conform_item_model_component(component.value)
 
     if component.key == "minecraft:item_name":
-        component.value = json_text_component.update(component.value, version, [], True)
+        component.value = json_text_component.update(component.value, version, [], {"mangled": True, "pack": False})
 
     if component.key == "minecraft:potion_contents":
         potion_contents = component.value
@@ -790,7 +790,8 @@ def extract(item_id: str, components: dict[str, Any] | None, nbt: dict[str, Any]
         
         if "Name" in display:
             components["minecraft:custom_name"] = display["Name"]
-            components["minecraft:item_name"] = json_text_component.convert_lock_string(display["Name"])
+            if option_manager.FIXES["lock_fixer"]:
+                components["minecraft:item_name"] = json_text_component.convert_lock_string(display["Name"])
         
         if "Lore" in display:
             components["minecraft:lore"] = display["Lore"]

@@ -1253,7 +1253,7 @@ def action_update_json_text_component():
             break
         print("")
         log(f'Old component: {test_component}')
-        log(f'New component: {json_text_component.update(test_component, option_manager.get_version(), [], False)}')
+        log(f'New component: {json_text_component.update(test_component, option_manager.get_version(), [], {"mangled": False, "pack": True})}')
         print("")
 
 def retrieve_file_path(message: str) -> Path | None:

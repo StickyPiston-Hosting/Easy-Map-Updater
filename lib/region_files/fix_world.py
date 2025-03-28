@@ -223,7 +223,7 @@ def fix_region_file(file_path: Path, source_file_path: Path, dimension: str):
 
                 if "LastOutput" in block_entity:
                     try:
-                        block_entity["LastOutput"] = NBT.TAG_String(json_text_component.update(block_entity["LastOutput"].value, pack_version, [], False))
+                        block_entity["LastOutput"] = json_text_component.update_from_lib_format(block_entity["LastOutput"], pack_version, [], False)
                     except Exception:
                         log(f"ERROR: An error occurred while updating a JSON text component: {block_entity["LastOutput"].value}")
                         utils.log_error()
@@ -426,14 +426,14 @@ def fix_block_entity(block_entity: NBT.TAG_Compound):
             fix_item(item, False)
 
     if "CustomName" in block_entity:
-        block_entity["CustomName"] = NBT.TAG_String(json_text_component.update(block_entity["CustomName"].value, pack_version, [], True))
+        block_entity["CustomName"] = json_text_component.update_from_lib_format(block_entity["CustomName"], pack_version, [], True)
 
     if "lock" in block_entity:
-        if pack_version <= 2101:
+        if pack_version <= 2101 and option_manager.FIXES["lock_fixer"]:
             if "components" in block_entity["lock"]:
                 components = block_entity["lock"]["components"]
                 if "minecraft:custom_name" in components:
-                    components["minecraft:item_name"] = NBT.TAG_String(json_text_component.convert_lock_string(components["minecraft:custom_name"].value))
+                    components["minecraft:item_name"] = json_text_component.convert_lock_string_from_lib_format(components["minecraft:custom_name"])
                     del components["minecraft:custom_name"]
                     flags["locked_containers"] = True
 
@@ -577,7 +577,7 @@ def fix_entity_recursive_passenger(entity: NBT.TAG_Compound, is_from_spawner: bo
     
     if entity_id == "minecraft:command_block_minecart":
         if "LastOutput" in entity:
-            entity["LastOutput"] = NBT.TAG_String(json_text_component.update(entity["LastOutput"].value, pack_version, [], False))
+            entity["LastOutput"] = json_text_component.update_from_lib_format(entity["LastOutput"], pack_version, [], False)
 
     if entity_id == "minecraft:item":
         if "Item" not in entity:
@@ -616,7 +616,7 @@ def fix_entity_recursive_passenger(entity: NBT.TAG_Compound, is_from_spawner: bo
             del entity["UUID"]
 
     if "CustomName" in entity:
-        entity["CustomName"] = NBT.TAG_String(json_text_component.update(entity["CustomName"].value, pack_version, [], True))
+        entity["CustomName"] = json_text_component.update_from_lib_format(entity["CustomName"], pack_version, [], True)
 
     if "Equipment" in entity:
         if "ArmorItems" not in entity or "HandItems" not in entity:
@@ -811,27 +811,27 @@ def fix_item(item: NBT.TAG_Compound, is_from_spawner: bool = False):
 
             # Handle custom name
             if "minecraft:custom_name" in item_components:
-                item_components["minecraft:custom_name"] = NBT.TAG_String(json_text_component.update(item_components["minecraft:custom_name"].value, pack_version, [], True))
+                item_components["minecraft:custom_name"] = json_text_component.update_from_lib_format(item_components["minecraft:custom_name"], pack_version, [], True)
 
                 # Handle lock logic
-                if pack_version <= 2101:
+                if pack_version <= 2101 and option_manager.FIXES["lock_fixer"]:
                     if "minecraft:custom_data" not in item_components:
                         item_components["minecraft:custom_data"] = NBT.TAG_Compound()
-                    item_components["minecraft:custom_data"]["emu_lock_name"] = NBT.TAG_String(item_components["minecraft:custom_name"].value)
-                    item_components["minecraft:item_name"] = NBT.TAG_String(json_text_component.convert_lock_string(item_components["minecraft:custom_name"].value))
+                    item_components["minecraft:custom_data"]["emu_lock_name"] = item_components["minecraft:custom_name"]
+                    item_components["minecraft:item_name"] = json_text_component.convert_lock_string_from_lib_format(item_components["minecraft:custom_name"])
 
             # Handle lore
             if "minecraft:lore" in item_components:
                 lore = item_components["minecraft:lore"]
                 for i in range(len(lore)):
-                    lore[i] = NBT.TAG_String(json_text_component.update(lore[i].value, pack_version, [], True))
+                    lore[i] = json_text_component.update_from_lib_format(lore[i], pack_version, [], True)
 
             # Handle written book pages
             if "minecraft:written_book_contents" in item_components:
                 if "pages" in item_components["minecraft:written_book_contents"]:
                     pages: NBT.TAG_List = item_components["minecraft:written_book_contents"]["pages"]
                     for i in range(len(pages)):
-                        pages[i] = NBT.TAG_String(json_text_component.update(pages[i].value, pack_version, [], False))
+                        pages[i] = json_text_component.update_from_lib_format(pages[i], pack_version, [], False)
 
             # Handle item model
             if pack_version <= 2103 and "minecraft:item_model" in item_components:

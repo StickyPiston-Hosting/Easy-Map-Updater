@@ -751,12 +751,19 @@ def edge_case_item_tag(parent: dict[str, Any], nbt: dict[str, Any], object_id: s
     return item_component.extract(object_id, parent["components"] if "components" in parent else {}, nbt, pack_version, issues)
 
 def edge_case_lock(nbt: str) -> dict:
-    lock_fixer.fix_locks()
-    return {
-        "components": {
-            "minecraft:item_name": json_text_component.convert_lock_string(nbt)
+    if option_manager.FIXES["lock_fixer"]:
+        lock_fixer.fix_locks()
+        return {
+            "components": {
+                "minecraft:item_name": json_text_component.convert_lock_string(nbt)
+            }
         }
-    }
+    else:
+        return {
+            "components": {
+                "minecraft:custom_name": nbt
+            }
+        }
 
 def edge_case_mooshroom_stew(parent: dict, pack_version: int, issues: list[dict[str, str | int]]):
     parent["stew_effects"] = TypeList([{}])
@@ -872,7 +879,7 @@ def edge_case_sign_text(parent: dict, issues: list[dict[str, str | int]]):
         if key in parent:
             if "messages" not in parent["front_text"]:
                 parent["front_text"]["messages"] = ['""', '""', '""', '""']
-            parent["front_text"]["messages"][i] = json_text_component.update(parent[key], pack_version, issues, False)
+            parent["front_text"]["messages"][i] = json_text_component.update(parent[key], pack_version, issues, {"mangled": False, "pack": False})
             del parent[key]
     if "Color" in parent:
         parent["front_text"]["color"] = parent["Color"]
@@ -1142,3 +1149,8 @@ def merge_nbt(base: dict, addition: dict) -> dict:
         else:
             base[key] = addition[key]
     return base
+
+
+
+def uuid_from_int_array(uuid: list[int]) -> TypeIntArray:
+    return TypeIntArray([TypeInt(uuid[i]) for i in range(3)])

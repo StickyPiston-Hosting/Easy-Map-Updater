@@ -80,7 +80,7 @@
             "index": 1,
             "branches": {
                 "add": {
-                    "mapping": ["carry", "carry", "carry", "json_text_component"]
+                    "mapping": ["carry", "carry", "carry", "json_text_component_packed"]
                 },
                 "get": {
                     "mapping": ["carry", "carry", "carry", "carry"]
@@ -99,7 +99,7 @@
                         },
                         "max": "color",
                         "name": {
-                            "mapping": ["carry", "carry", "carry", "carry", "json_text_component"]
+                            "mapping": ["carry", "carry", "carry", "carry", "json_text_component_packed"]
                         },
                         "players": {
                             "mapping": ["carry", "carry", "carry", "carry", "target_selector"]
@@ -1473,7 +1473,7 @@
                     "index": 2,
                     "branches": {
                         "add": {
-                            "mapping": ["carry", "carry", "carry", "carry", "scoreboard_objective_criteria", "json_text_component_merge"],
+                            "mapping": ["carry", "carry", "carry", "carry", "scoreboard_objective_criteria", "json_text_component_packed_merge"],
                             "legend": [0, 1, 2, 3, {"name": 3, "criteria": 4}, {"json_text_component": {"min": 5}}]
                         },
                         "list": {
@@ -1486,7 +1486,7 @@
                                     "mapping": ["carry", "carry", "carry", "carry", "carry", "carry"]
                                 },
                                 "displayname": {
-                                    "mapping": ["carry", "carry", "carry", "carry", "carry", "json_text_component_merge"],
+                                    "mapping": ["carry", "carry", "carry", "carry", "carry", "json_text_component_packed_merge"],
                                     "legend": [0, 1, 2, 3, 4, {"json_text_component": {"min": 5}}]
                                 },
                                 "numberformat": {
@@ -1496,7 +1496,7 @@
                                             "mapping": ["carry", "carry", "carry", "carry", "carry", "carry"]
                                         },
                                         "fixed": {
-                                            "mapping": ["carry", "carry", "carry", "carry", "carry", "carry", "json_text_component"]
+                                            "mapping": ["carry", "carry", "carry", "carry", "carry", "carry", "json_text_component_packed"]
                                         },
                                         "styled": "fixed"
                                     },
@@ -1530,7 +1530,7 @@
                             "index": 3,
                             "branches": {
                                 "name": {
-                                    "mapping": ["carry", "carry", "carry", "carry", "target_selector", "carry", "json_text_component"]
+                                    "mapping": ["carry", "carry", "carry", "carry", "target_selector", "carry", "json_text_component_packed"]
                                 },
                                 "numberformat": {
                                     "index": 6,
@@ -1539,7 +1539,7 @@
                                             "mapping": ["carry", "carry", "carry", "carry", "target_selector", "carry", "carry"]
                                         },
                                         "fixed": {
-                                            "mapping": ["carry", "carry", "carry", "carry", "target_selector", "carry", "carry", "json_text_component"]
+                                            "mapping": ["carry", "carry", "carry", "carry", "target_selector", "carry", "carry", "json_text_component_packed"]
                                         },
                                         "styled": "fixed"
                                     },
@@ -1572,7 +1572,7 @@
                     "index": 2,
                     "branches": {
                         "add": {
-                            "mapping": ["carry", "carry", "carry", "json_text_component"],
+                            "mapping": ["carry", "carry", "carry", "json_text_component_packed"],
                             "legend": ["team", 2, 3, 4]
                         },
                         "join": {
@@ -1651,7 +1651,7 @@
             "index": 1,
             "branches": {
                 "add": {
-                    "mapping": ["carry", "carry", "carry", "json_text_component"]
+                    "mapping": ["carry", "carry", "carry", "json_text_component_packed"]
                 },
                 "join": {
                     "mapping": ["carry", "carry", "carry", "target_selector"]
@@ -1713,7 +1713,7 @@
             "legend": [0, 1, {"join_text": {"min": 2}}]
         },
         "tellraw": {
-            "mapping": ["carry", "target_selector", "json_text_component"]
+            "mapping": ["carry", "target_selector", "json_text_component_packed"]
         },
         "tick": {
             "index": 1,
@@ -1751,7 +1751,7 @@
             "index": 2,
             "branches": {
                 "title": {
-                    "mapping": ["carry", "target_selector", "carry", "json_text_component"]
+                    "mapping": ["carry", "target_selector", "carry", "json_text_component_packed"]
                 },
                 "times": {
                     "mapping": ["carry", "target_selector", "carry", "carry", "carry", "carry"]
