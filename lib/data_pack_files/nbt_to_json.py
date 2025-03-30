@@ -230,6 +230,7 @@ def conform_item_components_to_json(components: dict[str, Any]) -> dict[str, Any
             "dispensable",
             "swappable",
             "damage_on_hurt",
+            "equip_on_interact",
         ]:
             if key in equippable:
                 equippable[key] = bool(equippable[key])
