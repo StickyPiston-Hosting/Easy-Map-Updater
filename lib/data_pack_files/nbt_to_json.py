@@ -273,6 +273,8 @@ def conform_item_components_to_json(components: dict[str, Any]) -> dict[str, Any
             for rule in components["minecraft:tool"]["rules"]:
                 if "correct_for_drops" in rule:
                     rule["correct_for_drops"] = bool(rule["correct_for_drops"])
+        if "can_destroy_blocks_in_creative" in components["minecraft:tool"]:
+            components["minecraft:tool"]["can_destroy_blocks_in_creative"] = bool(components["minecraft:tool"]["can_destroy_blocks_in_creative"])
 
     if "minecraft:use_remainder" in components:
         components["minecraft:use_remainder"] = conform_item_to_json(components["minecraft:use_remainder"])
