@@ -366,7 +366,10 @@
                     "rename": "body_armor_item",
                     "source": "item"
                 },
-                "ArmorDropChances": { "list": { "data_type": "float" } },
+                "ArmorDropChances": {
+                    "remove": true,
+                    "edge_case": "armor_drop_chances"
+                },
                 "ArmorItem": {
                     "rename": "body_armor_item",
                     "source": "item"
@@ -396,7 +399,10 @@
                 },
                 "BlockState": { "edge_case": "block_entity" },
                 "block_state": { "edge_case": "block_entity" },
-                "body_armor_drop_chance": { "data_type": "float" },
+                "body_armor_drop_chance": {
+                    "remove": true,
+                    "edge_case": "body_armor_drop_chance"
+                },
                 "body_armor_item": { "source": "item" },
                 "Color": {
                     "remove": true,
@@ -432,6 +438,17 @@
                 "DecorItem": {
                     "rename": "body_armor_item",
                     "source": "item"
+                },
+                "drop_chances": {
+                    "tags": {
+                        "body": { "data_type": "float" },
+                        "chest": { "data_type": "float" },
+                        "feet": { "data_type": "float" },
+                        "head": { "data_type": "float" },
+                        "legs": { "data_type": "float" },
+                        "mainhand": { "data_type": "float" },
+                        "offhand": { "data_type": "float" }
+                    }
                 },
                 "DropItem": { "data_type": "byte" },
                 "EffectId": {
@@ -488,7 +505,10 @@
                 },
                 "flower_pos": { "data_type": "int_array" },
                 "Fuse": { "edge_case": "fuse" },
-                "HandDropChances": { "list": { "data_type": "float" } },
+                "HandDropChances": {
+                    "remove": true,
+                    "edge_case": "hand_drop_chances"
+                },
                 "HandItems": { "list": { "source": "item" } },
                 "HivePos": {
                     "rename": "hive_pos",

@@ -532,6 +532,8 @@ def edge_case(parent: dict, nbt, case: str | dict[str, str], source: str, object
         case_type = case
 
     # Process NBT based on case
+    if case_type == "armor_drop_chances":
+        return edge_case_armor_drop_chances(parent)
     if case_type == "attribute_id":
         return edge_case_attribute_id(parent)
     if case_type == "banner_base":
@@ -540,6 +542,8 @@ def edge_case(parent: dict, nbt, case: str | dict[str, str], source: str, object
         return blocks.update_from_nbt(cast(blocks.BlockInputFromNBT, parent), pack_version, issues)
     if case_type == "boat_type":
         return edge_case_boat_type(parent)
+    if case_type == "body_armor_drop_chance":
+        return edge_case_body_armor_drop_chance(parent)
     if case_type == "can_place_on":
         return edge_case_can_place_on(nbt, issues)
     if case_type == "color":
@@ -554,6 +558,8 @@ def edge_case(parent: dict, nbt, case: str | dict[str, str], source: str, object
         return edge_case_equipment(parent, nbt, object_id, issues)
     if case_type == "fuse":
         return edge_case_fuse(parent, object_id)
+    if case_type == "hand_drop_chances":
+        return edge_case_hand_drop_chances(parent)
     if case_type == "item":
         return items.update_from_nbt(nbt, pack_version, issues)
     if case_type == "item_components":
@@ -588,6 +594,17 @@ def edge_case(parent: dict, nbt, case: str | dict[str, str], source: str, object
     if defaults.SEND_WARNINGS:
         log(f'WARNING: "{case_type}" case is not registered!')
     return nbt
+
+def edge_case_armor_drop_chances(parent: dict[str, Any]):
+    if "drop_chances" not in parent:
+        parent["drop_chances"] = {}
+
+    length = len(parent["ArmorDropChances"])
+
+    parent["drop_chances"]["feet"] = TypeFloat(parent["ArmorDropChances"][0]) if length >= 0 else TypeFloat(0.085)
+    parent["drop_chances"]["legs"] = TypeFloat(parent["ArmorDropChances"][1]) if length >= 1 else TypeFloat(0.085)
+    parent["drop_chances"]["chest"] = TypeFloat(parent["ArmorDropChances"][2]) if length >= 2 else TypeFloat(0.085)
+    parent["drop_chances"]["head"] = TypeFloat(parent["ArmorDropChances"][3]) if length >= 3 else TypeFloat(0.085)
 
 def edge_case_attribute_id(parent: dict[str, Any]):
     if "UUID" in parent:
@@ -639,6 +656,12 @@ def edge_case_boat_type(parent: dict[str, str]):
         id_array = tables.CHEST_BOAT_TYPES
         if boat_type in id_array:
             parent["id"] = id_array[boat_type]
+
+def edge_case_body_armor_drop_chance(parent: dict[str, Any]):
+    if "drop_chances" not in parent:
+        parent["drop_chances"] = {}
+
+    parent["drop_chances"]["body"] = TypeFloat(parent["body_armor_drop_chances"])
 
 def edge_case_can_place_on(nbt: list[str], issues: list[dict[str, str | int]]):
     new_list: list[str] = []
@@ -718,8 +741,8 @@ def edge_case_equipment(parent: dict, nbt: TypeList, object_id: str, issues: lis
         i: int = index[0]
         armor: str = index[1]
         if "id" in parent["ArmorItems"][i]:
-            if "Count" not in parent["ArmorItems"][i]:
-                parent["ArmorItems"][i]["Count"] = TypeByte(1)
+            if "count" not in parent["ArmorItems"][i]:
+                parent["ArmorItems"][i]["count"] = TypeInt(1)
             item_id: str = parent["ArmorItems"][i]["id"]
             for armor_test in ["boots", "leggings", "chestplate", "helmet"]:
                 if len(item_id) < len(armor_test):
@@ -742,6 +765,15 @@ def edge_case_fuse(parent: dict, object_id: str):
             del parent["Fuse"]
         if miscellaneous.namespace(object_id) == "minecraft:creeper":
             del parent["fuse"]
+
+def edge_case_hand_drop_chances(parent: dict[str, Any]):
+    if "drop_chances" not in parent:
+        parent["drop_chances"] = {}
+
+    length = len(parent["HandDropChances"])
+
+    parent["drop_chances"]["mainhand"] = TypeFloat(parent["HandDropChances"][0]) if length >= 0 else TypeFloat(0.085)
+    parent["drop_chances"]["offhand"] = TypeFloat(parent["HandDropChances"][1]) if length >= 1 else TypeFloat(0.085)
 
 def edge_case_item_components(nbt: dict[str, Any], version: int, issues: list[dict[str, str | int]]) -> dict[str, Any]:
     return item_component.conform_components(item_component.ItemComponents.unpack_from_dict(nbt, False), version, issues).pack_to_dict()
