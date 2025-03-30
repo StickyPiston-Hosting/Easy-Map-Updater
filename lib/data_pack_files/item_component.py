@@ -395,6 +395,12 @@ def conform_component(component: ItemComponent, version: int):
     if component.key == "minecraft:use_remainder":
         component.value = items.update_from_nbt(component.value, version, [])
 
+    if component.key == "minecraft:weapon":
+        weapon = component.value
+        if "damage_per_attack" in weapon:
+            weapon["item_damage_per_attack"] = weapon["damage_per_attack"]
+            del weapon["damage_per_attack"]
+
     if component.key == "minecraft:writable_book_content":
         writable_book_content = component.value
         if "pages" not in writable_book_content:
