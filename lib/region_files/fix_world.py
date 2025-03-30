@@ -618,51 +618,51 @@ def fix_entity_recursive_passenger(entity: NBT.TAG_Compound, is_from_spawner: bo
     if "CustomName" in entity:
         entity["CustomName"] = json_text_component.update_from_lib_format(entity["CustomName"], pack_version, [], True)
 
-    if "Equipment" in entity:
-        if "ArmorItems" not in entity or "HandItems" not in entity:
-            entity["ArmorItems"] = NBT.TAG_List(NBT.TAG_Compound)
-            entity["ArmorItems"].tags = [
-                entity["Equipment"][1],
-                entity["Equipment"][2],
-                entity["Equipment"][3],
-                entity["Equipment"][4]
-            ]
-            entity["HandItems"] = NBT.TAG_List(NBT.TAG_Compound)
-            entity["HandItems"].tags = [
-                entity["Equipment"][0],
-                NBT.TAG_Compound()
-            ]
+    # if "Equipment" in entity:
+    #     if "ArmorItems" not in entity or "HandItems" not in entity:
+    #         entity["ArmorItems"] = NBT.TAG_List(NBT.TAG_Compound)
+    #         entity["ArmorItems"].tags = [
+    #             entity["Equipment"][1],
+    #             entity["Equipment"][2],
+    #             entity["Equipment"][3],
+    #             entity["Equipment"][4]
+    #         ]
+    #         entity["HandItems"] = NBT.TAG_List(NBT.TAG_Compound)
+    #         entity["HandItems"].tags = [
+    #             entity["Equipment"][0],
+    #             NBT.TAG_Compound()
+    #         ]
 
-            if "DropChances" in entity:
+    #         if "DropChances" in entity:
 
-                entity["ArmorDropChances"] = NBT.TAG_List(NBT.TAG_Float)
-                entity["ArmorDropChances"].tags = [
-                    entity["DropChances"][1],
-                    entity["DropChances"][2],
-                    entity["DropChances"][3],
-                    entity["DropChances"][4]
-                ]
-                entity["HandDropChances"] = NBT.TAG_List(NBT.TAG_Float)
-                entity["HandDropChances"].tags = [
-                    entity["DropChances"][0],
-                    NBT.TAG_Float(0.085)
-                ]
+    #             entity["ArmorDropChances"] = NBT.TAG_List(NBT.TAG_Float)
+    #             entity["ArmorDropChances"].tags = [
+    #                 entity["DropChances"][1],
+    #                 entity["DropChances"][2],
+    #                 entity["DropChances"][3],
+    #                 entity["DropChances"][4]
+    #             ]
+    #             entity["HandDropChances"] = NBT.TAG_List(NBT.TAG_Float)
+    #             entity["HandDropChances"].tags = [
+    #                 entity["DropChances"][0],
+    #                 NBT.TAG_Float(0.085)
+    #             ]
 
-                del entity["DropChances"]
+    #             del entity["DropChances"]
 
-        else:
-            entity["ArmorItems"], entity["HandItems"] = entity["HandItems"], entity["ArmorItems"]
+    #     else:
+    #         entity["ArmorItems"], entity["HandItems"] = entity["HandItems"], entity["ArmorItems"]
 
-        del entity["Equipment"]
+    #     del entity["Equipment"]
 
-        # Fix 0 count items
-        for tag in ["ArmorItems", "HandItems"]:
-            for item in entity[tag]:
-                if "count" in item:
-                    if item["count"].value == 0:
-                        item["count"].value = 1
-                elif "id" in item:
-                    item["count"] = NBT.TAG_Byte(1)
+    #     # Fix 0 count items
+    #     for tag in ["ArmorItems", "HandItems"]:
+    #         for item in entity[tag]:
+    #             if "count" in item:
+    #                 if item["count"].value == 0:
+    #                     item["count"].value = 1
+    #             elif "id" in item:
+    #                 item["count"] = NBT.TAG_Byte(1)
 
 
     absorption_level = None

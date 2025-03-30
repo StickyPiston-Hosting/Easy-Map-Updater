@@ -550,7 +550,6 @@ def fix_helper_edge_case(argument_list: list[str], old_argument_list: list[str],
     if (
         option_manager.FIXES["command_helper"]["mitigate_block_update"] and
         pack_version <= 809 and
-        option_manager.FIXES["command_helper"]["clean_clone"] and
         argument_list[0] == "clone"
     ):
         return block_update_mitigator.handle_clean_clone(argument_list)

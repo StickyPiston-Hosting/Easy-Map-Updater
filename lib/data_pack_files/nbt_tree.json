@@ -374,7 +374,10 @@
                     "rename": "body_armor_item",
                     "source": "item"
                 },
-                "ArmorItems": { "list": { "source": "item" } },
+                "ArmorItems": {
+                    "remove": true,
+                    "edge_case": "armor_items"
+                },
                 "attributes": { "list": { "source": "attribute" } },
                 "Attributes": {
                     "rename": "attributes",
@@ -403,7 +406,10 @@
                     "remove": true,
                     "edge_case": "body_armor_drop_chance"
                 },
-                "body_armor_item": { "source": "item" },
+                "body_armor_item": {
+                    "remove": true,
+                    "edge_case": "body_armor_item"
+                },
                 "Color": {
                     "remove": true,
                     "edge_case": "color",
@@ -478,6 +484,17 @@
                     "list": { "source": "effect" }
                 },
                 "EnderItems": { "list": { "source": "item" } },
+                "equipment": {
+                    "tags": {
+                        "body": { "source": "item" },
+                        "chest": { "source": "item" },
+                        "feet": { "source": "item" },
+                        "head": { "source": "item" },
+                        "legs": { "source": "item" },
+                        "mainhand": { "source": "item" },
+                        "offhand": { "source": "item" }
+                    }
+                },
                 "Equipment": {
                     "remove": true,
                     "edge_case": "equipment"
@@ -509,7 +526,10 @@
                     "remove": true,
                     "edge_case": "hand_drop_chances"
                 },
-                "HandItems": { "list": { "source": "item" } },
+                "HandItems": {
+                    "remove": true,
+                    "edge_case": "hand_items"
+                },
                 "HivePos": {
                     "rename": "hive_pos",
                     "data_type": "carry",
@@ -615,6 +635,14 @@
                     "path": { "rename": [ "acceleration_power" ] }
                 },
                 "Rotation": { "list": { "data_type": "float" } },
+                "Saddle": {
+                    "remove": true,
+                    "edge_case": "saddle"
+                },
+                "SaddleItem": {
+                    "remove": true,
+                    "edge_case": "saddle_item"
+                },
                 "SelectedItem": { "source": "item" },
                 "ShotAtAngle": { "data_type": "byte" },
                 "ShotFromCrossbow": {

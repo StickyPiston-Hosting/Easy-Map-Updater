@@ -534,6 +534,8 @@ def edge_case(parent: dict, nbt, case: str | dict[str, str], source: str, object
     # Process NBT based on case
     if case_type == "armor_drop_chances":
         return edge_case_armor_drop_chances(parent)
+    if case_type == "armor_items":
+        return edge_case_armor_items(parent, object_id, issues)
     if case_type == "attribute_id":
         return edge_case_attribute_id(parent)
     if case_type == "banner_base":
@@ -544,6 +546,8 @@ def edge_case(parent: dict, nbt, case: str | dict[str, str], source: str, object
         return edge_case_boat_type(parent)
     if case_type == "body_armor_drop_chance":
         return edge_case_body_armor_drop_chance(parent)
+    if case_type == "body_armor_item":
+        return edge_case_body_armor_item(parent, object_id, issues)
     if case_type == "can_place_on":
         return edge_case_can_place_on(nbt, issues)
     if case_type == "color":
@@ -560,6 +564,8 @@ def edge_case(parent: dict, nbt, case: str | dict[str, str], source: str, object
         return edge_case_fuse(parent, object_id)
     if case_type == "hand_drop_chances":
         return edge_case_hand_drop_chances(parent)
+    if case_type == "hand_items":
+        return edge_case_hand_items(parent, object_id, issues)
     if case_type == "item":
         return items.update_from_nbt(nbt, pack_version, issues)
     if case_type == "item_components":
@@ -578,6 +584,10 @@ def edge_case(parent: dict, nbt, case: str | dict[str, str], source: str, object
         return edge_case_power(parent)
     if case_type == "recipes":
         return edge_case_recipes(nbt, issues)
+    if case_type == "saddle":
+        return edge_case_saddle(parent)
+    if case_type == "saddle_item":
+        return edge_case_saddle_item(parent, object_id, issues)
     if case_type == "shot_from_crossbow":
         return edge_case_shot_from_crossbow(parent)
     if case_type == "sign_text":
@@ -601,10 +611,25 @@ def edge_case_armor_drop_chances(parent: dict[str, Any]):
 
     length = len(parent["ArmorDropChances"])
 
-    parent["drop_chances"]["feet"] = TypeFloat(parent["ArmorDropChances"][0]) if length >= 0 else TypeFloat(0.085)
-    parent["drop_chances"]["legs"] = TypeFloat(parent["ArmorDropChances"][1]) if length >= 1 else TypeFloat(0.085)
-    parent["drop_chances"]["chest"] = TypeFloat(parent["ArmorDropChances"][2]) if length >= 2 else TypeFloat(0.085)
-    parent["drop_chances"]["head"] = TypeFloat(parent["ArmorDropChances"][3]) if length >= 3 else TypeFloat(0.085)
+    parent["drop_chances"]["feet"] = TypeFloat(parent["ArmorDropChances"][0]) if length > 0 else TypeFloat(0.085)
+    parent["drop_chances"]["legs"] = TypeFloat(parent["ArmorDropChances"][1]) if length > 1 else TypeFloat(0.085)
+    parent["drop_chances"]["chest"] = TypeFloat(parent["ArmorDropChances"][2]) if length > 2 else TypeFloat(0.085)
+    parent["drop_chances"]["head"] = TypeFloat(parent["ArmorDropChances"][3]) if length > 3 else TypeFloat(0.085)
+
+def edge_case_armor_items(parent: dict[str, Any], object_id: str, issues: list[dict[str, str | int]]):
+    if "equipment" not in parent:
+        parent["equipment"] = {}
+
+    length = len(parent["ArmorItems"])
+
+    if length > 0 and "id" in parent["ArmorItems"][0]:
+        parent["equipment"]["feet"] = get_source(parent, parent["ArmorItems"][0], "item", object_id, issues)
+    if length > 1 and "id" in parent["ArmorItems"][1]:
+        parent["equipment"]["legs"] = get_source(parent, parent["ArmorItems"][1], "item", object_id, issues)
+    if length > 2 and "id" in parent["ArmorItems"][2]:
+        parent["equipment"]["chest"] = get_source(parent, parent["ArmorItems"][2], "item", object_id, issues)
+    if length > 3 and "id" in parent["ArmorItems"][3]:
+        parent["equipment"]["head"] = get_source(parent, parent["ArmorItems"][3], "item", object_id, issues)
 
 def edge_case_attribute_id(parent: dict[str, Any]):
     if "UUID" in parent:
@@ -662,6 +687,12 @@ def edge_case_body_armor_drop_chance(parent: dict[str, Any]):
         parent["drop_chances"] = {}
 
     parent["drop_chances"]["body"] = TypeFloat(parent["body_armor_drop_chances"])
+
+def edge_case_body_armor_item(parent: dict[str, Any], object_id: str, issues: list[dict[str, str | int]]):
+    if "equipment" not in parent:
+        parent["equipment"] = {}
+
+    parent["equipment"]["body"] = get_source(parent, parent["body_armor_item"], "item", object_id, issues)
 
 def edge_case_can_place_on(nbt: list[str], issues: list[dict[str, str | int]]):
     new_list: list[str] = []
@@ -721,34 +752,36 @@ def edge_case_entity_id(parent: dict, nbt: str, object_id: str, issues: list[dic
     parent["SpawnData"]["entity"]["id"] = entities.update(nbt, pack_version, issues)
 
 def edge_case_equipment(parent: dict, nbt: TypeList, object_id: str, issues: list[dict[str, str | int]]):
-    parent["ArmorItems"] = TypeList([{},{},{},{}])
-    parent["HandItems"] = TypeList([{},{}])
+    if "equipment" not in parent:
+        parent["equipment"] = {}
+
     length = len(nbt)
-    if length >= 5:
-        parent["ArmorItems"][3] = get_source(parent, nbt[4], "item", object_id, issues)
-    if length >= 4:
-        parent["ArmorItems"][2] = get_source(parent, nbt[3], "item", object_id, issues)
-    if length >= 3:
-        parent["ArmorItems"][1] = get_source(parent, nbt[2], "item", object_id, issues)
-    if length >= 2:
-        parent["ArmorItems"][0] = get_source(parent, nbt[1], "item", object_id, issues)
-    if length >= 1:
-        parent["HandItems"][0]  = get_source(parent, nbt[0], "item", object_id, issues)
+
+    if length > 4 and "id" in nbt[4]:
+        parent["equipment"]["head"] = get_source(parent, nbt[4], "item", object_id, issues)
+    if length > 3 and "id" in nbt[3]:
+        parent["equipment"]["chest"] = get_source(parent, nbt[3], "item", object_id, issues)
+    if length > 2 and "id" in nbt[2]:
+        parent["equipment"]["legs"] = get_source(parent, nbt[2], "item", object_id, issues)
+    if length > 1 and "id" in nbt[1]:
+        parent["equipment"]["feet"] = get_source(parent, nbt[1], "item", object_id, issues)
+    if length > 0 and "id" in nbt[0]:
+        parent["equipment"]["mainhand"] = get_source(parent, nbt[0], "item", object_id, issues)
 
     # Fix false item rendering in 1.8
-    index: tuple[int, str]
-    for index in [(0, "boots"), (1, "leggings"), (2, "chestplate"), (3, "helmet")]:
-        i: int = index[0]
+    index: tuple[str, str]
+    for index in [("feet", "boots"), ("legs", "leggings"), ("chest", "chestplate"), ("head", "helmet")]:
+        slot: str = index[0]
         armor: str = index[1]
-        if "id" in parent["ArmorItems"][i]:
-            if "count" not in parent["ArmorItems"][i]:
-                parent["ArmorItems"][i]["count"] = TypeInt(1)
-            item_id: str = parent["ArmorItems"][i]["id"]
+        if slot in parent["equipment"] and "id" in parent["equipment"][slot]:
+            if "count" not in parent["equipment"][slot]:
+                parent["equipment"][slot]["count"] = TypeInt(1)
+            item_id: str = parent["equipment"][slot]["id"]
             for armor_test in ["boots", "leggings", "chestplate", "helmet"]:
                 if len(item_id) < len(armor_test):
                     continue
                 if item_id[-len(armor_test):] == armor_test:
-                    parent["ArmorItems"][i]["id"] = item_id[:-len(armor_test)] + armor
+                    parent["equipment"][slot]["id"] = item_id[:-len(armor_test)] + armor
                     break
 
 def edge_case_fuse(parent: dict, object_id: str):
@@ -772,8 +805,19 @@ def edge_case_hand_drop_chances(parent: dict[str, Any]):
 
     length = len(parent["HandDropChances"])
 
-    parent["drop_chances"]["mainhand"] = TypeFloat(parent["HandDropChances"][0]) if length >= 0 else TypeFloat(0.085)
-    parent["drop_chances"]["offhand"] = TypeFloat(parent["HandDropChances"][1]) if length >= 1 else TypeFloat(0.085)
+    parent["drop_chances"]["mainhand"] = TypeFloat(parent["HandDropChances"][0]) if length > 0 else TypeFloat(0.085)
+    parent["drop_chances"]["offhand"] = TypeFloat(parent["HandDropChances"][1]) if length > 1 else TypeFloat(0.085)
+
+def edge_case_hand_items(parent: dict[str, Any], object_id: str, issues: list[dict[str, str | int]]):
+    if "equipment" not in parent:
+        parent["equipment"] = {}
+
+    length = len(parent["HandItems"])
+
+    if length > 0 and "id" in parent["HandItems"][0]:
+        parent["equipment"]["mainhand"] = get_source(parent, parent["HandItems"][0], "item", object_id, issues)
+    if length > 1 and "id" in parent["HandItems"][1]:
+        parent["equipment"]["offhand"] = get_source(parent, parent["HandItems"][1], "item", object_id, issues)
 
 def edge_case_item_components(nbt: dict[str, Any], version: int, issues: list[dict[str, str | int]]) -> dict[str, Any]:
     return item_component.conform_components(item_component.ItemComponents.unpack_from_dict(nbt, False), version, issues).pack_to_dict()
@@ -863,6 +907,27 @@ def edge_case_recipes(nbt: list, issues: list[dict[str, str | int]]):
             else:
                 entry = "minecraft:stick"
         nbt[i] = items.update_from_command(cast(str, entry), pack_version, issues)
+
+def edge_case_saddle(parent: dict[str, Any]):
+    if not parent["Saddle"].value:
+        return
+
+    if "equipment" not in parent:
+        parent["equipment"] = {}
+    if "drop_chances" not in parent:
+        parent["drop_chances"] = {}
+    
+    parent["equipment"]["saddle"] = {"id": "minecraft:saddle", "count": TypeInt(1)}
+    parent["drop_chances"]["saddle"] = TypeFloat(2)
+
+def edge_case_saddle_item(parent: dict[str, Any], object_id: str, issues: list[dict[str, str | int]]):
+    if "equipment" not in parent:
+        parent["equipment"] = {}
+    if "drop_chances" not in parent:
+        parent["drop_chances"] = {}
+
+    parent["equipment"]["saddle"] = get_source(parent, parent["SaddleItem"], "item", object_id, issues)
+    parent["drop_chances"]["saddle"] = TypeFloat(2)
 
 def edge_case_shot_from_crossbow(parent: dict):
     if parent["ShotFromCrossbow"].value == 1:
