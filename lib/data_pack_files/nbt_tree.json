@@ -603,6 +603,7 @@
                         "RightLeg": { "list": { "data_type": "float" } }
                     }
                 },
+                "potion_duration_scale": { "data_type": "float" },
                 "Potion": {
                     "remove": true,
                     "edge_case": "potion",
