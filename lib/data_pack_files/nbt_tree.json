@@ -505,6 +505,11 @@
                     "data_type": "int",
                     "argument_type": "hangable_facing"
                 },
+                "fall_distance": { "data_type": "double" },
+                "FallDistance": {
+                    "rename": "fall_distance",
+                    "data_type": "double"
+                },
                 "FallHurtAmount": { "data_type": "float" },
                 "FallHurtMax": { "data_type": "int" },
                 "FireworksItem": { "source": "item" },
