@@ -440,6 +440,13 @@ def slot(name: str, version: int, issues: list[dict[str, str | int]]) -> str:
     if name in id_array:
         name = id_array[name]
 
+    # Change slot names for 1.21.5
+    id_array = {
+        "horse.saddle": "saddle"
+    }
+    if name in id_array:
+        name = id_array[name]
+
     return name
 
 def team_setting(name: str, version: int, issues: list[dict[str, str | int]]) -> str:
