@@ -159,7 +159,7 @@ def update_string(string: str):
             component["italic"] = nbt_tags.TypeByte(1)
         
         # Append to output list
-        components.append(section)
+        components.append(component)
 
         # Set first boolean
         after_first = True
