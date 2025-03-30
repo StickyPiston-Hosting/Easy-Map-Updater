@@ -602,6 +602,7 @@ ARGUMENT_FUNCTIONS: dict[str, tuple] = {
     "block_nbt": ( nbt_tags.update, "block" ),
     "block_nbt_from_path": ( nbt_tags_from_path.update, "block" ),
     "block_nbt_path": ( nbt_paths.update, "block" ),
+    "block_set": ( blocks.update_from_command_set, None ),
     "command": ( execute_command, None),
     "command_string": ( command_string, None ),
     "coordinate": ( miscellaneous.coordinate, None),

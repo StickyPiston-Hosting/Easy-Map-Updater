@@ -148,6 +148,17 @@
                                 "branches": {
                                     "filtered": {
                                         "mapping": ["carry", "carry", "dimension", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "carry", "dimension", "coordinate", "coordinate", "coordinate", "carry", "block", "carry"]
+                                    },
+                                    "strict": {
+                                        "index": 15,
+                                        "branches": {
+                                            "filtered": {
+                                                "mapping": ["carry", "carry", "dimension", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "carry", "dimension", "coordinate", "coordinate", "coordinate", "carry", "carry", "block", "carry"]
+                                            }
+                                        },
+                                        "else": {
+                                            "mapping": ["carry", "carry", "dimension", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "carry", "dimension", "coordinate", "coordinate", "coordinate", "carry", "carry", "carry"]
+                                        }
                                     }
                                 },
                                 "else": {
@@ -160,6 +171,17 @@
                             "branches": {
                                 "filtered": {
                                     "mapping": ["carry", "carry", "dimension", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "carry", "block", "carry"]
+                                },
+                                "strict": {
+                                    "index": 13,
+                                    "branches": {
+                                        "filtered": {
+                                            "mapping": ["carry", "carry", "dimension", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "carry", "carry", "block", "carry"]
+                                        }
+                                    },
+                                    "else": {
+                                        "mapping": ["carry", "carry", "dimension", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "carry", "carry", "carry"]
+                                    }
                                 }
                             },
                             "else": {
@@ -173,6 +195,17 @@
                     "branches": {
                         "filtered": {
                             "mapping": ["carry", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "carry", "block", "carry"]
+                        },
+                        "strict": {
+                            "index": 11,
+                            "branches": {
+                                "filtered": {
+                                    "mapping": ["carry", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "carry", "carry", "block", "carry"]
+                                }
+                            },
+                            "else": {
+                                "mapping": ["carry", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "carry", "carry", "carry"]
+                            }
                         }
                     },
                     "else": {
@@ -788,17 +821,17 @@
                     "replace": [
                         {
                             "is_nbt": 10,
-                            "mapping": ["carry", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "block", "fill_mode"],
+                            "mapping": ["carry", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "block_set", "fill_mode"],
                             "legend": [0, 1, 2, 3, 4, 5, 6, {"id": 7, "data_value": 8, "nbt": 10}, 9]
                         },
                         {
-                            "mapping": ["carry", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "block", "fill_mode", "block"],
+                            "mapping": ["carry", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "block_set", "fill_mode", "block"],
                             "legend": [0, 1, 2, 3, 4, 5, 6, {"id": 7, "data_value": 8}, 9, {"id": 10, "data_value": 11, "read": true}]
                         }
                     ]
                 },
                 "else": {
-                    "mapping": ["carry", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "block", "fill_mode"],
+                    "mapping": ["carry", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "block_set", "fill_mode"],
                     "legend": [0, 1, 2, 3, 4, 5, 6, {"id": 7, "data_value": 8, "nbt": 10}, 9]
                 }
             },
@@ -807,11 +840,11 @@
                 "index": 8,
                 "branches": {
                     "replace": {
-                        "mapping": ["carry", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "block", "fill_mode", "block"]
+                        "mapping": ["carry", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "block_set", "fill_mode", "block", "fill_mode"]
                     }
                 },
                 "else": {
-                    "mapping": ["carry", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "block", "fill_mode"]
+                    "mapping": ["carry", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate", "block_set", "fill_mode"]
                 }
             }
         ],
@@ -1348,7 +1381,7 @@
                     "mapping": ["carry", "carry", "carry", "coordinate", "coordinate", "coordinate"]
                 },
                 "template": {
-                    "mapping": ["carry", "carry", "carry", "coordinate", "coordinate", "coordinate", "carry", "carry", "carry", "carry"]
+                    "mapping": ["carry", "carry", "carry", "coordinate", "coordinate", "coordinate", "carry", "carry", "carry", "carry", "carry"]
                 }
             }
         },
@@ -1599,12 +1632,12 @@
         "setblock": [
             {
                 "version": {"max": 1202},
-                "mapping": ["carry", "coordinate", "coordinate", "coordinate", "block", "setblock_mode"],
+                "mapping": ["carry", "coordinate", "coordinate", "coordinate", "block_set", "setblock_mode"],
                 "legend": [0, 1, 2, 3, {"id": 4, "data_value": 5, "nbt": 7}, 6]
             },
             {
                 "version": {"min": 1300},
-                "mapping": ["carry", "coordinate", "coordinate", "coordinate", "block", "setblock_mode"]
+                "mapping": ["carry", "coordinate", "coordinate", "coordinate", "block_set", "setblock_mode"]
             }
         ],
         "setidletimeout": {

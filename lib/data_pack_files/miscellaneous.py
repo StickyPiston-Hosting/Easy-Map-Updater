@@ -247,7 +247,7 @@ def experience_value(value: str, version: int, issues: list[dict[str, str | int]
     return value
 
 def fill_mode(argument: str, version: int, issues: list[dict[str, str | int]]) -> str:
-    if argument not in ["destroy", "hollow", "keep", "outline", "replace"]:
+    if argument not in ["destroy", "hollow", "keep", "outline", "replace", "strict"]:
         return "replace"
     return argument
 
@@ -420,7 +420,7 @@ def scoreboard_range(argument: dict[str, str], version: int, issues: list[dict[s
     return f'{argument["lower"]}..{argument["upper"]}'
 
 def setblock_mode(argument: str, version: int, issues: list[dict[str, str | int]]) -> str:
-    if argument not in ["destroy", "keep", "replace"]:
+    if argument not in ["destroy", "keep", "replace", "strict"]:
         return "replace"
     return argument
 

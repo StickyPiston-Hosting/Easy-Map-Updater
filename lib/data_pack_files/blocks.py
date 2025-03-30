@@ -40,6 +40,26 @@ class BlockOutputFromCommand(TypedDict):
     block_states: dict[str, str]
     nbt: dict
 
+def update_from_command_set(block: str, version: int, issues: list[dict[str, str | int]]) -> str:
+    global pack_version
+    pack_version = version
+
+    block = update_from_command(block, version, issues)
+
+    # In 1.21.5, /setblock and /fill will not overwrite NBT data on blocks unless explicitly specified
+    if (
+        version <= 2104 and
+        not block.endswith("}")
+    ):
+        if "[" in block:
+            block_id = block[:block.find("[")]
+        else:
+            block_id = block
+        if block_id in tables.BLOCK_ENTITIES:
+            block += "{}"
+
+    return block
+
 def update_from_command(block: str | BlockInputFromCommand, version: int, issues: list[dict[str, str | int]]) -> str:
     global pack_version
     pack_version = version
