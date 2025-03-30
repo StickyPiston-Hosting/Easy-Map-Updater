@@ -91,8 +91,6 @@ def update_ingredient(ingredient: dict[str, Any] | str) -> str:
 
 def update_result(result: dict[str, Any] | str, recipe_type: str) -> dict[str, Any] | str:
     if isinstance(result, str):
-        if recipe_type == "minecraft:crafting_transmute":
-            return items.update_from_command(result, pack_version, [])
         result = {"id": result}
 
     if "item" in result:
