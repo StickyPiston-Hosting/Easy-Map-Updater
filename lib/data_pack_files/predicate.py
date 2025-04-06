@@ -239,6 +239,24 @@ def predicate_entity(contents: dict, version: int) -> dict:
         contents["type_specific"]["type"] = miscellaneous.namespace(contents["type_specific"]["type"])
         entity_type = contents["type_specific"]["type"]
 
+        type_specific_conversion = {
+            "minecraft:axolotl": "minecraft:axolotl/variant",
+            "minecraft:cat": "minecraft:cat/variant",
+            "minecraft:fox": "minecraft:fox/variant",
+            "minecraft:frog": "minecraft:frog/variant",
+            "minecraft:horse": "minecraft:horse/variant",
+            "minecraft:llama": "minecraft:llama/variant",
+            "minecraft:mooshroom": "minecraft:mooshroom/variant",
+            "minecraft:painting": "minecraft:painting/variant",
+            "minecraft:parrot": "minecraft:parrot/variant",
+            "minecraft:pig": "minecraft:pig/variant",
+            "minecraft:rabbit": "minecraft:rabbit/variant",
+            "minecraft:salmon": "minecraft:salmon/size",
+            "minecraft:tropical_fish": "minecraft:tropical_fish/pattern",
+            "minecraft:villager": "minecraft:villager/variant",
+            "minecraft:wolf": "minecraft:wolf/variant",
+        }
+
         if entity_type == "minecraft:boat":
             variant = contents["type_specific"]["variant"]
 
@@ -287,6 +305,34 @@ def predicate_entity(contents: dict, version: int) -> dict:
         elif entity_type == "minecraft:player":
             if "looking_at" in contents["type_specific"]:
                 contents["type_specific"]["looking_at"] = predicate_entity(contents["type_specific"]["looking_at"], version)
+
+        # Extract type specific check into an entity component
+        elif entity_type in type_specific_conversion:            
+            if "variant" in contents["type_specific"]:
+                if "components" not in contents:
+                    contents["components"] = {}
+
+                if isinstance(contents["type_specific"]["variant"], list):
+                    log(f"WARNING: type_specific: {entity_type} entity predicate variant is being condensed from a list to a single string")
+                    variant = contents["type_specific"]["variant"][0] if len(contents["type_specific"]["variant"]) > 0 else None
+                else:
+                    variant = contents["type_specific"]["variant"]
+
+                if variant is not None:
+                    contents["components"][type_specific_conversion[entity_type]] = variant
+
+            del contents["type_specific"]
+
+        if entity_type == "minecraft:sheep":
+            if "color" in contents["type_specific"]:
+                if "components" not in contents:
+                    contents["components"] = {}
+
+                contents["components"]["minecraft:sheep/color"] = contents["type_specific"]["color"]
+                del contents["type_specific"]["color"]
+
+                if "sheared" not in contents["type_specific"]:
+                    del contents["type_specific"]
 
     # Update entity types
     if "type" in contents:
