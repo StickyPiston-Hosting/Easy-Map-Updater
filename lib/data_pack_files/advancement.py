@@ -67,6 +67,13 @@ def advancement(contents: dict[str, Any], version: int) -> dict[str, Any]:
     if "display" in contents:
         display = contents["display"]
 
+        if "background" in display:
+            if version <= 2104:
+                if display["background"].startswith("texture/"):
+                    display["background"] = display["background"][8:]
+                if display["background"].endswith(".png"):
+                    display["background"] = display["background"][:-4]
+
         if "icon" in display:
             icon = display["icon"]
 
