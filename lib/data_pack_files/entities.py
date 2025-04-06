@@ -46,6 +46,7 @@ def update(entity: str | dict[str, str | bool], version: int, issues: list[dict[
         entity_id = entity
 
     boat_type: str | None = None
+    item_type: str | None = None
     if nbt != "":
         unpacked_nbt: dict = cast(dict, nbt_tags.unpack(nbt))
         
@@ -56,6 +57,10 @@ def update(entity: str | dict[str, str | bool], version: int, issues: list[dict[
         # Extract boat type if it is defined
         if "Type" in unpacked_nbt:
             boat_type = cast(str, unpacked_nbt["Type"])
+
+        # Extract item type if it is defined
+        if "Item" in unpacked_nbt and "id" in unpacked_nbt["Item"]:
+            item_type = miscellaneous.namespace(unpacked_nbt["Item"]["id"])
 
     entity_id = miscellaneous.namespace(entity_id)
 
@@ -95,6 +100,17 @@ def update(entity: str | dict[str, str | bool], version: int, issues: list[dict[
                 id_array = tables.CHEST_BOAT_TYPES
                 if boat_type in id_array:
                     entity_id = id_array[boat_type]
+
+    # In 1.21.5, potions were split into splash potions and lingering potions
+    if pack_version <= 2104 and entity_id == "minecraft:potion":
+        if read and item_type is None:
+            entity_id = "#tag_replacements:potion"
+            tag_replacements.create_pack(
+                easy_map_updater.MINECRAFT_PATH / "saves" / option_manager.get_map_name()
+            )
+
+        else:
+            entity_id = "minecraft:lingering_potion" if item_type == "minecraft:lingering_potion" else "minecraft:splash_potion"
 
     return entity_id.lower()
 

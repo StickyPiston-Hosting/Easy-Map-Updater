@@ -98,6 +98,10 @@ def update_arguments(selector: str, nbt: str, imposed_limit: bool, issues: list[
     if pack_version <= 2101 and "type" in selector_arguments:
         handle_boat_split(cast(dict, selector_arguments))
 
+    # Special handling for potion update in 1.21.5
+    if pack_version <= 2104 and "type" in selector_arguments:
+        handle_potion_split(cast(dict, selector_arguments))
+
     # Update arguments
     for argument_type in list(selector_arguments.keys()):
         update_argument(selector_type, selector_arguments, argument_type, selector_arguments[argument_type], issues)
@@ -461,6 +465,61 @@ def handle_boat_split(selector_arguments: dict[str, list[str]]):
     selector_arguments["type"].extend(added_entity_types)
 
     if create_chest_boat_tag:
+        tag_replacements.create_pack(
+            easy_map_updater.MINECRAFT_PATH / "saves" / option_manager.get_map_name()
+        )
+
+
+
+def handle_potion_split(selector_arguments: dict[str, list[str]]):
+    # Get list of all item types
+    item_type = ""
+    negated_item_types: list[str] = []
+    if "nbt" in selector_arguments:
+        for nbt_string in selector_arguments["nbt"]:
+            negated = nbt_string.startswith("!")
+            if negated:
+                nbt_string = nbt_string[1:]
+            unpacked_nbt = cast(dict[str, dict[str, str]], nbt_tags.unpack(nbt_string))
+            if "Item" in unpacked_nbt and "id" in unpacked_nbt["Item"]:
+                if negated:
+                    negated_item_types.append(miscellaneous.namespace(unpacked_nbt["Item"]["id"]))
+                else:
+                    item_type = miscellaneous.namespace(unpacked_nbt["Item"]["id"])
+
+    # Apply item type information to entity types
+    create_potion_tag = False
+    for i in range(len(selector_arguments["type"])):
+        entity_type = miscellaneous.namespace(selector_arguments["type"][i])
+        negated = entity_type.startswith("!")
+        if negated:
+            entity_type = entity_type[1:]
+        if entity_type != "minecraft:potion":
+            continue
+        if negated:
+            selector_arguments["type"][i] = "!#tag_replacements:potion"
+            create_potion_tag = True
+            continue
+
+        # If there is an explicit item type definition, the entity type will be set according to that
+        if item_type:
+            if item_type == "minecraft:lingering_potion":
+                selector_arguments["type"][i] = "minecraft:lingering_potion"
+            else:
+                selector_arguments["type"][i] = "minecraft:splash_potion"
+            continue
+
+        else:
+            if "minecraft:lingering_potion" in negated_item_types:
+                selector_arguments["type"][i] = "minecraft:splash_potion"
+            elif "minecraft:splash_potion" in negated_item_types:
+                selector_arguments["type"][i] = "minecraft:lingering_potion"
+            else:
+                selector_arguments["type"][i] = "#tag_replacements:potion"
+                create_potion_tag = True
+            continue
+
+    if create_potion_tag:
         tag_replacements.create_pack(
             easy_map_updater.MINECRAFT_PATH / "saves" / option_manager.get_map_name()
         )

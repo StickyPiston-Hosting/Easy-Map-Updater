@@ -275,6 +275,11 @@ def create_pack(world: Path):
         "minecraft:bamboo_chest_raft",
     ])
 
+    create_generic_tag(folder_path, "minecraft:potion", [
+        "minecraft:splash_potion",
+        "minecraft:lingering_potion",
+    ])
+
             
     log("Tag replacements data pack created")
 
