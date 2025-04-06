@@ -132,21 +132,6 @@ def convert_item_components_to_json(components: dict[str, Any]) -> dict[str, Any
 
 def conform_item_components_to_json(components: dict[str, Any]) -> dict[str, Any]:
 
-    # Handle show in tooltip
-    for component in [
-        "minecraft:attribute_modifiers",
-        "minecraft:can_break",
-        "minecraft:can_place_on",
-        "minecraft:dyed_color",
-        "minecraft:enchantments",
-        "minecraft:jukebox_playable",
-        "minecraft:stored_enchantments",
-        "minecraft:trim",
-        "minecraft:unbreakable",
-    ]:
-        if component in components and "show_in_tooltip" in components[component]:
-            components[component]["show_in_tooltip"] = bool(components[component]["show_in_tooltip"])
-
     # Handle item lists
     for component in [
         "minecraft:bundle_contents",

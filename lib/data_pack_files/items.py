@@ -437,8 +437,23 @@ def insert_old_adventure_mode_tags(components: item_component.ItemComponents, it
         can_break = nbt_tags.TypeList([{"blocks": "#adventure:mineable/universal"}])
 
     if len(can_place_on):
-        components["minecraft:can_place_on"] = {"predicates": can_place_on, "show_in_tooltip": nbt_tags.TypeByte(0)}
+        components["minecraft:can_place_on"] = can_place_on
+
+        if "minecraft:tooltip_display" not in components:
+            components["minecraft:tooltip_display"] = {}
+        tooltip_display = components["minecraft:tooltip_display"]
+        if "hidden_components" not in tooltip_display:
+            tooltip_display["hidden_components"] = nbt_tags.TypeList([])
+        tooltip_display["hidden_components"].append("minecraft:can_place_on")
+
     if len(can_break):
-        components["minecraft:can_break"] = {"predicates": can_break, "show_in_tooltip": nbt_tags.TypeByte(0)}
+        components["minecraft:can_break"] = can_break
+
+        if "minecraft:tooltip_display" not in components:
+            components["minecraft:tooltip_display"] = {}
+        tooltip_display = components["minecraft:tooltip_display"]
+        if "hidden_components" not in tooltip_display:
+            tooltip_display["hidden_components"] = nbt_tags.TypeList([])
+        tooltip_display["hidden_components"].append("minecraft:can_break")
 
     return components

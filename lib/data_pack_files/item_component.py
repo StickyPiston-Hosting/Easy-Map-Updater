@@ -171,6 +171,14 @@ class ItemComponents:
             if isinstance(component, ItemComponent) and component.key == key:
                 return True
         return False
+    
+    def __delitem__(self, key: str):
+        for i in range(len(self.components)):
+            component = self.components[i]
+            if isinstance(component, ItemComponent) and component.key == key:
+                del self.components[i]
+                return
+
 
 
 # Import more stuff to prevent circular loading issues
@@ -212,6 +220,74 @@ def conform_components(components: ItemComponents, version: int, issues: list[di
             del food["using_converts_to"]
 
 
+    # In 1.21.5, minecraft:hide_additional_tooltip, minecraft:hide_tooltip, and the show_in_tooltip were removed
+    if version <= 2104:
+        if "minecraft:hide_additional_tooltip" in components:
+            if "minecraft:tooltip_display" not in components:
+                components["minecraft:tooltip_display"] = {}
+            tooltip_display = components["minecraft:tooltip_display"]
+            if "hidden_components" not in tooltip_display:
+                tooltip_display["hidden_components"] = nbt_tags.TypeList([])
+
+            for component_id in [
+                "minecraft:banner_patterns",
+                "minecraft:bees",
+                "minecraft:block_entity_data",
+                "minecraft:block_state",
+                "minecraft:bundle_contents",
+                "minecraft:charged_projectiles",
+                "minecraft:container",
+                "minecraft:container_loot",
+                "minecraft:firework_explosion",
+                "minecraft:fireworks",
+                "minecraft:instrument",
+                "minecraft:map_id",
+                "minecraft:painting/variant",
+                "minecraft:pot_decorations",
+                "minecraft:potion_contents",
+                "minecraft:tropical_fish/pattern",
+                "minecraft:written_book_content",
+            ]:
+                if component_id in components:
+                    tooltip_display["hidden_components"].append(component_id)
+            del components["minecraft:hide_additional_tooltip"]
+
+        if "minecraft:hide_tooltip" in components:
+            if "minecraft:tooltip_display" not in components:
+                components["minecraft:tooltip_display"] = {}
+            components["minecraft:tooltip_display"]["hide_tooltip"] = nbt_tags.TypeByte(1)
+            del components["minecraft:hide_tooltip"]
+
+        for component_id in [
+            "minecraft:attribute_modifiers",
+            "minecraft:dyed_color",
+            "minecraft:can_place_on",
+            "minecraft:can_break",
+            "minecraft:enchantments",
+            "minecraft:stored_enchantments",
+            "minecraft:jukebox_playable",
+            "minecraft:trim",
+            "minecraft:unbreakable",
+        ]:
+            if component_id not in components:
+                continue
+            component = components[component_id]
+            if not isinstance(component, dict):
+                continue
+            if "show_in_tooltip" in component:
+                if component["show_in_tooltip"].value == 0:
+                    if "minecraft:tooltip_display" not in components:
+                        components["minecraft:tooltip_display"] = {}
+                    tooltip_display = components["minecraft:tooltip_display"]
+                    if "hidden_components" not in tooltip_display:
+                        tooltip_display["hidden_components"] = nbt_tags.TypeList([])
+                    
+                    tooltip_display["hidden_components"].append(component_id)
+                
+                del component["show_in_tooltip"]
+
+
+
     # Adjust formatting of components
     for component in components.components:
         if isinstance(component, ItemComponent):
@@ -247,9 +323,9 @@ def conform_component(component: ItemComponent, version: int):
 
     if component.key == "minecraft:attribute_modifiers":
         attribute_modifiers = component.value
-        if not isinstance(attribute_modifiers, dict):
-            attribute_modifiers = {"modifiers": attribute_modifiers}
-        for attribute_modifier in attribute_modifiers["modifiers"]:
+        if isinstance(attribute_modifiers, dict) and "modifiers" in attribute_modifiers:
+            attribute_modifiers = attribute_modifiers["modifiers"]
+        for attribute_modifier in attribute_modifiers:
             if "type" in attribute_modifier:
                 attribute_modifier["type"] = miscellaneous.attribute(attribute_modifier["type"], version, [])
             if "name" in attribute_modifier:
@@ -262,37 +338,43 @@ def conform_component(component: ItemComponent, version: int):
         component.value = attribute_modifiers
 
     if component.key == "minecraft:can_break":
-        can_break: dict[str, Any] = component.value
-        if "predicates" not in can_break and "show_in_tooltip" not in can_break:
-            can_break = {"predicates": nbt_tags.TypeList([can_break])}
-        if "predicates" in can_break:
-            for predicate in cast(nbt_tags.TypeList, can_break["predicates"]):
-                if "blocks" in predicate:
-                    if isinstance(predicate["blocks"], nbt_tags.TypeList):
-                        if len(predicate["blocks"]) == 1:
-                            predicate["blocks"] = blocks.update_from_command(predicate["blocks"][0], version, [])
-                        else:
-                            for i in range(len(predicate["blocks"])):
-                                predicate["blocks"][i] = blocks.update_from_command(predicate["blocks"][i], version, [])
+        can_break: dict[str, Any] | nbt_tags.TypeList = component.value
+        if isinstance(can_break, dict) and "predicates" in can_break:
+            can_break = can_break["predicates"]
+        if isinstance(can_break, dict):
+            can_break = nbt_tags.TypeList([can_break])
+        for predicate in cast(nbt_tags.TypeList, can_break):
+            if "blocks" in predicate:
+                if isinstance(predicate["blocks"], nbt_tags.TypeList):
+                    if len(predicate["blocks"]) == 1:
+                        predicate["blocks"] = blocks.update_from_command(predicate["blocks"][0], version, [])
                     else:
-                        predicate["blocks"] = blocks.update_from_command(predicate["blocks"], version, [])
+                        for i in range(len(predicate["blocks"])):
+                            predicate["blocks"][i] = blocks.update_from_command(predicate["blocks"][i], version, [])
+                else:
+                    predicate["blocks"] = blocks.update_from_command(predicate["blocks"], version, [])
+        if len(can_break) == 1:
+            can_break = can_break[0]
         component.value = can_break
 
     if component.key == "minecraft:can_place_on":
-        can_place_on: dict[str, Any] = component.value
-        if "predicates" not in can_place_on and "show_in_tooltip" not in can_place_on:
-            can_place_on = {"predicates": nbt_tags.TypeList([can_place_on])}
-        if "predicates" in can_place_on:
-            for predicate in cast(nbt_tags.TypeList, can_place_on["predicates"]):
-                if "blocks" in predicate:
-                    if isinstance(predicate["blocks"], nbt_tags.TypeList):
-                        if len(predicate["blocks"]) == 1:
-                            predicate["blocks"] = blocks.update_from_command(predicate["blocks"][0], version, [])
-                        else:
-                            for i in range(len(predicate["blocks"])):
-                                predicate["blocks"][i] = blocks.update_from_command(predicate["blocks"][i], version, [])
+        can_place_on: dict[str, Any] | nbt_tags.TypeList = component.value
+        if isinstance(can_place_on, dict) and "predicates" in can_place_on:
+            can_place_on = can_place_on["predicates"]
+        if isinstance(can_place_on, dict):
+            can_place_on = nbt_tags.TypeList([can_place_on])
+        for predicate in cast(nbt_tags.TypeList, can_place_on):
+            if "blocks" in predicate:
+                if isinstance(predicate["blocks"], nbt_tags.TypeList):
+                    if len(predicate["blocks"]) == 1:
+                        predicate["blocks"] = blocks.update_from_command(predicate["blocks"][0], version, [])
                     else:
-                        predicate["blocks"] = blocks.update_from_command(predicate["blocks"], version, [])
+                        for i in range(len(predicate["blocks"])):
+                            predicate["blocks"][i] = blocks.update_from_command(predicate["blocks"][i], version, [])
+                else:
+                    predicate["blocks"] = blocks.update_from_command(predicate["blocks"], version, [])
+        if len(can_place_on) == 1:
+            can_place_on = can_place_on[0]
         component.value = can_place_on
 
     if component.key == "minecraft:consumable":
@@ -325,22 +407,21 @@ def conform_component(component: ItemComponent, version: int):
 
     if component.key == "minecraft:dyed_color":
         dyed_color = component.value
-        if not isinstance(dyed_color, dict):
-            dyed_color = {"rgb": dyed_color}
+        if isinstance(dyed_color, dict) and "rgb" in dyed_color:
+            dyed_color = dyed_color["rgb"]
         component.value = dyed_color
 
     if component.key == "minecraft:enchantments":
         enchantments: dict[str, Any] = component.value
-        if "levels" not in enchantments and "show_in_tooltip" not in enchantments:
-            enchantments = {"levels": enchantments}
         if "levels" in enchantments:
-            levels = enchantments["levels"]
-            for enchantment in list(levels.keys()):
-                updated_enchantment = ids.enchantment(enchantment, version, [])
-                if enchantment != updated_enchantment:
-                    levels[updated_enchantment] = levels[enchantment]
-                    del levels[enchantment]
-                levels[updated_enchantment] = nbt_tags.TypeInt(min(max(levels[updated_enchantment].value, 0), 255))
+            enchantments = enchantments["levels"]
+        
+        for enchantment in list(enchantments.keys()):
+            updated_enchantment = ids.enchantment(enchantment, version, [])
+            if enchantment != updated_enchantment:
+                enchantments[updated_enchantment] = enchantments[enchantment]
+                del enchantments[enchantment]
+            enchantments[updated_enchantment] = nbt_tags.TypeInt(min(max(enchantments[updated_enchantment].value, 0), 255))
         component.value = enchantments
 
     if component.key == "minecraft:equippable":
@@ -375,21 +456,21 @@ def conform_component(component: ItemComponent, version: int):
         if "items" in repairable:
             if isinstance(repairable["items"], nbt_tags.TypeList):
                 for i in range(len(repairable["items"])):
-                    repairable["items"][i] = items.update_from_command(repairable["items"][i], version, [])
+                    cast(nbt_tags.TypeList, repairable["items"])[i] = items.update_from_command(repairable["items"][i], version, [])
             else:
-                repairable["items"] = items.update_from_command(repairable["items"], version, [])
+                repairable["items"] = items.update_from_command(cast(str, repairable["items"]), version, [])
 
     if component.key == "minecraft:stored_enchantments":
         stored_enchantments: dict[str, Any] = component.value
-        if "levels" not in stored_enchantments and "show_in_tooltip" not in stored_enchantments:
-            stored_enchantments = {"levels": stored_enchantments}
         if "levels" in stored_enchantments:
-            levels = stored_enchantments["levels"]
-            for stored_enchantment in list(levels.keys()):
-                updated_stored_enchantment = ids.enchantment(stored_enchantment, version, [])
-                if stored_enchantment != updated_stored_enchantment:
-                    levels[updated_stored_enchantment] = levels[stored_enchantment]
-                    del levels[stored_enchantment]
+            stored_enchantments = stored_enchantments["levels"]
+        
+        for enchantment in list(stored_enchantments.keys()):
+            updated_enchantment = ids.enchantment(enchantment, version, [])
+            if enchantment != updated_enchantment:
+                stored_enchantments[updated_enchantment] = stored_enchantments[enchantment]
+                del stored_enchantments[enchantment]
+            stored_enchantments[updated_enchantment] = nbt_tags.TypeInt(min(max(stored_enchantments[updated_enchantment].value, 0), 255))
         component.value = stored_enchantments
 
     if component.key == "minecraft:use_remainder":
@@ -480,10 +561,8 @@ def extract(item_id: str, components: dict[str, Any] | None, nbt: dict[str, Any]
 
     if "AttributeModifiers" in nbt:
         if "minecraft:attribute_modifiers" not in components:
-            components["minecraft:attribute_modifiers"] = {}
+            components["minecraft:attribute_modifiers"] = nbt_tags.TypeList([])
         attribute_modifiers = components["minecraft:attribute_modifiers"]
-        if "modifiers" not in attribute_modifiers:
-            attribute_modifiers["modifiers"] = nbt_tags.TypeList([])
         for attribute_modifier in nbt["AttributeModifiers"]:
             attribute = {}
             if "AttributeName" in attribute_modifier:
@@ -505,7 +584,7 @@ def extract(item_id: str, components: dict[str, Any] | None, nbt: dict[str, Any]
             for key in ["id", "operation", "amount"]:
                 if key in attribute_modifier:
                     attribute[key] = attribute_modifier[key]
-            attribute_modifiers["modifiers"].append(attribute)
+            attribute_modifiers.append(attribute)
         del nbt["AttributeModifiers"]
 
     if "author" in nbt:
@@ -646,58 +725,50 @@ def extract(item_id: str, components: dict[str, Any] | None, nbt: dict[str, Any]
 
     if "CanDestroy" in nbt:
         if "minecraft:can_break" not in components:
-            components["minecraft:can_break"] = {}
+            components["minecraft:can_break"] = nbt_tags.TypeList([{"blocks": nbt_tags.TypeList([])}])
         can_break = components["minecraft:can_break"]
-        if "predicates" not in can_break:
-            can_break["predicates"] = nbt_tags.TypeList([])
-        predicates: list[dict[str, Any]] = [{"blocks": nbt_tags.TypeList([])}]
         block: str
         for block in nbt["CanDestroy"]:
             if block.startswith("#"):
-                predicates.append({"blocks": block})
+                can_break.append({"blocks": block})
             else:
                 if "[" in block:
-                    predicates.append({
+                    can_break.append({
                         "blocks": block[:block.find("[")],
                         "state": blocks.unpack_block_states(block[block.find("["):])
                     })
                 else:
-                    predicates[0]["blocks"].append(block)
-        if len(predicates[0]["blocks"]) == 0:
-            predicates.pop(0)
-        elif len(predicates[0]["blocks"]) == 1:
-            predicates[0]["blocks"] = predicates[0]["blocks"][0]
-        can_break["predicates"].extend(predicates)
-        if len(can_break["predicates"]) == 0:
-            can_break["predicates"].append({})
+                    can_break[0]["blocks"].append(block)
+        if len(can_break[0]["blocks"]) == 0:
+            can_break.pop(0)
+        elif len(can_break[0]["blocks"]) == 1:
+            can_break[0]["blocks"] = can_break[0]["blocks"][0]
+        if len(can_break) == 1:
+            can_break = can_break[0]
         del nbt["CanDestroy"]
 
     if "CanPlaceOn" in nbt:
         if "minecraft:can_place_on" not in components:
-            components["minecraft:can_place_on"] = {}
+            components["minecraft:can_place_on"] = nbt_tags.TypeList([{"blocks": nbt_tags.TypeList([])}])
         can_place_on = components["minecraft:can_place_on"]
-        if "predicates" not in can_place_on:
-            can_place_on["predicates"] = nbt_tags.TypeList([])
-        predicates = [{"blocks": nbt_tags.TypeList([])}]
         block: str
         for block in nbt["CanPlaceOn"]:
             if block.startswith("#"):
-                predicates.append({"blocks": block})
+                can_place_on.append({"blocks": block})
             else:
                 if "[" in block:
-                    predicates.append({
+                    can_place_on.append({
                         "blocks": block[:block.find("[")],
                         "state": blocks.unpack_block_states(block[block.find("["):])
                     })
                 else:
-                    predicates[0]["blocks"].append(block)
-        if len(predicates[0]["blocks"]) == 0:
-            predicates.pop(0)
-        elif len(predicates[0]["blocks"]) == 1:
-            predicates[0]["blocks"] = predicates[0]["blocks"][0]
-        can_place_on["predicates"].extend(predicates)
-        if len(can_place_on["predicates"]) == 0:
-            can_place_on["predicates"].append({})
+                    can_place_on[0]["blocks"].append(block)
+        if len(can_place_on[0]["blocks"]) == 0:
+            can_place_on.pop(0)
+        elif len(can_place_on[0]["blocks"]) == 1:
+            can_place_on[0]["blocks"] = can_place_on[0]["blocks"][0]
+        if len(can_place_on) == 1:
+            can_place_on = can_place_on[0]
         del nbt["CanPlaceOn"]
 
     if "Charged" in nbt:
@@ -803,9 +874,7 @@ def extract(item_id: str, components: dict[str, Any] | None, nbt: dict[str, Any]
             components["minecraft:lore"] = display["Lore"]
 
         if "color" in display:
-            if "minecraft:dyed_color" not in components:
-                components["minecraft:dyed_color"] = {}
-            components["minecraft:dyed_color"]["rgb"] = nbt_tags.TypeInt(display["color"])
+            components["minecraft:dyed_color"] = nbt_tags.TypeInt(display["color"])
 
         if "MapColor" in display:
             components["minecraft:map_color"] = nbt_tags.TypeInt(display["MapColor"])
@@ -822,18 +891,14 @@ def extract(item_id: str, components: dict[str, Any] | None, nbt: dict[str, Any]
         if "minecraft:enchantments" not in components:
             components["minecraft:enchantments"] = {}
         enchantments = components["minecraft:enchantments"]
-        if "levels" not in enchantments:
-            enchantments["levels"] = {}
         for enchantment in nbt["Enchantments"]:
             if "id" in enchantment:
                 if "lvl" in enchantment:
-                    enchantments["levels"][miscellaneous.namespace(enchantment["id"])] = nbt_tags.TypeInt(enchantment["lvl"])
+                    enchantments[miscellaneous.namespace(enchantment["id"])] = nbt_tags.TypeInt(enchantment["lvl"])
                 else:
-                    enchantments["levels"][miscellaneous.namespace(enchantment["id"])] = nbt_tags.TypeInt(0)
-        if not enchantments["levels"]:
+                    enchantments[miscellaneous.namespace(enchantment["id"])] = nbt_tags.TypeInt(0)
+        if len(enchantments) == 0:
             components["minecraft:enchantment_glint_override"] = nbt_tags.TypeByte(1)
-            del enchantments["levels"]
-        if not enchantments:
             del components["minecraft:enchantments"]
         del nbt["Enchantments"]
 
@@ -1084,14 +1149,15 @@ def extract(item_id: str, components: dict[str, Any] | None, nbt: dict[str, Any]
         if "minecraft:stored_enchantments" not in components:
             components["minecraft:stored_enchantments"] = {}
         stored_enchantments = components["minecraft:stored_enchantments"]
-        if "levels" not in stored_enchantments:
-            stored_enchantments["levels"] = {}
         for stored_enchantment in nbt["StoredEnchantments"]:
             if "id" in stored_enchantment:
                 if "lvl" in stored_enchantment:
-                    stored_enchantments["levels"][miscellaneous.namespace(stored_enchantment["id"])] = nbt_tags.TypeInt(stored_enchantment["lvl"])
+                    stored_enchantments[miscellaneous.namespace(stored_enchantment["id"])] = nbt_tags.TypeInt(stored_enchantment["lvl"])
                 else:
-                    stored_enchantments["levels"][miscellaneous.namespace(stored_enchantment["id"])] = nbt_tags.TypeInt(0)
+                    stored_enchantments[miscellaneous.namespace(stored_enchantment["id"])] = nbt_tags.TypeInt(0)
+        if len(stored_enchantments) == 0:
+            components["minecraft:enchantment_glint_override"] = nbt_tags.TypeByte(1)
+            del components["minecraft:stored_enchantments"]
         del nbt["StoredEnchantments"]
 
     if "title" in nbt:
@@ -1123,25 +1189,52 @@ def extract(item_id: str, components: dict[str, Any] | None, nbt: dict[str, Any]
         del nbt["Variant"]
 
     if "HideFlags" in nbt:
-        if nbt["HideFlags"].value%2 == 1 and "minecraft:enchantments" in components:
-            components["minecraft:enchantments"]["show_in_tooltip"] = nbt_tags.TypeByte(0)
-        if nbt["HideFlags"].value//2%2 == 1 and "minecraft:minecraft:attribute_modifiers" in components:
-            components["minecraft:minecraft:attribute_modifiers"]["show_in_tooltip"] = nbt_tags.TypeByte(0)
-        if nbt["HideFlags"].value//4%2 == 1 and "minecraft:unbreakable" in components:
-            components["minecraft:unbreakable"]["show_in_tooltip"] = nbt_tags.TypeByte(0)
-        if nbt["HideFlags"].value//8%2 == 1 and "minecraft:can_break" in components:
-            components["minecraft:can_break"]["show_in_tooltip"] = nbt_tags.TypeByte(0)
-        if nbt["HideFlags"].value//16%2 == 1 and "minecraft:can_place_on" in components:
-            components["minecraft:can_place_on"]["show_in_tooltip"] = nbt_tags.TypeByte(0)
+        if "minecraft:tooltip_display" not in components:
+            components["minecraft:tooltip_display"] = {}
+        tooltip_display = components["minecraft:tooltip_display"]
+        if "hidden_components" not in tooltip_display:
+            tooltip_display["hidden_components"] = nbt_tags.TypeList([])
+        hidden_components = cast(nbt_tags.TypeList, tooltip_display["hidden_components"])
+
+        if nbt["HideFlags"].value%2 == 1:
+            hidden_components.append("minecraft:enchantments")
+        if nbt["HideFlags"].value//2%2 == 1:
+            hidden_components.append("minecraft:attribute_modifiers")
+        if nbt["HideFlags"].value//4%2 == 1:
+            hidden_components.append("minecraft:unbreakable")
+        if nbt["HideFlags"].value//8%2 == 1:
+            hidden_components.append("minecraft:can_break")
+        if nbt["HideFlags"].value//16%2 == 1:
+            hidden_components.append("minecraft:can_place_on")
         if nbt["HideFlags"].value//32%2 == 1:
-            if "minecraft:stored_enchantments" in components:
-                components["minecraft:stored_enchantments"]["show_in_tooltip"] = nbt_tags.TypeByte(0)
-            if "minecraft:hide_additional_tooltip" not in components:
-                components["minecraft:hide_additional_tooltip"] = {}
-        if nbt["HideFlags"].value//64%2 == 1 and "minecraft:dyed_color" in components:
-            components["minecraft:dyed_color"]["show_in_tooltip"] = nbt_tags.TypeByte(0)
-        if nbt["HideFlags"].value//128%2 == 1 and "minecraft:trim" in components:
-            components["minecraft:trim"]["show_in_tooltip"] = nbt_tags.TypeByte(0)
+            hidden_components.append("minecraft:stored_enchantments")
+
+            for component_id in [
+                "minecraft:banner_patterns",
+                "minecraft:bees",
+                "minecraft:block_entity_data",
+                "minecraft:block_state",
+                "minecraft:bundle_contents",
+                "minecraft:charged_projectiles",
+                "minecraft:container",
+                "minecraft:container_loot",
+                "minecraft:firework_explosion",
+                "minecraft:fireworks",
+                "minecraft:instrument",
+                "minecraft:map_id",
+                "minecraft:painting/variant",
+                "minecraft:pot_decorations",
+                "minecraft:potion_contents",
+                "minecraft:tropical_fish/pattern",
+                "minecraft:written_book_content",
+            ]:
+                if component_id in components:
+                    hidden_components.append(component_id)
+
+        if nbt["HideFlags"].value//64%2 == 1:
+            hidden_components.append("minecraft:dyed_color")
+        if nbt["HideFlags"].value//128%2 == 1:
+            hidden_components.append("minecraft:trim")
         del nbt["HideFlags"]
 
     if nbt:
@@ -1175,24 +1268,24 @@ def update_path(path_parts: list[str], version: int, issues: list[dict[str, str 
 
     if path_parts[1] == "AttributeModifiers":
         if len(path_parts) == 2:
-            return ["components", "minecraft:attribute_modifiers", "modifiers"]
+            return ["components", "minecraft:attribute_modifiers"]
         if len(path_parts) == 3:
-            return ["components", "minecraft:attribute_modifiers", "modifiers", path_parts[2]]
+            return ["components", "minecraft:attribute_modifiers", path_parts[2]]
         if path_parts[3] == "AttributeName":
-            return ["components", "minecraft:attribute_modifiers", "modifiers", path_parts[2], "type"]
+            return ["components", "minecraft:attribute_modifiers", path_parts[2], "type"]
         if path_parts[3] == "Slot":
-            return ["components", "minecraft:attribute_modifiers", "modifiers", path_parts[2], "slot"]
+            return ["components", "minecraft:attribute_modifiers", path_parts[2], "slot"]
         if path_parts[3] == "UUID":
-            return ["components", "minecraft:attribute_modifiers", "modifiers", path_parts[2], "uuid"] + path_parts[4:]
+            return ["components", "minecraft:attribute_modifiers", path_parts[2], "uuid"] + path_parts[4:]
         if path_parts[3] == "Name":
-            return ["components", "minecraft:attribute_modifiers", "modifiers", path_parts[2], "name"]
+            return ["components", "minecraft:attribute_modifiers", path_parts[2], "name"]
         if path_parts[3] == "Operation":
-            return ["components", "minecraft:attribute_modifiers", "modifiers", path_parts[2], "operation"]
+            return ["components", "minecraft:attribute_modifiers", path_parts[2], "operation"]
         if path_parts[3] == "Amount":
-            return ["components", "minecraft:attribute_modifiers", "modifiers", path_parts[2], "amount"]
+            return ["components", "minecraft:attribute_modifiers", path_parts[2], "amount"]
         if defaults.SEND_WARNINGS:
             log(f'WARNING: Invalid child of item tag "AttributeModifiers{path_parts[2]}": {path_parts[3]}')
-        return ["components", "minecraft:attribute_modifiers", "modifiers", path_parts[2]]
+        return ["components", "minecraft:attribute_modifiers", path_parts[2]]
 
     if path_parts[1] == "author":
         return ["components", "minecraft:written_book_content", "author"]
@@ -1255,7 +1348,7 @@ def update_path(path_parts: list[str], version: int, issues: list[dict[str, str 
 
     if path_parts[1] == "CanDestroy":
         if len(path_parts) == 2:
-            return ["components", "minecraft:can_break", "predicates"]
+            return ["components", "minecraft:can_break"]
         if defaults.SEND_WARNINGS:
             log(f'WARNING: Children of item tag {path_parts[1]} are not handled yet in component conversion')
         return ["components", "minecraft:can_break"] + path_parts[2:]
@@ -1309,7 +1402,7 @@ def update_path(path_parts: list[str], version: int, issues: list[dict[str, str 
         if path_parts[2] == "Lore":
             return ["components", "minecraft:lore"] + path_parts[3:]
         if path_parts[2] == "color":
-            return ["components", "minecraft:dyed_color", "rgb"]
+            return ["components", "minecraft:dyed_color"]
         if path_parts[2] == "MapColor":
             return ["components", "minecraft:map_color"]
         if defaults.SEND_WARNINGS:
@@ -1333,7 +1426,7 @@ def update_path(path_parts: list[str], version: int, issues: list[dict[str, str 
                     len(path_parts) == 4 and
                     path_parts[3] == "lvl"
                 ):
-                    return ["components", "minecraft:enchantments", "levels", unpacked_index["id"]]
+                    return ["components", "minecraft:enchantments", unpacked_index["id"]]
         if defaults.SEND_WARNINGS:
             log(f'WARNING: Children of item tag {path_parts[1]} are not handled yet in component conversion')
         return ["components", "minecraft:enchantments"] + path_parts[2:]

@@ -967,13 +967,20 @@ def insert_old_adventure_mode_components(item: NBT.TAG_Compound, item_id: str):
 
     for blocks, component in [(can_place_on, "minecraft:can_place_on"), (can_destroy, "minecraft:can_destroy")]:
         if blocks:
-            item_components[component] = NBT.TAG_Compound()
-            item_components[component]["predicates"] = NBT.TAG_List(type=NBT.TAG_Compound)
+            item_components[component] = NBT.TAG_List(type=NBT.TAG_Compound)
             for block in blocks:
                 new_entry = NBT.TAG_Compound()
                 new_entry["blocks"] = NBT.TAG_String(block)
-                item_components[component]["predicates"].append(new_entry)
-            item_components[component]["show_in_tooltip"] = NBT.TAG_Byte(0)
+                item_components[component].append(new_entry)
+            if len(item_components[component]) == 1:
+                item_components[component] = item_components[component][0]
+
+            if "minecraft:tooltip_display" not in item_components:
+                item_components["minecraft:tooltip_display"] = NBT.TAG_Compound()
+            tooltip_display = item_components["minecraft:tooltip_display"]
+            if "hidden_components" not in tooltip_display:
+                tooltip_display["hidden_components"] = NBT.TAG_List(type=NBT.TAG_String)
+            tooltip_display["hidden_components"].append(NBT.TAG_String(component))
 
 
 
