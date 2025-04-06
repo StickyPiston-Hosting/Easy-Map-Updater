@@ -165,7 +165,7 @@ def update_file_name(og_namespace: Path, namespace: Path, subdir: str, target: s
             if "slice" in target:
                 slice_data = cast(list[int], target["slice"])
             if "clip" in target:
-                clip_data = cast(list[int], target["clip"])
+                clip_data = cast(list[list[int]], target["clip"])
             if "metadata" in target:
                 metadata = cast(dict[str, Any], target["metadata"])
 
@@ -195,11 +195,14 @@ def update_file_name(og_namespace: Path, namespace: Path, subdir: str, target: s
 
             mask = Image.new("L", image.size, color = 255)
             draw = ImageDraw.Draw(mask)
-            ax = min(int( (clip_data[0]               )*image.size[0]//clip_data[4] ), image.size[0] - 1)
-            ay = min(int( (clip_data[1]               )*image.size[1]//clip_data[5] ), image.size[1] - 1)
-            bx = max(int( (clip_data[0] + clip_data[2])*image.size[0]//clip_data[4] ) - 1, ax + 1)
-            by = max(int( (clip_data[1] + clip_data[3])*image.size[1]//clip_data[5] ) - 1, ay + 1) 
-            draw.rectangle((ax, ay, bx, by), fill = 0)
+
+            for clip_instance in clip_data:
+                ax = min(int( (clip_instance[0]                   )*image.size[0]//clip_instance[4] ), image.size[0] - 1)
+                ay = min(int( (clip_instance[1]                   )*image.size[1]//clip_instance[5] ), image.size[1] - 1)
+                bx = max(int( (clip_instance[0] + clip_instance[2])*image.size[0]//clip_instance[4] ) - 1, ax + 1)
+                by = max(int( (clip_instance[1] + clip_instance[3])*image.size[1]//clip_instance[5] ) - 1, ay + 1) 
+                draw.rectangle((ax, ay, bx, by), fill = 0)
+
             alpha = ImageChops.subtract(alpha, mask)
 
             image.putalpha(alpha)

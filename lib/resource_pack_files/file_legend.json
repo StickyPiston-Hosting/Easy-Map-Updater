@@ -225,7 +225,7 @@
                         {"path": "sprites/widget/page_forward.png", "slice": [0, 192, 23, 13, 256, 256]},
                         {"path": "sprites/widget/page_backward_highlighted.png", "slice": [23, 205, 23, 13, 256, 256]},
                         {"path": "sprites/widget/page_backward.png", "slice": [0, 205, 23, 13, 256, 256]},
-                        {"path": "book.png", "clip": [20, 1, 146, 180, 256, 256]}
+                        {"path": "book.png", "clip": [[20, 1, 146, 180, 256, 256]]}
                     ],
                     "chat_tags.png": [
                         {"path": "sprites/icon/chat_modified.png", "slice": [0, 0, 9, 9, 32, 32]}
@@ -244,7 +244,7 @@
                             {"path": "./sprites/container/anvil/text_field.png", "slice": [0, 166, 110, 16, 256, 256]},
                             {"path": "./sprites/container/anvil/text_field_disabled.png", "slice": [0, 182, 110, 16, 256, 256]},
                             {"path": "./sprites/container/anvil/error.png", "slice": [176, 0, 28, 21, 256, 256]},
-                            {"path": "anvil.png", "clip": [0, 0, 176, 166, 256, 256]}
+                            {"path": "anvil.png", "clip": [[0, 0, 176, 166, 256, 256]]}
                         ],
                         "beacon.png": [
                             {"path": "./sprites/container/beacon/button_disabled.png", "slice": [44, 219, 22, 22, 256, 256]},
@@ -253,18 +253,18 @@
                             {"path": "./sprites/container/beacon/button.png", "slice": [0, 219, 22, 22, 256, 256]},
                             {"path": "./sprites/container/beacon/confirm.png", "slice": [90, 220, 18, 18, 256, 256]},
                             {"path": "./sprites/container/beacon/cancel.png", "slice": [112, 220, 18, 18, 256, 256]},
-                            {"path": "beacon.png", "clip": [0, 0, 230, 219, 256, 256]}
+                            {"path": "beacon.png", "clip": [[0, 0, 230, 219, 256, 256]]}
                         ],
                         "blast_furnace.png": [
                             {"path": "./sprites/container/blast_furnace/lit_progress.png", "slice": [176, 0, 14, 14, 256, 256]},
                             {"path": "./sprites/container/blast_furnace/burn_progress.png", "slice": [176, 14, 24, 16, 256, 256]},
-                            {"path": "blast_furnace.png", "clip": [0, 0, 176, 166, 256, 256]}
+                            {"path": "blast_furnace.png", "clip": [[0, 0, 176, 166, 256, 256]]}
                         ],
                         "brewing_stand.png": [
                             {"path": "./sprites/container/brewing_stand/fuel_length.png", "slice": [176, 29, 18, 4, 256, 256]},
                             {"path": "./sprites/container/brewing_stand/brew_progress.png", "slice": [176, 0, 9, 28, 256, 256]},
                             {"path": "./sprites/container/brewing_stand/bubbles.png", "slice": [185, 0, 12, 29, 256, 256]},
-                            {"path": "brewing_stand.png", "clip": [0, 0, 176, 166, 256, 256]}
+                            {"path": "brewing_stand.png", "clip": [[0, 0, 176, 166, 256, 256]]}
                         ],
                         "bundle.png": [
                             {"path": "./sprites/container/bundle/blocked_slot.png", "slice": [0, 40, 18, 20, 128, 128]},
@@ -279,10 +279,10 @@
                             {"path": "./sprites/container/cartography_table/duplicated_map.png", "slice": [176, 132, 50, 66, 256, 256]},
                             {"path": "./sprites/container/cartography_table/map.png", "slice": [176, 0, 66, 66, 256, 256]},
                             {"path": "./sprites/container/cartography_table/locked.png", "slice": [52, 214, 10, 14, 256, 256]},
-                            {"path": "cartography_table.png", "clip": [0, 0, 176, 166, 256, 256]}
+                            {"path": "cartography_table.png", "clip": [[0, 0, 176, 166, 256, 256]]}
                         ],
                         "crafting_table.png": [
-                            {"path": "crafting_table.png", "clip": [0, 0, 176, 166, 256, 256]}
+                            {"path": "crafting_table.png", "clip": [[0, 0, 176, 166, 256, 256]]}
                         ],
                         "creative_inventory": {
                             "tabs.png": [
@@ -319,7 +319,7 @@
                             ]
                         },
                         "dispenser.png": [
-                            {"path": "dispenser.png", "clip": [0, 0, 176, 166, 256, 256]}
+                            {"path": "dispenser.png", "clip": [[0, 0, 176, 166, 256, 256]]}
                         ],
                         "enchanting_table.png": [
                             {"path": "./sprites/container/enchanting_table/level_1.png", "slice": [0, 223, 16, 16, 256, 256]},
@@ -331,38 +331,38 @@
                             {"path": "./sprites/container/enchanting_table/enchantment_slot_disabled.png", "slice": [0, 185, 108, 19, 256, 256]},
                             {"path": "./sprites/container/enchanting_table/enchantment_slot_highlighted.png", "slice": [0, 204, 108, 19, 256, 256]},
                             {"path": "./sprites/container/enchanting_table/enchantment_slot.png", "slice": [0, 166, 108, 19, 256, 256]},
-                            {"path": "enchanting_table.png", "clip": [0, 0, 176, 166, 256, 256]}
+                            {"path": "enchanting_table.png", "clip": [[0, 0, 176, 166, 256, 256]]}
                         ],
                         "furnace.png": [
                             {"path": "./sprites/container/furnace/lit_progress.png", "slice": [176, 0, 14, 14, 256, 256]},
                             {"path": "./sprites/container/furnace/burn_progress.png", "slice": [176, 14, 24, 16, 256, 256]},
-                            {"path": "furnace.png", "clip": [0, 0, 176, 166, 256, 256]}
+                            {"path": "furnace.png", "clip": [[0, 0, 176, 166, 256, 256]]}
                         ],
                         "gamemode_switcher.png": [
                             {"path": "./sprites/gamemode_switcher/slot.png", "slice": [0, 75, 26, 26, 128, 128]},
                             {"path": "./sprites/gamemode_switcher/selection.png", "slice": [26, 75, 26, 26, 128, 128]},
-                            {"path": "gamemode_switcher.png", "clip": [0, 0, 125, 75, 128, 128]}
+                            {"path": "gamemode_switcher.png", "clip": [[0, 0, 125, 75, 128, 128]]}
                         ],
                         "grindstone.png": [
                             {"path": "./sprites/container/grindstone/error.png", "slice": [176, 0, 28, 21, 256, 256]},
-                            {"path": "grindstone.png", "clip": [0, 0, 176, 166, 256, 256]}
+                            {"path": "grindstone.png", "clip": [[0, 0, 176, 166, 256, 256]]}
                         ],
                         "hopper.png": [
-                            {"path": "hopper.png", "clip": [0, 0, 176, 133, 256, 256]}
+                            {"path": "hopper.png", "clip": [[0, 0, 176, 133, 256, 256]]}
                         ],
                         "horse.png": [
                             {"path": "./sprites/container/horse/chest_slots.png", "slice": [0, 166, 90, 54, 256, 256]},
                             {"path": "./sprites/container/horse/saddle_slot.png", "slice": [18, 220, 18, 18, 256, 256]},
                             {"path": "./sprites/container/horse/llama_armor_slot.png", "slice": [36, 220, 18, 18, 256, 256]},
                             {"path": "./sprites/container/horse/armor_slot.png", "slice": [0, 220, 18, 18, 256, 256]},
-                            {"path": "horse.png", "clip": [0, 0, 176, 166, 256, 256]}
+                            {"path": "horse.png", "clip": [[0, 0, 176, 166, 256, 256]]}
                         ],
                         "inventory.png": [
                             {"path": "./sprites/hud/effect_background_ambient.png", "slice": [165, 166, 24, 24, 256, 256]},
                             {"path": "./sprites/hud/effect_background.png", "slice": [141, 166, 24, 24, 256, 256]},
                             {"path": "./sprites/container/inventory/effect_background_large.png", "slice": [0, 166, 120, 32, 256, 256]},
                             {"path": "./sprites/container/inventory/effect_background_small.png", "slice": [0, 198, 32, 32, 256, 256]},
-                            {"path": "inventory.png", "clip": [0, 0, 176, 166, 256, 256]}
+                            {"path": "inventory.png", "clip": [[0, 0, 176, 166, 256, 256]]}
                         ],
                         "loom.png": [
                             {"path": "./sprites/container/loom/banner_slot.png", "slice": [176, 0, 16, 16, 256, 256]},
@@ -373,19 +373,19 @@
                             {"path": "./sprites/container/loom/pattern_selected.png", "slice": [0, 180, 14, 14, 256, 256]},
                             {"path": "./sprites/container/loom/pattern_highlighted.png", "slice": [0, 194, 14, 14, 256, 256]},
                             {"path": "./sprites/container/loom/pattern.png", "slice": [0, 166, 14, 14, 256, 256]},
-                            {"path": "loom.png", "clip": [0, 0, 176, 166, 256, 256]}
+                            {"path": "loom.png", "clip": [[0, 0, 176, 166, 256, 256]]}
                         ],
                         "shulker_box.png": [
-                            {"path": "shulker_box.png", "clip": [0, 0, 176, 166, 256, 256]}
+                            {"path": "shulker_box.png", "clip": [[0, 0, 176, 166, 256, 256]]}
                         ],
                         "smithing.png": [
                             {"path": "./sprites/container/smithing/error.png", "slice": [176, 0, 28, 21, 256, 256]},
-                            {"path": "smithing.png", "clip": [0, 0, 176, 166, 256, 256]}
+                            {"path": "smithing.png", "clip": [[0, 0, 176, 166, 256, 256]]}
                         ],
                         "smoker.png": [
                             {"path": "./sprites/container/smoker/lit_progress.png", "slice": [176, 0, 14, 14, 256, 256]},
                             {"path": "./sprites/container/smoker/burn_progress.png", "slice": [176, 14, 24, 16, 256, 256]},
-                            {"path": "smoker.png", "clip": [0, 0, 176, 166, 256, 256]}
+                            {"path": "smoker.png", "clip": [[0, 0, 176, 166, 256, 256]]}
                         ],
                         "stats_icons.png": [
                             {"path": "./sprites/container/slot.png", "slice": [0, 0, 18, 18, 128, 128]},
@@ -405,11 +405,10 @@
                             {"path": "./sprites/container/stonecutter/recipe_selected.png", "slice": [0, 184, 16, 18, 256, 256]},
                             {"path": "./sprites/container/stonecutter/recipe_highlighted.png", "slice": [0, 202, 16, 18, 256, 256]},
                             {"path": "./sprites/container/stonecutter/recipe.png", "slice": [0, 166, 16, 18, 256, 256]},
-                            {"path": "stonecutter.png", "clip": [0, 0, 176, 166, 256, 256]}
+                            {"path": "stonecutter.png", "clip": [[0, 0, 176, 166, 256, 256]]}
                         ],
                         "villager.png": [
-                            {"path": "villager.png", "clip": [0, 0, 276, 166, 512, 256]},
-                            {"path": "villager.png", "clip": [0, 0, 276, 166, 512, 256]}
+                            {"path": "villager.png", "clip": [[0, 0, 276, 166, 512, 256]]}
                         ],
                         "villager2.png": [
                             {"path": "./sprites/container/villager/out_of_stock.png", "slice": [311, 0, 28, 21, 512, 256]},
@@ -543,7 +542,7 @@
                         {"path": "sprites/recipe_book/slot_craftable.png", "slice": [29, 206, 25, 25, 256, 256]},
                         {"path": "sprites/recipe_book/slot_many_uncraftable.png", "slice": [54, 231, 25, 25, 256, 256]},
                         {"path": "sprites/recipe_book/slot_uncraftable.png", "slice": [54, 206, 25, 25, 256, 256]},
-                        {"path": "recipe_book.png", "clip": [0, 0, 149, 168, 256, 256]}
+                        {"path": "recipe_book.png", "clip": [[0, 0, 149, 168, 256, 256]]}
                     ],
                     "recipe_button.png": [
                         {"path": "sprites/recipe_book/button.png", "slice": [0, 0, 20, 18, 256, 256]},
@@ -1004,6 +1003,72 @@
                     "empty_slot_lapis_lazuli.png": "./gui/sprites/container/slot/lapis_lazuli.png",
                     "empty_slot_quartz.png": "./gui/sprites/container/slot/quartz.png",
                     "empty_slot_redstone_dust.png": "./gui/sprites/container/slot/redstone_dust.png"
+                }
+            }
+        }
+    },
+    "2104": {
+        "minecraft": {
+            "textures": {
+                "entity": {
+                    "camel": {
+                        "camel.png": [
+                            { "path": "./equipment/camel_saddle/saddle.png", "clip": [[84, 52, 44, 12, 128, 128], [0, 64, 128, 64, 128, 128]] },
+                            { "path": "camel.png", "clip": [[0, 0, 128, 52, 128, 128], [0, 52, 84, 12, 128, 128]] }
+                        ]
+                    },
+                    "horse": {
+                        "donkey.png": [
+                            { "path": "./equipment/donkey_saddle/saddle.png", "clip": [[0, 0, 54, 12, 64, 64], [26, 12, 28, 8, 64, 64]] },
+                            { "path": "donkey.png", "clip": [[0, 12, 26, 9, 64, 64], [0, 21, 64, 43, 64, 64]] }
+                        ],
+                        "horse_black.png": [
+                            { "path": "./equipment/horse_saddle/saddle.png", "clip": [[0, 0, 54, 12, 64, 64], [26, 12, 28, 8, 64, 64]] },
+                            { "path": "horse_black.png", "clip": [[0, 12, 26, 9, 64, 64], [0, 21, 64, 43, 64, 64]] }
+                        ],
+                        "horse_brown.png": [
+                            { "path": "./equipment/horse_saddle/saddle.png", "clip": [[0, 0, 54, 12, 64, 64], [26, 12, 28, 8, 64, 64]] },
+                            { "path": "horse_brown.png", "clip": [[0, 12, 26, 9, 64, 64], [0, 21, 64, 43, 64, 64]] }
+                        ],
+                        "horse_chestnut.png": [
+                            { "path": "./equipment/horse_saddle/saddle.png", "clip": [[0, 0, 54, 12, 64, 64], [26, 12, 28, 8, 64, 64]] },
+                            { "path": "horse_chestnut.png", "clip": [[0, 12, 26, 9, 64, 64], [0, 21, 64, 43, 64, 64]] }
+                        ],
+                        "horse_creamy.png": [
+                            { "path": "./equipment/horse_saddle/saddle.png", "clip": [[0, 0, 54, 12, 64, 64], [26, 12, 28, 8, 64, 64]] },
+                            { "path": "horse_creamy.png", "clip": [[0, 12, 26, 9, 64, 64], [0, 21, 64, 43, 64, 64]] }
+                        ],
+                        "horse_darkbrown.png": [
+                            { "path": "./equipment/horse_saddle/saddle.png", "clip": [[0, 0, 54, 12, 64, 64], [26, 12, 28, 8, 64, 64]] },
+                            { "path": "horse_darkbrown.png", "clip": [[0, 12, 26, 9, 64, 64], [0, 21, 64, 43, 64, 64]] }
+                        ],
+                        "horse_gray.png": [
+                            { "path": "./equipment/horse_saddle/saddle.png", "clip": [[0, 0, 54, 12, 64, 64], [26, 12, 28, 8, 64, 64]] },
+                            { "path": "horse_gray.png", "clip": [[0, 12, 26, 9, 64, 64], [0, 21, 64, 43, 64, 64]] }
+                        ],
+                        "horse_skeleton.png": [
+                            { "path": "./equipment/skeleton_horse_saddle/saddle.png", "clip": [[0, 0, 54, 12, 64, 64], [26, 12, 28, 8, 64, 64]] },
+                            { "path": "horse_skeleton.png", "clip": [[0, 12, 26, 9, 64, 64], [0, 21, 64, 43, 64, 64]] }
+                        ],
+                        "horse_white.png": [
+                            { "path": "./equipment/horse_saddle/saddle.png", "clip": [[0, 0, 54, 12, 64, 64], [26, 12, 28, 8, 64, 64]] },
+                            { "path": "horse_white.png", "clip": [[0, 12, 26, 9, 64, 64], [0, 21, 64, 43, 64, 64]] }
+                        ],
+                        "horse_zombie.png": [
+                            { "path": "./equipment/zombie_horse_saddle/saddle.png", "clip": [[0, 0, 54, 12, 64, 64], [26, 12, 28, 8, 64, 64]] },
+                            { "path": "horse_zombie.png", "clip": [[0, 12, 26, 9, 64, 64], [0, 21, 64, 43, 64, 64]] }
+                        ],
+                        "mule.png": [
+                            { "path": "./equipment/mule_saddle/saddle.png", "clip": [[0, 0, 54, 12, 64, 64], [26, 12, 28, 8, 64, 64]] },
+                            { "path": "mule.png", "clip": [[0, 12, 26, 9, 64, 64], [0, 21, 64, 43, 64, 64]] }
+                        ]
+                    },
+                    "pig": {
+                        "pig_saddle.png": "./equipment/pig_saddle/saddle.png"
+                    },
+                    "strider": {
+                        "strider_saddle.png": "./equipment/strider_saddle/saddle.png"
+                    }
                 }
             }
         }
