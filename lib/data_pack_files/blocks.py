@@ -495,4 +495,11 @@ def update_block_id(block_id: str | nbt_tags.TypeNumeric, data_value: int | str,
                 easy_map_updater.MINECRAFT_PATH / "saves" / option_manager.get_map_name()
             )
 
+    if pack_version <= 2104 or post_fixes:
+        id_array = {
+            "#minecraft:dead_bush_may_place_on": "#minecraft:dry_vegetation_may_place_on"
+        }
+        if block_id in id_array:
+            block_id = id_array[block_id]
+
     return (block_id, block_states, nbt)
