@@ -232,6 +232,11 @@ def clean_level_dat(world: Path):
         if "GameRules" in file["Data"]:
             file["Data"]["GameRules"]["spawnChunkRadius"] = NBT.TAG_String("10")
 
+    # Set allowFireTicksAwayFromPlayer gamerule, which was added in 1.21.5
+    if version <= 2104:
+        if "GameRules" in file["Data"]:
+            file["Data"]["GameRules"]["allowFireTicksAwayFromPlayer"] = NBT.TAG_String("true")
+
     # Close file
     file.write_file(file_path)
 
