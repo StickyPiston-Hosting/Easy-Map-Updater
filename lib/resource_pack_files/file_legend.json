@@ -1017,6 +1017,11 @@
                             { "path": "camel.png", "clip": [[0, 0, 128, 52, 128, 128], [0, 52, 84, 12, 128, 128]] }
                         ]
                     },
+                    "cow": {
+                        "brown_mooshroom.png": { "path": "brown_mooshroom.png", "resize": [64, 32, 64, 64, 0, 0] },
+                        "cow.png": { "path": "temperate_cow.png", "resize": [64, 32, 64, 64, 0, 0] },
+                        "red_mooshroom.png": { "path": "red_mooshroom.png", "resize": [64, 32, 64, 64, 0, 0] }
+                    },
                     "horse": {
                         "donkey.png": [
                             { "path": "./equipment/donkey_saddle/saddle.png", "clip": [[0, 0, 54, 12, 64, 64], [26, 12, 28, 8, 64, 64]] },
@@ -1064,6 +1069,7 @@
                         ]
                     },
                     "pig": {
+                        "pig.png": "temperate_pig.png",
                         "pig_saddle.png": "./equipment/pig_saddle/saddle.png"
                     },
                     "strider": {

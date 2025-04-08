@@ -157,6 +157,7 @@ def update_file_name(og_namespace: Path, namespace: Path, subdir: str, target: s
 
         slice_data = None
         clip_data = None
+        resize_data = None
         metadata = None
         if isinstance(target, str):
             target_path = target.replace("*", path.name).split("/")
@@ -166,6 +167,8 @@ def update_file_name(og_namespace: Path, namespace: Path, subdir: str, target: s
                 slice_data = cast(list[int], target["slice"])
             if "clip" in target:
                 clip_data = cast(list[list[int]], target["clip"])
+            if "resize" in target:
+                resize_data = cast(list[int], target["resize"])
             if "metadata" in target:
                 metadata = cast(dict[str, Any], target["metadata"])
 
@@ -207,6 +210,21 @@ def update_file_name(og_namespace: Path, namespace: Path, subdir: str, target: s
 
             image.putalpha(alpha)
             image.save(namespace / path, "png")
+        elif resize_data:
+            image = Image.open(og_namespace / subdir, "r", ["png"])
+            if image.mode != "RGBA":
+                image = image.convert("RGBA")
+
+            resized_image = Image.new("RGBA", (
+                resize_data[2]*image.size[0]//resize_data[0],
+                resize_data[3]*image.size[1]//resize_data[1],
+            ), color = (0,0,0,0))
+            resized_image.paste(image, (
+                resize_data[4]*resized_image.size[0]//resize_data[2],
+                resize_data[5]*resized_image.size[1]//resize_data[3],
+            ))
+
+            resized_image.save(namespace / path, "png")
         else:
             shutil.copyfile(
                 og_namespace / subdir,
