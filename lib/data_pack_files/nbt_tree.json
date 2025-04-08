@@ -450,6 +450,7 @@
                     "argument_type": "command_string"
                 },
                 "CommandStats": { "source": "command_stats" },
+                "CustomDisplayTile": { "remove": true },
                 "CustomName": {
                     "data_type": "carry",
                     "argument_type": "json_text_component_mangled"
