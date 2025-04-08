@@ -586,6 +586,8 @@ def edge_case(parent: dict, nbt, case: str | dict[str, str], source: str, object
         return edge_case_power(parent)
     if case_type == "recipes":
         return edge_case_recipes(nbt, issues)
+    if case_type == "respawn":
+        return edge_case_respawn(parent)
     if case_type == "saddle":
         return edge_case_saddle(parent)
     if case_type == "saddle_item":
@@ -929,6 +931,31 @@ def edge_case_recipes(nbt: list, issues: list[dict[str, str | int]]):
                 entry = "minecraft:stick"
         nbt[i] = items.update_from_command(cast(str, entry), pack_version, issues)
 
+def edge_case_respawn(parent: dict[str, Any]):
+    if "respawn" in parent:
+        return
+    parent["respawn"] = {}
+
+    if "SpawnX" in parent:
+        if "pos" not in parent["respawn"]:
+            parent["respawn"]["pos"] = TypeIntArray([TypeInt(0), TypeInt(0), TypeInt(0)])
+        parent["respawn"]["pos"][0] = TypeInt(parent["SpawnX"])
+    if "SpawnY" in parent:
+        if "pos" not in parent["respawn"]:
+            parent["respawn"]["pos"] = TypeIntArray([TypeInt(0), TypeInt(0), TypeInt(0)])
+        parent["respawn"]["pos"][1] = TypeInt(parent["SpawnY"])
+    if "SpawnZ" in parent:
+        if "pos" not in parent["respawn"]:
+            parent["respawn"]["pos"] = TypeIntArray([TypeInt(0), TypeInt(0), TypeInt(0)])
+        parent["respawn"]["pos"][2] = TypeInt(parent["SpawnZ"])
+
+    if "SpawnAngle" in parent:
+        parent["respawn"]["angle"] = TypeFloat(parent["SpawnAngle"])
+    if "SpawnDimension" in parent:
+        parent["respawn"]["dimension"] = miscellaneous.namespace(parent["SpawnDimension"])
+    if "SpawnForced" in parent:
+        parent["respawn"]["forced"] = TypeByte(parent["SpawnForced"])
+
 def edge_case_saddle(parent: dict[str, Any]):
     if not parent["Saddle"].value:
         return
@@ -958,6 +985,25 @@ def edge_case_shot_from_crossbow(parent: dict):
         }
     else:
         log(f'WARNING: Entity tag "ShotFromCrossbow:0b" was used, make sure it isn\'t being read')
+
+def edge_case_sign_text(parent: dict, issues: list[dict[str, str | int]]):
+    # Prepare front text
+    if "front_text" not in parent:
+        parent["front_text"] = {}
+
+    for i in range(4):
+        key = f"Text{i+1}"
+        if key in parent:
+            if "messages" not in parent["front_text"]:
+                parent["front_text"]["messages"] = ['""', '""', '""', '""']
+            parent["front_text"]["messages"][i] = json_text_component.update(parent[key], pack_version, issues, {"mangled": False, "pack": False})
+            del parent[key]
+    if "Color" in parent:
+        parent["front_text"]["color"] = parent["Color"]
+        del parent["Color"]
+    if "GlowingText" in parent:
+        parent["front_text"]["has_glowing_text"] = parent["GlowingText"]
+        del parent["GlowingText"]
 
 def edge_case_size(parent: dict, object_id: str):
     if (
@@ -1001,25 +1047,6 @@ def edge_case_skull_owner(nbt: dict | str):
         del nbt["Properties"]
 
     return nbt
-
-def edge_case_sign_text(parent: dict, issues: list[dict[str, str | int]]):
-    # Prepare front text
-    if "front_text" not in parent:
-        parent["front_text"] = {}
-
-    for i in range(4):
-        key = f"Text{i+1}"
-        if key in parent:
-            if "messages" not in parent["front_text"]:
-                parent["front_text"]["messages"] = ['""', '""', '""', '""']
-            parent["front_text"]["messages"][i] = json_text_component.update(parent[key], pack_version, issues, {"mangled": False, "pack": False})
-            del parent[key]
-    if "Color" in parent:
-        parent["front_text"]["color"] = parent["Color"]
-        del parent["Color"]
-    if "GlowingText" in parent:
-        parent["front_text"]["has_glowing_text"] = parent["GlowingText"]
-        del parent["GlowingText"]
 
 def edge_case_sleeping_pos(parent: dict[str, Any]):
     if "sleeping_pos" in parent:

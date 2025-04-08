@@ -692,6 +692,36 @@
                     "path": { "rename": [ "sleeping_pos", "[2]" ] }
                 },
                 "Small": { "data_type": "byte" },
+                "SpawnAngle": {
+                    "remove": true,
+                    "edge_case": "respawn",
+                    "path": { "rename": [ "respawn", "angle" ] }
+                },
+                "SpawnDimension": {
+                    "remove": true,
+                    "edge_case": "respawn",
+                    "path": { "rename": [ "respawn", "dimension" ] }
+                },
+                "SpawnForced": {
+                    "remove": true,
+                    "edge_case": "respawn",
+                    "path": { "rename": [ "respawn", "forced" ] }
+                },
+                "SpawnX": {
+                    "remove": true,
+                    "edge_case": "respawn",
+                    "path": { "rename": [ "respawn", "pos", "[0]" ] }
+                },
+                "SpawnY": {
+                    "remove": true,
+                    "edge_case": "respawn",
+                    "path": { "rename": [ "respawn", "pos", "[1]" ] }
+                },
+                "SpawnZ": {
+                    "remove": true,
+                    "edge_case": "respawn",
+                    "path": { "rename": [ "respawn", "pos", "[2]" ] }
+                },
                 "text": {
                     "data_type": "carry",
                     "argument_type": "json_text_component"
