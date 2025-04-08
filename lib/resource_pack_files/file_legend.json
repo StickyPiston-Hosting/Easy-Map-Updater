@@ -1017,6 +1017,7 @@
                             { "path": "camel.png", "clip": [[0, 0, 128, 52, 128, 128], [0, 52, 84, 12, 128, 128]] }
                         ]
                     },
+                    "chicken.png": "chicken/temperate_chicken.png",
                     "cow": {
                         "brown_mooshroom.png": { "path": "brown_mooshroom.png", "resize": [64, 32, 64, 64, 0, 0] },
                         "cow.png": { "path": "temperate_cow.png", "resize": [64, 32, 64, 64, 0, 0] },
