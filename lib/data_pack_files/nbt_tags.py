@@ -594,6 +594,8 @@ def edge_case(parent: dict, nbt, case: str | dict[str, str], source: str, object
         return edge_case_sign_text(parent, issues)
     if case_type == "skull_owner":
         return edge_case_skull_owner(nbt)
+    if case_type == "sleeping_pos":
+        return edge_case_sleeping_pos(parent)
     if case_type == "spawn_data":
         return edge_case_spawn_data(nbt, object_id, issues)
     if case_type == "spawn_potential_entity":
@@ -984,6 +986,21 @@ def edge_case_sign_text(parent: dict, issues: list[dict[str, str | int]]):
     if "GlowingText" in parent:
         parent["front_text"]["has_glowing_text"] = parent["GlowingText"]
         del parent["GlowingText"]
+
+def edge_case_sleeping_pos(parent: dict[str, Any]):
+    if "sleeping_pos" in parent:
+        return
+    parent["sleeping_pos"] = TypeIntArray([
+        TypeInt(0),
+        TypeInt(0),
+        TypeInt(0),
+    ])
+    if "SleepingX" in parent:
+        parent["sleeping_pos"][0] = TypeInt(parent["SleepingX"])
+    if "SleepingY" in parent:
+        parent["sleeping_pos"][1] = TypeInt(parent["SleepingY"])
+    if "SleepingZ" in parent:
+        parent["sleeping_pos"][2] = TypeInt(parent["SleepingZ"])
 
 def edge_case_spawn_data(nbt: dict[str, Any], object_id: str, issues: list[dict[str, str | int]]):
     # Move tags into "entity" if they aren't there already

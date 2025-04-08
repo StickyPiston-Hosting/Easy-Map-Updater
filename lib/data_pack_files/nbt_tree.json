@@ -657,6 +657,21 @@
                 },
                 "ShowArms": { "data_type": "byte" },
                 "Silent": { "data_type": "byte" },
+                "SleepingX": {
+                    "remove": true,
+                    "edge_case": "sleeping_pos",
+                    "path": { "rename": [ "sleeping_pos", "[0]" ] }
+                },
+                "SleepingY": {
+                    "remove": true,
+                    "edge_case": "sleeping_pos",
+                    "path": { "rename": [ "sleeping_pos", "[1]" ] }
+                },
+                "SleepingZ": {
+                    "remove": true,
+                    "edge_case": "sleeping_pos",
+                    "path": { "rename": [ "sleeping_pos", "[2]" ] }
+                },
                 "Small": { "data_type": "byte" },
                 "text": {
                     "data_type": "carry",
