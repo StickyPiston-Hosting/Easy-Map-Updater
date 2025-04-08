@@ -544,12 +544,16 @@ def edge_case(parent: dict, nbt, case: str | dict[str, str], source: str, object
         return edge_case_banner_base(parent, object_id, issues)
     if case_type == "block_entity":
         return blocks.update_from_nbt(cast(blocks.BlockInputFromNBT, parent), pack_version, issues)
+    if case_type == "block_pos":
+        return edge_case_block_pos(parent)
     if case_type == "boat_type":
         return edge_case_boat_type(parent)
     if case_type == "body_armor_drop_chance":
         return edge_case_body_armor_drop_chance(parent)
     if case_type == "body_armor_item":
         return edge_case_body_armor_item(parent, object_id, issues)
+    if case_type == "bound_pos":
+        return edge_case_bound_pos(parent)
     if case_type == "can_place_on":
         return edge_case_can_place_on(nbt, issues)
     if case_type == "color":
@@ -568,6 +572,8 @@ def edge_case(parent: dict, nbt, case: str | dict[str, str], source: str, object
         return edge_case_hand_drop_chances(parent)
     if case_type == "hand_items":
         return edge_case_hand_items(parent, object_id, issues)
+    if case_type == "home_pos":
+        return edge_case_home_pos(parent)
     if case_type == "item":
         return items.update_from_nbt(nbt, pack_version, issues)
     if case_type == "item_components":
@@ -686,6 +692,21 @@ def edge_case_banner_base(parent: dict[str, TypeInt], object_id: str, issues: li
     else:
         del parent["Base"]
 
+def edge_case_block_pos(parent: dict[str, Any]):
+    if "block_pos" in parent:
+        return
+    parent["block_pos"] = TypeIntArray([
+        TypeInt(0),
+        TypeInt(0),
+        TypeInt(0),
+    ])
+    if "TileX" in parent:
+        parent["block_pos"][0] = TypeInt(parent["TileX"])
+    if "TileY" in parent:
+        parent["block_pos"][1] = TypeInt(parent["TileY"])
+    if "TileZ" in parent:
+        parent["block_pos"][2] = TypeInt(parent["TileZ"])
+
 def edge_case_boat_type(parent: dict[str, str]):
     if "id" not in parent:
         return
@@ -716,6 +737,21 @@ def edge_case_body_armor_item(parent: dict[str, Any], object_id: str, issues: li
         parent["equipment"] = {}
 
     parent["equipment"]["body"] = get_source(parent, parent["body_armor_item"], "item", object_id, issues)
+
+def edge_case_bound_pos(parent: dict[str, Any]):
+    if "bound_pos" in parent:
+        return
+    parent["bound_pos"] = TypeIntArray([
+        TypeInt(0),
+        TypeInt(0),
+        TypeInt(0),
+    ])
+    if "BoundX" in parent:
+        parent["bound_pos"][0] = TypeInt(parent["BoundX"])
+    if "BoundY" in parent:
+        parent["bound_pos"][1] = TypeInt(parent["BoundY"])
+    if "BoundZ" in parent:
+        parent["bound_pos"][2] = TypeInt(parent["BoundZ"])
 
 def edge_case_can_place_on(nbt: list[str], issues: list[dict[str, str | int]]):
     new_list: list[str] = []
@@ -841,6 +877,21 @@ def edge_case_hand_items(parent: dict[str, Any], object_id: str, issues: list[di
         parent["equipment"]["mainhand"] = get_source(parent, parent["HandItems"][0], "item", object_id, issues)
     if length > 1 and "id" in parent["HandItems"][1]:
         parent["equipment"]["offhand"] = get_source(parent, parent["HandItems"][1], "item", object_id, issues)
+
+def edge_case_home_pos(parent: dict[str, Any]):
+    if "home_pos" in parent:
+        return
+    parent["home_pos"] = TypeIntArray([
+        TypeInt(0),
+        TypeInt(0),
+        TypeInt(0),
+    ])
+    if "HomePosX" in parent:
+        parent["home_pos"][0] = TypeInt(parent["HomePosX"])
+    if "HomePosY" in parent:
+        parent["home_pos"][1] = TypeInt(parent["HomePosY"])
+    if "HomePosZ" in parent:
+        parent["home_pos"][2] = TypeInt(parent["HomePosZ"])
 
 def edge_case_item_components(nbt: dict[str, Any], version: int, issues: list[dict[str, str | int]]) -> dict[str, Any]:
     return item_component.conform_components(item_component.ItemComponents.unpack_from_dict(nbt, False), version, issues).pack_to_dict()

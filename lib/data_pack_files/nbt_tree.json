@@ -425,6 +425,21 @@
                     "remove": true,
                     "edge_case": "body_armor_item"
                 },
+                "BoundX": {
+                    "remove": true,
+                    "edge_case": "bound_pos",
+                    "path": { "rename": [ "bound_pos", "[0]" ] }
+                },
+                "BoundY": {
+                    "remove": true,
+                    "edge_case": "bound_pos",
+                    "path": { "rename": [ "bound_pos", "[1]" ] }
+                },
+                "BoundZ": {
+                    "remove": true,
+                    "edge_case": "bound_pos",
+                    "path": { "rename": [ "bound_pos", "[2]" ] }
+                },
                 "Color": {
                     "remove": true,
                     "edge_case": "color",
@@ -562,6 +577,11 @@
                     "remove": true,
                     "edge_case": "hand_items"
                 },
+                "HasEgg": {
+                    "rename": "has_egg",
+                    "data_type": "byte"
+                },
+                "has_egg": { "data_type": "byte" },
                 "HivePos": {
                     "rename": "hive_pos",
                     "data_type": "carry",
@@ -575,6 +595,21 @@
                     }
                 },
                 "hive_pos": { "data_type": "int_array" },
+                "HomePosX": {
+                    "remove": true,
+                    "edge_case": "home_pos",
+                    "path": { "rename": [ "home_pos", "[0]" ] }
+                },
+                "HomePosY": {
+                    "remove": true,
+                    "edge_case": "home_pos",
+                    "path": { "rename": [ "home_pos", "[1]" ] }
+                },
+                "HomePosZ": {
+                    "remove": true,
+                    "edge_case": "home_pos",
+                    "path": { "rename": [ "home_pos", "[2]" ] }
+                },
                 "HurtEntities": { "data_type": "byte" },
                 "id": {
                     "data_type": "string",
@@ -599,6 +634,11 @@
                 },
                 "leash": { "data_type": "int_array" },
                 "Life": { "data_type": "int" },
+                "LifeTicks": {
+                    "rename": "life_ticks",
+                    "data_type": "int"
+                },
+                "life_ticks": { "data_type": "int" },
                 "LifeTime": { "data_type": "int" },
                 "Marker": { "data_type": "byte" },
                 "Motion": { "list": { "data_type": "double" } },
@@ -742,6 +782,21 @@
                     "path": {
                         "source": "block"
                     }
+                },
+                "TileX": {
+                    "remove": true,
+                    "edge_case": "block_pos",
+                    "path": { "rename": [ "block_pos", "[0]" ] }
+                },
+                "TileY": {
+                    "remove": true,
+                    "edge_case": "block_pos",
+                    "path": { "rename": [ "block_pos", "[1]" ] }
+                },
+                "TileZ": {
+                    "remove": true,
+                    "edge_case": "block_pos",
+                    "path": { "rename": [ "block_pos", "[2]" ] }
                 },
                 "Time": { "data_type": "int" },
                 "TNTFuse": {
