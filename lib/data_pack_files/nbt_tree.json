@@ -499,6 +499,18 @@
                     "list": { "source": "effect" }
                 },
                 "EnderItems": { "list": { "source": "item" } },
+                "enteredNetherPosition": {
+                    "rename": "entered_nether_pos",
+                    "data_type": "carry",
+                    "argument_type": "coord_map_to_array_double",
+                    "path": {
+                        "tags": {
+                            "x": { "rename": "[0]" },
+                            "y": { "rename": "[1]" },
+                            "z": { "rename": "[2]" }
+                        }
+                    }
+                },
                 "equipment": {
                     "tags": {
                         "body": { "source": "item" },

@@ -187,6 +187,21 @@ def coord_map_to_array(coordinates: dict[str, nbt_tags.TypeInt], version: int, i
         nbt_tags.TypeInt(new_coordinates["Z"].value),
     ])
 
+def coord_map_to_array_double(coordinates: dict[str, nbt_tags.TypeDouble], version: int, issues: list[dict[str, str | int]]) -> nbt_tags.TypeList:
+    new_coordinates = {
+        "x": nbt_tags.TypeDouble(0),
+        "y": nbt_tags.TypeDouble(0),
+        "z": nbt_tags.TypeDouble(0),
+    }
+    for axis in ["x", "y", "z"]:
+        if axis in coordinates:
+            new_coordinates[axis] = coordinates[axis]
+    return nbt_tags.TypeList([
+        nbt_tags.TypeDouble(new_coordinates["x"].value),
+        nbt_tags.TypeDouble(new_coordinates["y"].value),
+        nbt_tags.TypeDouble(new_coordinates["z"].value),
+    ])
+
 def difficulty(name: str, version: int, issues: list[dict[str, str | int]]) -> str:
     id_array = {
         "0": "peaceful",
