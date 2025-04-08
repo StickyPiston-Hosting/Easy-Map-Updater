@@ -383,6 +383,21 @@
                     "rename": "attributes",
                     "list": { "source": "attribute" }
                 },
+                "AX": {
+                    "remove": true,
+                    "edge_case": "anchor_pos",
+                    "path": { "rename": [ "anchor_pos", "[0]" ] }
+                },
+                "AY": {
+                    "remove": true,
+                    "edge_case": "anchor_pos",
+                    "path": { "rename": [ "anchor_pos", "[1]" ] }
+                },
+                "AZ": {
+                    "remove": true,
+                    "edge_case": "anchor_pos",
+                    "path": { "rename": [ "anchor_pos", "[2]" ] }
+                },
                 "BeamTarget": {
                     "rename": "beam_target",
                     "data_type": "carry",
@@ -657,6 +672,10 @@
                 },
                 "ShowArms": { "data_type": "byte" },
                 "Silent": { "data_type": "byte" },
+                "Size": {
+                    "edge_case": "size"
+                },
+                "size": { "data_type": "int" },
                 "SleepingX": {
                     "remove": true,
                     "edge_case": "sleeping_pos",

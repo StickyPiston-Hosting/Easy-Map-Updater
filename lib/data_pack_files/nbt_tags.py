@@ -532,6 +532,8 @@ def edge_case(parent: dict, nbt, case: str | dict[str, str], source: str, object
         case_type = case
 
     # Process NBT based on case
+    if case_type == "anchor_pos":
+        return edge_case_anchor_pos(parent)
     if case_type == "armor_drop_chances":
         return edge_case_armor_drop_chances(parent)
     if case_type == "armor_items":
@@ -592,6 +594,8 @@ def edge_case(parent: dict, nbt, case: str | dict[str, str], source: str, object
         return edge_case_shot_from_crossbow(parent)
     if case_type == "sign_text":
         return edge_case_sign_text(parent, issues)
+    if case_type == "size":
+        return edge_case_size(parent, object_id)
     if case_type == "skull_owner":
         return edge_case_skull_owner(nbt)
     if case_type == "sleeping_pos":
@@ -606,6 +610,21 @@ def edge_case(parent: dict, nbt, case: str | dict[str, str], source: str, object
     if defaults.SEND_WARNINGS:
         log(f'WARNING: "{case_type}" case is not registered!')
     return nbt
+
+def edge_case_anchor_pos(parent: dict[str, Any]):
+    if "anchor_pos" in parent:
+        return
+    parent["anchor_pos"] = TypeIntArray([
+        TypeInt(0),
+        TypeInt(0),
+        TypeInt(0),
+    ])
+    if "AX" in parent:
+        parent["anchor_pos"][0] = TypeInt(parent["AX"])
+    if "AY" in parent:
+        parent["anchor_pos"][1] = TypeInt(parent["AY"])
+    if "AZ" in parent:
+        parent["anchor_pos"][2] = TypeInt(parent["AZ"])
 
 def edge_case_armor_drop_chances(parent: dict[str, Any]):
     if "drop_chances" not in parent:
@@ -939,6 +958,21 @@ def edge_case_shot_from_crossbow(parent: dict):
         }
     else:
         log(f'WARNING: Entity tag "ShotFromCrossbow:0b" was used, make sure it isn\'t being read')
+
+def edge_case_size(parent: dict, object_id: str):
+    if (
+        pack_version <= 2104 and
+        "Size" in parent and
+        "size" not in parent
+    ):
+        parent["Size"] = TypeInt(parent["Size"].value)
+        parent["size"] = TypeInt(parent["Size"].value)
+        if "id" in parent:
+            object_id = parent["id"]
+        if miscellaneous.namespace(object_id) == "minecraft:phantom":
+            del parent["Size"]
+        if miscellaneous.namespace(object_id) in ["minecraft:slime", "minecraft:magma_cube"]:
+            del parent["size"]
 
 def edge_case_skull_owner(nbt: dict | str):
     if isinstance(nbt, str):
