@@ -6,6 +6,7 @@
 # Import things
 
 from typing import cast
+from lib.log import log
 from lib.data_pack_files import nbt_tags
 from lib.data_pack_files import miscellaneous
 from lib.data_pack_files import items
@@ -282,6 +283,10 @@ def sound_event(name: str, version: int, issues: list[dict[str, str | int]]) -> 
         id_array = tables.SOUND_EVENTS_1_12
         if name in id_array:
             name = id_array[name]
+
+    # Wolf howl was removed in 1.21.5
+    if name == "minecraft:entity.wolf.howl":
+        log('WARNING: Sound event "minecraft:entity.wolf.howl" was removed!')
 
     return name
 
