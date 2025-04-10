@@ -19,6 +19,17 @@ from lib.log import log, get_log_path
 # Define functions
 
 def is_num(string: str) -> bool:
+    string = string.replace("_", "")
+
+    # Return true if the string is a hex string or binary string
+    if len(string) >= 3 and (string.startswith("0x") or string.startswith("0b")):
+        try:
+            int(string, 0)
+        except:
+            pass
+        else:
+            return True
+
     # Check that at least one character is a number (to rule out NaN and infinity)
     for char in string:
         if char.isnumeric():
@@ -190,12 +201,24 @@ def nbt_list_remove(nbt_list: NBT.TAG_List, value):
 
 
 
+def long_range(x: int):
+    return num_range(x, 64)
+
 def int_range(x: int):
-    return (x + 2147483648)%4294967296 - 2147483648
+    return num_range(x, 32)
+
+def short_range(x: int):
+    return num_range(x, 16)
+
+def byte_range(x: int):
+    return num_range(x, 8)
+
+def num_range(x: int, power: int):
+    return (x + int(2**(power-1)))%int(2**power) - int(2**(power-1))
 
 def cast_int(x: str) -> int:
     try:
-        return int(x)
+        return int(x, 0)
     except:
         return int(math.floor(float(x)))
 

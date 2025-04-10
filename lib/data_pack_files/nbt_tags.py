@@ -43,9 +43,20 @@ class TypeNumeric:
 
     def num(self, value, num_type: str):
         if isinstance(value, str):
-            for char in ["b", "B", "s", "S", "l", "L", "f", "F", "d", "D"]:
+            is_hex = len(value) >= 3 and value.startswith("0x")
+            for char in ["b", "B", "s", "S", "i", "I", "l", "L", "f", "F", "d", "D"]:
+                if char in ["f", "F"] and is_hex:
+                    continue
+                if char in ["b", "B"] and is_hex and not (value.endswith("s" + char) or value.endswith("u" + char)):
+                    continue
                 if value.endswith(char):
                     value = value[:-1]
+                    for char in ["s", "u"]:
+                        if value.endswith(char):
+                            value = value[:-1]
+                            break
+                    break
+            value = value.replace("_", "")
         if num_type == "int":
             return utils.cast_int(value)
         return float(value)
@@ -53,23 +64,27 @@ class TypeNumeric:
 class TypeByte(TypeNumeric):
     def __init__(self, value):
         TypeNumeric.__init__(self, value, "int")
+        self.value = utils.byte_range(self.value)
         self.suffix = "b"
 
 class TypeShort(TypeNumeric):
     value: int
     def __init__(self, value):
         TypeNumeric.__init__(self, value, "int")
+        self.value = utils.short_range(self.value)
         self.suffix = "s"
 
 class TypeInt(TypeNumeric):
     value: int
     def __init__(self, value):
         TypeNumeric.__init__(self, value, "int")
+        self.value = utils.int_range(self.value)
 
 class TypeLong(TypeNumeric):
     value: int
     def __init__(self, value):
         TypeNumeric.__init__(self, value, "int")
+        self.value = utils.long_range(self.value)
         self.suffix = "L"
 
 class TypeFloat(TypeNumeric):
@@ -240,20 +255,39 @@ def unpack(nbt: str) -> Any:
     if nbt[0] in ['"', "'"]:
         return utils.unpack_string(nbt)
     if utils.is_num(nbt):
-        if "." in nbt:
+        try:
+            int(nbt.replace("_", ""), 0)
+        except:
             return TypeDecimal(nbt)
-        return TypeInt(nbt)
+        else:
+            return TypeInt(nbt)
+    is_hex = len(nbt) >= 3 and nbt.startswith("0x")
     if len(nbt) > 1 and utils.is_num(nbt[:-1]):
-        if nbt[-1] in ["b", "B"]:
+        if nbt[-1] in ["b", "B"] and not is_hex:
             return TypeByte(nbt[:-1])
         if nbt[-1] in ["s", "S"]:
             return TypeShort(nbt[:-1])
+        if nbt[-1] in ["i", "I"]:
+            return TypeInt(nbt[:-1])
         if nbt[-1] in ["l", "L"]:
             return TypeLong(nbt[:-1])
-        if nbt[-1] in ["f", "F"]:
+        if nbt[-1] in ["f", "F"] and not is_hex:
             return TypeFloat(nbt[:-1])
         if nbt[-1] in ["d", "D"]:
             return TypeDouble(nbt[:-1])
+    if len(nbt) > 2 and utils.is_num(nbt[:-2]) and nbt[-2] in ["s", "u"]:
+        if nbt[-1] in ["b", "B"]:
+            return TypeByte(nbt[:-2])
+        if nbt[-1] in ["s", "S"]:
+            return TypeShort(nbt[:-2])
+        if nbt[-1] in ["i", "I"]:
+            return TypeInt(nbt[:-2])
+        if nbt[-1] in ["l", "L"]:
+            return TypeLong(nbt[:-2])
+        if nbt[-1] in ["f", "F"] and not is_hex:
+            return TypeFloat(nbt[:-2])
+        if nbt[-1] in ["d", "D"]:
+            return TypeDouble(nbt[:-2])
     
     if nbt == "true":
         return TypeByte(1)
