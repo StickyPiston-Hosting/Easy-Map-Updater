@@ -333,6 +333,8 @@ def get_block_ticks(chunk: NBT.NBTFile, source_chunk: NBT.NBTFile) -> list[tuple
 
         # Remove block ticks that are actually out of bounds
         if use_source_block_ticks:
+            if len(source_block_ticks) <= i:
+                continue
             source_block_tick = cast(NBT.TAG_Compound, source_block_ticks[i])
             if (
                 not ("x" in block_tick and "x" in source_block_tick and block_tick["x"].value == source_block_tick["x"].value) or
