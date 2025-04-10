@@ -157,15 +157,40 @@ def unpack_string(string: str) -> str:
         return ""
     else:
         if string.startswith("'"):
-            return unquote(string).replace("\\\\", "__DOUBLE_BACKSLASH_INDICATOR__").replace("\\'", "'").replace("\\n", "\n").replace("\\u", "__UNICODE_INDICATOR__").replace("__UNICODE_INDICATOR__003d", "=").replace("__UNICODE_INDICATOR__0027", "'").replace("__DOUBLE_BACKSLASH_INDICATOR__", "\\")
+            string = swap_tokens(unquote(string).replace("\\\\", "__DOUBLE_BACKSLASH_INDICATOR__").replace("\\'", "'"), False).replace("__UNICODE_INDICATOR_FOUR__003d", "=").replace("__UNICODE_INDICATOR_FOUR__0027", "'").replace("__DOUBLE_BACKSLASH_INDICATOR__", "\\")
         else:
-            return unquote(string).replace("\\\\", "__DOUBLE_BACKSLASH_INDICATOR__").replace('\\"', '"').replace("\\n", "\n").replace("\\u", "__UNICODE_INDICATOR__").replace("__UNICODE_INDICATOR__003d", "=").replace("__UNICODE_INDICATOR__0027", "'").replace("__DOUBLE_BACKSLASH_INDICATOR__", "\\")
+            string = swap_tokens(unquote(string).replace("\\\\", "__DOUBLE_BACKSLASH_INDICATOR__").replace('\\"', '"'), False).replace("__UNICODE_INDICATOR_FOUR__003d", "=").replace("__UNICODE_INDICATOR_FOUR__0027", "'").replace("__DOUBLE_BACKSLASH_INDICATOR__", "\\")
+    return string
 
 def pack_string(string: str, force_double: bool = False) -> str:
     # Return escaped string
     if '"' in string and not force_double:
-        return "'" + string.replace("\\", "\\\\").replace("'", "\\'").replace("\n", "\\n").replace("__UNICODE_INDICATOR__", "\\u") + "'"
-    return '"' + string.replace("\\", "\\\\").replace('"', '\\"').replace("\n", "\\n").replace("__UNICODE_INDICATOR__", "\\u") + '"'
+        string = "'" + swap_tokens(string.replace("\\", "\\\\").replace("'", "\\'"), True) + "'"
+    else:
+        string = '"' + swap_tokens(string.replace("\\", "\\\\").replace('"', '\\"'), True) + '"'
+    return string
+
+def swap_tokens(string: str, pack: bool) -> str:
+    tokens = [
+        ("\\x", "__UNICODE_INDICATOR_TWO__"),
+        ("\\u", "__UNICODE_INDICATOR_FOUR__"),
+        ("\\U", "__UNICODE_INDICATOR_EIGHT__"),
+        ("\\N", "__UNICODE_INDICATOR_NAME__"),
+        ("\\b", "\b"),
+        ("\\s", " "),
+        ("\\t", "\t"),
+        ("\\n", "\n"),
+        ("\\f", "\f"),
+        ("\\r", "\r"),
+    ]
+
+    for token_pair in tokens:
+        if pack and token_pair[1] != " ":
+            string = string.replace(token_pair[1], token_pair[0])
+        else:
+            string = string.replace(token_pair[0], token_pair[1])
+
+    return string
 
 
 
