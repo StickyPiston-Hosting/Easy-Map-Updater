@@ -1,6 +1,6 @@
 # Modify item name if custom name is defined and is different from the stored value
 
-data modify storage lock:data item set from entity @s ArmorItems[3]
+data modify storage lock:data item set from entity @s item
 
 execute store result score #custom_name_exists lock.value if data storage lock:data item.components."minecraft:custom_name"
 
@@ -13,5 +13,6 @@ execute if score #custom_name_exists lock.value matches 1 if score #different lo
 execute if score #modified_boolean lock.value matches 1 unless data storage lock:data item.components."minecraft:custom_data" run data modify storage lock:data item.components."minecraft:custom_data" set value {}
 execute if score #modified_boolean lock.value matches 1 run data modify storage lock:data item.components."minecraft:custom_data".emu_lock_name set from storage lock:data item.components."minecraft:custom_name"
 execute if score #modified_boolean lock.value matches 1 run function lock:extract_string/main
-execute if score #modified_boolean lock.value matches 1 run data modify storage lock:data item.components."minecraft:item_name" set from storage lock:data string
-execute if score #modified_boolean lock.value matches 1 run data modify entity @s ArmorItems[3] set from storage lock:data item
+execute if score #modified_boolean lock.value matches 1 run data modify storage lock:data item.components."minecraft:item_name" set value {extra:[],text:"EMU"}
+execute if score #modified_boolean lock.value matches 1 run data modify storage lock:data item.components."minecraft:item_name".extra append from storage lock:data string
+execute if score #modified_boolean lock.value matches 1 run data modify entity @s item set from storage lock:data item

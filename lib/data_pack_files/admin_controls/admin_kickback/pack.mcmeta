@@ -1,6 +1,6 @@
 {
     "pack": {
-        "pack_format": 61,
+        "pack_format": 71,
         "description": "Kicks back non-admins from things they shouldn't touch."
     }
 }

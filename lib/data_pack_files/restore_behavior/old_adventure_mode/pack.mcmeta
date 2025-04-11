@@ -1,6 +1,6 @@
 {
     "pack": {
-        "pack_format": 61,
+        "pack_format": 71,
         "description": "Brings back pre-1.8 adventure mode behavior."
     }
 }

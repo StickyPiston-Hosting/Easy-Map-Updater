@@ -7,20 +7,16 @@
         "function": "minecraft:set_components",
         "components": {
             "minecraft:can_break": {
-                "predicates": [
-                    {
-                        "blocks": "#adventure:mineable/universal"
-                    }
-                ],
-                "show_in_tooltip": false
+                "blocks": "#adventure:mineable/universal"
             },
             "minecraft:can_place_on": {
-                "predicates": [
-                    {
-                        "blocks": "#adventure:all"
-                    }
-                ],
-                "show_in_tooltip": false
+                "blocks": "#adventure:all"
+            },
+            "minecraft:tooltip_display": {
+                "hidden_components": [
+                    "minecraft:can_place_on",
+                    "minecraft:can_break"
+                ]
             }
         }
     }
