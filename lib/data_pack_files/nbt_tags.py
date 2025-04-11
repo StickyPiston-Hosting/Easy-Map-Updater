@@ -570,6 +570,8 @@ def edge_case(parent: dict, nbt, case: str | dict[str, str], source: str, object
         return edge_case_anchor_pos(parent)
     if case_type == "armor_drop_chances":
         return edge_case_armor_drop_chances(parent)
+    if case_type == "armor_item":
+        return edge_case_armor_item(parent, object_id, issues)
     if case_type == "armor_items":
         return edge_case_armor_items(parent, object_id, issues)
     if case_type == "attribute_id":
@@ -678,6 +680,12 @@ def edge_case_armor_drop_chances(parent: dict[str, Any]):
     parent["drop_chances"]["legs"] = TypeFloat(parent["ArmorDropChances"][1]) if length > 1 else TypeFloat(0.085)
     parent["drop_chances"]["chest"] = TypeFloat(parent["ArmorDropChances"][2]) if length > 2 else TypeFloat(0.085)
     parent["drop_chances"]["head"] = TypeFloat(parent["ArmorDropChances"][3]) if length > 3 else TypeFloat(0.085)
+
+def edge_case_armor_item(parent: dict[str, Any], object_id: str, issues: list[dict[str, str | int]]):
+    if "equipment" not in parent:
+        parent["equipment"] = {}
+
+    parent["equipment"]["body"] = get_source(parent, parent["ArmorItem"], "item", object_id, issues)
 
 def edge_case_armor_items(parent: dict[str, Any], object_id: str, issues: list[dict[str, str | int]]):
     if "equipment" not in parent:

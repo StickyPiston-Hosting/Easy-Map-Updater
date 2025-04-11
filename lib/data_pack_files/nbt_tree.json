@@ -368,15 +368,24 @@
                 },
                 "ArmorDropChances": {
                     "remove": true,
-                    "edge_case": "armor_drop_chances"
+                    "edge_case": "armor_drop_chances",
+                    "path": {
+                        "edge_case": "armor_drop_chances"
+                    }
                 },
                 "ArmorItem": {
-                    "rename": "body_armor_item",
-                    "source": "item"
+                    "remove": true,
+                    "edge_case": "armor_item",
+                    "path": {
+                        "edge_case": "armor_item"
+                    }
                 },
                 "ArmorItems": {
                     "remove": true,
-                    "edge_case": "armor_items"
+                    "edge_case": "armor_items",
+                    "path": {
+                        "edge_case": "armor_items"
+                    }
                 },
                 "attributes": { "list": { "source": "attribute" } },
                 "Attributes": {
@@ -413,17 +422,36 @@
                 "beam_target": { "data_type": "int_array" },
                 "Block": {
                     "remove": true,
-                    "edge_case": "block_entity"
+                    "edge_case": "block_entity",
+                    "path": {
+                        "edge_case": "block_entity"
+                    }
                 },
-                "BlockState": { "edge_case": "block_entity" },
-                "block_state": { "edge_case": "block_entity" },
+                "BlockState": {
+                    "edge_case": "block_entity",
+                    "path": {
+                        "edge_case": "block_entity"
+                    }
+                },
+                "block_state": {
+                    "edge_case": "block_entity",
+                    "path": {
+                        "edge_case": "block_entity"
+                    }
+                },
                 "body_armor_drop_chance": {
                     "remove": true,
-                    "edge_case": "body_armor_drop_chance"
+                    "edge_case": "body_armor_drop_chance",
+                    "path": {
+                        "rename": ["drop_chances", "body"]
+                    }
                 },
                 "body_armor_item": {
                     "remove": true,
-                    "edge_case": "body_armor_item"
+                    "edge_case": "body_armor_item",
+                    "path": {
+                        "rename": ["equipment", "body"]
+                    }
                 },
                 "BoundX": {
                     "remove": true,
@@ -572,11 +600,17 @@
                 "Fuse": { "edge_case": "fuse" },
                 "HandDropChances": {
                     "remove": true,
-                    "edge_case": "hand_drop_chances"
+                    "edge_case": "hand_drop_chances",
+                    "path": {
+                        "edge_case": "hand_drop_chances"
+                    }
                 },
                 "HandItems": {
                     "remove": true,
-                    "edge_case": "hand_items"
+                    "edge_case": "hand_items",
+                    "path": {
+                        "edge_case": "hand_items"
+                    }
                 },
                 "HasEgg": {
                     "rename": "has_egg",
@@ -710,11 +744,17 @@
                 "Rotation": { "list": { "data_type": "float" } },
                 "Saddle": {
                     "remove": true,
-                    "edge_case": "saddle"
+                    "edge_case": "saddle",
+                    "path": {
+                        "rename": ["equipment", "saddle"]
+                    }
                 },
                 "SaddleItem": {
                     "remove": true,
-                    "edge_case": "saddle_item"
+                    "edge_case": "saddle_item",
+                    "path": {
+                        "rename": ["equipment", "saddle"]
+                    }
                 },
                 "SelectedItem": { "source": "item" },
                 "ShotAtAngle": { "data_type": "byte" },

@@ -180,6 +180,46 @@ def extract_nbt_from_path(nbt, path_parts: list[str]):
 
 
 def edge_case(path_parts: list[str], case_type: str, source: str, issues: list[dict[str, str | int]]) -> list[str]:
+    if case_type == "armor_drop_chances":
+        return edge_case_equipment_path(path_parts, "drop_chances", {
+            "[0]": "feet",
+            "[1]": "legs",
+            "[2]": "chest",
+            "[3]": "head",
+        }, False, issues)
+
+    if case_type == "armor_item":
+        return edge_case_equipment_path(path_parts, "equipment", "body", True, issues)
+    
+    if case_type == "armor_items":
+        return edge_case_equipment_path(path_parts, "equipment", {
+            "[0]": "feet",
+            "[1]": "legs",
+            "[2]": "chest",
+            "[3]": "head",
+        }, True, issues)
+
+    if case_type == "block_entity":
+        return edge_case_block_entity(path_parts, issues)
+
+    if case_type == "body_armor_drop_chances":
+        return edge_case_equipment_path(path_parts, "drop_chances", "body", False, issues)
+
+    if case_type == "body_armor_item":
+        return edge_case_equipment_path(path_parts, "equipment", "body", True, issues)
+
+    if case_type == "hand_drop_chances":
+        return edge_case_equipment_path(path_parts, "drop_chances", {
+            "[0]": "mainhand",
+            "[1]": "offhand",
+        }, False, issues)
+
+    if case_type == "hand_items":
+        return edge_case_equipment_path(path_parts, "equipment", {
+            "[0]": "mainhand",
+            "[1]": "offhand",
+        }, True, issues)
+
     if case_type == "item_tag":
         path_parts = search_tags(path_parts, NBT_TREE["sources"]["item_tag"]["tags"], source, issues)
         return item_component.update_path(path_parts, pack_version, issues)
@@ -194,3 +234,27 @@ def edge_case(path_parts: list[str], case_type: str, source: str, issues: list[d
     if defaults.SEND_WARNINGS:
         log(f'WARNING: "{case_type}" case is not registered!')
     return path_parts
+
+
+
+def edge_case_block_entity(path_parts: list[str], issues: list[dict[str, str | int]]) -> list[str]:
+    if len(path_parts) <= 2:
+        return path_parts
+    
+    if path_parts[1] == "TileEntityData":
+        return path_parts[:2] + get_source(path_parts[1:], "block", issues)[1:]
+    
+    return path_parts
+
+
+
+def edge_case_equipment_path(path_parts: list[str], base_name: str, secondary_name: str | dict[str, str], update_item: bool, issues: list[dict[str, str | int]]) -> list[str]:
+    if len(path_parts) <= 1:
+        return [base_name]
+    path = [base_name, secondary_name if isinstance(secondary_name, str) else secondary_name[path_parts[1]]]
+    if len(path_parts) > 2:
+        if update_item:
+            path += get_source(path_parts[1:], "item", issues)[1:]
+        else:
+            path += path_parts[2:]
+    return path
