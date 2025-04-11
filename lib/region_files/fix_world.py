@@ -822,6 +822,16 @@ def fix_item(item: NBT.TAG_Compound, is_from_spawner: bool = False):
                     item_components["minecraft:custom_data"]["emu_lock_name"] = item_components["minecraft:custom_name"]
                     item_components["minecraft:item_name"] = json_text_component.convert_lock_string_from_lib_format(item_components["minecraft:custom_name"])
 
+            # Handle custom data
+            if "minecraft:custom_data" in item_components:
+                custom_data = item_components["minecraft:custom_data"]
+                if "emu_lock_name" in custom_data and pack_version <= 2104:
+                    custom_data["emu_lock_name"] = json_text_component.update_from_lib_format(custom_data["emu_lock_name"], pack_version, [], True)
+
+            # Handle item name
+            if "minecraft:item_name":
+                item_components["minecraft:item_name"] = json_text_component.update_from_lib_format(item_components["minecraft:item_name"], pack_version, [], True)
+
             # Handle lore
             if "minecraft:lore" in item_components:
                 lore = item_components["minecraft:lore"]

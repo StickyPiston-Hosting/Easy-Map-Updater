@@ -394,6 +394,11 @@ def conform_component(component: ItemComponent, version: int):
                         for i in range(len(on_consume_effect["effects"])):
                             on_consume_effect["effects"][i] = ids.effect(on_consume_effect["effects"][i], version, [])
 
+    if component.key == "minecraft:custom_data":
+        custom_data: dict[str, Any] = component.value
+        if "emu_lock_name" in custom_data and version <= 2104:
+            custom_data["emu_lock_name"] = json_text_component.update(custom_data["emu_lock_name"], version, [], {"mangled": True})
+
     if component.key == "minecraft:custom_name":
         component.value = json_text_component.update(component.value, version, [], {"mangled": True, "pack": False})
 

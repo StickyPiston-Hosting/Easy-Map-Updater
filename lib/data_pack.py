@@ -20,6 +20,7 @@ from lib.data_pack_files import recipe
 from lib.data_pack_files import item_modifier
 from lib.data_pack_files import mcfunction
 from lib.data_pack_files import tags
+from lib.data_pack_files.restore_behavior import lock_fixer
 from lib.region_files import structure
 from lib import finalize
 from lib import json_manager
@@ -90,6 +91,16 @@ def update(world: Path, version: int):
         except Exception:
             log(f"An error was thrown while updating the data pack: {data_pack.name}")
             utils.log_error()
+
+    # Replace behavior restoring data packs if they have been updated
+    if version <= 2104:
+        for name in ["lock_fixer", "lock_fixer.zip"]:
+            lock_fixer_path = world / "datapacks" / name
+            if lock_fixer_path.exists():
+                log("Replacing lock fixer data pack with updated version")
+                shutil.rmtree(lock_fixer_path)
+                lock_fixer.create_pack(world)
+                break
 
     # Log completion
     log("Data packs updated")
