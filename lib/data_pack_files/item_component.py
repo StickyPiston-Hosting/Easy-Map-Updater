@@ -296,6 +296,32 @@ def conform_components(components: ItemComponents, version: int, issues: list[di
             for alternative in component.alternatives:
                 conform_component(alternative, version)
 
+                if alternative.key == "minecraft:food":
+                    food = alternative.value
+                    if "eat_seconds" in food:
+                        del food["eat_seconds"]
+                    if "effects" in food:
+                        del food["effects"]
+                    if "using_converts_to" in food:
+                        del food["using_converts_to"]
+
+                if alternative.key in [
+                    "minecraft:attribute_modifiers",
+                    "minecraft:dyed_color",
+                    "minecraft:can_place_on",
+                    "minecraft:can_break",
+                    "minecraft:enchantments",
+                    "minecraft:stored_enchantments",
+                    "minecraft:jukebox_playable",
+                    "minecraft:trim",
+                    "minecraft:unbreakable",
+                ]:
+                    component = alternative.value
+                    if not isinstance(component, dict):
+                        continue
+                    if "show_in_tooltip" in component:
+                        del component["show_in_tooltip"]
+
 
     # In 1.21.2, container locks got converted into item predicates
     # The raw character data of the custom name will be extracted out into the item name for comparison
@@ -304,13 +330,6 @@ def conform_components(components: ItemComponents, version: int, issues: list[di
         if "minecraft:custom_data" not in components:
             components["minecraft:custom_data"] = {}
         components["minecraft:custom_data"]["emu_lock_name"] = components["minecraft:custom_name"]
-
-
-    # In 1.21.4, custom model data was rewritten
-    if version <= 2103 and "minecraft:custom_model_data" in components:
-        components["minecraft:custom_model_data"] = {
-            "floats": nbt_tags.TypeList([nbt_tags.TypeFloat(components["minecraft:custom_model_data"].value)])
-        }
 
 
     return components
@@ -398,6 +417,12 @@ def conform_component(component: ItemComponent, version: int):
         custom_data: dict[str, Any] = component.value
         if "emu_lock_name" in custom_data and version <= 2104:
             custom_data["emu_lock_name"] = json_text_component.update(custom_data["emu_lock_name"], version, [], {"mangled": True})
+
+    if component.key == "minecraft:custom_model_data":
+        if version <= 2103:
+            component.value = {
+                "floats": nbt_tags.TypeList([nbt_tags.TypeFloat(component.value)])
+            }
 
     if component.key == "minecraft:custom_name":
         component.value = json_text_component.update(component.value, version, [], {"mangled": True, "pack": False})
@@ -788,7 +813,9 @@ def extract(item_id: str, components: dict[str, Any] | None, nbt: dict[str, Any]
         del nbt["ChargedProjectiles"]
 
     if "CustomModelData" in nbt:
-        components["minecraft:custom_model_data"] = nbt_tags.TypeInt(nbt["CustomModelData"])
+        components["minecraft:custom_model_data"] = {
+            "floats": nbt_tags.TypeList([nbt_tags.TypeFloat(nbt["CustomModelData"])])
+        }
         del nbt["CustomModelData"]
 
     if "CustomPotionColor" in nbt:
