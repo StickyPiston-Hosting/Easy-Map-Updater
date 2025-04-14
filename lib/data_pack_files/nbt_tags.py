@@ -595,7 +595,7 @@ def edge_case(parent: dict, nbt, case: str | dict[str, str], source: str, object
     if case_type == "can_place_on":
         return edge_case_can_place_on(nbt, issues)
     if case_type == "color":
-        return edge_case_color(parent)
+        return edge_case_color(parent, object_id)
     if case_type == "custom_potion_effects":
         return edge_case_custom_potion_effects(parent, object_id, issues)
     if case_type == "effects":
@@ -813,10 +813,12 @@ def edge_case_can_place_on(nbt: list[str], issues: list[dict[str, str | int]]):
         new_list.append(cast(str, new_block["id"]) + (blocks.pack_block_states(new_block["block_states"]) if new_block["block_states"] else ""))
     return TypeList(utils.deduplicate_list(new_list))
 
-def edge_case_color(parent: dict):
-    if "potion_contents" not in parent:
-        parent["potion_contents"] = {}
-    parent["potion_contents"]["custom_color"] = TypeInt(parent["Color"].value)
+def edge_case_color(parent: dict, object_id: str):
+    if object_id == "minecraft:area_effect_cloud":
+        if "potion_contents" not in parent:
+            parent["potion_contents"] = {}
+        parent["potion_contents"]["custom_color"] = TypeInt(parent["Color"].value)
+        del parent["Color"]
 
 def edge_case_custom_potion_effects(parent: dict, object_id: str, issues: list[dict[str, str | int]]):
     if "item" not in parent:

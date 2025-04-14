@@ -469,9 +469,10 @@
                     "path": { "rename": [ "bound_pos", "[2]" ] }
                 },
                 "Color": {
-                    "remove": true,
                     "edge_case": "color",
-                    "path": { "rename": [ "potion_contents", "custom_color" ] }
+                    "path": {
+                        "edge_case": "color"
+                    }
                 },
                 "Command": {
                     "data_type": "string",

@@ -207,6 +207,10 @@ def edge_case(path_parts: list[str], case_type: str, source: str, issues: list[d
 
     if case_type == "body_armor_item":
         return edge_case_equipment_path(path_parts, "equipment", "body", True, issues)
+    
+    if case_type == "color":
+        log(f'WARNING: NBT path "Color" may need to be modified to "potion_contents.custom_color" for area effect clouds.')
+        return path_parts
 
     if case_type == "hand_drop_chances":
         return edge_case_equipment_path(path_parts, "drop_chances", {
@@ -228,7 +232,7 @@ def edge_case(path_parts: list[str], case_type: str, source: str, issues: list[d
         return item_component.conform_component_paths(path_parts, pack_version, issues)    
     
     if case_type == "shot_from_crossbow":
-        log(f'WARNING: Entity tag "ShotFromCrossbow" used in an NBT path and was converted to "weapon.id", check that its use is valid')
+        log(f'WARNING: Entity tag "ShotFromCrossbow" used in an NBT path and was converted to "weapon.id", check that its use is valid.')
         return ["weapon", "id"]
 
     if defaults.SEND_WARNINGS:
