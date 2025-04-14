@@ -69,7 +69,10 @@ def item_modifier(contents: dict[str, Any] | list, version: int, object_id: str 
             entry = output[i]
             
             if entry["function"] == "minecraft:set_custom_data":
-                custom_data_array.append(nbt_tags.unpack(entry["tag"]))
+                if isinstance(entry["tag"], str):
+                    custom_data_array.append(nbt_tags.unpack(entry["tag"]))
+                else:
+                    custom_data_array.append(nbt_tags.convert_from_json(entry["tag"]))
                 set_custom_data_index = i
                 output.pop(i)
 
@@ -272,7 +275,7 @@ def item_modifier(contents: dict[str, Any] | list, version: int, object_id: str 
 
     if function_id == "minecraft:set_lore":
         for i in range(len(contents["lore"])):
-            contents["lore"][i] = json_text_component.update_component(contents["lore"][i], version, [])
+            contents["lore"][i] = nbt_tags.convert_to_json(json_text_component.update_component(contents["lore"][i], version, []))
         if "replace" in contents:
             contents["mode"] = "replace_all" if contents["replace"] else "append"
             del contents["replace"]
@@ -282,7 +285,7 @@ def item_modifier(contents: dict[str, Any] | list, version: int, object_id: str 
             contents["entity"] = miscellaneous.loot_context(contents["entity"])
 
     if function_id == "minecraft:set_name":
-        contents["name"] = json_text_component.update_component(contents["name"], version, [])
+        contents["name"] = nbt_tags.convert_to_json(json_text_component.update_component(contents["name"], version, []))
         if "entity" in contents:
             contents["entity"] = miscellaneous.loot_context(contents["entity"])
 

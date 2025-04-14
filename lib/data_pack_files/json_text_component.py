@@ -54,7 +54,7 @@ def update(string: str, version: int, issues: list[dict[str, str | int]], params
     if not isinstance(string, str):
         unpacked_component = string
     elif pack_version <= 2104:
-        unpacked_component = json_manager.unpack(string)
+        unpacked_component = nbt_tags.convert_from_json(json_manager.unpack(string))
     else:
         unpacked_component = nbt_tags.unpack(string)
 
@@ -65,7 +65,7 @@ def update(string: str, version: int, issues: list[dict[str, str | int]], params
     else:
         return updated_component
 
-def direct_update(unpacked_component: dict | list | str, version: int, issues: list[dict[str, str | int]], mangled: bool):
+def direct_update(unpacked_component: str | dict | nbt_tags.TypeList, version: int, issues: list[dict[str, str | int]], mangled: bool):
     global pack_version
     pack_version = version
 
@@ -93,7 +93,7 @@ def update_string(string: str):
     strikethrough = False
     obfuscated = False
 
-    components = []
+    components = nbt_tags.TypeList([])
 
     # Iterate through string
     after_first = False
@@ -190,11 +190,11 @@ def update_string(string: str):
 #     separator: Any
 #     shadow_color: int | list[int]
 
-def update_component(component: str | list | dict, version: int, issues: list[dict[str, str | int]]) -> str | list | dict:
+def update_component(component: str | dict | nbt_tags.TypeList, version: int, issues: list[dict[str, str | int]]) -> str | dict | nbt_tags.TypeList:
     global pack_version
     pack_version = version
 
-    if isinstance(component, list):
+    if isinstance(component, nbt_tags.TypeList):
         return update_list(component, issues)
     if isinstance(component, dict):
         return update_compound(component, issues)
@@ -202,7 +202,7 @@ def update_component(component: str | list | dict, version: int, issues: list[di
         return {"type":"text","text":""}
     return component
 
-def update_list(component: list, issues: list[dict[str, str | int]]) -> list | dict:
+def update_list(component: nbt_tags.TypeList, issues: list[dict[str, str | int]]) -> dict | nbt_tags.TypeList:
     # Iterate through list
     for i in range(len(component)):
         component[i] = update_component(component[i], pack_version, issues)
@@ -475,16 +475,16 @@ def retrieve_translation_keys():
 
 
 
-def pack_mangled(component: str | list | dict) -> str | list | dict:
+def pack_mangled(component: str | dict | nbt_tags.TypeList) -> str | dict | nbt_tags.TypeList:
     component = reorder_data(component)
     component = prune_data(component)
     return component
 
-def reorder_data(component: str | list | dict) -> dict:
+def reorder_data(component: str | dict | nbt_tags.TypeList) -> dict:
     if isinstance(component, str):
         return {"text": component}
     
-    if isinstance(component, list):
+    if isinstance(component, nbt_tags.TypeList):
         if len(component) == 0:
             return {"text": ""}
         output_component = reorder_data(component[0])
@@ -576,10 +576,10 @@ def convert_lock_string_from_lib_format(string):
     return nbt_tags.convert_to_lib_format(convert_lock_string(nbt_tags.convert_from_lib_format(string)))
 
 
-def extract_raw_string(component: str | dict | list) -> str:
+def extract_raw_string(component: str | dict | nbt_tags.TypeList) -> str:
     if isinstance(component, dict):
         return extract_raw_string_compound(component)
-    if isinstance(component, list):
+    if isinstance(component, nbt_tags.TypeList):
         return extract_raw_string_list(component)
     return component
 
@@ -601,7 +601,7 @@ def extract_raw_string_compound(component: dict) -> str:
     
     return raw_string
 
-def extract_raw_string_list(component: list) -> str:
+def extract_raw_string_list(component: nbt_tags.TypeList) -> str:
     raw_string = ""
     for entry in component:
         raw_string += extract_raw_string(entry)

@@ -244,6 +244,8 @@ def update_with_guide(snbt: str, version: int, issues: list[dict[str, str | int]
 
 
 def unpack(nbt: str) -> Any:
+    if not isinstance(nbt, str):
+        return nbt
     if nbt == "":
         return
 
