@@ -307,7 +307,7 @@ def conform_components(components: ItemComponents, version: int, issues: list[di
 
 
     # In 1.21.4, custom model data was rewritten
-    if version <= 2104 and "minecraft:custom_model_data" in components:
+    if version <= 2103 and "minecraft:custom_model_data" in components:
         components["minecraft:custom_model_data"] = {
             "floats": nbt_tags.TypeList([nbt_tags.TypeFloat(components["minecraft:custom_model_data"].value)])
         }
