@@ -560,11 +560,8 @@ def prune_data(component: dict) -> str | dict:
 
 
 def convert_lock_string(string):
-    # Unpack string
-    unpacked_component = nbt_tags.unpack(string)
-
     # Extract raw string
-    raw_string = extract_raw_string(unpacked_component)
+    raw_string = extract_raw_string(string)
 
     # Replace escapable characters 
     raw_string = raw_string.replace('"', "_DQ_").replace("'", "_SQ_").replace("\\", "_BS_")
