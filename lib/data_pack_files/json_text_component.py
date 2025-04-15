@@ -245,7 +245,7 @@ def update_compound(component: str | dict, issues: list[dict[str, str | int]]) -
                 component[key] = nbt_tags.TypeByte(1)
             elif component[key] in ["false", "False"]:
                 component[key] = nbt_tags.TypeByte(0)
-            else:
+            elif isinstance(component[key], bool):
                 component[key] = nbt_tags.TypeByte(1 if component[key] else 0)
         if key == "translate":
             update_translate(component)
