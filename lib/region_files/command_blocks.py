@@ -159,7 +159,7 @@ def read_commands_from_region(world: Path, file_path: Path, list_name: str) -> s
                             continue
                         sign_nbt[tag] = {"messages": []}
                         for message in text["messages"]:
-                            sign_nbt[tag]["messages"].append(message.value)
+                            sign_nbt[tag]["messages"].append(nbt_tags.convert_from_lib_format(message))
 
                     data = cast(CommandGuide, {
                         "coordinates": f"{x} {y} {z}",
@@ -300,15 +300,7 @@ def write_commands(world: Path, get_confirmation: bool):
                 if sign_side not in block_entity:
                     block_entity[sign_side] = NBT.TAG_Compound()
                 for key in sign_nbt[sign_side]:
-                    tag = sign_nbt[sign_side][key]
-                    if isinstance(tag, str):
-                        block_entity[sign_side][key] = NBT.TAG_String(tag)
-                    if isinstance(tag, nbt_tags.TypeByte):
-                        block_entity[sign_side][key] = NBT.TAG_Byte(tag.value)
-                    if isinstance(tag, nbt_tags.TypeList):
-                        block_entity[sign_side][key] = NBT.TAG_List(type=NBT.TAG_String)
-                        for entry in tag:
-                            block_entity[sign_side][key].append(NBT.TAG_String(entry))
+                    block_entity[sign_side][key] = nbt_tags.convert_to_lib_format(sign_nbt[sign_side][key])
 
         else:
             block_entity[guide["tag"]] = NBT.TAG_String(command)

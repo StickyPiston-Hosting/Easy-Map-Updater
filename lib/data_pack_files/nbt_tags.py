@@ -370,7 +370,7 @@ def pack_compound(nbt: dict[str, Any]) -> str:
 
     # Iterate through keys
     for key in nbt:
-        pack_bool = ":" in key or '"' in key or "'" in key
+        pack_bool = ":" in key or '"' in key or "'" in key or key == ""
         tags.append(f'{utils.pack_string(key) if pack_bool else key}:{pack(nbt[key])}')
     
     # Return stringified version of compound
@@ -1235,6 +1235,18 @@ def convert_to_lib_format_nbt_list(nbt: TypeList) -> Any:
     else:
         data = [ convert_to_lib_format(nbt[i]) for i in range(len(nbt)) ]
         if data:
+            # If there are multiple data types present, conform all entries to the standardized format
+            data_type = type(data[0])
+            for entry in data:
+                if data_type == type(entry):
+                    continue
+                for i in range(len(data)):
+                    if type(data[i]) == NBT.TAG_Compound:
+                        continue
+                    value = data[i]
+                    data[i] = NBT.TAG_Compound()
+                    cast(NBT.TAG_Compound, data[i])[""] = value
+                break
             output = NBT.TAG_List(type(data[0]))
         else:
             output = NBT.TAG_List(NBT.TAG_Compound)

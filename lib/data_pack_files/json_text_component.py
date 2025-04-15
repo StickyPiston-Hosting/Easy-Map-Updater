@@ -221,7 +221,6 @@ def update_compound(component: str | dict, issues: list[dict[str, str | int]]) -
             del component[key]
         if key == "click_event":
             component[key] = update_click_event(component[key])
-            del component[key]
         if key == "color":
             if not component[key].startswith("#"):
                 if component[key] not in tables.COLORS:
