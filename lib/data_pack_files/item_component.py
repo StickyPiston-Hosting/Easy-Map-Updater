@@ -469,6 +469,11 @@ def conform_component(component: ItemComponent, version: int):
     if component.key == "minecraft:item_name":
         component.value = json_text_component.update(component.value, version, [], {"mangled": True, "pack": False})
 
+    if component.key == "minecraft:lore":
+        lore = component.value
+        for i in range(len(lore)):
+            lore[i] = json_text_component.update(lore[i], version, [], {"mangled": True, "pack": False})
+
     if component.key == "minecraft:potion_contents":
         potion_contents = component.value
         if not isinstance(potion_contents, dict):
