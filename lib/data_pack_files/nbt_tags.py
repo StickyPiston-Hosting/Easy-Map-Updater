@@ -61,6 +61,9 @@ class TypeNumeric:
             return utils.cast_int(value)
         return float(value)
 
+    def __bool__(self) -> bool:
+        return bool(self.value)
+
 class TypeByte(TypeNumeric):
     def __init__(self, value):
         TypeNumeric.__init__(self, value, "int")

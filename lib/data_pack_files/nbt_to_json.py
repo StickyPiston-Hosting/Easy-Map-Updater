@@ -58,6 +58,10 @@ def conform_entity_to_json(entity: dict[str, Any]) -> dict[str, Any]:
         if tag in entity:
             entity[tag] = bool(entity[tag])
 
+    # Handle name
+    if "CustomName" in entity:
+        entity["CustomName"] = conform_text_component_to_json(entity["CustomName"])
+
     # Handle items
     for key in [
         "ArmorItems",
@@ -67,11 +71,12 @@ def conform_entity_to_json(entity: dict[str, Any]) -> dict[str, Any]:
         if key in entity:
             for i in range(len(entity[key])):
                 entity[key][i] = conform_item_to_json(entity[key][i])
-    for key in [
-        "body_armor_item",
-    ]:
+    for key in ["body_armor_item"]:
         if key in entity:
             entity[key] = conform_item_to_json(entity[key])
+    if "equipment" in entity:
+        for key in entity["equipment"]:
+            entity["equipment"][key] = conform_item_to_json(entity["equipment"][key])
 
     # Handle effects
     for effect_key in [
@@ -192,6 +197,9 @@ def conform_item_components_to_json(components: dict[str, Any]) -> dict[str, Any
             if "item" in item:
                 item["item"] = conform_item_to_json(item["item"])
 
+    if "minecraft:custom_name" in components:
+        components["minecraft:custom_name"] = conform_text_component_to_json(components["minecraft:custom_name"])
+
     if "minecraft:death_protection" in components:
         death_protection = components["minecraft:death_protection"]
         if "death_effects" in death_protection:
@@ -244,10 +252,17 @@ def conform_item_components_to_json(components: dict[str, Any]) -> dict[str, Any
         if "can_always_eat" in food:
             food["can_always_eat"] = bool(food["can_always_eat"])
 
+    if "minecraft:item_name" in components:
+        components["minecraft:item_name"] = conform_text_component_to_json(components["minecraft:item_name"])
+
     if "minecraft:lodestone_tracker" in components:
         lodestone_tracker = components["minecraft:lodestone_tracker"]
         if "tracked" in lodestone_tracker:
             lodestone_tracker["tracked"] = bool(lodestone_tracker["tracked"])
+
+    if "minecraft:lore" in components:
+        for i in range(len(components["minecraft:lore"])):
+            components["minecraft:lore"][i] = conform_text_component_to_json(components["minecraft:lore"][i])
 
     if "minecraft:potion_contents" in components:
         if "custom_effects" in components["minecraft:potion_contents"]:
@@ -284,3 +299,38 @@ def conform_item_component_effect_to_json(effect: dict[str, Any]) -> dict[str, A
             effect[key] = bool(effect[key])
 
     return effect
+
+
+
+def conform_text_component_to_json(text_component: str | dict | list) -> str | dict | list:
+    if isinstance(text_component, str):
+        return text_component
+    if isinstance(text_component, dict):
+        return conform_text_compound_to_json(text_component)
+    return conform_text_list_to_json(text_component)
+
+def conform_text_compound_to_json(text_component: dict[str, Any]) -> dict[str, Any]:
+    for key in ["bold", "italic", "underlined", "strikethrough", "obfuscated"]:
+        if key in text_component:
+            text_component[key] = bool(text_component[key])
+
+    for key in ["extra", "separator", "with"]:
+        if key in text_component:
+            text_component[key] = conform_text_component_to_json(text_component[key])
+
+    if "hover_event" in text_component:
+        hover_event = text_component["hover_event"]
+        if "action" in hover_event:
+            if hover_event["action"] == "show_text" and "value" in hover_event:
+                hover_event["value"] = conform_text_component_to_json(hover_event["value"])
+            if hover_event["action"] == "show_entity" and "name" in hover_event:
+                hover_event["name"] = conform_text_component_to_json(hover_event["name"])
+            if hover_event["action"] == "show_item" and "components" in hover_event:
+                hover_event["components"] = conform_item_components_to_json(hover_event["components"])
+
+    return text_component
+
+def conform_text_list_to_json(text_component: list) -> list:
+    for i in range(len(text_component)):
+        text_component[i] = conform_text_component_to_json(text_component[i])
+    return text_component
