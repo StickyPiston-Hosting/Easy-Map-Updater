@@ -160,6 +160,7 @@ def update_texture_names(model_json: dict, modified: bool) -> bool:
     # Insert particle texture if it doesn't exist
     if "particle" not in model_json["textures"] and len(model_json["textures"].keys()):
         model_json["textures"]["particle"] = list(model_json["textures"].values())[0]
+        modified = True
 
     return modified
 
