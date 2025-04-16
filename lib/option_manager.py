@@ -65,6 +65,7 @@ def get_default_options() -> Options:
             "old_adventure_mode_items": True,
             "post_fixes": True,
             "lock_fixer": True,
+            "empty_equipment_override": False,
             "stats_options": {
                 "block_stats_used": True,
                 "block_positions_dynamic": False,
