@@ -197,7 +197,7 @@ def update(snbt: str | dict[str, str], version: int, issues: list[dict[str, str 
     # Extract arguments if a dict
     if isinstance(snbt, dict):
         if "object_id" in snbt:
-            object_id: str = snbt["object_id"]
+            object_id: str = miscellaneous.namespace(snbt["object_id"])
         snbt = snbt["nbt"]
 
     # Return if not SNBT
@@ -467,10 +467,13 @@ def update_tags(parent: dict, nbt: dict, guide: dict, source: str, object_id: st
             if "conditions" in necessary_tags[key]:
                 skip = False
                 for condition in necessary_tags[key]["conditions"]:
-                    if condition not in nbt:
+                    if condition in nbt:
+                        value = nbt[condition]
+                    elif condition == "id":
+                        value = object_id
+                    else:
                         skip = True
                         break
-                    value = nbt[condition]
                     if isinstance(value, str):
                         if value != necessary_tags[key]["conditions"][condition]:
                             skip = True
@@ -485,6 +488,9 @@ def update_tags(parent: dict, nbt: dict, guide: dict, source: str, object_id: st
                 if skip:
                     continue
 
+            if generator == "area_effect_cloud_radius":
+                if pack_version <= 2104:
+                    nbt[key] = TypeFloat(0)
             if generator == "item_entity":
                 nbt[key] = {"id": "minecraft:stone", "count": TypeInt(1)}
             if generator == "uuid":

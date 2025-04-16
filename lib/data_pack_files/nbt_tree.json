@@ -898,6 +898,12 @@
                     "conditions": {
                         "id": "minecraft:item"
                     }
+                },
+                "Radius": {
+                    "generator": "area_effect_cloud_radius",
+                    "conditions": {
+                        "id": "minecraft:area_effect_cloud"
+                    }
                 }
             }
         },
