@@ -48,4 +48,7 @@ def update(argument: dict[str, str], version: int, issues: list[dict[str, str | 
     if defaults.DEBUG_MODE:
         log(f'New NBT: {nbt_tags.pack(nested_nbt)}')
     path_parts = nbt_paths.direct_update(path_parts, pack_version, issues, source)
-    return nbt_tags.pack(nbt_paths.extract_nbt_from_path(nested_nbt, path_parts))
+    new_data = nbt_paths.extract_nbt_from_path(nested_nbt, path_parts)
+    if new_data is None:
+        return nbt
+    return nbt_tags.pack(new_data)

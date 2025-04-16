@@ -698,19 +698,19 @@ def edge_case_armor_items(parent: dict[str, Any], object_id: str, issues: list[d
 
     length = len(parent["ArmorItems"])
 
-    if length > 0 and "id" in parent["ArmorItems"][0]:
+    if length > 0 and parent["ArmorItems"][0]:
         parent["equipment"]["feet"] = get_source(parent, parent["ArmorItems"][0], "item", object_id, issues)
     else:
         parent["equipment"]["feet"] = {"id": "minecraft:air", "count": TypeInt(0)}
-    if length > 1 and "id" in parent["ArmorItems"][1]:
+    if length > 1 and parent["ArmorItems"][1]:
         parent["equipment"]["legs"] = get_source(parent, parent["ArmorItems"][1], "item", object_id, issues)
     else:
         parent["equipment"]["legs"] = {"id": "minecraft:air", "count": TypeInt(0)}
-    if length > 2 and "id" in parent["ArmorItems"][2]:
+    if length > 2 and parent["ArmorItems"][2]:
         parent["equipment"]["chest"] = get_source(parent, parent["ArmorItems"][2], "item", object_id, issues)
     else:
         parent["equipment"]["chest"] = {"id": "minecraft:air", "count": TypeInt(0)}
-    if length > 3 and "id" in parent["ArmorItems"][3]:
+    if length > 3 and parent["ArmorItems"][3]:
         parent["equipment"]["head"] = get_source(parent, parent["ArmorItems"][3], "item", object_id, issues)
     else:
         parent["equipment"]["head"] = {"id": "minecraft:air", "count": TypeInt(0)}
@@ -873,23 +873,23 @@ def edge_case_equipment(parent: dict, nbt: TypeList, object_id: str, issues: lis
 
     length = len(nbt)
 
-    if length > 4 and "id" in nbt[4]:
+    if length > 4 and nbt[4]:
         parent["equipment"]["head"] = get_source(parent, nbt[4], "item", object_id, issues)
     else:
         parent["equipment"]["head"] = {"id": "minecraft:air", "count": TypeInt(0)}
-    if length > 3 and "id" in nbt[3]:
+    if length > 3 and nbt[3]:
         parent["equipment"]["chest"] = get_source(parent, nbt[3], "item", object_id, issues)
     else:
         parent["equipment"]["chest"] = {"id": "minecraft:air", "count": TypeInt(0)}
-    if length > 2 and "id" in nbt[2]:
+    if length > 2 and nbt[2]:
         parent["equipment"]["legs"] = get_source(parent, nbt[2], "item", object_id, issues)
     else:
         parent["equipment"]["legs"] = {"id": "minecraft:air", "count": TypeInt(0)}
-    if length > 1 and "id" in nbt[1]:
+    if length > 1 and nbt[1]:
         parent["equipment"]["feet"] = get_source(parent, nbt[1], "item", object_id, issues)
     else:
         parent["equipment"]["feet"] = {"id": "minecraft:air", "count": TypeInt(0)}
-    if length > 0 and "id" in nbt[0]:
+    if length > 0 and nbt[0]:
         parent["equipment"]["mainhand"] = get_source(parent, nbt[0], "item", object_id, issues)
     else:
         parent["equipment"]["mainhand"] = {"id": "minecraft:air", "count": TypeInt(0)}
@@ -940,11 +940,11 @@ def edge_case_hand_items(parent: dict[str, Any], object_id: str, issues: list[di
 
     length = len(parent["HandItems"])
 
-    if length > 0 and "id" in parent["HandItems"][0]:
+    if length > 0 and parent["HandItems"][0]:
         parent["equipment"]["mainhand"] = get_source(parent, parent["HandItems"][0], "item", object_id, issues)
     else:
         parent["equipment"]["mainhand"] = {"id": "minecraft:air", "count": TypeInt(0)}
-    if length > 1 and "id" in parent["HandItems"][1]:
+    if length > 1 and parent["HandItems"][1]:
         parent["equipment"]["offhand"] = get_source(parent, parent["HandItems"][1], "item", object_id, issues)
     else:
         parent["equipment"]["offhand"] = {"id": "minecraft:air", "count": TypeInt(0)}
