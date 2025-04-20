@@ -1693,7 +1693,21 @@
                     "mapping": ["carry", "carry", "target_selector"]
                 },
                 "modify": {
-                    "mapping": ["carry", "carry", "carry", "team_setting", "carry"]
+                    "index": 3,
+                    "branches": {
+                        "displayName": {
+                            "mapping": ["carry", "carry", "carry", "team_setting", "json_text_component_packed"]
+                        },
+                        "prefix": {
+                            "mapping": ["carry", "carry", "carry", "team_setting", "json_text_component_packed"]
+                        },
+                        "suffix": {
+                            "mapping": ["carry", "carry", "carry", "team_setting", "json_text_component_packed"]
+                        }
+                    },
+                    "else": {
+                        "mapping": ["carry", "carry", "carry", "team_setting", "carry"]
+                    }
                 }
             },
             "else": "add"
