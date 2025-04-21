@@ -526,7 +526,11 @@ def conform_component(component: ItemComponent, version: int):
             page = pages[index]
             if isinstance(page, str):
                 pages[index] = {"raw": page}
-            pages[index]["raw"] = json_text_component.update(pages[index]["raw"], version, [], {"mangled": True, "pack": False})
+            if "raw" in pages[index]:
+                page_content = pages[index]["raw"]
+            else:
+                page_content = pages[index]
+            pages[index] = {"raw": json_text_component.update(page_content, version, [], {"mangled": True, "pack": False})}
 
     if component.key == "minecraft:written_book_content":
         written_book_content = component.value
@@ -537,7 +541,11 @@ def conform_component(component: ItemComponent, version: int):
             page = pages[index]
             if isinstance(page, str):
                 pages[index] = {"raw": page}
-            pages[index]["raw"] = json_text_component.update(pages[index]["raw"], version, [], {"mangled": True, "pack": False})
+            if "raw" in pages[index]:
+                page_content = pages[index]["raw"]
+            else:
+                page_content = pages[index]
+            pages[index] = {"raw": json_text_component.update(page_content, version, [], {"mangled": True, "pack": False})}
 
 
 
