@@ -352,6 +352,8 @@ def clean_scoreboard_dat(world: Path):
         if "Teams" in file["data"]:
             for i in range(len(file["data"]["Teams"])):
                 team = file["data"]["Teams"][i]
+                if "Players" not in team:
+                    continue
                 length = len(team["Players"])
                 for j in range(length):
                     j = length-j-1
