@@ -1060,7 +1060,8 @@ def fix_scoreboard_dat(world: Path):
     if "Objectives" in file["data"]:
         objective: NBT.TAG_Compound
         for objective in file["data"]["Objectives"]:
-            objective["CriteriaName"].value = ids.scoreboard_objective_criteria({"name": objective["Name"].value, "criteria": objective["CriteriaName"].value}, pack_version, [])
+            if "Name" in objective and "CriteriaName" in objective:
+                objective["CriteriaName"].value = ids.scoreboard_objective_criteria({"name": objective["Name"].value, "criteria": objective["CriteriaName"].value}, pack_version, [])
 
     if "PlayerScores" in file["data"]:
         index_list = list(range(len(file["data"]["PlayerScores"])))
