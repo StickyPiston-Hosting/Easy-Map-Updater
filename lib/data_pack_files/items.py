@@ -126,6 +126,8 @@ def update_from_nbt(item: ItemInputFromNBT, version: int, issues: list[dict[str,
     pack_version = version
 
     # Initialize parameters
+    if isinstance(item, str):
+        item = cast(ItemInputFromNBT, {"id": item})
     item_id = None
     components = None
     data_value = -1
