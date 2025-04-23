@@ -65,6 +65,9 @@ class ItemComponent:
     def set_namespace(self):
         self.key = miscellaneous.namespace(self.key)
 
+    def is_instance(self, object) -> bool:
+        return isinstance(self.value, object)
+
 
 class ItemComponentAlternatives:
     alternatives: list[ItemComponent]
@@ -419,7 +422,7 @@ def conform_component(component: ItemComponent, version: int):
             custom_data["emu_lock_name"] = json_text_component.update(custom_data["emu_lock_name"], version, [], {"mangled": True})
 
     if component.key == "minecraft:custom_model_data":
-        if version <= 2103:
+        if version <= 2103 and not component.is_instance(dict):
             component.value = {
                 "floats": nbt_tags.TypeList([nbt_tags.TypeFloat(component.value)])
             }
