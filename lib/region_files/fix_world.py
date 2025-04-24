@@ -819,7 +819,7 @@ def fix_item(item: NBT.TAG_Compound, is_from_spawner: bool = False):
                 if pack_version <= 2101 and option_manager.FIXES["lock_fixer"]:
                     if "minecraft:custom_data" not in item_components:
                         item_components["minecraft:custom_data"] = NBT.TAG_Compound()
-                    item_components["minecraft:custom_data"]["emu_lock_name"] = item_components["minecraft:custom_name"]
+                    item_components["minecraft:custom_data"]["emu_lock_name"] = nbt_tags.copy_lib_format(item_components["minecraft:custom_name"])
                     item_components["minecraft:item_name"] = json_text_component.convert_lock_string_from_lib_format(item_components["minecraft:custom_name"])
 
             # Handle custom data
@@ -853,7 +853,7 @@ def fix_item(item: NBT.TAG_Compound, is_from_spawner: bool = False):
             if "minecraft:block_entity_data" in item_components:
                 fix_block_entity(item_components["minecraft:block_entity_data"])
                 if "id" not in item_components["minecraft:block_entity_data"]:
-                    item_components["minecraft:block_entity_data"]["id"] = item["id"]
+                    item_components["minecraft:block_entity_data"]["id"] = NBT.TAG_String(item["id"].value)
 
             # Handle entity data
             if "minecraft:entity_data" in item_components:

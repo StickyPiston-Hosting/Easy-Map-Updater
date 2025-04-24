@@ -1369,6 +1369,11 @@ def convert_from_lib_format_string(nbt: NBT.TAG_String) -> str:
 
 
 
+def copy_lib_format(nbt: NBT.TAG) -> NBT.TAG:
+    return convert_to_lib_format(convert_from_lib_format(nbt))
+
+
+
 def convert_to_json(nbt: dict | TypeList | TypeNumeric | str):
     if isinstance(nbt, dict):
         return convert_to_json_compound(nbt)
