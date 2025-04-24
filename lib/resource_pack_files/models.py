@@ -394,8 +394,8 @@ def filter_overrides_by_predicate(overrides: list[dict], namespaced_id: str, pre
                 }],
                 "fallback": item.copy(),
             }
-            item["cases"][0]["model"]["target"] = "daytime"
-            item["fallback"]["target"] = "random"
+            item["cases"][0]["model"]["source"] = "daytime"
+            item["fallback"]["source"] = "random"
 
         return item
 
