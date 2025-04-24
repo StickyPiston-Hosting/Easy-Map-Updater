@@ -723,6 +723,11 @@ def fix_entity_recursive_passenger(entity: NBT.TAG_Compound, is_from_spawner: bo
     for tag in ["ArmorItem", "Item", "item", "SaddleItem"]:
         if tag in entity:
             fix_item(entity[tag], is_from_spawner)
+    if "equipment" in entity:
+        equipment = entity["equipment"]
+        for tag in ["head", "chest", "legs", "feet", "mainhand", "offhand", "body", "saddle"]:
+            if tag in equipment:
+                fix_item(equipment[tag], is_from_spawner)
     if "Offers" in entity:
         if "Recipes" in entity["Offers"]:
             for recipe in entity["Offers"]["Recipes"]:
