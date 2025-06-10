@@ -98,7 +98,10 @@ def update(world: Path, version: int):
             lock_fixer_path = world / "datapacks" / name
             if lock_fixer_path.exists():
                 log("Replacing lock fixer data pack with updated version")
-                shutil.rmtree(lock_fixer_path)
+                if lock_fixer_path.is_file():
+                    os.remove(lock_fixer_path)
+                else:
+                    shutil.rmtree(lock_fixer_path)
                 lock_fixer.create_pack(world)
                 break
 
