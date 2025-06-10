@@ -820,6 +820,8 @@ def extract(item_id: str, components: dict[str, Any] | None, nbt: dict[str, Any]
         del nbt["CanPlaceOn"]
 
     if "Charged" in nbt:
+        if "minecraft:charged_projectiles" not in components:
+            components["minecraft:charged_projectiles"] = nbt_tags.TypeList([])
         del nbt["Charged"]
     if "ChargedProjectiles" in nbt:
         if "minecraft:charged_projectiles" not in components:
