@@ -371,6 +371,10 @@ def pack_compound(nbt: dict[str, Any]) -> str:
     # Prepare tag list
     tags: list[str] = []
 
+    # Return value if it's an array shortcut
+    if len(nbt) == 1 and "" in nbt:
+        return pack(nbt[""])
+
     # Iterate through keys
     for key in nbt:
         pack_bool = ":" in key or '"' in key or "'" in key or key == ""
@@ -1474,3 +1478,22 @@ def merge_nbt(base: dict, addition: dict) -> dict:
 
 def uuid_from_int_array(uuid: list[int]) -> TypeIntArray:
     return TypeIntArray([TypeInt(uuid[i]) for i in range(3)])
+
+
+
+def conform_lib_format_list(nbt: NBT.TAG_List):
+    if len(nbt) == 0:
+        return
+    
+    tag_type = nbt[0].id
+    for tag in nbt:
+        if tag_type != tag.id:
+            nbt.tagID = NBT.TAG_COMPOUND
+            for index in range(len(nbt)):
+                if nbt[index].id != NBT.TAG_COMPOUND:
+                    compound = NBT.TAG_Compound()
+                    compound[""] = nbt[index]
+                    nbt[index] = compound
+            return
+        
+    nbt.tagID = nbt[0].id

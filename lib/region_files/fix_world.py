@@ -842,6 +842,7 @@ def fix_item(item: NBT.TAG_Compound, is_from_spawner: bool = False):
                 lore = item_components["minecraft:lore"]
                 for i in range(len(lore)):
                     lore[i] = json_text_component.update_from_lib_format(lore[i], pack_version, [], True)
+                nbt_tags.conform_lib_format_list(lore)
 
             # Handle written book pages
             if "minecraft:written_book_contents" in item_components:
@@ -849,6 +850,7 @@ def fix_item(item: NBT.TAG_Compound, is_from_spawner: bool = False):
                     pages: NBT.TAG_List = item_components["minecraft:written_book_contents"]["pages"]
                     for i in range(len(pages)):
                         pages[i] = json_text_component.update_from_lib_format(pages[i], pack_version, [], False)
+                    nbt_tags.conform_lib_format_list(pages)
 
             # Handle item model
             if pack_version <= 2103 and "minecraft:item_model" in item_components:
