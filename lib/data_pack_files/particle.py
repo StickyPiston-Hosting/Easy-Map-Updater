@@ -110,14 +110,21 @@ def update(particle: str | dict[str, str], version: int, issues: list[dict[str, 
                 particle_data["block_state"]["data"] = int(particle["data"])
         if "item" in particle:
             item = particle["item"]
+            if "{" in item:
+                tag = item[item.find("{"):]
+                item = item[:item.find("{")]
+            else:
+                tag = ""
             if "[" in item:
                 item_id = item[:item.find("[")]
                 components = item[item.find("["):]
             else:
-                item_id = item
                 components = ""
+            item_id = item
             particle_data["item"] = {}
             particle_data["item"]["id"] = item_id
+            if tag:
+                particle_data["item"]["tag"] = nbt_tags.unpack(tag)
             if components:
                 particle_data["item"]["components"] = item_component.ItemComponents.unpack(components).pack_to_dict()
             if "data" in particle:
