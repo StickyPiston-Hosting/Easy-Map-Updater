@@ -250,6 +250,11 @@ def update(block: BlockInput, version: int, issues: list[dict[str, str | int]]) 
     }
 
 def update_block_id(block_id: str | nbt_tags.TypeNumeric, data_value: int | str, block_states: dict[str, str], nbt: dict, read: bool, issues: list[dict[str, str | int]]) -> tuple[str, dict[str, str], dict[str, str]]:
+    # Return if a macro token
+    if isinstance(block_id, str) and miscellaneous.is_macro_token(block_id):
+        return (block_id, block_states, nbt)
+    
+
     # Convert if a numeric
     if not isinstance(block_id, str):
         block_id, data_value = numeric_ids.update_block_item(int(block_id.value), data_value)

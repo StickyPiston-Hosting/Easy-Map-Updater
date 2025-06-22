@@ -66,12 +66,36 @@ def update(line: str, version: int, function_id: str) -> str:
                 log("Pack version changed to 1202 in:\n  " + namespaced_id + "\n  " + line)
                 pack_version = 1202
 
+    # Handle macro commands
+    line = line.strip()
+    is_macro = line.startswith("$")
+    macro_prefix = ""
+    if is_macro:
+        if not option_manager.FIXES["macros"]:
+            log(f'Macros are not configured to be updated: {line}')
+            return line
+        line = line[1:].strip()
+        macro_prefix = "$"
+
     try:
-        return command(line.strip()).strip()
+        updated_line = command(line).strip()
+        if is_macro:
+            if function_id != "test_command":
+                log(f'Updated a macro command:')
+                log(f'Old: {line}')
+                log(f'New: {updated_line}')
+            return "$" + updated_line
+        else:
+            return updated_line
     except Exception:
-        log(f'A command from {namespaced_id} has thrown an error:\n\n{line.strip()}')
-        utils.log_error()
-        return line
+        if is_macro:
+            log(f'A macro command from {namespaced_id} has thrown an error:\n\n${line.strip()}')
+        else:
+            log(f'A command from {namespaced_id} has thrown an error:\n\n{line.strip()}')
+        utils.log_error(not is_macro)
+        if is_macro:
+            log(f'The above error was from an attempt to update a macro command. This behavior is considered experimental.', True)
+        return macro_prefix + line
 
 def command(line: str) -> str:
     # Return if blank
@@ -81,11 +105,6 @@ def command(line: str) -> str:
     # Return commented version if the command begins with certain illegal characters
     if line[0] in [".", ","]:
         return "#" + line
-    
-    # Return command if a macro
-    if line.startswith("$"):
-        log(f'Macros are not yet handled: {line}')
-        return line
 
     # Convert command
     command = parsed_command(arguments.parse(line, " ", pack_version >= 1400), True)
@@ -333,6 +352,10 @@ def update_argument(argument: str | dict[str, Any], argument_type: str, issues: 
     # Return carry arguments
     if argument_type == "carry":
         return cast(str, argument)
+    
+    # Return macro tokens
+    if isinstance(argument, str) and miscellaneous.is_macro_token(argument):
+        return argument
 
     # Return arguments based on type
     if argument_type in ARGUMENT_FUNCTIONS:

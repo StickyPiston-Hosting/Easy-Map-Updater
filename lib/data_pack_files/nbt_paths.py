@@ -219,7 +219,7 @@ def edge_case(path_parts: list[str], case_type: str, source: str, issues: list[d
             item = cast(dict, nbt_tags.direct_update_with_guide(nbt_tags.unpack(path_parts[1][1:-1].strip()), pack_version, issues, source, {"source": "item"}, "branch"))
             equipment_slots = [100, 101, 102, 103, -106]
             if "Slot" in item:
-                slot = item["Slot"].value
+                slot = nbt_tags.get_value(item["Slot"])
                 if slot in equipment_slots:
                     del item["Slot"]
                     key = "offhand"

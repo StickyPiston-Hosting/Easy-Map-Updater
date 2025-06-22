@@ -167,6 +167,19 @@ class TypeLongArray(TypeList):
         TypeList.__init__(self, value)
         self.prefix = "L;"
 
+class TypeMacroToken:
+    token: str
+    suffix: str
+    def __init__(self, token: str, suffix: str = ""):
+        self.token = token
+        self.suffix = suffix
+
+    def pack(self) -> str:
+        return self.token + self.suffix
+    
+    def __bool__(self) -> bool:
+        return bool(self.token)
+
 
 
 # Import more stuff to prevent circular loading issues
@@ -307,6 +320,11 @@ def unpack(nbt: str) -> Any:
         return TypeByte(1)
     if nbt == "false":
         return TypeByte(0)
+    
+    if miscellaneous.is_macro_token(nbt):
+        return TypeMacroToken(nbt)
+    if nbt[-1].lower() in ["b", "s", "i", "l", "f", "d"] and miscellaneous.is_macro_token(nbt[:-1]):
+        return TypeMacroToken(nbt[:-1], nbt[-1])
 
     return nbt
 
@@ -520,7 +538,11 @@ def update_list(parent: dict, nbt: TypeList, guide: dict, source: str, object_id
         nbt[i] = branch(parent, nbt[i], guide, source, object_id, issues)
     return nbt
 
-def update_data(parent: dict, nbt, guide: dict, source: str, object: str, issues: list[dict[str, str | int]]) -> str:
+def update_data(parent: dict, nbt, guide: dict, source: str, object: str, issues: list[dict[str, str | int]]):
+    # Return if a macro token
+    if isinstance(nbt, TypeMacroToken):
+        return nbt
+
     # Get types
     data_type: str = guide["data_type"]
     output_data_type = data_type
@@ -1539,3 +1561,19 @@ def conform_lib_format_list(nbt: NBT.TAG_List):
             return
         
     nbt.tagID = nbt[0].id
+
+
+
+def get_value(nbt, cast_type = None):
+    if isinstance(nbt, TypeMacroToken):
+        return nbt
+    if cast_type:
+        return cast_type(nbt.value)
+    return nbt.value
+
+def set_value(nbt, cast_type = None):
+    if isinstance(nbt, TypeMacroToken):
+        return nbt
+    if cast_type:
+        return cast_type(nbt)
+    return nbt

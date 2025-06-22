@@ -45,6 +45,10 @@ def update(entity: str | dict[str, str | bool], version: int, issues: list[dict[
     else:
         entity_id = entity
 
+    # Return if a macro token
+    if isinstance(entity_id, str) and miscellaneous.is_macro_token(entity_id):
+        return entity_id
+
     boat_type: str | None = None
     item_type: str | None = None
     if nbt != "":
@@ -59,7 +63,7 @@ def update(entity: str | dict[str, str | bool], version: int, issues: list[dict[
             boat_type = cast(str, unpacked_nbt["Type"])
 
         # Extract item type if it is defined
-        if "Item" in unpacked_nbt and "id" in unpacked_nbt["Item"]:
+        if "Item" in unpacked_nbt and isinstance(unpacked_nbt["Item"], dict) and "id" in unpacked_nbt["Item"]:
             item_type = miscellaneous.namespace(unpacked_nbt["Item"]["id"])
 
     entity_id = miscellaneous.namespace(entity_id)

@@ -66,6 +66,7 @@ def get_default_options() -> Options:
             "post_fixes": True,
             "lock_fixer": True,
             "empty_equipment_override": False,
+            "macros": True,
             "stats_options": {
                 "block_stats_used": True,
                 "block_positions_dynamic": False,

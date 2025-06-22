@@ -9,6 +9,7 @@ import math
 from lib.log import log
 from lib import defaults
 from lib import utils
+from lib.data_pack_files import arguments
 from lib.data_pack_files import nbt_tags
 from lib.data_pack_files import target_selectors
 from lib.data_pack_files import tables
@@ -41,6 +42,10 @@ def attribute(name: str, version: int, issues: list[dict[str, str | int]]) -> st
     global pack_version
     pack_version = version
 
+    # Return if a macro token
+    if isinstance(name, str) and is_macro_token(name):
+        return name
+
     name = namespace(name)
 
     # Attribute IDs changed in 1.16
@@ -64,6 +69,10 @@ def attribute(name: str, version: int, issues: list[dict[str, str | int]]) -> st
     return name
 
 def attribute_id(value: str, version: int, issues: list[dict[str, str | int]]) -> str:
+    # Return if a macro token
+    if isinstance(value, str) and is_macro_token(value):
+        return value
+
     if version <= 2006:
         return namespace(utils.uuid_from_int_array(utils.uuid_from_string(value)))
     return namespace(value)
@@ -312,6 +321,12 @@ def int_coordinate(coord: str, version: int, issues: list[dict[str, str | int]])
         coord = str(math.floor(float(coord)))
     return coord
 
+def is_macro_token(token: str) -> bool:
+    if not token.startswith("$(") or not token.endswith(")"):
+        return False
+    tokens = arguments.parse(token[1:], "", True)
+    return len(tokens) == 1
+
 def join_text(text: dict[str, list[str]], version: int, issues: list[dict[str, str | int]]) -> str:
     return " ".join(text["join_text"])
 
@@ -338,6 +353,10 @@ def loot_table(name: str, version: int, issues: list[dict[str, str | int]]) -> s
     # Assign version
     global pack_version
     pack_version = version
+
+    # Return if a macro token
+    if isinstance(name, str) and is_macro_token(name):
+        return name
 
     if pack_version <= 1202 and defaults.SEND_WARNINGS:
         log("WARNING: Loot tables are not handled for 1.12!")

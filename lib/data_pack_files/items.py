@@ -125,6 +125,10 @@ def update_from_nbt(item: ItemInputFromNBT, version: int, issues: list[dict[str,
     global pack_version
     pack_version = version
 
+    # Return if a macro token
+    if isinstance(item, nbt_tags.TypeMacroToken):
+        return cast(dict, item)
+
     # Initialize parameters
     if isinstance(item, str):
         item = cast(ItemInputFromNBT, {"id": item})
@@ -142,22 +146,22 @@ def update_from_nbt(item: ItemInputFromNBT, version: int, issues: list[dict[str,
     if "components" in item:
         components = item["components"]
     if "Damage" in item:
-        data_value = int(item["Damage"].value)
+        data_value = nbt_tags.get_value(item["Damage"], int)
     if "tag" in item:
         nbt = item["tag"]
     if "Count" in item:
-        count = int(item["Count"].value)
+        count = nbt_tags.get_value(item["Count"], int)
     if "count" in item:
-        count = int(item["count"].value)
+        count = nbt_tags.get_value(item["count"], int)
     if "Slot" in item:
-        slot = int(item["Slot"].value)
+        slot = nbt_tags.get_value(item["Slot"], int)
 
     # Update item
     new_item = update(
         {
             "id": item_id,
             "components": item_component.ItemComponents.unpack_from_dict(components, read),
-            "data_value": data_value,
+            "data_value": cast(int, data_value),
             "nbt": nbt,
             "read": read
         },
@@ -170,10 +174,10 @@ def update_from_nbt(item: ItemInputFromNBT, version: int, issues: list[dict[str,
         export_item["id"] = new_item["id"]
     if new_item["components"].has_components():
         export_item["components"] = new_item["components"].pack_to_dict()
-    if count >= 0:
+    if isinstance(count, int) and count >= 0:
         export_item["count"] = nbt_tags.TypeInt(count)
     if slot != None:
-        export_item["Slot"] = nbt_tags.TypeByte(slot)
+        export_item["Slot"] = nbt_tags.set_value(slot, nbt_tags.TypeByte)
     
     return export_item
 
@@ -277,6 +281,10 @@ def update(item: ItemInput, version: int, issues: list[dict[str, str | int]]) ->
 
 
 def update_item_id(item_id: str | nbt_tags.TypeNumeric, components: item_component.ItemComponents | None, data_value: int, nbt: dict | None, read: bool, issues: list[dict[str, str | int]]) -> str:
+    # Return if a macro token
+    if isinstance(item_id, str) and miscellaneous.is_macro_token(item_id):
+        return item_id
+
     # Convert if a numeric
     if not isinstance(item_id, str):
         item_id, data_value = cast(tuple[str, int], numeric_ids.update_block_item(int(item_id.value), data_value))

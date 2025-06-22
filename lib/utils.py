@@ -286,11 +286,11 @@ def get_version_string(version: int) -> str:
 
 
 
-def log_error():
+def log_error(halt: bool = True):
     print("")
     log(f'ERROR:\n{traceback.format_exc()}')
     log(f'Error logged to: {get_log_path().as_posix()}')
-    log(f'Please report the issue on the E.M.U. Discord server: {defaults.DISCORD_INVITE}', True)
+    log(f'Please report the issue on the E.M.U. Discord server: {defaults.DISCORD_INVITE}', halt)
 
 
 
