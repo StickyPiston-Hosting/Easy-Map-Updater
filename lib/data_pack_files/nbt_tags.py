@@ -226,21 +226,30 @@ def update_with_guide(snbt: str, version: int, issues: list[dict[str, str | int]
     if not snbt:
         return snbt
     
+    return pack(direct_update_with_guide(unpack(snbt), version, issues, source, guide, callback))
+
+def direct_update_with_guide(nbt: dict, version: int, issues: list[dict[str, str | int]], source: str, guide: dict, callback: str) -> dict | TypeList:
+    global pack_version
+    pack_version = version
+
+    # Return if not NBT
+    if not nbt:
+        return nbt
+    
     if defaults.DEBUG_MODE:
         log(f'CALLBACK: {callback} - GUIDE: {guide}')
 
-    nbt: dict = cast(dict, unpack(snbt))
     match callback:
         case "branch":
-            return pack(branch({}, nbt, guide, source, "", issues))
+            return branch({}, nbt, guide, source, "", issues)
         case "tags":
             if "necessary_tags" in guide:
-                return pack(update_tags({}, nbt, guide, source, "", guide["necessary_tags"], issues))
-            return pack(update_tags({}, nbt, guide, source, "", {}, issues))
+                return update_tags({}, nbt, guide, source, "", guide["necessary_tags"], issues)
+            return update_tags({}, nbt, guide, source, "", {}, issues)
         case "list":
-            return pack(update_list({}, cast(TypeList, nbt), guide, source, "", issues))
+            return update_list({}, cast(TypeList, nbt), guide, source, "", issues)
         
-    return snbt
+    return nbt
     
 
 
@@ -625,6 +634,8 @@ def edge_case(parent: dict, nbt, case: str | dict[str, str], source: str, object
         return edge_case_hand_items(parent, object_id, issues)
     if case_type == "home_pos":
         return edge_case_home_pos(parent)
+    if case_type == "inventory":
+        return edge_case_inventory(parent, issues)
     if case_type == "item":
         return items.update_from_nbt(nbt, pack_version, issues)
     if case_type == "item_components":
@@ -973,6 +984,37 @@ def edge_case_home_pos(parent: dict[str, Any]):
         parent["home_pos"][1] = TypeInt(parent["HomePosY"])
     if "HomePosZ" in parent:
         parent["home_pos"][2] = TypeInt(parent["HomePosZ"])
+
+def edge_case_inventory(parent: dict[str, Any], issues: list[dict[str, str | int]]):
+    inventory: list[dict] = []
+    equipment_slots = [100, 101, 102, 103, -106]
+    for item in parent["Inventory"]:
+        item = items.update_from_nbt(item, pack_version, issues)
+        moved_to_equipment = False
+        if "Slot" in item:
+            slot: int = item["Slot"].value
+            if slot in equipment_slots:
+                moved_to_equipment = True
+                del item["Slot"]
+                if "equipment" not in parent:
+                    parent["equipment"] = {}
+                equipment = parent["equipment"]
+                if slot == 100:
+                    equipment["feet"] = item
+                if slot == 101:
+                    equipment["legs"] = item
+                if slot == 102:
+                    equipment["chest"] = item
+                if slot == 103:
+                    equipment["head"] = item
+                if slot == -106:
+                    equipment["offhand"] = item
+        if not moved_to_equipment:
+            inventory.append(item)
+    parent["Inventory"] = inventory
+    if len(inventory) == 0:
+        del parent["Inventory"]
+
 
 def edge_case_item_components(nbt: dict[str, Any], version: int, issues: list[dict[str, str | int]]) -> dict[str, Any]:
     return item_component.conform_components(item_component.ItemComponents.unpack_from_dict(nbt, False), version, issues).pack_to_dict()

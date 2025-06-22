@@ -564,7 +564,8 @@
                         "head": { "source": "item" },
                         "legs": { "source": "item" },
                         "mainhand": { "source": "item" },
-                        "offhand": { "source": "item" }
+                        "offhand": { "source": "item" },
+                        "saddle": { "source": "item" }
                     }
                 },
                 "Equipment": {
@@ -651,7 +652,12 @@
                     "data_type": "string",
                     "argument_type": "entity"
                 },
-                "Inventory": { "list": { "source": "item" } },
+                "Inventory": {
+                    "edge_case": "inventory",
+                    "path": {
+                        "edge_case": "inventory"
+                    }
+                },
                 "Invisible": { "data_type": "byte" },
                 "Invulnerable": { "data_type": "byte" },
                 "item": { "source": "item" },

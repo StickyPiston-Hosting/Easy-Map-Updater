@@ -6,7 +6,7 @@
 # Import things
 
 import json
-from typing import Any
+from typing import Any, cast
 from pathlib import Path
 from lib.log import log
 from lib import defaults
@@ -211,6 +211,32 @@ def edge_case(path_parts: list[str], case_type: str, source: str, issues: list[d
     if case_type == "color":
         log(f'WARNING: NBT path "Color" may need to be modified to "potion_contents.custom_color" for area effect clouds.')
         return path_parts
+    
+    if case_type == "inventory":
+        if len(path_parts) < 2:
+            return path_parts
+        if path_parts[1].startswith("[") and path_parts[1][1:-1].strip().startswith("{"):
+            item = cast(dict, nbt_tags.direct_update_with_guide(nbt_tags.unpack(path_parts[1][1:-1].strip()), pack_version, issues, source, {"source": "item"}, "branch"))
+            equipment_slots = [100, 101, 102, 103, -106]
+            if "Slot" in item:
+                slot = item["Slot"].value
+                if slot in equipment_slots:
+                    del item["Slot"]
+                    key = "offhand"
+                    if slot == 100:
+                        key = "feet"
+                    if slot == 101:
+                        key = "legs"
+                    if slot == 102:
+                        key = "chest"
+                    if slot == 103:
+                        key = "head"
+                    new_path_parts = ["equipment", key]
+                    if len(item) > 0:
+                        new_path_parts.append(nbt_tags.pack(item))
+                    return new_path_parts[:-1] + get_source([new_path_parts[-1]] + path_parts[2:], "item", issues)
+            path_parts[1] = "[" + nbt_tags.update_with_guide(path_parts[1][1:-1].strip(), pack_version, issues, source, {"source": "item"}, "branch") + "]"
+        return path_parts[:1] + get_source(path_parts[1:], "item", issues)
 
     if case_type == "hand_drop_chances":
         return edge_case_equipment_path(path_parts, "drop_chances", {
