@@ -6,10 +6,11 @@
 # Import things
 
 import json
-from typing import Any, cast
+from typing import cast
 from pathlib import Path
 from lib.data_pack_files import miscellaneous
 from lib.resource_pack_files import model_tables
+from lib.resource_pack_files import miscellaneous as rp_miscellaneous
 from lib import json_manager
 from lib import utils
 from lib.log import log
@@ -23,9 +24,6 @@ pack_version = defaults.PACK_VERSION
 PROGRAM_PATH = Path(__file__).parent
 
 pack_path: Path
-
-with (PROGRAM_PATH / "file_legend.json").open("r", encoding="utf-8") as file:
-    FILE_LEGEND: dict[str, Any] = json.load(file)
 
 overrides_array: dict[str, list[dict]] = {}
 builtin_models: list[str] = []
@@ -124,38 +122,10 @@ def update_texture_names(model_json: dict, modified: bool) -> bool:
             continue
         texture = miscellaneous.namespace(texture)
         texture += ".png"
-        if texture.split(":")[0] != "minecraft":
-            continue
-        path = ["minecraft", "textures"] + texture.split(":")[1].split("/")
-
-        for file_version in FILE_LEGEND:
-            if pack_version > int(file_version):
-                continue
-            legend = FILE_LEGEND[file_version]
-            for folder in path[:-1]:
-                if folder in legend:
-                    legend = legend[folder]
-                else:
-                    break
-            else:
-                if path[-1] in legend:
-                    target = legend[path[-1]]
-                elif "*" in legend:
-                    target = legend["*"]
-                else:
-                    continue
-
-                if isinstance(target, list):
-                    target = target[0]
-                elif isinstance(target, dict):
-                    continue
-                new_texture = "minecraft:" + "/".join(update_texture_name("/".join(path), target).split("/")[2:])
-                
-                if texture != new_texture:
-                    model_json["textures"][key] = new_texture[:-4]
-                    modified = True
-
-                break
+        new_texture = rp_miscellaneous.update_texture_path(texture, pack_version)
+        if texture != new_texture:
+            model_json["textures"][key] = new_texture[:-4]
+            modified = True
 
     # Insert particle texture if it doesn't exist
     if "particle" not in model_json["textures"] and len(model_json["textures"].keys()):
@@ -163,17 +133,6 @@ def update_texture_names(model_json: dict, modified: bool) -> bool:
         modified = True
 
     return modified
-
-def update_texture_name(subdir: str, target: str) -> str:
-    path = Path(subdir)
-    target_path = target.replace("*", path.name).split("/")
-    path = path.parent
-    for target_folder in target_path:
-        if target_folder == ".":
-            path = path.parent
-        else:
-            path = path / target_folder
-    return path.as_posix()
 
 
 

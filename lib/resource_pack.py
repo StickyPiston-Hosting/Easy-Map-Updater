@@ -68,7 +68,7 @@ def update(pack: Path, version: int):
     try:
         update_pack_mcmeta(og_pack, pack)
         update_file_names(og_pack, pack)
-        fonts.update(pack)
+        fonts.update(pack, pack_version)
         models.update(pack, pack_version)
         atlas_logger.log_atlas(pack)
         shaders.update(pack, pack_version)

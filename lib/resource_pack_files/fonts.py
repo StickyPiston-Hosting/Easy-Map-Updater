@@ -16,7 +16,7 @@ from lib.resource_pack_files import miscellaneous
 
 # Define functions
 
-def update(pack: Path):
+def update(pack: Path, version: int):
     log("Updating fonts")
 
     # Iterate through namespaces
@@ -31,9 +31,9 @@ def update(pack: Path):
         for file_path in folder.glob("**/*.json"):
             if not file_path.is_file():
                 continue
-            update_font(pack, file_path)
+            update_font(pack, file_path, version)
 
-def update_font(pack: Path, file_path: Path):
+def update_font(pack: Path, file_path: Path, version: int):
     contents, load_bool = json_manager.safe_load(file_path)
     if not load_bool:
         return
@@ -56,12 +56,10 @@ def update_font(pack: Path, file_path: Path):
             continue
 
         # Get texture ID
-        texture: str = provider["file"]
-        if ":" not in texture:
-            texture = miscellaneous.namespace(texture)
+        provider["file"] = miscellaneous.update_texture_path(provider["file"], version)
 
         # Add provider to the list if the texture exists
-        if miscellaneous.resource_exists(pack, texture, "textures"):
+        if miscellaneous.resource_exists(pack, provider["file"], "textures"):
             new_providers.append(provider)
 
     # Add a space provider if one doesn't exist
