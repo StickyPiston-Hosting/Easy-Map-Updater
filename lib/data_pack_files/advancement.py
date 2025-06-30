@@ -69,12 +69,12 @@ def advancement(contents: dict[str, Any], version: int) -> dict[str, Any]:
 
         if "background" in display:
             if version <= 2104:
-                if display["background"].startswith("texture/"):
-                    display["background"] = display["background"][8:]
+                if display["background"].startswith("textures/"):
+                    display["background"] = display["background"][9:]
                 elif ":" in display["background"]:
                     colon_index = display["background"].index(":") + 1
-                    if display["background"][colon_index:].startswith("texture/"):
-                        display["background"] = display["background"][:colon_index] + display["background"][colon_index + 8:]
+                    if display["background"][colon_index:].startswith("textures/"):
+                        display["background"] = display["background"][:colon_index] + display["background"][colon_index + 9:]
                 if display["background"].endswith(".png"):
                     display["background"] = display["background"][:-4]
 
