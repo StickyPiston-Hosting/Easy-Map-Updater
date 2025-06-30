@@ -13,7 +13,7 @@ from lib import utils
 
 # Define functions
 
-def handle_merge(command: list[str], block_nbt: dict, old_block_nbt: dict) -> str:
+def handle_merge(command: list[str], is_macro: bool, block_nbt: dict, old_block_nbt: dict) -> str:
     new_commands: list[str] = []
     for key, i in {"Text1": 0, "Text2": 1, "Text3": 2, "Text4": 3}.items():
         if key not in old_block_nbt:
@@ -28,5 +28,6 @@ def handle_merge(command: list[str], block_nbt: dict, old_block_nbt: dict) -> st
         return new_commands[0]
     return command_helper.create_function(
         "\n".join(new_commands) +
-        "\nreturn 1"
+        "\nreturn 1",
+        is_macro
     )

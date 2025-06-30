@@ -12,7 +12,7 @@ from lib.data_pack_files import blocks
 
 # Define functions
 
-def handle_doors(command: list[str]) -> str:
+def handle_doors(command: list[str], is_macro: bool) -> str:
     # Extract block states
     block = command[4].split("{")[0]
     if "[" in block:
@@ -31,5 +31,6 @@ def handle_doors(command: list[str]) -> str:
         f'execute if score #boolean help.value matches 1 positioned {command[1]} {command[2]} {command[3]} run fill ~ ~ ~ ~ ~{offset} ~ minecraft:air\n'
         f'execute if score #boolean help.value matches 1 positioned {command[1]} {command[2]} {command[3]} run setblock ~ ~{offset} ~ {block_id}{blocks.pack_block_states(block_states)}\n'
 
-        f'return run {" ".join(command)}'
+        f'return run {" ".join(command)}',
+        is_macro
     )

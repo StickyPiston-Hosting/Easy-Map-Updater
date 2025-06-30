@@ -587,7 +587,7 @@ def conform_component_paths(path_parts: list[str], version: int, issues: list[di
     
     if version <= 2103:
         if path_parts[1] == "minecraft:custom_model_data":
-            return ["components", "minecraft:custom_model_data", "floats", "[0]"]
+            return ["components", "minecraft:custom_model_data", "floats", "[0]", "__CUSTOM_MODEL_PATH__"]
         
     
     return path_parts

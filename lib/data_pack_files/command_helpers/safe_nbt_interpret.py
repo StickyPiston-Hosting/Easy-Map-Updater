@@ -11,7 +11,7 @@ from lib.data_pack_files import command_helper
 
 # Define functions
 
-def handle_interpret(command: list[str], issues: list[dict[str, str | int]]) -> str:
+def handle_interpret(command: list[str], is_macro: bool, issues: list[dict[str, str | int]]) -> str:
     commands = ["data modify storage help:data safe_nbt_interpret set value {}\n"]
 
     for issue in issues:
@@ -29,5 +29,6 @@ def handle_interpret(command: list[str], issues: list[dict[str, str | int]]) -> 
 
     return command_helper.create_function(
         "\n".join(commands) + "\n" +
-        f'return run {" ".join(command)}'
+        f'return run {" ".join(command)}',
+        is_macro
     )

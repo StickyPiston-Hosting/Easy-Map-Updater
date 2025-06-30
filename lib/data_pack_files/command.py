@@ -31,6 +31,7 @@ from lib.data_pack_files.command_helpers import falling_block_handler
 from lib.data_pack_files.command_helpers import sign_merge_handler
 from lib.data_pack_files.command_helpers import safe_nbt_interpret
 from lib.data_pack_files.command_helpers import teleport_dismount
+from lib.data_pack_files.command_helpers import custom_model_data_store
 from lib.data_pack_files.restore_behavior import firework_damage_canceler
 from lib.data_pack_files.restore_behavior import effect_overflow
 from lib.region_files import illegal_chunk
@@ -78,13 +79,13 @@ def update(line: str, version: int, function_id: str) -> str:
         macro_prefix = "$"
 
     try:
-        updated_line = command(line).strip()
+        updated_line = command(line, is_macro).strip()
         if is_macro:
             if function_id != "test_command":
                 log(f'Updated a macro command:')
                 log(f'Old: {line}')
                 log(f'New: {updated_line}')
-            return "$" + updated_line
+            return ("$" if len(updated_line.split("$(")) > 1 else "") + updated_line
         else:
             return updated_line
     except Exception:
@@ -97,7 +98,7 @@ def update(line: str, version: int, function_id: str) -> str:
             log(f'The above error was from an attempt to update a macro command. This behavior is considered experimental.', True)
         return macro_prefix + line
 
-def command(line: str) -> str:
+def command(line: str, is_macro: bool) -> str:
     # Return if blank
     if len(line) == 0:
         return ""
@@ -107,13 +108,16 @@ def command(line: str) -> str:
         return "#" + line
 
     # Convert command
-    command = parsed_command(arguments.parse(line, " ", pack_version >= 1400), True)
+    command = parsed_command(arguments.parse(line, " ", pack_version >= 1400), is_macro, True)
     if command.endswith("COMMAND_HELPER"):
         if namespaced_id == "commands.mcfunction":
             command = f'execute store result block ~ ~ ~ SuccessCount int 1 run {command[:-14]}'
         else:
             command = command[:-14]
 
+    return finalize_command(command)
+
+def finalize_command(command: str) -> str:
     # Remove as @s
     segments = command.split(" as @s")
     for i in range(len(segments)-1):
@@ -123,7 +127,7 @@ def command(line: str) -> str:
         if segments[i+1].startswith("["):
             segments[i] = segments[i] + " if entity @s"
 
-    return remove_run_execute("".join(segments).replace("positioned ~ ~ ~ ", "")).replace("at @s at @s ", "at @s ")
+    return remove_run_execute("".join(segments).replace("positioned ~ ~ ~ ", "")).replace("at @s at @s ", "at @s ").replace(".__CUSTOM_MODEL_PATH__", "")
 
 def remove_slash(line: str) -> str:
     if line == "":
@@ -135,7 +139,7 @@ def remove_slash(line: str) -> str:
 def remove_run_execute(line: str) -> str:
     return line.replace("return run", "__RETURN_RUN__").replace(" run execute", "").replace("__RETURN_RUN__", "return run").replace("execute run ", "")
 
-def parsed_command(argument_list: list[str], display_command: bool) -> str:
+def parsed_command(argument_list: list[str], is_macro: bool, display_command: bool) -> str:
     # Skip if just whitespace
     if len(argument_list) == 0 or argument_list[0] == "":
         return ""
@@ -154,10 +158,10 @@ def parsed_command(argument_list: list[str], display_command: bool) -> str:
     # Initialize issues list
     issues: list[dict[str, str | int]] = []
 
-    return command_arguments(argument_list, command_tree, issues)
+    return command_arguments(argument_list, command_tree, issues, is_macro)
 
 
-def command_arguments(argument_list: list[str], guide: list | dict[str, Any], issues: list[dict[str, str | int]]) -> str:
+def command_arguments(argument_list: list[str], guide: list | dict[str, Any], issues: list[dict[str, str | int]], is_macro: bool) -> str:
     # Get guide from array based on certain parameters
     if isinstance(guide, list):
         # Iterate through entries in the guide
@@ -174,7 +178,7 @@ def command_arguments(argument_list: list[str], guide: list | dict[str, Any], is
                     argument_list[entry["is_nbt"]][0] == "{"
                 )
             if boolean:
-                return command_arguments(argument_list, entry, issues)
+                return command_arguments(argument_list, entry, issues, is_macro)
         # Warn if no valid object was found
         if defaults.SEND_WARNINGS:
             log(f'WARNING: No branch found for: {" ".join(argument_list)}')
@@ -182,15 +186,15 @@ def command_arguments(argument_list: list[str], guide: list | dict[str, Any], is
 
     # Manage explicit branches
     if "index" in guide:
-        return guide_branch(argument_list, guide, issues)
+        return guide_branch(argument_list, guide, issues, is_macro)
 
     # Return mapped arguments
     if "mapping" in guide:
-        return guide_mapping(argument_list, guide, issues)
+        return guide_mapping(argument_list, guide, issues, is_macro)
 
     # Sort through array if it is present
     if "array" in guide:
-        return command_arguments(argument_list, guide["array"], issues)
+        return command_arguments(argument_list, guide["array"], issues, is_macro)
 
     log(f'WARNING: Branch is undefined for: {" ".join(argument_list)}')
     if defaults.DEBUG_MODE:
@@ -208,7 +212,7 @@ def test_list_entry(entry: dict[str, int] | int, value: int, boolean: bool) -> b
     return boolean
 
 
-def guide_branch(argument_list: list[str], guide: dict[str, Any], issues: list[dict[str, str | int]]) -> str:
+def guide_branch(argument_list: list[str], guide: dict[str, Any], issues: list[dict[str, str | int]], is_macro: bool) -> str:
     # Get index
     index: int = guide["index"]
 
@@ -242,10 +246,10 @@ def guide_branch(argument_list: list[str], guide: dict[str, Any], issues: list[d
         lookup_guide = guide["branches"][lookup_guide]
 
     # Explore the branch
-    return command_arguments(argument_list, lookup_guide, issues)
+    return command_arguments(argument_list, lookup_guide, issues, is_macro)
 
 
-def guide_mapping(argument_list: list[str], guide: dict[str, list | dict], issues: list[dict[str, str | int]]) -> str:
+def guide_mapping(argument_list: list[str], guide: dict[str, list | dict], issues: list[dict[str, str | int]], is_macro: bool) -> str:
     # Get mapping
     mapping: list[str] = cast(list, guide["mapping"])
 
@@ -271,10 +275,10 @@ def guide_mapping(argument_list: list[str], guide: dict[str, list | dict], issue
                 break
 
         # Add argument to list
-        new_argument_list.append(update_argument(source, mapping[index], issues))
+        new_argument_list.append(update_argument(source, mapping[index], issues, is_macro))
 
     # Fix edge cases with helper functions
-    return fix_helper_edge_case(new_argument_list, argument_list, issues)
+    return fix_helper_edge_case(new_argument_list, argument_list, issues, is_macro)
     
 
 def get_legend(mapping: list[str], guide: dict[str, Any]) -> list:
@@ -348,7 +352,7 @@ def get_argument(argument_list: list[str], source: int | str | dict[str, Any]) -
 
 
 
-def update_argument(argument: str | dict[str, Any], argument_type: str, issues: list[dict[str, str | int]]) -> str:
+def update_argument(argument: str | dict[str, Any], argument_type: str, issues: list[dict[str, str | int]], is_macro: bool = False) -> str:
     # Return carry arguments
     if argument_type == "carry":
         return cast(str, argument)
@@ -356,6 +360,10 @@ def update_argument(argument: str | dict[str, Any], argument_type: str, issues: 
     # Return macro tokens
     if isinstance(argument, str) and miscellaneous.is_macro_token(argument):
         return argument
+    
+    # Return special case for execute sub commands
+    if argument_type == "command":
+        return execute_command(cast(list[str], argument), pack_version, issues, is_macro)
 
     # Return arguments based on type
     if argument_type in ARGUMENT_FUNCTIONS:
@@ -370,7 +378,7 @@ def update_argument(argument: str | dict[str, Any], argument_type: str, issues: 
     return cast(str, argument)
 
 
-def execute_command(argument: dict[str, list[str] | bool] | list[str], version: int, issues: list[dict[str, str | int]]):
+def execute_command(argument: dict[str, list[str] | bool] | list[str], version: int, issues: list[dict[str, str | int]], is_macro: bool):
     # Initialize parameters
     execute = False
 
@@ -387,14 +395,14 @@ def execute_command(argument: dict[str, list[str] | bool] | list[str], version: 
     # Return command
     if argument == ["execute"]:
         return "execute"
-    return parsed_command(argument, False)
+    return parsed_command(argument, is_macro, False)
 
 def command_string(command: str, version: int, issues: list[dict[str, str | int]]):
     return update(command, version, "NBT")
 
 
 
-def fix_helper_edge_case(argument_list: list[str], old_argument_list: list[str], issues: list[dict[str, str | int]]) -> str:
+def fix_helper_edge_case(argument_list: list[str], old_argument_list: list[str], issues: list[dict[str, str | int]], is_macro: bool) -> str:
     # Remove empty NBT from summon command
     if (
         len(argument_list) >= 6 and
@@ -411,7 +419,70 @@ def fix_helper_edge_case(argument_list: list[str], old_argument_list: list[str],
         len(argument_list) > 4 and
         argument_list[4].split("{")[0].split("[")[0] == "minecraft:comparator"
     ):
-        return block_update_mitigator.handle_comparator_setblock(argument_list)
+        return block_update_mitigator.handle_comparator_setblock(argument_list, is_macro)
+    
+    # Fix pre-1.21.4 bugs
+    if pack_version <= 2103:
+        # Fix pre-1.21.4 merging into custom model data requiring initialization of the tag first
+        if (option_manager.FIXES["command_helper"]["custom_model_data_store"]):
+            source: str | None = None
+            path: str | None = None
+            type_index: int | None = None
+
+            if (
+                len(argument_list) >= 4 and
+                argument_list[0] == "execute" and
+                argument_list[1] == "store"
+            ):
+                if (
+                    len(argument_list) >= 8 and
+                    argument_list[3] == "block"
+                ):
+                    source = " ".join(argument_list[3:7])
+                    path = argument_list[7]
+                    type_index = 8
+                if (
+                    len(argument_list) >= 6 and
+                    argument_list[3] == "entity"
+                ):
+                    source = " ".join(argument_list[3:5])
+                    path = argument_list[5]
+                    type_index = 6
+                if (
+                    len(argument_list) >= 6 and
+                    argument_list[3] == "storage"
+                ):
+                    source = " ".join(argument_list[3:5])
+                    path = argument_list[5]
+                    type_index = 6
+
+            if (
+                len(argument_list) >= 2 and
+                argument_list[0] == "data" and
+                argument_list[1] == "modify"
+            ):
+                if (
+                    len(argument_list) >= 7 and
+                    argument_list[3] == "block"
+                ):
+                    source = " ".join(argument_list[2:6])
+                    path = argument_list[6]
+                if (
+                    len(argument_list) >= 5 and
+                    argument_list[2] == "entity"
+                ):
+                    source = " ".join(argument_list[2:4])
+                    path = argument_list[4]
+                if (
+                    len(argument_list) >= 5 and
+                    argument_list[2] == "storage"
+                ):
+                    source = " ".join(argument_list[2:4])
+                    path = argument_list[4]
+
+            if source is not None and path is not None and path.endswith(".__CUSTOM_MODEL_PATH__"):
+                path = path[:-22]
+                return custom_model_data_store.handle_store(argument_list, is_macro, source, path, type_index)
     
     # Fix pre-1.21.2 bugs
     if pack_version <= 2101:
@@ -421,7 +492,7 @@ def fix_helper_edge_case(argument_list: list[str], old_argument_list: list[str],
             len(argument_list) > 5 and
             argument_list[0] in ["tp", "teleport"]
         ):
-            return teleport_dismount.handle_teleport(argument_list)
+            return teleport_dismount.handle_teleport(argument_list, is_macro)
     
     # Fix pre-1.20.5 bugs
     if pack_version <= 2004:
@@ -458,7 +529,7 @@ def fix_helper_edge_case(argument_list: list[str], old_argument_list: list[str],
             block_nbt: dict[str, Any] = nbt_tags.unpack(argument_list[6])
             old_block_nbt = nbt_tags.unpack(old_argument_list[6 if old_argument_list[0] == "data" else 4])
             if "front_text" in block_nbt and "front_text" not in old_block_nbt:
-                return sign_merge_handler.handle_merge(argument_list, block_nbt, old_block_nbt)
+                return sign_merge_handler.handle_merge(argument_list, is_macro, block_nbt, old_block_nbt)
     
     # Fix pre-1.18 bugs
     if pack_version <= 1702:
@@ -474,8 +545,8 @@ def fix_helper_edge_case(argument_list: list[str], old_argument_list: list[str],
             if "Time" in entity_nbt:
                 falling_block_time = entity_nbt["Time"].value
             if falling_block_time == 0:
-                return falling_block_handler.handle_time_0(argument_list, entity_nbt)
-            return falling_block_handler.handle_non_time_0(argument_list, entity_nbt)
+                return falling_block_handler.handle_time_0(argument_list, is_macro, entity_nbt)
+            return falling_block_handler.handle_non_time_0(argument_list, is_macro, entity_nbt)
         
     # Fix pre-1.16 bugs
     if pack_version <= 1502:
@@ -505,7 +576,7 @@ def fix_helper_edge_case(argument_list: list[str], old_argument_list: list[str],
             
             # Fix pre-1.16 doors being modified by setblock
             if block[0].endswith("_door"):
-                return door_modifier.handle_doors(argument_list)
+                return door_modifier.handle_doors(argument_list, is_macro)
     
     # Fix pre-1.13 testfor handling of SuccessCount
     if (
@@ -522,11 +593,11 @@ def fix_helper_edge_case(argument_list: list[str], old_argument_list: list[str],
     if pack_version <= 1102:
         if argument_list[0] == "setblock" and option_manager.FIXES["command_helper"]["block_nbt_modifier"]:
             if len(argument_list) > 4 and "{" in argument_list[4]:
-                return block_nbt_modifier.handle_setblock(argument_list)
+                return block_nbt_modifier.handle_setblock(argument_list, is_macro)
 
         if argument_list[0] == "fill" and option_manager.FIXES["command_helper"]["block_nbt_modifier"]:
             if len(argument_list) > 7 and "{" in argument_list[7]:
-                return block_nbt_modifier.handle_fill(argument_list)
+                return block_nbt_modifier.handle_fill(argument_list, is_macro)
             
     # Fix pre-1.11 bugs
     if pack_version <= 1002:
@@ -561,13 +632,13 @@ def fix_helper_edge_case(argument_list: list[str], old_argument_list: list[str],
             argument_list[6] == "entity" and
             "Motion" in nbt_tags.unpack_compound(argument_list[8])
         ):
-            return motion_canceler.handle_motion_modification(argument_list)
+            return motion_canceler.handle_motion_modification(argument_list, is_macro)
         if (
             option_manager.FIXES["command_helper"]["teleport_motion_cancel"] and
             (argument_list[0] == "execute" and "teleport" in argument_list) or
             argument_list[0] == "teleport"
         ):
-            return motion_canceler.handle_teleport(argument_list)
+            return motion_canceler.handle_teleport(argument_list, is_macro)
     
     # Fix pre-1.9 clone breaking blocks
     if (
@@ -575,7 +646,7 @@ def fix_helper_edge_case(argument_list: list[str], old_argument_list: list[str],
         pack_version <= 809 and
         argument_list[0] == "clone"
     ):
-        return block_update_mitigator.handle_clean_clone(argument_list)
+        return block_update_mitigator.handle_clean_clone(argument_list, is_macro)
     
     # Remove illegal particles
     if (
@@ -603,7 +674,7 @@ def fix_helper_edge_case(argument_list: list[str], old_argument_list: list[str],
             safe_nbt_interpret_issues.append(issue)
 
     if len(safe_nbt_interpret_issues) > 0 and option_manager.FIXES["command_helper"]["safe_nbt_interpret"]:
-        return safe_nbt_interpret.handle_interpret(argument_list, safe_nbt_interpret_issues)
+        return safe_nbt_interpret.handle_interpret(argument_list, is_macro, safe_nbt_interpret_issues)
 
 
 
@@ -625,7 +696,7 @@ ARGUMENT_FUNCTIONS: dict[str, tuple] = {
     "block_nbt_from_path": ( nbt_tags_from_path.update, "block" ),
     "block_nbt_path": ( nbt_paths.update, "block" ),
     "block_set": ( blocks.update_from_command_set, None ),
-    "command": ( execute_command, None),
+    # "command": ( execute_command, None),
     "command_string": ( command_string, None ),
     "coordinate": ( miscellaneous.coordinate, None),
     "coord_map_to_array": ( miscellaneous.coord_map_to_array, None ),

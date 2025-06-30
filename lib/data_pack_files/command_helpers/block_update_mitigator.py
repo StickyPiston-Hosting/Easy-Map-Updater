@@ -12,7 +12,7 @@ from lib.data_pack_files import command_helper
 
 # Define functions
 
-def handle_comparator_setblock(command: list[str]) -> str:
+def handle_comparator_setblock(command: list[str], is_macro: bool) -> str:
     # Extract blockstates from comparator
     states = {
         "facing": "north",
@@ -40,19 +40,21 @@ def handle_comparator_setblock(command: list[str]) -> str:
             f'execute positioned {command[1]} {command[2]} {command[3]} positioned {offset} if block ~ ~ ~ minecraft:command_block run data merge block ~ ~ ~ {{SuccessCount:0}}\n'
             f'execute positioned {command[1]} {command[2]} {command[3]} positioned {offset} if block ~ ~ ~ minecraft:chain_command_block run data merge block ~ ~ ~ {{SuccessCount:0}}\n'
             f'execute positioned {command[1]} {command[2]} {command[3]} positioned {offset} if block ~ ~ ~ minecraft:repeating_command_block run data merge block ~ ~ ~ {{SuccessCount:0}}\n'
-            f'return run {" ".join(command)}'
+            f'return run {" ".join(command)}',
+            is_macro
         )
     else:
         return " ".join(command)
     
 
 
-def handle_clean_clone(command: list[str]) -> str:
+def handle_clean_clone(command: list[str], is_macro: bool) -> str:
     return command_helper.create_function(
         f'execute store result score #do_tile_drops help.value run gamerule doTileDrops\n'
         f'gamerule doTileDrops false\n'
         f'execute store success score #success help.value run {" ".join(command)}\n'
         f'execute if score #do_tile_drops help.value matches 1 run gamerule doTileDrops true\n'
         f'execute if score #success help.value matches 0 run return 0\n'
-        f'return 1'
+        f'return 1',
+            is_macro
     )
