@@ -70,7 +70,7 @@ def update(pack: Path, version: int):
         update_file_names(og_pack, pack)
         fonts.update(pack, pack_version)
         models.update(pack, pack_version)
-        atlas_logger.log_atlas(pack)
+        atlas_logger.log_atlas(og_pack, pack, version)
         shaders.update(pack, pack_version)
         finalize.delete_ds_store(pack)
         log("Resource pack updated")
