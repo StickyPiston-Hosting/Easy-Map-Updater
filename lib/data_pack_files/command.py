@@ -421,6 +421,22 @@ def fix_helper_edge_case(argument_list: list[str], old_argument_list: list[str],
     ):
         return block_update_mitigator.handle_comparator_setblock(argument_list, is_macro)
     
+    # Fix pre-1.21.5 bugs
+    if pack_version <= 2104:
+        # Fix pre-1.21.5 structure blocks having different default NBT data
+        if (
+            len(argument_list) >= 5 and
+            argument_list[0] == "setblock" and
+            argument_list[4].startswith("minecraft:structure_block")
+        ):
+            argument_list[4] = blocks.add_old_default_structure_block_data(argument_list[4])
+        if (
+            len(argument_list) >= 8 and
+            argument_list[0] == "fill" and
+            argument_list[7].startswith("minecraft:structure_block")
+        ):
+            argument_list[7] = blocks.add_old_default_structure_block_data(argument_list[7])
+    
     # Fix pre-1.21.4 bugs
     if pack_version <= 2103:
         # Fix pre-1.21.4 merging into custom model data requiring initialization of the tag first

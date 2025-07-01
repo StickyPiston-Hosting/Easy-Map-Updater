@@ -508,3 +508,20 @@ def update_block_id(block_id: str | nbt_tags.TypeNumeric, data_value: int | str,
             block_id = id_array[block_id]
 
     return (block_id, block_states, nbt)
+
+
+
+def add_old_default_structure_block_data(block: str) -> str:
+    if "{" in block:
+        nbt = nbt_tags.unpack(block[block.index("{"):])
+    else:
+        nbt = {}
+
+    if "ignoreEntities" not in nbt:
+        nbt["ignoreEntities"] = nbt_tags.TypeByte(0)
+    if "posY" not in nbt:
+        nbt["posY"] = nbt_tags.TypeInt(0)
+    if "showboundingbox" not in nbt:
+        nbt["showboundingbox"] = nbt_tags.TypeByte(0)
+
+    return block[:block.index("{")] + nbt_tags.pack(nbt)
