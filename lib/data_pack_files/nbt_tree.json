@@ -1,7 +1,7 @@
 {
     "sources": {
         "arbitrary": {
-            "tags": {}
+            "edge_case": "arbitrary_data"
         },
         "attribute": {
             "tags": {
@@ -501,6 +501,7 @@
                         "list": { "source": "effect" }
                     }
                 },
+                "data": { "source": "arbitrary" },
                 "DecorItem": {
                     "rename": "body_armor_item",
                     "source": "item"

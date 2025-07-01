@@ -122,6 +122,10 @@ def fix(world: Path, source_world: Path, version: int, get_confirmation: bool) -
     # Fix maps
     log("Fixing maps")
     fix_maps(world)
+
+    # Fix command storage
+    log("Fixing command storage")
+    fix_command_storage(world)
     
     log("World data fixed")
 
@@ -1095,60 +1099,84 @@ def fix_maps(world: Path):
     if not folder_path.exists():
         return
     for file_path in folder_path.iterdir():
-        if file_path.name.startswith("map_") and file_path.name.endswith(".dat"):
-            file = NBT.NBTFile(file_path)
-            modified = False
-            if "DataVersion" not in file:
-                file["DataVersion"] = NBT.TAG_Int(defaults.DATA_VERSION)
-                modified = True
-            if "data" not in file:
-                file["data"] = NBT.TAG_Compound()
-                modified = True
-            
-            data = file["data"]
-            if "scale" not in data:
-                data["scale"] = NBT.TAG_Byte(0)
-                modified = True
-            if "dimension" not in data:
-                data["dimension"] = NBT.TAG_String("minecraft:overworld")
-                modified = True
-            if isinstance(data["dimension"].value, int):
-                data["dimension"] = NBT.TAG_String({
-                    0: "minecraft:overworld",
-                    -1: "minecraft:the_nether",
-                    1: "minecraft:the_end"
-                }[data["dimension"].value])
-                modified = True
-            if "trackingPosition" not in data:
-                data["trackingPosition"] = NBT.TAG_Byte(1)
-                modified = True
-            if "unlimitedTracking" not in data:
-                data["unlimitedTracking"] = NBT.TAG_Byte(1)
-                modified = True
-            if "locked" not in data:
-                data["locked"] = NBT.TAG_Byte(0)
-                modified = True
-            if "xCenter" not in data:
-                data["xCenter"] = NBT.TAG_Int(0)
-                modified = True
-            if "zCenter" not in data:
-                data["zCenter"] = NBT.TAG_Int(0)
-                modified = True
-            if "banners" not in data:
-                data["banners"] = NBT.TAG_List(NBT.TAG_Compound)
-                modified = True
-            if "frames" not in data:
-                data["frames"] = NBT.TAG_List(NBT.TAG_Compound)
-                modified = True
-            if "colors" not in data:
-                data["colors"] = NBT.TAG_Byte_Array()
-                data["colors"].value = [0 for i in range(16384)]
-                modified = True
-
-            if modified:
-                file.write_file(file_path)
+        if not (file_path.name.startswith("map_") and file_path.name.endswith(".dat")):
             continue
-                
+
+        file = NBT.NBTFile(file_path)
+        modified = False
+        if "DataVersion" not in file:
+            file["DataVersion"] = NBT.TAG_Int(defaults.DATA_VERSION)
+            modified = True
+        if "data" not in file:
+            file["data"] = NBT.TAG_Compound()
+            modified = True
+         
+        data = file["data"]
+        if "scale" not in data:
+            data["scale"] = NBT.TAG_Byte(0)
+            modified = True
+        if "dimension" not in data:
+            data["dimension"] = NBT.TAG_String("minecraft:overworld")
+            modified = True
+        if isinstance(data["dimension"].value, int):
+            data["dimension"] = NBT.TAG_String({
+                0: "minecraft:overworld",
+                -1: "minecraft:the_nether",
+                1: "minecraft:the_end"
+            }[data["dimension"].value])
+            modified = True
+        if "trackingPosition" not in data:
+            data["trackingPosition"] = NBT.TAG_Byte(1)
+            modified = True
+        if "unlimitedTracking" not in data:
+            data["unlimitedTracking"] = NBT.TAG_Byte(1)
+            modified = True
+        if "locked" not in data:
+            data["locked"] = NBT.TAG_Byte(0)
+            modified = True
+        if "xCenter" not in data:
+            data["xCenter"] = NBT.TAG_Int(0)
+            modified = True
+        if "zCenter" not in data:
+            data["zCenter"] = NBT.TAG_Int(0)
+            modified = True
+        if "banners" not in data:
+            data["banners"] = NBT.TAG_List(NBT.TAG_Compound)
+            modified = True
+        if "frames" not in data:
+            data["frames"] = NBT.TAG_List(NBT.TAG_Compound)
+            modified = True
+        if "colors" not in data:
+            data["colors"] = NBT.TAG_Byte_Array()
+            data["colors"].value = [0 for i in range(16384)]
+            modified = True
+
+        if modified:
+            file.write_file(file_path)
+
+
+
+def fix_command_storage(world: Path):
+    folder_path = world / "data"
+    if not folder_path.exists():
+        return
+    for file_path in folder_path.iterdir():
+        if not (file_path.name.startswith("command_storage_") and file_path.name.endswith(".dat")):
+            continue
+
+        file = NBT.NBTFile(file_path)
+        file["DataVersion"] = NBT.TAG_Int(defaults.DATA_VERSION)
+
+        if "data" in file:
+            if "contents" in file["data"]:
+                file["data"]["contents"] = nbt_tags.convert_to_lib_format_compound(
+                    cast(dict, nbt_tags.process_arbitrary_nbt(
+                        nbt_tags.convert_from_lib_format_compound(file["data"]["contents"]), pack_version
+                    ))
+                )
+
+        file.write_file(file_path)
+
 
 
 

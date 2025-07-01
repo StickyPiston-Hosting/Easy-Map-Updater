@@ -68,6 +68,7 @@ def get_default_options() -> Options:
             "lock_fixer": True,
             "empty_equipment_override": False,
             "macros": True,
+            "json_text_components_in_storage": True,
             "stats_options": {
                 "block_stats_used": True,
                 "block_positions_dynamic": False,

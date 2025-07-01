@@ -420,6 +420,7 @@ def conform_component(component: ItemComponent, version: int):
         custom_data: dict[str, Any] = component.value
         if "emu_lock_name" in custom_data and version <= 2104:
             custom_data["emu_lock_name"] = json_text_component.update(custom_data["emu_lock_name"], version, [], {"mangled": True})
+        component.value = nbt_tags.process_arbitrary_nbt(component.value, version)
 
     if component.key == "minecraft:custom_model_data":
         if version <= 2103 and not component.is_instance(dict):

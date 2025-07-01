@@ -14,6 +14,7 @@ from lib.log import log
 from lib import defaults
 from lib import utils
 from lib import option_manager
+from lib import json_manager
 
 
 
@@ -217,7 +218,10 @@ def update(snbt: str | dict[str, str], version: int, issues: list[dict[str, str 
     if snbt == "":
         return snbt
     if snbt[0] != "{":
-        return snbt
+        if source != "arbitrary":
+            return snbt
+        if snbt[0] != "[" and snbt[0] != '"':
+            return snbt
 
     nbt: dict = cast(dict, unpack(snbt))
     return pack(get_source({}, nbt, source, object_id, issues))
@@ -614,6 +618,8 @@ def edge_case(parent: dict, nbt, case: str | dict[str, str], source: str, object
     # Process NBT based on case
     if case_type == "anchor_pos":
         return edge_case_anchor_pos(parent)
+    if case_type == "arbitrary_data":
+        return edge_case_arbitrary_data(nbt)
     if case_type == "armor_drop_chances":
         return edge_case_armor_drop_chances(parent)
     if case_type == "armor_item":
@@ -717,6 +723,9 @@ def edge_case_anchor_pos(parent: dict[str, Any]):
         parent["anchor_pos"][1] = TypeInt(parent["AY"])
     if "AZ" in parent:
         parent["anchor_pos"][2] = TypeInt(parent["AZ"])
+
+def edge_case_arbitrary_data(nbt):
+    return process_arbitrary_nbt(nbt)
 
 def edge_case_armor_drop_chances(parent: dict[str, Any]):
     if "drop_chances" not in parent:
@@ -1576,4 +1585,39 @@ def set_value(nbt, cast_type = None):
         return nbt
     if cast_type:
         return cast_type(nbt)
+    return nbt
+
+
+
+def process_arbitrary_nbt(nbt, version: int | None = None):
+    global pack_version
+    if version is not None:
+        pack_version = version
+
+    if isinstance(nbt, dict):
+        return process_arbitrary_nbt_compound(nbt)
+    if isinstance(nbt, TypeList):
+        return process_arbitrary_nbt_list(nbt)
+    if isinstance(nbt, str):
+        return process_arbitrary_nbt_string(nbt)
+    return nbt
+    
+def process_arbitrary_nbt_compound(nbt: dict[str, Any]) -> dict[str, Any]:
+    for key in nbt:
+        nbt[key] = process_arbitrary_nbt(nbt[key])
+    return nbt
+
+def process_arbitrary_nbt_list(nbt: TypeList) -> TypeList:
+    for i in range(len(nbt)):
+        nbt[i] = process_arbitrary_nbt(nbt[i])
+    return nbt
+
+def process_arbitrary_nbt_string(nbt: str):
+    if (
+        option_manager.FIXES["json_text_components_in_storage"] and
+        pack_version <= 2104 and
+        (nbt.startswith("{") or nbt.startswith("[") or nbt.startswith('"'))
+    ):
+        return json_text_component.direct_update(convert_from_json(json_manager.unpack(nbt)), pack_version, [], False)
+
     return nbt
