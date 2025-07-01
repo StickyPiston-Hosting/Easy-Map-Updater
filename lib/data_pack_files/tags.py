@@ -37,11 +37,13 @@ def update(file_path: Path, source_file_path: Path, version: int, tag_type: str)
     
     modified = False
     for i in range(len(contents["values"])):
-        new_entry = contents["values"][i]
+        entry: str = contents["values"][i] if isinstance(contents["values"][i], str) else contents["values"][i]["id"]
+        print(f'entry: {entry}')
+        new_entry = entry
         if tag_type == "block":
             new_entry = blocks.update(
                 {
-                    "id": contents["values"][i],
+                    "id": entry,
                     "data_value": -1,
                     "block_states": {},
                     "nbt": {},
@@ -51,13 +53,13 @@ def update(file_path: Path, source_file_path: Path, version: int, tag_type: str)
             )["id"]
         if tag_type == "entity_type":
             new_entry = entities.update(
-                {"id": contents["values"][i], "read": True},
+                {"id": entry, "read": True},
                 pack_version, []
             )
         if tag_type == "item":
             new_entry = items.update(
                 {
-                    "id": contents["values"][i],
+                    "id": entry,
                     "data_value": -1,
                     "components": item_component.ItemComponents([]),
                     "nbt": {},
@@ -65,8 +67,11 @@ def update(file_path: Path, source_file_path: Path, version: int, tag_type: str)
                 },
                 pack_version, []
             )["id"]
-        if contents["values"][i] != new_entry:
-            contents["values"][i] = new_entry
+        if entry != new_entry:
+            if isinstance(contents["values"][i], str):
+                contents["values"][i] = new_entry
+            else:
+                contents["values"][i]["id"] = new_entry
             modified = True
 
     if modified:
