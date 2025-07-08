@@ -30,7 +30,7 @@ SPECIAL_EFFECTS = [
 
 # Define functions
 
-def add_effect(command: list[str]) -> str:
+def add_effect(command: list[str], is_macro: bool) -> str:
     check_pack_creation()
 
     effect = command[3].split(":")[1]
@@ -38,10 +38,11 @@ def add_effect(command: list[str]) -> str:
     return command_helper.create_function(
         f'{" ".join(command)}\n'
         f'execute as {command[2]} if entity @s[type=minecraft:player,predicate=effect:{effect}] run function effect:{effect}/check\n'
-        f'return 1'
+        f'return 1',
+        is_macro
     )
 
-def remove_effect(command: list[str]) -> str:
+def remove_effect(command: list[str], is_macro: bool) -> str:
     check_pack_creation()
 
     effect = command[3].split(":")[1]
@@ -49,16 +50,18 @@ def remove_effect(command: list[str]) -> str:
     return command_helper.create_function(
         f'{" ".join(command)}\n'
         f'execute as {command[2]} if entity @s[type=minecraft:player] unless score @s effect.{effect}_duration matches 0 run function effect:{effect}/remove\n'
-        f'return 1'
+        f'return 1',
+        is_macro
     )
 
-def remove_all_effects(command: list[str]) -> str:
+def remove_all_effects(command: list[str], is_macro: bool) -> str:
     check_pack_creation()
 
     return command_helper.create_function(
         f'{" ".join(command)}\n'
         f'execute as {command[2] if len(command) >= 3 else "@s"} if entity @s[type=minecraft:player] run function effect:remove_all\n'
-        f'return 1'
+        f'return 1',
+        is_macro
     )
 
 def check_pack_creation():

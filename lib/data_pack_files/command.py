@@ -519,7 +519,7 @@ def fix_helper_edge_case(argument_list: list[str], old_argument_list: list[str],
                 argument_list[1] == "give" and
                 argument_list[3] in effect_overflow.SPECIAL_EFFECTS
             ):
-                return effect_overflow.add_effect(argument_list)
+                return effect_overflow.add_effect(argument_list, is_macro)
             if (
                 len(argument_list) >= 2 and
                 argument_list[1] == "clear"
@@ -528,9 +528,9 @@ def fix_helper_edge_case(argument_list: list[str], old_argument_list: list[str],
                     len(argument_list) >= 4 and
                     argument_list[3] in effect_overflow.SPECIAL_EFFECTS
                 ):
-                    return effect_overflow.remove_effect(argument_list)
+                    return effect_overflow.remove_effect(argument_list, is_macro)
                 if len(argument_list) <= 3:
-                    return effect_overflow.remove_all_effects(argument_list)
+                    return effect_overflow.remove_all_effects(argument_list, is_macro)
     
     # Fix pre-1.20 bugs
     if pack_version <= 1904:
@@ -623,7 +623,7 @@ def fix_helper_edge_case(argument_list: list[str], old_argument_list: list[str],
             argument_list[0] == "summon" and
             argument_list[1] == "minecraft:firework_rocket"
         ):
-            return firework_damage_canceler.cancel_damage(argument_list)
+            return firework_damage_canceler.cancel_damage(argument_list, is_macro)
 
         # Fix pre-1.11 NBTless item spawning
         if (

@@ -25,7 +25,7 @@ MINECRAFT_PATH = EASY_MAP_UPDATER_PATH.parent
 
 # Define functions
 
-def cancel_damage(command: list[str]) -> str:
+def cancel_damage(command: list[str], is_macro: bool) -> str:
     world = MINECRAFT_PATH / "saves" / option_manager.get_map_name()
     data_pack_path = world / "datapacks" / "firework_damage_canceler.zip"
     if world.exists() and not data_pack_path.exists():
@@ -49,7 +49,8 @@ def cancel_damage(command: list[str]) -> str:
         f'execute store success score #success help.value run {" ".join(command)}\n'
         f'execute positioned {position} run function firework:spawn/post\n'
         f'execute if score #success help.value matches 0 run return 0\n'
-        f'return 1'
+        f'return 1',
+        is_macro
     )
 
 def create_pack(world: Path):
