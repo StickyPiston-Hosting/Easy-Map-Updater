@@ -6,6 +6,7 @@
 # Import things
 
 import math
+import json
 from lib.log import log
 from lib import defaults
 from lib import utils
@@ -13,8 +14,10 @@ from lib.data_pack_files import arguments
 from lib.data_pack_files import nbt_tags
 from lib.data_pack_files import target_selectors
 from lib.data_pack_files import tables
+from lib.data_pack_files import predicate as predicate_lib
 from lib.data_pack_files.restore_behavior import loot_table_replacements
 from lib import option_manager
+from lib import json_manager
 import easy_map_updater
 
 
@@ -426,7 +429,11 @@ def pitch(argument: str, version: int, issues: list[dict[str, str | int]]) -> st
         return argument
 
 def predicate(name: str, version: int, issues: list[dict[str, str | int]]) -> str:
-    return name.lower()
+    if name.startswith("{") or name.startswith("["):
+        contents = json_manager.unpack(name)
+        return json.dumps(predicate_lib.predicate(contents, version))
+
+    return namespace(name.lower())
 
 def recipe(name: str, version: int, issues: list[dict[str, str | int]]) -> str:
     return name.lower()
