@@ -352,7 +352,7 @@ def update_hover_event(component: dict[str, Any], issues: list[dict[str, str | i
             if "components" in contents:
                 item_nbt["components"] = nbt_tags.unpack(contents["components"])
 
-        item_nbt = cast(dict, nbt_tags.direct_update(item_nbt, pack_version, issues, "item", ""))
+        item_nbt = cast(dict, nbt_tags.direct_update(item_nbt, pack_version, issues, "item", "", False))
         component = {"action": "show_item"}
         if "id" in item_nbt:
             component["id"] = item_nbt["id"]

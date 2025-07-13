@@ -37,7 +37,7 @@ def update(path: str, version: int, issues: list[dict[str, str | int]], source: 
     if not path:
         return path
     if path.startswith("{"):
-        return nbt_tags.update(path, pack_version, issues, source)
+        return nbt_tags.update({"nbt": path, "read": True}, pack_version, issues, source)
 
     path_parts = unpack(f'ROOT.{path}')
     if defaults.DEBUG_MODE:
@@ -97,7 +97,7 @@ def search_tags(path_parts: list[str], guide: dict, source: str, issues: list[di
     if len(path_parts) < 2:
         return path_parts
     if path_parts[1].startswith("{"):
-        path_parts[1] = nbt_tags.update_with_guide(path_parts[1], pack_version, issues, source, guide, "tags")
+        path_parts[1] = nbt_tags.update_with_guide(path_parts[1], pack_version, issues, source, True, guide, "tags")
         return path_parts[:1] + search_tags(path_parts[1:], guide, source, issues)
     if path_parts[1] in guide:
         return path_parts[:1] + branch(path_parts[1:], guide[path_parts[1]], source, issues)
@@ -107,7 +107,7 @@ def search_list(path_parts: list[str], guide: dict, source: str, issues: list[di
     if len(path_parts) < 2:
         return path_parts
     if path_parts[1].startswith("[") and path_parts[1][1:-1].strip().startswith("{"):
-        path_parts[1] = "[" + nbt_tags.update_with_guide(path_parts[1][1:-1].strip(), pack_version, issues, source, guide, "branch") + "]"
+        path_parts[1] = "[" + nbt_tags.update_with_guide(path_parts[1][1:-1].strip(), pack_version, issues, source, True, guide, "branch") + "]"
     return path_parts[:1] + branch(path_parts[1:], guide, source, issues)
 
 
@@ -216,7 +216,7 @@ def edge_case(path_parts: list[str], case_type: str, source: str, issues: list[d
         if len(path_parts) < 2:
             return path_parts
         if path_parts[1].startswith("[") and path_parts[1][1:-1].strip().startswith("{"):
-            item = cast(dict, nbt_tags.direct_update_with_guide(nbt_tags.unpack(path_parts[1][1:-1].strip()), pack_version, issues, source, {"source": "item"}, "branch"))
+            item = cast(dict, nbt_tags.direct_update_with_guide(nbt_tags.unpack(path_parts[1][1:-1].strip()), pack_version, issues, source, True, {"source": "item"}, "branch"))
             equipment_slots = [100, 101, 102, 103, -106]
             if "Slot" in item:
                 slot = nbt_tags.get_value(item["Slot"])
@@ -235,7 +235,7 @@ def edge_case(path_parts: list[str], case_type: str, source: str, issues: list[d
                     if len(item) > 0:
                         new_path_parts.append(nbt_tags.pack(item))
                     return new_path_parts[:-1] + get_source([new_path_parts[-1]] + path_parts[2:], "item", issues)
-            path_parts[1] = "[" + nbt_tags.update_with_guide(path_parts[1][1:-1].strip(), pack_version, issues, source, {"source": "item"}, "branch") + "]"
+            path_parts[1] = "[" + nbt_tags.update_with_guide(path_parts[1][1:-1].strip(), pack_version, issues, source, True, {"source": "item"}, "branch") + "]"
         return path_parts[:1] + get_source(path_parts[1:], "item", issues)
 
     if case_type == "hand_drop_chances":

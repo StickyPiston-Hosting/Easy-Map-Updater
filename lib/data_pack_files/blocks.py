@@ -241,7 +241,7 @@ def update(block: BlockInput, version: int, issues: list[dict[str, str | int]]) 
         block_id, block_states, nbt = update_block_id(block_id, data_value, block_states, nbt or {}, read, issues)
 
     # Update NBT
-    nbt = nbt_tags.direct_update(nbt, pack_version, issues, "block", block_id or "minecraft:stone")
+    nbt = nbt_tags.direct_update(nbt, pack_version, issues, "block", block_id or "minecraft:stone", read)
 
     return {
         "id": block_id,

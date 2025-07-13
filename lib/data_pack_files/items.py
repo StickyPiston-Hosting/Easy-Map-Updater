@@ -259,7 +259,7 @@ def update(item: ItemInput, version: int, issues: list[dict[str, str | int]]) ->
 
     # Update NBT
     if nbt:
-        components = item_component.ItemComponents.unpack_from_dict(nbt_tags.direct_update(nbt, pack_version, issues, "item_tag", old_item_id or "minecraft:stone"), read)
+        components = item_component.ItemComponents.unpack_from_dict(nbt_tags.direct_update(nbt, pack_version, issues, "item_tag", old_item_id or "minecraft:stone", read), read)
 
     # Conform component format
     if version >= 2005:

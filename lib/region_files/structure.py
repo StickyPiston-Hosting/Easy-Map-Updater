@@ -70,7 +70,7 @@ def update(file_path: Path, source_file_path: Path, version: int):
 
             block_entity = cast(NBT.TAG_Compound, block["nbt"])
             block_nbt = nbt_tags.convert_from_lib_format_compound(block_entity)
-            block_nbt = cast(dict, nbt_tags.direct_update(block_nbt, pack_version, [], "block", block_id or "minecraft:stone"))
+            block_nbt = cast(dict, nbt_tags.direct_update(block_nbt, pack_version, [], "block", block_id or "minecraft:stone", False))
             block["nbt"] = nbt_tags.convert_to_lib_format_compound(block_nbt)
 
 
@@ -81,7 +81,7 @@ def update(file_path: Path, source_file_path: Path, version: int):
 
             entity_data = cast(NBT.TAG_Compound, entity["nbt"])
             entity_nbt = nbt_tags.convert_from_lib_format_compound(entity_data)
-            entity_nbt = cast(dict, nbt_tags.direct_update(entity_nbt, pack_version, [], "entity", entity_nbt["id"] if "id" in entity_nbt else "minecraft:pig"))
+            entity_nbt = cast(dict, nbt_tags.direct_update(entity_nbt, pack_version, [], "entity", entity_nbt["id"] if "id" in entity_nbt else "minecraft:pig", False))
             entity["nbt"] = nbt_tags.convert_to_lib_format_compound(entity_nbt)
 
 

@@ -904,13 +904,15 @@
                     "generator": "item_entity",
                     "conditions": {
                         "id": "minecraft:item"
-                    }
+                    },
+                    "read": false
                 },
                 "Radius": {
                     "generator": "area_effect_cloud_radius",
                     "conditions": {
                         "id": "minecraft:area_effect_cloud"
-                    }
+                    },
+                    "read": false
                 }
             }
         },

@@ -202,17 +202,20 @@ from lib.data_pack_files.restore_behavior import lock_fixer
 
 # Define functions
 
-def update(snbt: str | dict[str, str], version: int, issues: list[dict[str, str | int]], source: str) -> str:
+def update(snbt: str | dict, version: int, issues: list[dict[str, str | int]], source: str) -> str:
     global pack_version
     pack_version = version
 
     object_id = ""
+    read = False
 
     # Extract arguments if a dict
     if isinstance(snbt, dict):
         if "object_id" in snbt:
             object_id: str = miscellaneous.namespace(snbt["object_id"])
-        snbt = snbt["nbt"]
+        if "read" in snbt:
+            read = snbt["read"]
+        snbt = cast(str, snbt["nbt"])
 
     # Return if not SNBT
     if snbt == "":
@@ -224,18 +227,18 @@ def update(snbt: str | dict[str, str], version: int, issues: list[dict[str, str 
             return snbt
 
     nbt: dict = cast(dict, unpack(snbt))
-    return pack(get_source({}, nbt, source, object_id, issues))
+    return pack(get_source({}, nbt, source, object_id, read, issues))
 
-def direct_update(nbt: dict | None, version: int, issues: list[dict[str, str | int]], source: str, object_id: str) -> dict | None:
+def direct_update(nbt: dict | None, version: int, issues: list[dict[str, str | int]], source: str, object_id: str, read: bool) -> dict | None:
     global pack_version
     pack_version = version
 
     if not isinstance(nbt, dict):
         return
     
-    return get_source({}, nbt, source, object_id, issues)
+    return get_source({}, nbt, source, object_id, read, issues)
 
-def update_with_guide(snbt: str, version: int, issues: list[dict[str, str | int]], source: str, guide: dict, callback: str) -> str:
+def update_with_guide(snbt: str, version: int, issues: list[dict[str, str | int]], source: str, read: bool, guide: dict, callback: str) -> str:
     global pack_version
     pack_version = version
 
@@ -243,9 +246,9 @@ def update_with_guide(snbt: str, version: int, issues: list[dict[str, str | int]
     if not snbt:
         return snbt
     
-    return pack(direct_update_with_guide(unpack(snbt), version, issues, source, guide, callback))
+    return pack(direct_update_with_guide(unpack(snbt), version, issues, source, read, guide, callback))
 
-def direct_update_with_guide(nbt: dict, version: int, issues: list[dict[str, str | int]], source: str, guide: dict, callback: str) -> dict | TypeList:
+def direct_update_with_guide(nbt: dict, version: int, issues: list[dict[str, str | int]], source: str, read: bool, guide: dict, callback: str) -> dict | TypeList:
     global pack_version
     pack_version = version
 
@@ -258,13 +261,13 @@ def direct_update_with_guide(nbt: dict, version: int, issues: list[dict[str, str
 
     match callback:
         case "branch":
-            return branch({}, nbt, guide, source, "", issues)
+            return branch({}, nbt, guide, source, "", read, issues)
         case "tags":
             if "necessary_tags" in guide:
-                return update_tags({}, nbt, guide, source, "", guide["necessary_tags"], issues)
-            return update_tags({}, nbt, guide, source, "", {}, issues)
+                return update_tags({}, nbt, guide, source, "", read, guide["necessary_tags"], issues)
+            return update_tags({}, nbt, guide, source, "", read, {}, issues)
         case "list":
-            return update_list({}, cast(TypeList, nbt), guide, source, "", issues)
+            return update_list({}, cast(TypeList, nbt), guide, source, "", read, issues)
         
     return nbt
     
@@ -422,31 +425,31 @@ def pack_list(nbt: list) -> str:
 
 
 
-def get_source(parent: dict, nbt: dict, source: str, object_id: str, issues: list[dict[str, str | int]]) -> Any:
+def get_source(parent: dict, nbt: dict, source: str, object_id: str, read: bool, issues: list[dict[str, str | int]]) -> Any:
     # Get guide
     if source not in NBT_TREE["sources"]:
         if defaults.SEND_WARNINGS:
             log(f'WARNING: Source "{source}" is not registered!')
         return nbt
-    return branch(parent, nbt, NBT_TREE["sources"][source], source, object_id, issues)
+    return branch(parent, nbt, NBT_TREE["sources"][source], source, object_id, read, issues)
 
-def branch(parent: dict, nbt, guide: dict, source: str, object_id: str, issues: list[dict[str, str | int]]) -> Any:
+def branch(parent: dict, nbt, guide: dict, source: str, object_id: str, read: bool, issues: list[dict[str, str | int]]) -> Any:
     # Return function based on contents of guide
     if "edge_case" in guide:
-        return edge_case(parent, nbt, guide["edge_case"], source, object_id, issues)
+        return edge_case(parent, nbt, guide["edge_case"], source, object_id, read, issues)
     if "source" in guide:
-        return get_source(parent, nbt, guide["source"], object_id, issues)
+        return get_source(parent, nbt, guide["source"], object_id, read, issues)
     if "tags" in guide:
         if "necessary_tags" in guide:
-            return update_tags(parent, nbt, guide["tags"], source, object_id, guide["necessary_tags"], issues)
-        return update_tags(parent, nbt, guide["tags"], source, object_id, {}, issues)
+            return update_tags(parent, nbt, guide["tags"], source, object_id, read, guide["necessary_tags"], issues)
+        return update_tags(parent, nbt, guide["tags"], source, object_id, read, {}, issues)
     if "list" in guide:
-        return update_list(parent, nbt, guide["list"], source, object_id, issues)
+        return update_list(parent, nbt, guide["list"], source, object_id, read, issues)
     if "data_type" in guide:
-        return update_data(parent, nbt, guide, source, object_id, issues)
+        return update_data(parent, nbt, guide, source, object_id, read, issues)
     return nbt
 
-def update_tags(parent: dict, nbt: dict, guide: dict, source: str, object_id: str, necessary_tags: dict, issues: list[dict[str, str | int]]) -> dict:
+def update_tags(parent: dict, nbt: dict, guide: dict, source: str, object_id: str, read: bool, necessary_tags: dict, issues: list[dict[str, str | int]]) -> dict:
     if not isinstance(nbt, dict):
         return nbt
 
@@ -480,15 +483,15 @@ def update_tags(parent: dict, nbt: dict, guide: dict, source: str, object_id: st
                     ))
                 )
             ):
-                branch(nbt, nbt[key], guide[key], source, object_id, issues)
+                branch(nbt, nbt[key], guide[key], source, object_id, read, issues)
                 if key in nbt:
                     del nbt[key]
             elif "rename" in guide[key]:
-                nbt[guide[key]["rename"]] = branch(nbt, nbt[key], guide[key], source, object_id, issues)
+                nbt[guide[key]["rename"]] = branch(nbt, nbt[key], guide[key], source, object_id, read, issues)
                 if key in nbt:
                     del nbt[key]
             else:
-                value = branch(nbt, nbt[key], guide[key], source, object_id, issues)
+                value = branch(nbt, nbt[key], guide[key], source, object_id, read, issues)
                 if value != None:
                     nbt[key] = value
 
@@ -523,6 +526,10 @@ def update_tags(parent: dict, nbt: dict, guide: dict, source: str, object_id: st
                 if skip:
                     continue
 
+            if "read" in necessary_tags[key]:
+                if necessary_tags[key]["read"] != read:
+                    continue
+
             if generator == "area_effect_cloud_radius":
                 if pack_version <= 2104:
                     nbt[key] = TypeFloat(0)
@@ -533,16 +540,16 @@ def update_tags(parent: dict, nbt: dict, guide: dict, source: str, object_id: st
 
     return nbt
 
-def update_list(parent: dict, nbt: TypeList, guide: dict, source: str, object_id: str, issues: list[dict[str, str | int]]) -> TypeList:
+def update_list(parent: dict, nbt: TypeList, guide: dict, source: str, object_id: str, read: bool, issues: list[dict[str, str | int]]) -> TypeList:
     if not isinstance(nbt, TypeList):
         return nbt
 
     # Iterate through elements
     for i in range(len(nbt.value)):
-        nbt[i] = branch(parent, nbt[i], guide, source, object_id, issues)
+        nbt[i] = branch(parent, nbt[i], guide, source, object_id, read, issues)
     return nbt
 
-def update_data(parent: dict, nbt, guide: dict, source: str, object: str, issues: list[dict[str, str | int]]):
+def update_data(parent: dict, nbt, guide: dict, source: str, object_id: str, read: bool, issues: list[dict[str, str | int]]):
     # Return if a macro token
     if isinstance(nbt, TypeMacroToken):
         return nbt
@@ -608,7 +615,7 @@ def invert_riding(nbt: dict) -> dict:
 
 
 
-def edge_case(parent: dict, nbt, case: str | dict[str, str], source: str, object_id: str, issues: list[dict[str, str | int]]) -> Any:
+def edge_case(parent: dict, nbt, case: str | dict[str, str], source: str, object_id: str, read: bool, issues: list[dict[str, str | int]]) -> Any:
     # Get case
     if isinstance(case, dict):
         case_type: str = case["case"]
@@ -623,9 +630,9 @@ def edge_case(parent: dict, nbt, case: str | dict[str, str], source: str, object
     if case_type == "armor_drop_chances":
         return edge_case_armor_drop_chances(parent)
     if case_type == "armor_item":
-        return edge_case_armor_item(parent, object_id, issues)
+        return edge_case_armor_item(parent, object_id, read, issues)
     if case_type == "armor_items":
-        return edge_case_armor_items(parent, object_id, issues)
+        return edge_case_armor_items(parent, object_id, read, issues)
     if case_type == "attribute_id":
         return edge_case_attribute_id(parent)
     if case_type == "banner_base":
@@ -639,7 +646,7 @@ def edge_case(parent: dict, nbt, case: str | dict[str, str], source: str, object
     if case_type == "body_armor_drop_chance":
         return edge_case_body_armor_drop_chance(parent)
     if case_type == "body_armor_item":
-        return edge_case_body_armor_item(parent, object_id, issues)
+        return edge_case_body_armor_item(parent, object_id, read, issues)
     if case_type == "bound_pos":
         return edge_case_bound_pos(parent)
     if case_type == "can_place_on":
@@ -647,19 +654,19 @@ def edge_case(parent: dict, nbt, case: str | dict[str, str], source: str, object
     if case_type == "color":
         return edge_case_color(parent, object_id)
     if case_type == "custom_potion_effects":
-        return edge_case_custom_potion_effects(parent, object_id, issues)
+        return edge_case_custom_potion_effects(parent, object_id, read, issues)
     if case_type == "effects":
-        return edge_case_effects(parent, object_id, issues)
+        return edge_case_effects(parent, object_id, read, issues)
     if case_type == "entity_id":
-        return edge_case_entity_id(parent, nbt, object_id, issues)
+        return edge_case_entity_id(parent, nbt, object_id, read, issues)
     if case_type == "equipment":
-        return edge_case_equipment(parent, nbt, object_id, issues)
+        return edge_case_equipment(parent, nbt, object_id, read, issues)
     if case_type == "fuse":
         return edge_case_fuse(parent, object_id)
     if case_type == "hand_drop_chances":
         return edge_case_hand_drop_chances(parent)
     if case_type == "hand_items":
-        return edge_case_hand_items(parent, object_id, issues)
+        return edge_case_hand_items(parent, object_id, read, issues)
     if case_type == "home_pos":
         return edge_case_home_pos(parent)
     if case_type == "inventory":
@@ -669,13 +676,13 @@ def edge_case(parent: dict, nbt, case: str | dict[str, str], source: str, object
     if case_type == "item_components":
         return edge_case_item_components(nbt, pack_version, issues)
     if case_type == "item_tag":
-        return edge_case_item_tag(parent, nbt, object_id, pack_version, issues)
+        return edge_case_item_tag(parent, nbt, object_id, read, pack_version, issues)
     if case_type == "lock":
         return edge_case_lock(nbt)
     if case_type == "mooshroom_stew":
         return edge_case_mooshroom_stew(parent, pack_version, issues)
     if case_type == "old_spawn_potential_entity":
-        return edge_case_old_spawn_potential_entity(parent, nbt, object_id, issues)
+        return edge_case_old_spawn_potential_entity(parent, nbt, object_id, read, issues)
     if case_type == "potion":
         return edge_case_potion(parent, object_id)
     if case_type == "power":
@@ -687,7 +694,7 @@ def edge_case(parent: dict, nbt, case: str | dict[str, str], source: str, object
     if case_type == "saddle":
         return edge_case_saddle(parent)
     if case_type == "saddle_item":
-        return edge_case_saddle_item(parent, object_id, issues)
+        return edge_case_saddle_item(parent, object_id, read, issues)
     if case_type == "shot_from_crossbow":
         return edge_case_shot_from_crossbow(parent)
     if case_type == "sign_text":
@@ -699,9 +706,9 @@ def edge_case(parent: dict, nbt, case: str | dict[str, str], source: str, object
     if case_type == "sleeping_pos":
         return edge_case_sleeping_pos(parent)
     if case_type == "spawn_data":
-        return edge_case_spawn_data(nbt, object_id, issues)
+        return edge_case_spawn_data(nbt, object_id, read, issues)
     if case_type == "spawn_potential_entity":
-        return edge_case_spawn_potential_entity(parent, nbt, object_id, issues)
+        return edge_case_spawn_potential_entity(parent, nbt, object_id, read, issues)
     if case_type == "uuid_long":
         return edge_case_uuid_long(parent, cast(dict, case))
 
@@ -738,32 +745,32 @@ def edge_case_armor_drop_chances(parent: dict[str, Any]):
     parent["drop_chances"]["chest"] = TypeFloat(parent["ArmorDropChances"][2]) if length > 2 else TypeFloat(0.085)
     parent["drop_chances"]["head"] = TypeFloat(parent["ArmorDropChances"][3]) if length > 3 else TypeFloat(0.085)
 
-def edge_case_armor_item(parent: dict[str, Any], object_id: str, issues: list[dict[str, str | int]]):
+def edge_case_armor_item(parent: dict[str, Any], object_id: str, read: bool, issues: list[dict[str, str | int]]):
     if "equipment" not in parent:
         parent["equipment"] = {}
 
-    parent["equipment"]["body"] = get_source(parent, parent["ArmorItem"], "item", object_id, issues)
+    parent["equipment"]["body"] = get_source(parent, parent["ArmorItem"], "item", object_id, read, issues)
 
-def edge_case_armor_items(parent: dict[str, Any], object_id: str, issues: list[dict[str, str | int]]):
+def edge_case_armor_items(parent: dict[str, Any], object_id: str, read: bool, issues: list[dict[str, str | int]]):
     if "equipment" not in parent:
         parent["equipment"] = {}
 
     length = len(parent["ArmorItems"])
 
     if length > 0 and parent["ArmorItems"][0]:
-        parent["equipment"]["feet"] = get_source(parent, parent["ArmorItems"][0], "item", object_id, issues)
+        parent["equipment"]["feet"] = get_source(parent, parent["ArmorItems"][0], "item", object_id, read, issues)
     elif option_manager.FIXES["empty_equipment_override"]:
         parent["equipment"]["feet"] = {"id": "minecraft:air", "count": TypeInt(0)}
     if length > 1 and parent["ArmorItems"][1]:
-        parent["equipment"]["legs"] = get_source(parent, parent["ArmorItems"][1], "item", object_id, issues)
+        parent["equipment"]["legs"] = get_source(parent, parent["ArmorItems"][1], "item", object_id, read, issues)
     elif option_manager.FIXES["empty_equipment_override"]:
         parent["equipment"]["legs"] = {"id": "minecraft:air", "count": TypeInt(0)}
     if length > 2 and parent["ArmorItems"][2]:
-        parent["equipment"]["chest"] = get_source(parent, parent["ArmorItems"][2], "item", object_id, issues)
+        parent["equipment"]["chest"] = get_source(parent, parent["ArmorItems"][2], "item", object_id, read, issues)
     elif option_manager.FIXES["empty_equipment_override"]:
         parent["equipment"]["chest"] = {"id": "minecraft:air", "count": TypeInt(0)}
     if length > 3 and parent["ArmorItems"][3]:
-        parent["equipment"]["head"] = get_source(parent, parent["ArmorItems"][3], "item", object_id, issues)
+        parent["equipment"]["head"] = get_source(parent, parent["ArmorItems"][3], "item", object_id, read, issues)
     elif option_manager.FIXES["empty_equipment_override"]:
         parent["equipment"]["head"] = {"id": "minecraft:air", "count": TypeInt(0)}
 
@@ -839,11 +846,11 @@ def edge_case_body_armor_drop_chance(parent: dict[str, Any]):
 
     parent["drop_chances"]["body"] = TypeFloat(parent["body_armor_drop_chances"])
 
-def edge_case_body_armor_item(parent: dict[str, Any], object_id: str, issues: list[dict[str, str | int]]):
+def edge_case_body_armor_item(parent: dict[str, Any], object_id: str, read: bool, issues: list[dict[str, str | int]]):
     if "equipment" not in parent:
         parent["equipment"] = {}
 
-    parent["equipment"]["body"] = get_source(parent, parent["body_armor_item"], "item", object_id, issues)
+    parent["equipment"]["body"] = get_source(parent, parent["body_armor_item"], "item", object_id, read, issues)
 
 def edge_case_bound_pos(parent: dict[str, Any]):
     if "bound_pos" in parent:
@@ -883,7 +890,7 @@ def edge_case_color(parent: dict, object_id: str):
         parent["potion_contents"]["custom_color"] = TypeInt(parent["Color"].value)
         del parent["Color"]
 
-def edge_case_custom_potion_effects(parent: dict, object_id: str, issues: list[dict[str, str | int]]):
+def edge_case_custom_potion_effects(parent: dict, object_id: str, read: bool, issues: list[dict[str, str | int]]):
     if "item" not in parent:
         parent["item"] = {}
     if "id" not in parent["item"]:
@@ -901,48 +908,48 @@ def edge_case_custom_potion_effects(parent: dict, object_id: str, issues: list[d
     else:
         key = "custom_potion_effects"
     for effect in parent[key]:
-        parent["item"]["components"]["minecraft:potion_contents"]["custom_effects"].append(get_source(parent, effect, "effect", object_id, issues))
+        parent["item"]["components"]["minecraft:potion_contents"]["custom_effects"].append(get_source(parent, effect, "effect", object_id, read, issues))
 
-def edge_case_effects(parent: dict, object_id: str, issues: list[dict[str, str | int]]):
+def edge_case_effects(parent: dict, object_id: str, read: bool, issues: list[dict[str, str | int]]):
     if "potion_contents" not in parent:
         parent["potion_contents"] = {}
     parent["potion_contents"]["custom_effects"] = TypeList([])
     for effect in parent["effects"]:
-        parent["potion_contents"]["custom_effects"].append(get_source(parent, effect, "effect", object_id, issues))
+        parent["potion_contents"]["custom_effects"].append(get_source(parent, effect, "effect", object_id, read, issues))
 
-def edge_case_entity_id(parent: dict, nbt: str, object_id: str, issues: list[dict[str, str | int]]):
+def edge_case_entity_id(parent: dict, nbt: str, object_id: str, read: bool, issues: list[dict[str, str | int]]):
     if "SpawnData" in parent:
-        parent["SpawnData"] = edge_case_spawn_data(parent["SpawnData"], object_id, issues)
+        parent["SpawnData"] = edge_case_spawn_data(parent["SpawnData"], object_id, read, issues)
     else:
         parent["SpawnData"] = {}
     if "entity" not in parent["SpawnData"]:
         parent["SpawnData"]["entity"] = {}
     parent["SpawnData"]["entity"]["id"] = entities.update(nbt, pack_version, issues)
 
-def edge_case_equipment(parent: dict, nbt: TypeList, object_id: str, issues: list[dict[str, str | int]]):
+def edge_case_equipment(parent: dict, nbt: TypeList, object_id: str, read: bool, issues: list[dict[str, str | int]]):
     if "equipment" not in parent:
         parent["equipment"] = {}
 
     length = len(nbt)
 
     if length > 4 and nbt[4]:
-        parent["equipment"]["head"] = get_source(parent, nbt[4], "item", object_id, issues)
+        parent["equipment"]["head"] = get_source(parent, nbt[4], "item", object_id, read, issues)
     elif option_manager.FIXES["empty_equipment_override"]:
         parent["equipment"]["head"] = {"id": "minecraft:air", "count": TypeInt(0)}
     if length > 3 and nbt[3]:
-        parent["equipment"]["chest"] = get_source(parent, nbt[3], "item", object_id, issues)
+        parent["equipment"]["chest"] = get_source(parent, nbt[3], "item", object_id, read, issues)
     elif option_manager.FIXES["empty_equipment_override"]:
         parent["equipment"]["chest"] = {"id": "minecraft:air", "count": TypeInt(0)}
     if length > 2 and nbt[2]:
-        parent["equipment"]["legs"] = get_source(parent, nbt[2], "item", object_id, issues)
+        parent["equipment"]["legs"] = get_source(parent, nbt[2], "item", object_id, read, issues)
     elif option_manager.FIXES["empty_equipment_override"]:
         parent["equipment"]["legs"] = {"id": "minecraft:air", "count": TypeInt(0)}
     if length > 1 and nbt[1]:
-        parent["equipment"]["feet"] = get_source(parent, nbt[1], "item", object_id, issues)
+        parent["equipment"]["feet"] = get_source(parent, nbt[1], "item", object_id, read, issues)
     elif option_manager.FIXES["empty_equipment_override"]:
         parent["equipment"]["feet"] = {"id": "minecraft:air", "count": TypeInt(0)}
     if length > 0 and nbt[0]:
-        parent["equipment"]["mainhand"] = get_source(parent, nbt[0], "item", object_id, issues)
+        parent["equipment"]["mainhand"] = get_source(parent, nbt[0], "item", object_id, read, issues)
     elif option_manager.FIXES["empty_equipment_override"]:
         parent["equipment"]["mainhand"] = {"id": "minecraft:air", "count": TypeInt(0)}
 
@@ -986,18 +993,18 @@ def edge_case_hand_drop_chances(parent: dict[str, Any]):
     parent["drop_chances"]["mainhand"] = TypeFloat(parent["HandDropChances"][0]) if length > 0 else TypeFloat(0.085)
     parent["drop_chances"]["offhand"] = TypeFloat(parent["HandDropChances"][1]) if length > 1 else TypeFloat(0.085)
 
-def edge_case_hand_items(parent: dict[str, Any], object_id: str, issues: list[dict[str, str | int]]):
+def edge_case_hand_items(parent: dict[str, Any], object_id: str, read: bool, issues: list[dict[str, str | int]]):
     if "equipment" not in parent:
         parent["equipment"] = {}
 
     length = len(parent["HandItems"])
 
     if length > 0 and parent["HandItems"][0]:
-        parent["equipment"]["mainhand"] = get_source(parent, parent["HandItems"][0], "item", object_id, issues)
+        parent["equipment"]["mainhand"] = get_source(parent, parent["HandItems"][0], "item", object_id, read, issues)
     elif option_manager.FIXES["empty_equipment_override"]:
         parent["equipment"]["mainhand"] = {"id": "minecraft:air", "count": TypeInt(0)}
     if length > 1 and parent["HandItems"][1]:
-        parent["equipment"]["offhand"] = get_source(parent, parent["HandItems"][1], "item", object_id, issues)
+        parent["equipment"]["offhand"] = get_source(parent, parent["HandItems"][1], "item", object_id, read, issues)
     elif option_manager.FIXES["empty_equipment_override"]:
         parent["equipment"]["offhand"] = {"id": "minecraft:air", "count": TypeInt(0)}
 
@@ -1050,8 +1057,8 @@ def edge_case_inventory(parent: dict[str, Any], issues: list[dict[str, str | int
 def edge_case_item_components(nbt: dict[str, Any], version: int, issues: list[dict[str, str | int]]) -> dict[str, Any]:
     return item_component.conform_components(item_component.ItemComponents.unpack_from_dict(nbt, False), version, issues).pack_to_dict()
 
-def edge_case_item_tag(parent: dict[str, Any], nbt: dict[str, Any], object_id: str, pack_version: int, issues: list[dict[str, str | int]]) -> dict[str, Any]:
-    nbt = update_tags(parent, nbt, NBT_TREE["sources"]["item_tag"]["tags"], "item_tag", object_id, {}, issues)
+def edge_case_item_tag(parent: dict[str, Any], nbt: dict[str, Any], object_id: str, read: bool, pack_version: int, issues: list[dict[str, str | int]]) -> dict[str, Any]:
+    nbt = update_tags(parent, nbt, NBT_TREE["sources"]["item_tag"]["tags"], "item_tag", object_id, read, {}, issues)
     return item_component.extract(object_id, parent["components"] if "components" in parent else {}, nbt, pack_version, issues)
 
 def edge_case_lock(nbt: str) -> dict:
@@ -1078,7 +1085,7 @@ def edge_case_mooshroom_stew(parent: dict, pack_version: int, issues: list[dict[
         parent["stew_effects"][0]["duration"] = parent["EffectDuration"]
         del parent["EffectDuration"]
 
-def edge_case_old_spawn_potential_entity(parent: dict[str, Any], nbt: dict[str, Any], object_id: str, issues: list[dict[str, str | int]]):
+def edge_case_old_spawn_potential_entity(parent: dict[str, Any], nbt: dict[str, Any], object_id: str, read: bool, issues: list[dict[str, str | int]]):
     if "data" not in parent:
         parent["data"] = {}
     if "entity" not in parent["data"]:
@@ -1089,7 +1096,7 @@ def edge_case_old_spawn_potential_entity(parent: dict[str, Any], nbt: dict[str, 
     if "Type" in parent:
         parent["data"]["entity"]["id"] = entities.update(parent["Type"], pack_version, issues)
         del parent["Type"]
-    parent["data"]["entity"] = get_source(parent["data"], parent["data"]["entity"], "entity", object_id, issues)
+    parent["data"]["entity"] = get_source(parent["data"], parent["data"]["entity"], "entity", object_id, read, issues)
 
 def edge_case_potion(parent: dict, object_id: str):
     # Handle tipped arrow case
@@ -1173,13 +1180,13 @@ def edge_case_saddle(parent: dict[str, Any]):
     parent["equipment"]["saddle"] = {"id": "minecraft:saddle", "count": TypeInt(1)}
     parent["drop_chances"]["saddle"] = TypeFloat(2)
 
-def edge_case_saddle_item(parent: dict[str, Any], object_id: str, issues: list[dict[str, str | int]]):
+def edge_case_saddle_item(parent: dict[str, Any], object_id: str, read: bool, issues: list[dict[str, str | int]]):
     if "equipment" not in parent:
         parent["equipment"] = {}
     if "drop_chances" not in parent:
         parent["drop_chances"] = {}
 
-    parent["equipment"]["saddle"] = get_source(parent, parent["SaddleItem"], "item", object_id, issues)
+    parent["equipment"]["saddle"] = get_source(parent, parent["SaddleItem"], "item", object_id, read, issues)
     parent["drop_chances"]["saddle"] = TypeFloat(2)
 
 def edge_case_shot_from_crossbow(parent: dict):
@@ -1268,7 +1275,7 @@ def edge_case_sleeping_pos(parent: dict[str, Any]):
     if "SleepingZ" in parent:
         parent["sleeping_pos"][2] = TypeInt(parent["SleepingZ"])
 
-def edge_case_spawn_data(nbt: dict[str, Any], object_id: str, issues: list[dict[str, str | int]]):
+def edge_case_spawn_data(nbt: dict[str, Any], object_id: str, read: bool, issues: list[dict[str, str | int]]):
     # Move tags into "entity" if they aren't there already
     if "entity" not in nbt:
         entity = nbt.copy()
@@ -1277,13 +1284,13 @@ def edge_case_spawn_data(nbt: dict[str, Any], object_id: str, issues: list[dict[
         nbt["entity"] = entity
 
     # Update entity data
-    nbt["entity"] = get_source(nbt, nbt["entity"], "entity", object_id, issues)
+    nbt["entity"] = get_source(nbt, nbt["entity"], "entity", object_id, read, issues)
     return nbt
 
-def edge_case_spawn_potential_entity(parent: dict[str, Any], nbt: dict[str, Any], object_id: str, issues: list[dict[str, str | int]]):
+def edge_case_spawn_potential_entity(parent: dict[str, Any], nbt: dict[str, Any], object_id: str, read: bool, issues: list[dict[str, str | int]]):
     if "data" not in parent:
         parent["data"] = {}
-    parent["data"]["entity"] = get_source(parent["data"], parent["data"]["entity"], "entity", object_id, issues)
+    parent["data"]["entity"] = get_source(parent["data"], parent["data"]["entity"], "entity", object_id, read, issues)
 
 def edge_case_uuid_long(parent: dict, case: dict[str, str]):
     least_tag = case["least"]

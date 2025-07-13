@@ -290,7 +290,7 @@ def item_modifier(contents: dict[str, Any] | list, version: int, object_id: str 
             contents["entity"] = miscellaneous.loot_context(contents["entity"])
 
     if function_id == "minecraft:set_nbt":
-        updated_data = cast(dict[str, Any], nbt_tags.direct_update(nbt_tags.unpack(contents["tag"]), version, [], "item_tag", ""))
+        updated_data = cast(dict[str, Any], nbt_tags.direct_update(nbt_tags.unpack(contents["tag"]), version, [], "item_tag", "", False))
         if "minecraft:custom_data" in updated_data:
             set_custom_data = {
                 "function": "minecraft:set_custom_data",

@@ -70,7 +70,7 @@ def update(selector: str | dict[str, str | bool | list], version: int, issues: l
         if imposed_limit and selector[1] in ["a", "e"]:
             arguments["limit"] = "1"
         if nbt:
-            arguments["nbt"] = nbt_tags.update(nbt, pack_version, issues, "entity")
+            arguments["nbt"] = nbt_tags.update({"nbt": nbt, "read": True}, pack_version, issues, "entity")
         if arguments:
             new_arguments = pack_arguments(arguments)
             if new_arguments:
@@ -84,7 +84,7 @@ def update(selector: str | dict[str, str | bool | list], version: int, issues: l
     if nbt == "":
         return selector
     # Insert NBT
-    return f'@a[name={selector},nbt={nbt_tags.update(nbt, pack_version, issues, "entity")}]'
+    return f'@a[name={selector},nbt={nbt_tags.update({"nbt": nbt, "read": True}, pack_version, issues, "entity")}]'
 
 
 def update_arguments(selector: str, nbt: str, imposed_limit: bool, issues: list[dict[str, str | int]]) -> str:
@@ -125,9 +125,9 @@ def update_arguments(selector: str, nbt: str, imposed_limit: bool, issues: list[
     # Add NBT to the list
     if nbt != "":
         if "type" in selector_arguments and not selector_arguments["type"][0].startswith("!"):
-            updated_nbt = nbt_tags.update({"nbt": nbt, "object_id": entities.update(selector_arguments["type"][0], pack_version, issues)}, pack_version, issues, "entity")
+            updated_nbt = nbt_tags.update({"nbt": nbt, "object_id": entities.update(selector_arguments["type"][0], pack_version, issues), "read": True}, pack_version, issues, "entity")
         else:
-            updated_nbt = nbt_tags.update(nbt, pack_version, issues, "entity")
+            updated_nbt = nbt_tags.update({"nbt": nbt, "read": True}, pack_version, issues, "entity")
 
         if "nbt" in selector_arguments:
             cast(list, selector_arguments["nbt"]).append(updated_nbt)
@@ -331,7 +331,7 @@ def update_argument_list(argument_type: str, value: str, selector_arguments: dic
         return miscellaneous.gamemode(value, pack_version, issues)
 
     if argument_type == "nbt":
-        nbt_input = {"nbt": value}
+        nbt_input = {"nbt": value, "read": True}
         if value.startswith("!"):
             nbt_input["nbt"] = value[1:]
 
