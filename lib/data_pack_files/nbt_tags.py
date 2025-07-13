@@ -517,7 +517,7 @@ def update_tags(parent: dict, nbt: dict, guide: dict, source: str, object_id: st
                             skip = True
                             break
                     elif isinstance(value, TypeNumeric):
-                        if value.value != necessary_tags[key]["conditions"][condition].value:
+                        if value.value != necessary_tags[key]["conditions"][condition]:
                             skip = True
                             break
                     else:
@@ -539,8 +539,9 @@ def update_tags(parent: dict, nbt: dict, guide: dict, source: str, object_id: st
                         continue
 
             if generator == "area_effect_cloud_radius":
-                if pack_version <= 2104:
-                    nbt[key] = TypeFloat(0)
+                nbt[key] = TypeFloat(0)
+            if generator == "area_effect_cloud_custom_particle":
+                nbt[key] = {"type": "minecraft:block", "block_state": {"Name": "minecraft:air"}}
             if generator == "item_entity":
                 nbt[key] = {"id": "minecraft:stone", "count": TypeInt(1)}
             if generator == "tnt_fuse":

@@ -448,6 +448,18 @@ def fix_helper_edge_case(argument_list: list[str], old_argument_list: list[str],
                 argument_list.append('{fuse:0s}')
             elif argument_list[5] == "":
                 argument_list[5] = '{fuse:0s}'
+
+        # Fix pre-1.21.5 area effect clouds having different default NBT data
+        if (
+            argument_list[0] == "summon" and
+            argument_list[1] == "minecraft:area_effect_cloud"
+        ):
+            if len(argument_list) < 5:
+                argument_list = ["summon", "minecraft:area_effect_cloud", "~", "~", "~", '{Radius:0.0f,custom_particle:{type:"minecraft:block",block_state:{Name:"minecraft:air"}}}']
+            elif len(argument_list) < 6:
+                argument_list.append('{Radius:0.0f,custom_particle:{type:"minecraft:block",block_state:{Name:"minecraft:air"}}}')
+            elif argument_list[5] == "":
+                argument_list[5] = '{Radius:0.0f,custom_particle:{type:"minecraft:block",block_state:{Name:"minecraft:air"}}}'
     
     # Fix pre-1.21.4 bugs
     if pack_version <= 2103:

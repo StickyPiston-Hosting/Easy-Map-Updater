@@ -920,7 +920,17 @@
                     "conditions": {
                         "id": "minecraft:area_effect_cloud"
                     },
-                    "read": false
+                    "read": false,
+                    "version": {"max": 2104}
+                },
+                "custom_particle": {
+                    "generator": "area_effect_cloud_custom_particle",
+                    "conditions": {
+                        "id": "minecraft:area_effect_cloud",
+                        "Radius": 0.0
+                    },
+                    "read": false,
+                    "version": {"max": 2104}
                 }
             }
         },
