@@ -530,11 +530,21 @@ def update_tags(parent: dict, nbt: dict, guide: dict, source: str, object_id: st
                 if necessary_tags[key]["read"] != read:
                     continue
 
+            if "version" in necessary_tags[key]:
+                if "min" in necessary_tags[key]:
+                    if pack_version < necessary_tags[key]["min"]:
+                        continue
+                if "max" in necessary_tags[key]:
+                    if pack_version > necessary_tags[key]["max"]:
+                        continue
+
             if generator == "area_effect_cloud_radius":
                 if pack_version <= 2104:
                     nbt[key] = TypeFloat(0)
             if generator == "item_entity":
                 nbt[key] = {"id": "minecraft:stone", "count": TypeInt(1)}
+            if generator == "tnt_fuse":
+                nbt[key] = TypeShort(0)
             if generator == "uuid":
                 nbt[key] = miscellaneous.new_uuid_int_array()
 

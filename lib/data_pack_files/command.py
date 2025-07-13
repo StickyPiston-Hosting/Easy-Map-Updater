@@ -436,6 +436,18 @@ def fix_helper_edge_case(argument_list: list[str], old_argument_list: list[str],
             argument_list[7].startswith("minecraft:structure_block")
         ):
             argument_list[7] = blocks.add_old_default_structure_block_data(argument_list[7])
+
+        # Fix pre-1.21.5 TNT having different default NBT data
+        if (
+            argument_list[0] == "summon" and
+            argument_list[1] == "minecraft:tnt"
+        ):
+            if len(argument_list) < 5:
+                argument_list = ["summon", "minecraft:tnt", "~", "~", "~", '{fuse:0s}']
+            elif len(argument_list) < 6:
+                argument_list.append('{fuse:0s}')
+            elif argument_list[5] == "":
+                argument_list[5] = '{fuse:0s}'
     
     # Fix pre-1.21.4 bugs
     if pack_version <= 2103:

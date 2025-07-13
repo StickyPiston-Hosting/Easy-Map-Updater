@@ -900,6 +900,14 @@
                 }
             },
             "necessary_tags": {
+                "fuse": {
+                    "generator": "tnt_fuse",
+                    "conditions": {
+                        "id": "minecraft:tnt"
+                    },
+                    "read": false,
+                    "version": {"max": 2104}
+                },
                 "Item": {
                     "generator": "item_entity",
                     "conditions": {
