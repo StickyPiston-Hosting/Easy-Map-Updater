@@ -411,6 +411,24 @@ def fix_helper_edge_case(argument_list: list[str], old_argument_list: list[str],
     ):
         argument_list.pop(5)
 
+    # Add predicate checks where removed default NBT is being checked
+    if (
+        len(argument_list) >= 6 and
+        argument_list[0] == "execute" and
+        argument_list[1] in ("if", "unless") and
+        argument_list[2] == "data" and
+        argument_list[3] == "entity" and
+        argument_list[5].startswith("{")
+    ):
+        predicate_name = nbt_tags.extract_hidden_default_tags(argument_list[5])
+        if predicate_name is not None:
+            argument_list.insert(6, argument_list[1])
+            argument_list.insert(7, "predicate")
+            argument_list.insert(8, predicate_name)
+            argument_list[5] = nbt_tags.remove_hidden_default_tags(argument_list[5])
+            if argument_list[5] == "{}":
+                argument_list = [argument_list[0]] + argument_list[6:]
+
     # Fix comparator block updates (FIND VERSION WHERE IT IS NECESSARY)
     if (
         option_manager.FIXES["command_helper"]["mitigate_block_update"] and

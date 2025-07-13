@@ -186,6 +186,7 @@ class TypeMacroToken:
 # Import more stuff to prevent circular loading issues
 
 from lib.data_pack_files import command
+from lib.data_pack_files import command_helper
 from lib.data_pack_files import arguments
 from lib.data_pack_files import items
 from lib.data_pack_files import blocks
@@ -1639,3 +1640,65 @@ def process_arbitrary_nbt_string(nbt: str):
         return json_text_component.direct_update(convert_from_json(json_manager.unpack(nbt)), pack_version, [], False)
 
     return nbt
+
+
+
+def extract_hidden_default_tags(snbt: str) -> str | None:
+    if not option_manager.FIXES["command_helper"]["removed_default_nbt"]:
+        return None
+
+    nbt: dict = unpack(snbt)
+
+    if "active_effects" not in nbt:
+        return None
+    
+    defaults_found = False
+    predicate_contents = {
+        "condition": "minecraft:entity_properties",
+        "entity": "this",
+        "predicate": {
+            "effects": {}
+        }
+    }
+    effects = predicate_contents["predicate"]["effects"]
+
+    for effect in nbt["active_effects"]:
+        if "id" in effect:
+            effects[effect["id"]] = {}
+            effect_predicate = effects[effect["id"]]
+        else:
+            continue
+
+        if "amplifier" in effect:
+            effect_predicate["amplifier"] = effect["amplifier"].value
+            if effect_predicate["amplifier"] == 0:
+                defaults_found = True
+
+        if "duration" in effect:
+            effect_predicate["duration"] = effect["duration"].value
+            if effect_predicate["duration"] == 0:
+                defaults_found = True
+
+        if "ambient" in effect:
+            effect_predicate["ambient"] = bool(effect["ambient"].value)
+            if not effect_predicate["ambient"]:
+                defaults_found = True
+
+        if "show_particles" in effect:
+            effect_predicate["visible"] = bool(effect["show_particles"].value)
+            if effect_predicate["visible"]:
+                defaults_found = True
+
+
+    if defaults_found:
+        return command_helper.create_predicate(json.dumps(predicate_contents, indent=4))
+    return None
+
+
+def remove_hidden_default_tags(snbt: str) -> str:
+    nbt: dict = unpack(snbt)
+
+    if "active_effects" in nbt:
+        del nbt["active_effects"]
+
+    return pack(nbt)

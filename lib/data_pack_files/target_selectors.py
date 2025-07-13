@@ -71,6 +71,12 @@ def update(selector: str | dict[str, str | bool | list], version: int, issues: l
             arguments["limit"] = "1"
         if nbt:
             arguments["nbt"] = nbt_tags.update({"nbt": nbt, "read": True}, pack_version, issues, "entity")
+            predicate_name = nbt_tags.extract_hidden_default_tags(arguments["nbt"])
+            if predicate_name is not None:
+                arguments["predicate"] = predicate_name
+                arguments["nbt"] = nbt_tags.remove_hidden_default_tags(arguments["nbt"])
+                if arguments["nbt"] == "{}":
+                    del arguments["nbt"]
         if arguments:
             new_arguments = pack_arguments(arguments)
             if new_arguments:
@@ -84,7 +90,16 @@ def update(selector: str | dict[str, str | bool | list], version: int, issues: l
     if nbt == "":
         return selector
     # Insert NBT
-    return f'@a[name={selector},nbt={nbt_tags.update({"nbt": nbt, "read": True}, pack_version, issues, "entity")}]'
+    arguments: dict[str, str | dict | list] = {}
+    arguments["name"] = selector
+    arguments["nbt"] = nbt_tags.update({"nbt": nbt, "read": True}, pack_version, issues, "entity")
+    predicate_name = nbt_tags.extract_hidden_default_tags(arguments["nbt"])
+    if predicate_name is not None:
+        arguments["predicate"] = predicate_name
+        arguments["nbt"] = nbt_tags.remove_hidden_default_tags(arguments["nbt"])
+        if arguments["nbt"] == "{}":
+            del arguments["nbt"]
+    return f'@a[{pack_arguments(arguments)}]'
 
 
 def update_arguments(selector: str, nbt: str, imposed_limit: bool, issues: list[dict[str, str | int]]) -> str:
@@ -129,10 +144,19 @@ def update_arguments(selector: str, nbt: str, imposed_limit: bool, issues: list[
         else:
             updated_nbt = nbt_tags.update({"nbt": nbt, "read": True}, pack_version, issues, "entity")
 
-        if "nbt" in selector_arguments:
-            cast(list, selector_arguments["nbt"]).append(updated_nbt)
-        else:
-            selector_arguments["nbt"] = [updated_nbt]
+        predicate_name = nbt_tags.extract_hidden_default_tags(updated_nbt)
+        if predicate_name is not None:
+            if "predicate" in selector_arguments:
+                cast(list, selector_arguments["predicate"]).append(predicate_name)
+            else:
+                selector_arguments["predicate"] = [predicate_name]
+            updated_nbt = nbt_tags.remove_hidden_default_tags(updated_nbt)
+
+        if updated_nbt != "{}":
+            if "nbt" in selector_arguments:
+                cast(list, selector_arguments["nbt"]).append(updated_nbt)
+            else:
+                selector_arguments["nbt"] = [updated_nbt]
 
     # Apply imposed limit
     if imposed_limit and selector_type in ["a", "e"]:
@@ -332,13 +356,24 @@ def update_argument_list(argument_type: str, value: str, selector_arguments: dic
 
     if argument_type == "nbt":
         nbt_input = {"nbt": value, "read": True}
+        prefix = ""
         if value.startswith("!"):
             nbt_input["nbt"] = value[1:]
+            prefix = "!"
 
         if "type" in selector_arguments and not selector_arguments["type"][0].startswith("!"):
             nbt_input["object_id"] = entities.update(selector_arguments["type"][0], pack_version, issues)
 
         updated_nbt = nbt_tags.update(nbt_input, pack_version, issues, "entity")
+
+        predicate_name = nbt_tags.extract_hidden_default_tags(updated_nbt)
+        if predicate_name is not None:
+            if "predicate" in selector_arguments:
+                cast(list, selector_arguments["predicate"]).append(prefix + predicate_name)
+            else:
+                selector_arguments["predicate"] = [prefix + predicate_name]
+            updated_nbt = nbt_tags.remove_hidden_default_tags(updated_nbt)
+
         if updated_nbt == "{}":
             return None
         if value.startswith("!"):

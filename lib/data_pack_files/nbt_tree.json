@@ -314,20 +314,18 @@
         },
         "effect": {
             "tags": {
-                "ambient": { "data_type": "byte", "remove": { "matches": 0 } },
-                "Ambient": { "rename": "ambient", "data_type": "byte", "remove": { "matches": 0 } },
-                "amplifier": { "data_type": "byte", "remove": { "matches": 0 } },
-                "Amplifier": { "rename": "amplifier", "data_type": "byte", "remove": { "matches": 0 } },
+                "ambient": { "data_type": "byte" },
+                "Ambient": { "rename": "ambient", "data_type": "byte" },
+                "amplifier": { "data_type": "byte" },
+                "Amplifier": { "rename": "amplifier", "data_type": "byte" },
                 "duration": {
                     "data_type": "int",
-                    "argument_type": "effect_duration",
-                    "remove": { "matches": 0 }
+                    "argument_type": "effect_duration"
                 },
                 "Duration": {
                     "rename": "duration",
                     "data_type": "int",
-                    "argument_type": "effect_duration",
-                    "remove": { "matches": 0 }
+                    "argument_type": "effect_duration"
                 },
                 "hidden_effect": { "source": "effect" },
                 "HiddenEffect": { "rename": "hidden_effect", "source": "effect" },
@@ -342,8 +340,8 @@
                 },
                 "show_icon": { "data_type": "byte" },
                 "ShowIcon": { "rename": "show_icon", "data_type": "byte" },
-                "show_particles": { "data_type": "byte", "remove": { "matches": 1 } },
-                "ShowParticles": { "rename": "show_particles", "data_type": "byte", "remove": { "matches": 1 } }
+                "show_particles": { "data_type": "byte" },
+                "ShowParticles": { "rename": "show_particles", "data_type": "byte" }
             }
         },
         "enchantment": {

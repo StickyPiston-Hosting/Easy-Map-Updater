@@ -27,10 +27,67 @@ MINECRAFT_PATH = EASY_MAP_UPDATER_PATH.parent
 # Define functions
 
 def create_function(commands: str, is_macro: bool) -> str:
+    data_pack_path = prepare_helper_data_pack()
+    if data_pack_path is None:
+        return f"function help:helper_function_requires_world"
+
+    # Handle macros
+    macro_provider = ""
+    if is_macro:
+        new_commands: list[str] = []
+        macro_tokens: list[str] = []
+
+        for command in commands.split("\n"):
+            if command.strip().startswith("#"):
+                new_commands.append(command)
+                continue
+
+            tokens = command.split("$(")
+            for token in tokens[1:]:
+                if ")" not in token:
+                    continue
+                macro_tokens.append(token[:token.index(")")])
+            if len(tokens) > 1:
+                command = "$" + command
+            new_commands.append(command)
+
+        if len(macro_tokens) > 0:
+            for i in range(len(macro_tokens)):
+                macro_tokens[i] = f'{macro_tokens[i]}:$({macro_tokens[i]})'
+            macro_provider = " {" + ",".join(macro_tokens) + "}"
+
+        commands = "\n".join(new_commands)
+
+    # Create function
+    function_name = hashlib.sha256(commands.encode("utf-8")).hexdigest()
+    function_path = data_pack_path / "data" / "help" / "function" / f"{function_name}.mcfunction"
+    function_path.parent.mkdir(exist_ok=True, parents=True)
+    utils.safe_file_write(function_path, commands)
+
+    return f"function help:{function_name}{macro_provider}COMMAND_HELPER"
+
+
+
+def create_predicate(contents: str) -> str:
+    data_pack_path = prepare_helper_data_pack()
+    if data_pack_path is None:
+        return f"help:helper_predicate_requires_world"
+    
+    # Create predicate
+    predicate_name = hashlib.sha256(contents.encode("utf-8")).hexdigest()
+    predicate_path = data_pack_path / "data" / "help" / "predicate" / f"{predicate_name}.json"
+    predicate_path.parent.mkdir(exist_ok=True, parents=True)
+    utils.safe_file_write(predicate_path, contents)
+
+    return f"help:{predicate_name}"
+
+
+
+def prepare_helper_data_pack() -> Path | None:
     # Prepare data pack path
     world = data_pack_path = MINECRAFT_PATH / "saves" / option_manager.get_map_name()
     if not world.exists():
-        return f"function help:helper_function_requires_world"
+        return None
     data_pack_path = world / "datapacks" / "command_helper"
     data_pack_path.mkdir(exist_ok=True, parents=True)
 
@@ -90,37 +147,4 @@ def create_function(commands: str, is_macro: bool) -> str:
         "tag @e remove help.motion_modified"
     )
 
-    # Handle macros
-    macro_provider = ""
-    if is_macro:
-        new_commands: list[str] = []
-        macro_tokens: list[str] = []
-
-        for command in commands.split("\n"):
-            if command.strip().startswith("#"):
-                new_commands.append(command)
-                continue
-
-            tokens = command.split("$(")
-            for token in tokens[1:]:
-                if ")" not in token:
-                    continue
-                macro_tokens.append(token[:token.index(")")])
-            if len(tokens) > 1:
-                command = "$" + command
-            new_commands.append(command)
-
-        if len(macro_tokens) > 0:
-            for i in range(len(macro_tokens)):
-                macro_tokens[i] = f'{macro_tokens[i]}:$({macro_tokens[i]})'
-            macro_provider = " {" + ",".join(macro_tokens) + "}"
-
-        commands = "\n".join(new_commands)
-
-    # Create function
-    function_name = hashlib.sha256(commands.encode("utf-8")).hexdigest()
-    function_path = data_pack_path / "data" / "help" / "function" / f"{function_name}.mcfunction"
-    function_path.parent.mkdir(exist_ok=True, parents=True)
-    utils.safe_file_write(function_path, commands)
-
-    return f"function help:{function_name}{macro_provider}COMMAND_HELPER"
+    return data_pack_path
