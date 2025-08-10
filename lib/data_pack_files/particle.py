@@ -92,6 +92,8 @@ def update(particle: str | dict[str, str], version: int, issues: list[dict[str, 
 
     # Extract arguments if a dict
     if isinstance(particle, dict):
+        color_scale = 255 if version <= 2004 else 1
+
         if "particle" in particle:
             particle_data["type"] = miscellaneous.namespace(particle["particle"])
         if "block" in particle:
@@ -132,23 +134,23 @@ def update(particle: str | dict[str, str], version: int, issues: list[dict[str, 
 
         if "color_r" in particle:
             particle_data["color"] = nbt_tags.TypeList([
-                nbt_tags.TypeFloat(particle["color_r"]),
-                nbt_tags.TypeFloat(particle["color_g"]),
-                nbt_tags.TypeFloat(particle["color_b"]),
+                nbt_tags.TypeFloat(float(particle["color_r"]) / color_scale),
+                nbt_tags.TypeFloat(float(particle["color_g"]) / color_scale),
+                nbt_tags.TypeFloat(float(particle["color_b"]) / color_scale),
             ])
 
         if "from_color_r" in particle:
             particle_data["from_color"] = nbt_tags.TypeList([
-                nbt_tags.TypeFloat(particle["from_color_r"]),
-                nbt_tags.TypeFloat(particle["from_color_g"]),
-                nbt_tags.TypeFloat(particle["from_color_b"]),
+                nbt_tags.TypeFloat(float(particle["from_color_r"]) / color_scale),
+                nbt_tags.TypeFloat(float(particle["from_color_g"]) / color_scale),
+                nbt_tags.TypeFloat(float(particle["from_color_b"]) / color_scale),
             ])
 
         if "to_color_r" in particle:
             particle_data["to_color"] = nbt_tags.TypeList([
-                nbt_tags.TypeFloat(particle["to_color_r"]),
-                nbt_tags.TypeFloat(particle["to_color_g"]),
-                nbt_tags.TypeFloat(particle["to_color_b"]),
+                nbt_tags.TypeFloat(float(particle["to_color_r"]) / color_scale),
+                nbt_tags.TypeFloat(float(particle["to_color_g"]) / color_scale),
+                nbt_tags.TypeFloat(float(particle["to_color_b"]) / color_scale),
             ])
 
         if "scale" in particle:
