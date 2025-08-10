@@ -1929,6 +1929,9 @@
                 }
             }
         },
-        "xp": "experience"
+        "xp": "experience",
+        "emu_sign_text": {
+            "mapping": ["carry", "carry"]
+        }
     }
 }

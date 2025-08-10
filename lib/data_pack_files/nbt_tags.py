@@ -1219,7 +1219,7 @@ def edge_case_sign_text(parent: dict, issues: list[dict[str, str | int]]):
         key = f"Text{i+1}"
         if key in parent:
             if "messages" not in parent["front_text"]:
-                parent["front_text"]["messages"] = ['""', '""', '""', '""']
+                parent["front_text"]["messages"] = ["", "", "", ""]
             parent["front_text"]["messages"][i] = json_text_component.update(parent[key], pack_version, issues, {"mangled": False, "pack": False})
             del parent[key]
     if "Color" in parent:

@@ -175,7 +175,7 @@ def read_commands_from_region(world: Path, file_path: Path, list_name: str) -> s
                         for key in block_entity["CommandStats"]:
                             data["CommandStats"][key] = block_entity["CommandStats"][key].value
                     commands.append(
-                        f'# {json.dumps(data)}\ndata merge block ~ ~ ~ {nbt_tags.pack(sign_nbt)}'
+                        f'# {json.dumps(data)}\nemu_sign_text {nbt_tags.pack(sign_nbt)}'
                     )
 
             if list_name == "Entities" and block_entity_id.value == "minecraft:command_block_minecart":
@@ -295,7 +295,10 @@ def write_commands(world: Path, get_confirmation: bool):
 
         # Write command to chunk
         if guide["tag"] == "sign_edge_case":
-            sign_nbt: dict[str, dict[str, nbt_tags.TypeList | str | nbt_tags.TypeByte]] = nbt_tags.unpack(command[23:])
+            if command.startswith("data"):
+                sign_nbt: dict[str, dict[str, nbt_tags.TypeList | str | nbt_tags.TypeByte]] = nbt_tags.unpack(command[23:])
+            else:
+                sign_nbt: dict[str, dict[str, nbt_tags.TypeList | str | nbt_tags.TypeByte]] = nbt_tags.unpack(command[14:])
             for sign_side in sign_nbt:
                 if sign_side not in block_entity:
                     block_entity[sign_side] = NBT.TAG_Compound()

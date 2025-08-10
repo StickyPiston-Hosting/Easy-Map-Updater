@@ -403,6 +403,20 @@ def command_string(command: str, version: int, issues: list[dict[str, str | int]
 
 
 def fix_helper_edge_case(argument_list: list[str], old_argument_list: list[str], issues: list[dict[str, str | int]], is_macro: bool) -> str:
+    # Handle special sign text command
+    if (
+        len(argument_list) == 2 and
+        argument_list[0] == "emu_sign_text"
+    ):
+        unpacked_nbt = nbt_tags.unpack(argument_list[1])
+        for key in ["front_text", "back_text"]:
+            if key not in unpacked_nbt or "messages" not in unpacked_nbt[key]:
+                continue
+            for i in range(len(unpacked_nbt[key]["messages"])):
+                message = unpacked_nbt[key]["messages"][i]
+                unpacked_nbt[key]["messages"][i] = json_text_component.update(message, pack_version, issues, {"mangled": False, "pack": False, "from_sign": True})
+        return f'emu_sign_text {nbt_tags.pack(unpacked_nbt)}'
+
     # Remove empty NBT from summon command
     if (
         len(argument_list) >= 6 and
