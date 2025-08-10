@@ -1473,7 +1473,7 @@ def copy_lib_format(nbt: NBT.TAG) -> NBT.TAG:
 def convert_to_json(nbt: dict | TypeList | TypeNumeric | str):
     if isinstance(nbt, dict):
         return convert_to_json_compound(nbt)
-    if isinstance(nbt, TypeList):
+    if isinstance(nbt, TypeList) or isinstance(nbt, list):
         return convert_to_json_list(nbt)
     if isinstance(nbt, TypeNumeric):
         return convert_to_json_numeric(nbt)
@@ -1487,7 +1487,7 @@ def convert_to_json_compound(nbt: dict[str, Any]) -> dict[str, Any]:
         output_nbt[key] = convert_to_json(nbt[key])
     return output_nbt
 
-def convert_to_json_list(nbt: TypeList) -> list:
+def convert_to_json_list(nbt: TypeList | list) -> list:
     if isinstance(nbt, TypeByteArray):
         return [ int(nbt[i].value) for i in range(len(nbt)) ]
     elif isinstance(nbt, TypeIntArray):

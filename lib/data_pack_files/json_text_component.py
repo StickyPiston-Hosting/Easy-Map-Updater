@@ -489,7 +489,7 @@ def reorder_data(component: str | dict | nbt_tags.TypeList) -> dict:
         output_component = reorder_data(component[0])
         if len(component) > 1:
             if "extra" not in output_component:
-                output_component["extra"] = []
+                output_component["extra"] = nbt_tags.TypeList([])
             output_component["extra"].extend(component[1:])
         component = output_component
 
@@ -566,7 +566,7 @@ def convert_lock_string(string):
     # Replace escapable characters 
     raw_string = raw_string.replace('"', "_DQ_").replace("'", "_SQ_").replace("\\", "_BS_")
 
-    return {"extra": [raw_string], "text": "EMU"}
+    return {"extra": nbt_tags.TypeList([raw_string]), "text": "EMU"}
 
 def convert_lock_string_from_lib_format(string):
     return nbt_tags.convert_to_lib_format(convert_lock_string(nbt_tags.convert_from_lib_format(string)))
