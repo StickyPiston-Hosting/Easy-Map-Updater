@@ -444,7 +444,7 @@ def fix_helper_edge_case(argument_list: list[str], old_argument_list: list[str],
             if not unpacked_nbt or "text" not in unpacked_nbt:
                 send_warning = True
         if send_warning:
-            log(f"WARNING: You're summoning a text display with no text: {" ".join(argument_list)}")
+            log(f"WARNING: You're summoning a text display with no text: {" ".join(old_argument_list)}")
 
     # Fix comparator block updates (FIND VERSION WHERE IT IS NECESSARY)
     if (
