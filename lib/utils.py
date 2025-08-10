@@ -145,21 +145,26 @@ def new_uuid() -> list[int]:
 
 
 
-def unpack_string_check(string: str) -> str:
+def unpack_string_check(string: str, primitive: bool = False) -> str:
     # Unpack the string only if it is quoted
     if string.startswith('"') or string.startswith("'"):
-        return unpack_string(string)
+        return unpack_string(string, primitive)
     return string
 
-def unpack_string(string: str) -> str:
+def unpack_string(string: str, primitive: bool = False) -> str:
     # Return unescaped string
     if len(string) == 0:
         return ""
     else:
         if string.startswith("'"):
-            string = swap_tokens(unquote(string).replace("\\\\", "__DOUBLE_BACKSLASH_INDICATOR__").replace("\\'", "'"), False).replace("__UNICODE_INDICATOR_FOUR__003d", "=").replace("__UNICODE_INDICATOR_FOUR__0027", "'").replace("__DOUBLE_BACKSLASH_INDICATOR__", "\\")
+            quote_tokens = ("\\'", "'")
         else:
-            string = swap_tokens(unquote(string).replace("\\\\", "__DOUBLE_BACKSLASH_INDICATOR__").replace('\\"', '"'), False).replace("__UNICODE_INDICATOR_FOUR__003d", "=").replace("__UNICODE_INDICATOR_FOUR__0027", "'").replace("__DOUBLE_BACKSLASH_INDICATOR__", "\\")
+            quote_tokens = ('\\"', '"')
+
+        string = unquote(string).replace("\\\\", "__DOUBLE_BACKSLASH_INDICATOR__").replace(quote_tokens[0], quote_tokens[1])
+        if not primitive:
+            string = swap_tokens(string, False)
+        string = string.replace("__UNICODE_INDICATOR_FOUR__003d", "=").replace("__UNICODE_INDICATOR_FOUR__0027", "'").replace("__DOUBLE_BACKSLASH_INDICATOR__", "\\")
     return string
 
 def pack_string(string: str, force_double: bool = False) -> str:

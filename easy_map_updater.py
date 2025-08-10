@@ -1263,7 +1263,7 @@ def retrieve_file_path(message: str) -> Path | None:
             return
         if path_input.startswith("&"):
             path_input = path_input[1:].strip()
-        path_input = utils.unpack_string_check(path_input)
+        path_input = utils.unpack_string_check(path_input, True)
         file_path = Path(path_input)
         if not file_path.exists():
             print("ERROR: File does not exist!")
