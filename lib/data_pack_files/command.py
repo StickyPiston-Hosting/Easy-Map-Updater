@@ -429,6 +429,23 @@ def fix_helper_edge_case(argument_list: list[str], old_argument_list: list[str],
             if argument_list[5] == "{}":
                 argument_list = [argument_list[0]] + argument_list[6:]
 
+    # Send a warning if a text display with no text was spawned
+    if (
+        len(argument_list) >= 2 and
+        argument_list[0] == "summon" and
+        argument_list[1] == "minecraft:text_display" and
+        defaults.SEND_WARNINGS
+    ):
+        send_warning = False
+        if len(argument_list) < 6:
+            send_warning = True
+        else:
+            unpacked_nbt = nbt_tags.unpack(argument_list[5])
+            if not unpacked_nbt or "text" not in unpacked_nbt:
+                send_warning = True
+        if send_warning:
+            log(f"WARNING: You're summoning a text display with no text: {" ".join(argument_list)}")
+
     # Fix comparator block updates (FIND VERSION WHERE IT IS NECESSARY)
     if (
         option_manager.FIXES["command_helper"]["mitigate_block_update"] and
