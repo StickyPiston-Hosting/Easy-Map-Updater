@@ -12,6 +12,7 @@ from lib.data_pack_files import tables
 from lib.data_pack_files.restore_behavior import tag_replacements
 from lib import defaults
 from lib import option_manager
+from lib import utils
 import easy_map_updater
 
 
@@ -69,7 +70,7 @@ def update(entity: str | dict[str, str | bool], version: int, issues: list[dict[
     entity_id = miscellaneous.namespace(entity_id)
 
     if pack_version <= 1202:
-        entity_id = entity_id.lower()
+        entity_id = utils.safe_lowercase(entity_id)
         id_array = tables.ENTITY_IDS
         if entity_id in id_array:
             entity_id = id_array[entity_id]
@@ -116,7 +117,7 @@ def update(entity: str | dict[str, str | bool], version: int, issues: list[dict[
         else:
             entity_id = "minecraft:lingering_potion" if item_type == "minecraft:lingering_potion" else "minecraft:splash_potion"
 
-    return entity_id.lower()
+    return utils.safe_lowercase(entity_id)
 
 def extract_riding_id(nbt: dict) -> str:
     if "Riding" in nbt:

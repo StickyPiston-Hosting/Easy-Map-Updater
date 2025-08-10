@@ -336,3 +336,15 @@ def remove_extension(path: str) -> str:
     if len(path_parts) == 1:
         return path_parts[0]
     return ".".join(path_parts[:-1])
+
+
+
+def safe_lowercase(string: str) -> str:
+    tokens = string.split("$(")
+    tokens[0] = tokens[0].lower()
+    for i in range(1, len(tokens)):
+        token = tokens[i]
+        if ")" in token:
+            index = token.find(")")
+            tokens[i] = token[:index] + token[index:].lower()
+    return "$(".join(tokens)

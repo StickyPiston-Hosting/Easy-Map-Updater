@@ -230,7 +230,7 @@ def difficulty(name: str, version: int, issues: list[dict[str, str | int]]) -> s
     return name
 
 def dimension(name: str, version: int, issues: list[dict[str, str | int]]) -> str:
-    return name.lower()
+    return utils.safe_lowercase(name)
 
 def effect_duration(duration: nbt_tags.TypeInt | str, version: int, issues: list[dict[str, str | int]]) -> nbt_tags.TypeInt:
     if isinstance(duration, str):
@@ -279,7 +279,7 @@ def fill_mode(argument: str, version: int, issues: list[dict[str, str | int]]) -
     return argument
 
 def function_call(name: str, version: int, issues: list[dict[str, str | int]]) -> str:
-    return name.lower()
+    return utils.safe_lowercase(name)
 
 def gamemode(name: str, version: int, issues: list[dict[str, str | int]]) -> str:
     id_array = {
@@ -433,10 +433,10 @@ def predicate(name: str, version: int, issues: list[dict[str, str | int]]) -> st
         contents = json_manager.unpack(name)
         return json.dumps(predicate_lib.predicate(contents, version))
 
-    return namespace(name.lower())
+    return namespace(utils.safe_lowercase(name))
 
 def recipe(name: str, version: int, issues: list[dict[str, str | int]]) -> str:
-    return name.lower()
+    return utils.safe_lowercase(name)
 
 def say_text(text: dict[str, list[str]], version: int, issues: list[dict[str, str | int]]) -> str:
     # Convert any target selecors that are present
