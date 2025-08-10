@@ -249,6 +249,30 @@ def conform_components(item_id: str, components: ItemComponents, version: int, i
     components.set_namespaces()
 
 
+    # In at least 1.21.5 (maybe earlier), potion names cannot be assigned by minecraft:item_name
+    if (
+        item_id in ["minecraft:potion", "minecraft:splash_potion", "minecraft:lingering_potion"] and
+        "minecraft:item_name" in components and
+        "minecraft:custom_name" not in components
+    ):
+        name = nbt_tags.unpack(nbt_tags.pack(components["minecraft:item_name"]))
+        if isinstance(name, str):
+            name = {"text": name, "italic": nbt_tags.TypeByte(0)}
+        elif isinstance(name, dict):
+            if "italic" not in name:
+                name["italic"] = nbt_tags.TypeByte(0)
+        elif isinstance(name, nbt_tags.TypeList) or isinstance(name, list):
+            if len(name) > 0:
+                name_entry = name[0]
+                if isinstance(name_entry, str):
+                    name_entry = {"text": name_entry, "italic": nbt_tags.TypeByte(0)}
+                elif isinstance(name_entry, dict):
+                    if "italic" not in name_entry:
+                        name_entry["italic"] = nbt_tags.TypeByte(0)
+                name[0] = name_entry
+        components["minecraft:custom_name"] = name
+
+
     # minecraft:food component got extracted out in 1.21.2
     if "minecraft:food" in components and "minecraft:consumable" not in components:
         food: dict[str, Any] = components["minecraft:food"]
