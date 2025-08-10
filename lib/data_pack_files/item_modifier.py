@@ -223,7 +223,7 @@ def item_modifier(contents: dict[str, Any] | list, version: int, object_id: str 
     if function_id == "minecraft:set_components":
         if "components" in contents:
             item_components = item_component.ItemComponents.unpack_from_dict(nbt_tags.convert_from_json(contents["components"]), False)
-            updated_item_components = item_component.conform_components(item_components, version, []).pack_to_dict()
+            updated_item_components = item_component.conform_components("minecraft:stone", item_components, version, [], False).pack_to_dict()
             contents["components"] = nbt_to_json.convert_item_components_to_json(updated_item_components)
 
     if function_id == "minecraft:set_contents":

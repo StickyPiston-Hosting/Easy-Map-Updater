@@ -369,7 +369,7 @@ def predicate_item(contents: dict, version: int) -> dict:
 
     if "components" in contents:
         item_components = item_component.ItemComponents.unpack_from_dict(nbt_tags.convert_from_json(contents["components"]), False)
-        updated_item_components = item_component.conform_components(item_components, version, []).pack_to_dict()
+        updated_item_components = item_component.conform_components("minecraft:stone", item_components, version, [], True).pack_to_dict()
         contents["components"] = nbt_to_json.convert_item_components_to_json(updated_item_components)
 
     if "nbt" in contents:

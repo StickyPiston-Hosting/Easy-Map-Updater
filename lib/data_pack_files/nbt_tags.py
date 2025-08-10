@@ -686,7 +686,7 @@ def edge_case(parent: dict, nbt, case: str | dict[str, str], source: str, object
     if case_type == "item":
         return items.update_from_nbt(nbt, pack_version, issues)
     if case_type == "item_components":
-        return edge_case_item_components(nbt, pack_version, issues)
+        return edge_case_item_components(parent, pack_version, issues, read)
     if case_type == "item_tag":
         return edge_case_item_tag(parent, nbt, object_id, read, pack_version, issues)
     if case_type == "lock":
@@ -1066,8 +1066,8 @@ def edge_case_inventory(parent: dict[str, Any], issues: list[dict[str, str | int
         del parent["Inventory"]
 
 
-def edge_case_item_components(nbt: dict[str, Any], version: int, issues: list[dict[str, str | int]]) -> dict[str, Any]:
-    return item_component.conform_components(item_component.ItemComponents.unpack_from_dict(nbt, False), version, issues).pack_to_dict()
+def edge_case_item_components(parent: dict[str, Any], version: int, issues: list[dict[str, str | int]], read: bool) -> dict[str, Any]:
+    return item_component.conform_components(parent["id"] if "id" in parent else "minecraft:stone", item_component.ItemComponents.unpack_from_dict(parent["components"], False), version, issues, read).pack_to_dict()
 
 def edge_case_item_tag(parent: dict[str, Any], nbt: dict[str, Any], object_id: str, read: bool, pack_version: int, issues: list[dict[str, str | int]]) -> dict[str, Any]:
     nbt = update_tags(parent, nbt, NBT_TREE["sources"]["item_tag"]["tags"], "item_tag", object_id, read, {}, issues)

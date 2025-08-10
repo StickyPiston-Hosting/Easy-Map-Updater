@@ -157,6 +157,11 @@ class ItemComponents:
         for component in self.components:
             component.set_namespace()
 
+    def set_separator(self, key: str, separator: str):
+        for component in self.components:
+            if isinstance(component, ItemComponent) and component.key == key:
+                component.separator = separator
+
     def __getitem__(self, key: str) -> Any:
         for component in self.components:
             if isinstance(component, ItemComponent) and component.key == key:
@@ -196,9 +201,50 @@ from lib.data_pack_files import ids
 
 
 
+# Set constants
+
+default_components = {
+    "minecraft:banner_patterns": [
+        "minecraft:white_banner",
+        "minecraft:orange_banner",
+        "minecraft:magenta_banner",
+        "minecraft:light_blue_banner",
+        "minecraft:yellow_banner",
+        "minecraft:lime_banner",
+        "minecraft:pink_banner",
+        "minecraft:gray_banner",
+        "minecraft:light_gray_banner",
+        "minecraft:cyan_banner",
+        "minecraft:purple_banner",
+        "minecraft:blue_banner",
+        "minecraft:brown_banner",
+        "minecraft:green_banner",
+        "minecraft:red_banner",
+        "minecraft:black_banner",
+    ],
+    "minecraft:bees": ["minecraft:bee_nest", "minecraft:beehive"],
+    "minecraft:block_entity_data": [],
+    "minecraft:block_state": [],
+    "minecraft:bundle_contents": ["minecraft:bundle"],
+    "minecraft:charged_projectiles": ["minecraft:crossbow"],
+    "minecraft:container": [],
+    "minecraft:container_loot": [],
+    "minecraft:firework_explosion": ["minecraft:firework_star"],
+    "minecraft:fireworks": ["minecraft:firework_rocket"],
+    "minecraft:instrument": ["minecraft:note_block"],
+    "minecraft:map_id": ["minecraft:filled_map"],
+    "minecraft:painting/variant": ["minecraft:painting"],
+    "minecraft:pot_decorations": ["minecraft:decorated_pot"],
+    "minecraft:potion_contents": ["minecraft:potion"],
+    "minecraft:tropical_fish/pattern": ["minecraft:tropical_fish_bucket"],
+    "minecraft:written_book_content": ["minecraft:written_book"],
+}
+
+
+
 # Define functions
 
-def conform_components(components: ItemComponents, version: int, issues: list[dict[str, str | int]]) -> ItemComponents:
+def conform_components(item_id: str, components: ItemComponents, version: int, issues: list[dict[str, str | int]], read: bool) -> ItemComponents:
     # Apply namespace to all components
     components.set_namespaces()
 
@@ -226,34 +272,22 @@ def conform_components(components: ItemComponents, version: int, issues: list[di
 
     # In 1.21.5, minecraft:hide_additional_tooltip, minecraft:hide_tooltip, and the show_in_tooltip were removed
     if "minecraft:hide_additional_tooltip" in components:
-        if "minecraft:tooltip_display" not in components:
-            components["minecraft:tooltip_display"] = {}
-        tooltip_display = components["minecraft:tooltip_display"]
+        if "minecraft:tooltip_display" in components:
+            tooltip_display = components["minecraft:tooltip_display"]
+        else:
+            tooltip_display = {}
         if "hidden_components" not in tooltip_display:
             tooltip_display["hidden_components"] = nbt_tags.TypeList([])
 
-        for component_id in [
-            "minecraft:banner_patterns",
-            "minecraft:bees",
-            "minecraft:block_entity_data",
-            "minecraft:block_state",
-            "minecraft:bundle_contents",
-            "minecraft:charged_projectiles",
-            "minecraft:container",
-            "minecraft:container_loot",
-            "minecraft:firework_explosion",
-            "minecraft:fireworks",
-            "minecraft:instrument",
-            "minecraft:map_id",
-            "minecraft:painting/variant",
-            "minecraft:pot_decorations",
-            "minecraft:potion_contents",
-            "minecraft:tropical_fish/pattern",
-            "minecraft:written_book_content",
-        ]:
+        for component_id in default_components:
             if component_id in components:
                 tooltip_display["hidden_components"].append(component_id)
+            elif item_id in default_components[component_id]:
+                tooltip_display["hidden_components"].append(component_id)
         del components["minecraft:hide_additional_tooltip"]
+
+        if tooltip_display["hidden_components"]:
+            components["minecraft:tooltip_display"] = tooltip_display
 
     if "minecraft:hide_tooltip" in components:
         if "minecraft:tooltip_display" not in components:
@@ -1242,9 +1276,10 @@ def extract(item_id: str, components: dict[str, Any] | None, nbt: dict[str, Any]
         del nbt["Variant"]
 
     if "HideFlags" in nbt:
-        if "minecraft:tooltip_display" not in components:
-            components["minecraft:tooltip_display"] = {}
-        tooltip_display = components["minecraft:tooltip_display"]
+        if "minecraft:tooltip_display" in components:
+            tooltip_display = components["minecraft:tooltip_display"]
+        else:
+            tooltip_display = {}
         if "hidden_components" not in tooltip_display:
             tooltip_display["hidden_components"] = nbt_tags.TypeList([])
         hidden_components = cast(nbt_tags.TypeList, tooltip_display["hidden_components"])
@@ -1262,26 +1297,10 @@ def extract(item_id: str, components: dict[str, Any] | None, nbt: dict[str, Any]
         if nbt["HideFlags"].value//32%2 == 1:
             hidden_components.append("minecraft:stored_enchantments")
 
-            for component_id in [
-                "minecraft:banner_patterns",
-                "minecraft:bees",
-                "minecraft:block_entity_data",
-                "minecraft:block_state",
-                "minecraft:bundle_contents",
-                "minecraft:charged_projectiles",
-                "minecraft:container",
-                "minecraft:container_loot",
-                "minecraft:firework_explosion",
-                "minecraft:fireworks",
-                "minecraft:instrument",
-                "minecraft:map_id",
-                "minecraft:painting/variant",
-                "minecraft:pot_decorations",
-                "minecraft:potion_contents",
-                "minecraft:tropical_fish/pattern",
-                "minecraft:written_book_content",
-            ]:
+            for component_id in default_components:
                 if component_id in components:
+                    hidden_components.append(component_id)
+                elif item_id in default_components[component_id]:
                     hidden_components.append(component_id)
 
         if nbt["HideFlags"].value//64%2 == 1:
@@ -1289,6 +1308,9 @@ def extract(item_id: str, components: dict[str, Any] | None, nbt: dict[str, Any]
         if nbt["HideFlags"].value//128%2 == 1:
             hidden_components.append("minecraft:trim")
         del nbt["HideFlags"]
+
+        if hidden_components:
+            components["minecraft:tooltip_display"] = tooltip_display
 
     if nbt:
         if "minecraft:custom_data" in components:

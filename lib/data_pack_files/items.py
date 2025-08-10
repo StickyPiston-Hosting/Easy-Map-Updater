@@ -263,7 +263,7 @@ def update(item: ItemInput, version: int, issues: list[dict[str, str | int]]) ->
 
     # Conform component format
     if version >= 2005:
-        components = item_component.conform_components(components, version, issues)
+        components = item_component.conform_components(item_id or "minecraft:stone", components, version, issues, read)
 
     # Apply damage to items with durability
     if item_id in tables.ITEMS_WITH_DURABILITY and (data_value >= 1 or (data_value == 0 and read)):
