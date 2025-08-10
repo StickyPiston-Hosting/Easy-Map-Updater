@@ -204,7 +204,7 @@ def conform_components(components: ItemComponents, version: int, issues: list[di
 
 
     # minecraft:food component got extracted out in 1.21.2
-    if version <= 2101 and "minecraft:food" in components:
+    if "minecraft:food" in components and "minecraft:consumable" not in components:
         food: dict[str, Any] = components["minecraft:food"]
         consumable = {}
         if "eat_seconds" in food:
@@ -217,77 +217,77 @@ def conform_components(components: ItemComponents, version: int, issues: list[di
             }
             consumable["on_consume_effects"] = nbt_tags.TypeList([on_consume_effect])
             del food["effects"]
-        components["minecraft:consumable"] = consumable
+        if consumable:
+            components["minecraft:consumable"] = consumable
         if "using_converts_to" in food:
             components["minecraft:use_remainder"] = food["using_converts_to"]
             del food["using_converts_to"]
 
 
     # In 1.21.5, minecraft:hide_additional_tooltip, minecraft:hide_tooltip, and the show_in_tooltip were removed
-    if version <= 2104:
-        if "minecraft:hide_additional_tooltip" in components:
-            if "minecraft:tooltip_display" not in components:
-                components["minecraft:tooltip_display"] = {}
-            tooltip_display = components["minecraft:tooltip_display"]
-            if "hidden_components" not in tooltip_display:
-                tooltip_display["hidden_components"] = nbt_tags.TypeList([])
-
-            for component_id in [
-                "minecraft:banner_patterns",
-                "minecraft:bees",
-                "minecraft:block_entity_data",
-                "minecraft:block_state",
-                "minecraft:bundle_contents",
-                "minecraft:charged_projectiles",
-                "minecraft:container",
-                "minecraft:container_loot",
-                "minecraft:firework_explosion",
-                "minecraft:fireworks",
-                "minecraft:instrument",
-                "minecraft:map_id",
-                "minecraft:painting/variant",
-                "minecraft:pot_decorations",
-                "minecraft:potion_contents",
-                "minecraft:tropical_fish/pattern",
-                "minecraft:written_book_content",
-            ]:
-                if component_id in components:
-                    tooltip_display["hidden_components"].append(component_id)
-            del components["minecraft:hide_additional_tooltip"]
-
-        if "minecraft:hide_tooltip" in components:
-            if "minecraft:tooltip_display" not in components:
-                components["minecraft:tooltip_display"] = {}
-            components["minecraft:tooltip_display"]["hide_tooltip"] = nbt_tags.TypeByte(1)
-            del components["minecraft:hide_tooltip"]
+    if "minecraft:hide_additional_tooltip" in components:
+        if "minecraft:tooltip_display" not in components:
+            components["minecraft:tooltip_display"] = {}
+        tooltip_display = components["minecraft:tooltip_display"]
+        if "hidden_components" not in tooltip_display:
+            tooltip_display["hidden_components"] = nbt_tags.TypeList([])
 
         for component_id in [
-            "minecraft:attribute_modifiers",
-            "minecraft:dyed_color",
-            "minecraft:can_place_on",
-            "minecraft:can_break",
-            "minecraft:enchantments",
-            "minecraft:stored_enchantments",
-            "minecraft:jukebox_playable",
-            "minecraft:trim",
-            "minecraft:unbreakable",
+            "minecraft:banner_patterns",
+            "minecraft:bees",
+            "minecraft:block_entity_data",
+            "minecraft:block_state",
+            "minecraft:bundle_contents",
+            "minecraft:charged_projectiles",
+            "minecraft:container",
+            "minecraft:container_loot",
+            "minecraft:firework_explosion",
+            "minecraft:fireworks",
+            "minecraft:instrument",
+            "minecraft:map_id",
+            "minecraft:painting/variant",
+            "minecraft:pot_decorations",
+            "minecraft:potion_contents",
+            "minecraft:tropical_fish/pattern",
+            "minecraft:written_book_content",
         ]:
-            if component_id not in components:
-                continue
-            component = components[component_id]
-            if not isinstance(component, dict):
-                continue
-            if "show_in_tooltip" in component:
-                if component["show_in_tooltip"].value == 0:
-                    if "minecraft:tooltip_display" not in components:
-                        components["minecraft:tooltip_display"] = {}
-                    tooltip_display = components["minecraft:tooltip_display"]
-                    if "hidden_components" not in tooltip_display:
-                        tooltip_display["hidden_components"] = nbt_tags.TypeList([])
-                    
-                    tooltip_display["hidden_components"].append(component_id)
+            if component_id in components:
+                tooltip_display["hidden_components"].append(component_id)
+        del components["minecraft:hide_additional_tooltip"]
+
+    if "minecraft:hide_tooltip" in components:
+        if "minecraft:tooltip_display" not in components:
+            components["minecraft:tooltip_display"] = {}
+        components["minecraft:tooltip_display"]["hide_tooltip"] = nbt_tags.TypeByte(1)
+        del components["minecraft:hide_tooltip"]
+
+    for component_id in [
+        "minecraft:attribute_modifiers",
+        "minecraft:dyed_color",
+        "minecraft:can_place_on",
+        "minecraft:can_break",
+        "minecraft:enchantments",
+        "minecraft:stored_enchantments",
+        "minecraft:jukebox_playable",
+        "minecraft:trim",
+        "minecraft:unbreakable",
+    ]:
+        if component_id not in components:
+            continue
+        component = components[component_id]
+        if not isinstance(component, dict):
+            continue
+        if "show_in_tooltip" in component:
+            if component["show_in_tooltip"].value == 0:
+                if "minecraft:tooltip_display" not in components:
+                    components["minecraft:tooltip_display"] = {}
+                tooltip_display = components["minecraft:tooltip_display"]
+                if "hidden_components" not in tooltip_display:
+                    tooltip_display["hidden_components"] = nbt_tags.TypeList([])
                 
-                del component["show_in_tooltip"]
+                tooltip_display["hidden_components"].append(component_id)
+            
+            del component["show_in_tooltip"]
 
 
 
