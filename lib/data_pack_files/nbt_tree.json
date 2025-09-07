@@ -483,6 +483,10 @@
                     "argument_type": "json_text_component_mangled"
                 },
                 "CustomNameVisible": { "data_type": "byte" },
+                "custom_particle": {
+                    "data_type": "carry",
+                    "argument_type": "particle_nbt"
+                },
                 "custom_potion_effects": {
                     "remove": true,
                     "edge_case": "custom_potion_effects",
@@ -707,6 +711,7 @@
                     }
                 },
                 "Particle": {
+                    "rename": "custom_particle",
                     "data_type": "carry",
                     "argument_type": "particle_nbt"
                 },

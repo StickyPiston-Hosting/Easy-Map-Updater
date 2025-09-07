@@ -28,7 +28,7 @@ def update_from_nbt(particle: str | dict[str, Any], version: int, issues: list[d
 
     # Return if input type is a dict
     if isinstance(particle, dict):
-        return particle
+        return update_particle_nbt(particle, version, issues)
 
     particle_array = arguments.parse_with_quotes(particle, " ", True)
     particle_id = miscellaneous.namespace(particle_array[0])
@@ -253,6 +253,41 @@ def update(particle: str | dict[str, str], version: int, issues: list[dict[str, 
 
 
     return particle_data
+
+
+
+def update_particle_nbt(particle: dict[str, Any], version: int, issues: list[dict[str, str | int]]) -> dict[str, Any]:
+    if "type" in particle:
+        particle["type"] = miscellaneous.namespace(particle["type"])
+        particle_type = particle["type"]
+    else:
+        particle_type = "minecraft:smoke"
+        particle["type"] = particle_type
+
+    if "block_state" in particle:
+        block_id = particle["block_state"]["Name"] if "Name" in particle["block_state"] else "minecraft:stone"
+        block_states = particle["block_state"]["Properties"] if "Properties" in particle["block_state"] else {}
+        updated_block = blocks.update({
+            "id": block_id,
+            "data_value": -1,
+            "block_states": block_states,
+            "nbt": {},
+            "read": False
+        },
+        pack_version, issues)
+        particle["block_state"]["Name"] = updated_block["id"]
+        if updated_block["block_states"]:
+            particle["block_state"]["Properties"] = updated_block["block_states"]
+        else:
+            if "Properties" in particle["block_state"]:
+                del particle["block_state"]["Properties"]
+
+    if "item" in particle:
+        particle["item"] = items.update_from_nbt(particle["item"], version, [])
+
+    return particle
+
+    
 
 
 
