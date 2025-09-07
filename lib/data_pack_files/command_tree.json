@@ -562,6 +562,17 @@
         "deop": {
             "mapping": ["carry", "target_selector"]
         },
+        "dialog": {
+            "index": 1,
+            "branches": {
+                "clear": {
+                    "mapping": ["carry", "carry", "target_selector"]
+                },
+                "show": {
+                    "mapping": ["carry", "carry", "target_selector", "carry"]
+                }
+            }
+        },
         "difficulty": {
             "mapping": ["carry", "difficulty"]
         },
