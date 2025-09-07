@@ -1093,6 +1093,14 @@
                     "horse": {
                         "*": "././mob/horse/*"
                     },
+                    "leashknot": {
+                        "break1.ogg": "unleash1.ogg",
+                        "break2.ogg": "unleash2.ogg",
+                        "break3.ogg": "unleash3.ogg",
+                        "place1.ogg": "leash1.ogg",
+                        "place2.ogg": "leash2.ogg",
+                        "place3.ogg": "leash3.ogg"
+                    },
                     "pufferfish": {
                         "*": "././mob/pufferfish/*"
                     },
