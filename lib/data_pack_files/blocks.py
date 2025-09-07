@@ -507,6 +507,13 @@ def update_block_id(block_id: str | nbt_tags.TypeNumeric, data_value: int | str,
         if block_id in id_array:
             block_id = id_array[block_id]
 
+    if pack_version <= 2105 or post_fixes:
+        id_array = {
+            "#minecraft:plays_ambient_desert_block_sounds": "#minecraft:triggers_ambient_desert_sand_block_sounds"
+        }
+        if block_id in id_array:
+            block_id = id_array[block_id]
+
     return (block_id, block_states, nbt)
 
 
