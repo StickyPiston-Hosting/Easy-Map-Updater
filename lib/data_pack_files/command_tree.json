@@ -518,6 +518,9 @@
         "datapack": {
             "index": 1,
             "branches": {
+                "create": {
+                    "mapping": ["carry", "carry", "carry", "carry"]
+                },
                 "disable": {
                     "mapping": ["carry", "carry", "carry"]
                 },
