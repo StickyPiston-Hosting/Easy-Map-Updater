@@ -237,6 +237,11 @@ def clean_level_dat(world: Path):
         if "GameRules" in file["Data"]:
             file["Data"]["GameRules"]["allowFireTicksAwayFromPlayer"] = NBT.TAG_String("true")
 
+    # Set locatorBar gamerule, which was added in 1.21.6
+    if version <= 2106:
+        if "GameRules" in file["Data"]:
+            file["Data"]["GameRules"]["locatorBar"] = NBT.TAG_String("false")
+
     # Close file
     file.write_file(file_path)
 
