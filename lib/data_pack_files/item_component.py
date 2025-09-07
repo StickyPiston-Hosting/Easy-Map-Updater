@@ -415,6 +415,9 @@ def conform_component(component: ItemComponent, version: int):
                     utils.uuid_from_int_array([entry.value for entry in attribute_modifier["uuid"]])
                 )
                 del attribute_modifier["uuid"]
+            if "display" in attribute_modifier:
+                if "value" in attribute_modifier["display"]:
+                    attribute_modifier["display"]["value"] = json_text_component.update(attribute_modifier["display"]["value"], version, [], {"mangled": False, "pack": False})
         component.value = attribute_modifiers
 
     if component.key == "minecraft:can_break":
