@@ -1220,7 +1220,13 @@ def edge_case_sign_text(parent: dict, issues: list[dict[str, str | int]]):
         if key in parent:
             if "messages" not in parent["front_text"]:
                 parent["front_text"]["messages"] = ["", "", "", ""]
-            parent["front_text"]["messages"][i] = json_text_component.update(parent[key], pack_version, issues, {"mangled": False, "pack": False})
+            text = json_text_component.update(parent[key], pack_version, issues, {"mangled": False, "pack": False})
+            # Ensure that component is a compound
+            if isinstance(text, TypeList) or isinstance(text, list):
+                text = {"extra": text, "text": ""}
+            elif isinstance(text, str):
+                text = {"text": text}
+            parent["front_text"]["messages"][i] = text
             del parent[key]
     if "Color" in parent:
         parent["front_text"]["color"] = parent["Color"]
@@ -1383,6 +1389,18 @@ def convert_to_lib_format_nbt_list(nbt: TypeList) -> Any:
 def convert_to_lib_format_list(nbt: list) -> Any:
     data = [ convert_to_lib_format(nbt[i]) for i in range(len(nbt)) ]
     if data:
+        # If there are multiple data types present, conform all entries to the standardized format
+        data_type = type(data[0])
+        for entry in data:
+            if data_type == type(entry):
+                continue
+            for i in range(len(data)):
+                if type(data[i]) == NBT.TAG_Compound:
+                    continue
+                value = data[i]
+                data[i] = NBT.TAG_Compound()
+                cast(NBT.TAG_Compound, data[i])[""] = value
+            break
         output = NBT.TAG_List(type(data[0]))
     else:
         output = NBT.TAG_List(NBT.TAG_Compound)
