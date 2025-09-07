@@ -16,6 +16,7 @@ from lib.data_pack_files import tables
 from lib.data_pack_files import item_component
 from lib.data_pack_files.restore_behavior import scoreboard_objective_splitter
 from lib import defaults
+from lib import option_manager
 
 
 
@@ -287,6 +288,15 @@ def sound_event(name: str, version: int, issues: list[dict[str, str | int]]) -> 
     # Wolf howl was removed in 1.21.5
     if name == "minecraft:entity.wolf.howl":
         log('WARNING: Sound event "minecraft:entity.wolf.howl" was removed!')
+
+    post_fixes = option_manager.FIXES["post_fixes"]
+
+    if pack_version <= 2105 or post_fixes:
+        id_array = {
+            "minecraft:block.sand.wind": "minecraft:block.dry_grass.ambient"
+        }
+        if name in id_array:
+            name = id_array[name]
 
     return name
 
