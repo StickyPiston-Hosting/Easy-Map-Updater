@@ -1889,6 +1889,9 @@
         "trigger": {
             "mapping": ["carry", "carry", "carry", "carry"]
         },
+        "version": {
+            "mapping": ["carry"]
+        },
         "w": {
             "mapping": ["carry", "target_selector", "join_text"],
             "legend": [0, 1, {"join_text": {"min": 2}}]
