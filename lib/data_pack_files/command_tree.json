@@ -1893,6 +1893,44 @@
             "mapping": ["carry", "target_selector", "join_text"],
             "legend": [0, 1, {"join_text": {"min": 2}}]
         },
+        "waypoint": {
+            "index": 1,
+            "branches": {
+                "list": {
+                    "mapping": ["carry", "carry"]
+                },
+                "modify": {
+                    "index": 3,
+                    "branches": {
+                        "color": {
+                            "index": 4,
+                            "branches": {
+                                "hex": {
+                                    "mapping": ["carry", "carry", "target_selector_single", "carry", "carry", "carry"]
+                                },
+                                "reset": {
+                                    "mapping": ["carry", "carry", "target_selector_single", "carry", "carry"]
+                                }
+                            },
+                            "else": {
+                                "mapping": ["carry", "carry", "target_selector_single", "carry", "carry"]
+                            }
+                        },
+                        "style": {
+                            "index": 4,
+                            "branches": {
+                                "set": {
+                                    "mapping": ["carry", "carry", "target_selector_single", "carry", "carry", "carry"]
+                                },
+                                "reset": {
+                                    "mapping": ["carry", "carry", "target_selector_single", "carry", "carry"]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "weather": {
             "mapping": ["carry", "carry", "carry"]
         },
