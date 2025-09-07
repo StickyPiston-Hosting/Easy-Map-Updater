@@ -1079,5 +1079,31 @@
                 }
             }
         }
+    },
+    "2106": {
+        "minecraft": {
+            "sounds": {
+                "entity": {
+                    "glow_squid": {
+                        "*": "././mob/glow_squid/*"
+                    },
+                    "guardian": {
+                        "*": "././mob/guardian/*"
+                    },
+                    "horse": {
+                        "*": "././mob/horse/*"
+                    },
+                    "pufferfish": {
+                        "*": "././mob/pufferfish/*"
+                    },
+                    "rabbit": {
+                        "*": "././mob/rabbit/*"
+                    },
+                    "squid": {
+                        "*": "././mob/squid/*"
+                    }
+                }
+            }
+        }
     }
 }
