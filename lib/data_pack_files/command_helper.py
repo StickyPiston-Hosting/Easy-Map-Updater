@@ -83,6 +83,21 @@ def create_predicate(contents: str) -> str:
 
 
 
+def create_painting_variant(contents: str) -> str:
+    data_pack_path = prepare_helper_data_pack()
+    if data_pack_path is None:
+        return f"help:helper_painting_variant_requires_world"
+    
+    # Create painting variant
+    painting_variant_name = hashlib.sha256(contents.encode("utf-8")).hexdigest()
+    painting_variant_path = data_pack_path / "data" / "help" / "painting_variant" / f"{painting_variant_name}.json"
+    painting_variant_path.parent.mkdir(exist_ok=True, parents=True)
+    utils.safe_file_write(painting_variant_path, contents)
+
+    return f"help:{painting_variant_name}"
+
+
+
 def prepare_helper_data_pack() -> Path | None:
     # Prepare data pack path
     world = data_pack_path = MINECRAFT_PATH / "saves" / option_manager.get_map_name()

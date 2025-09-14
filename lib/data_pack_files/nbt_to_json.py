@@ -334,3 +334,16 @@ def conform_text_list_to_json(text_component: list) -> list:
     for i in range(len(text_component)):
         text_component[i] = conform_text_component_to_json(text_component[i])
     return text_component
+
+
+
+def convert_painting_variant_to_json(painting_variant: dict) -> dict[str, Any]:
+    painting_variant = cast(dict, nbt_tags.convert_to_json(painting_variant))
+    return conform_painting_variant_to_json(painting_variant)
+
+def conform_painting_variant_to_json(painting_variant: dict) -> dict[str, Any]:
+    if "title" in painting_variant:
+        painting_variant["title"] = conform_text_component_to_json(painting_variant["title"])
+    if "author" in painting_variant:
+        painting_variant["author"] = conform_text_component_to_json(painting_variant["author"])
+    return painting_variant

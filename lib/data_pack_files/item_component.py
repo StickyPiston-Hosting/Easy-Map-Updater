@@ -11,6 +11,9 @@ from lib.log import log
 from lib import defaults
 from lib import utils
 from lib import option_manager
+from lib.data_pack_files import command_helper
+from lib.data_pack_files import nbt_tags
+from lib.data_pack_files import nbt_to_json
 import easy_map_updater
 
 
@@ -538,6 +541,12 @@ def conform_component(component: ItemComponent, version: int):
         lore = component.value
         for i in range(len(lore)):
             lore[i] = json_text_component.update(lore[i], version, [], {"mangled": True, "pack": False})
+
+    if component.key == "minecraft:painting/variant":
+        painting_variant = component.value
+        if isinstance(painting_variant, dict):
+            painting_variant = command_helper.create_painting_variant(json.dumps(nbt_to_json.convert_painting_variant_to_json(painting_variant)))
+        component.value = painting_variant
 
     if component.key == "minecraft:potion_contents":
         potion_contents = component.value
