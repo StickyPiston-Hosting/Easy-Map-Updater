@@ -59,7 +59,8 @@ def update(string: str, version: int, issues: list[dict[str, str | int]], params
         unpacked_component = nbt_tags.convert_from_json(json_manager.unpack(string))
     else:
         if not string.startswith("{") and not string.startswith("["):
-            string = utils.pack_string(string)
+            if not string.startswith('"') and not string.startswith("'"):
+                string = utils.pack_string(string)
         unpacked_component = nbt_tags.unpack(string)
 
     updated_component = direct_update(unpacked_component, version, issues, params["mangled"] if "mangled" in params else False)
