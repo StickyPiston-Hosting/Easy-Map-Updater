@@ -15,6 +15,7 @@ from lib import json_manager
 from lib import utils
 from lib.log import log
 from lib import defaults
+from lib import option_manager
 
 
 
@@ -50,6 +51,8 @@ def update(pack: Path, version: int):
     process_models(pack)
     if pack_version <= 2103:
         create_item_definitions(pack)
+    else:
+        update_item_definitions(pack)
 
 
 
@@ -174,9 +177,12 @@ def create_item_definitions(pack: Path):
         item_definition = convert_overrides(overrides_array[namespaced_id], namespaced_id)
         file_path = pack / "assets" / namespaced_id.split(":")[0] / "items" / f"{"/".join(namespaced_id.split(":")[1].split("/")[1:])}.json"
         file_path.parent.mkdir(parents=True, exist_ok=True)
+        contents: dict = {"model": item_definition}
+        if option_manager.FIXES["oversized_in_gui"]:
+            contents["oversized_in_gui"] = True
         with file_path.open("w", encoding="utf-8", newline="\n") as file:
             json.dump(
-                {"model": item_definition},
+                contents,
                 file,
                 indent=4
             )
@@ -633,3 +639,34 @@ def get_base_model_definition(namespaced_id: str, model_id: str) -> dict:
         "type": "minecraft:model",
         "model": model_id
     }
+
+
+
+def update_item_definitions(pack: Path):
+    assets_folder = pack / "assets"
+    if not assets_folder.exists():
+        return
+    for namespace_folder in assets_folder.iterdir():
+        if not namespace_folder.is_dir():
+            continue
+        items_folder = namespace_folder / "items"
+        if not items_folder.exists():
+            continue
+
+        for item_path in items_folder.glob("**/*.json"):
+            if not item_path.is_file():
+                continue
+            process_item_definition(item_path)
+
+def process_item_definition(item_path: Path):
+    modified = False
+    item_json, load_bool = json_manager.safe_load(item_path)
+    if not load_bool:
+        return
+    
+    if option_manager.FIXES["oversized_in_gui"] and pack_version <= 2105 and "oversized_in_gui" not in item_json:
+        item_json["oversized_in_gui"] = True
+        modified = True
+
+    if modified:
+        utils.safe_file_write(item_path, json.dumps(item_json))

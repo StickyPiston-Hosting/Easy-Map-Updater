@@ -70,6 +70,7 @@ def get_default_options() -> Options:
             "empty_equipment_override": False,
             "macros": True,
             "json_text_components_in_storage": True,
+            "oversized_in_gui": False,
             "stats_options": {
                 "block_stats_used": True,
                 "block_positions_dynamic": False,
