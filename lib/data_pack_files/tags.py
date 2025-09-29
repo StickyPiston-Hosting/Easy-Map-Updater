@@ -38,7 +38,6 @@ def update(file_path: Path, source_file_path: Path, version: int, tag_type: str)
     modified = False
     for i in range(len(contents["values"])):
         entry: str = contents["values"][i] if isinstance(contents["values"][i], str) else contents["values"][i]["id"]
-        print(f'entry: {entry}')
         new_entry = entry
         if tag_type == "block":
             new_entry = blocks.update(
