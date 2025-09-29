@@ -128,8 +128,41 @@ def update_pack_mcmeta(pack: Path, source_pack: Path):
     contents, load_bool = json_manager.safe_load(source_pack / "pack.mcmeta")
     if not load_bool:
         return
-    if contents["pack"]["pack_format"] < PACK_FORMAT:
-        contents["pack"]["pack_format"] = PACK_FORMAT
+    
+    # Update pack format
+    min_format = PACK_FORMAT
+    max_format = PACK_FORMAT
+    if "pack_format" in contents["pack"]:
+        if isinstance(contents["pack"]["pack_format"], list):
+            max_format = max(max_format, contents["pack"]["pack_format"][0])
+        else:
+            max_format = max(max_format, contents["pack"]["pack_format"])
+    if "max_format" in contents["pack"]:
+        if isinstance(contents["pack"]["max_format"], list):
+            max_format = max(max_format, contents["pack"]["max_format"][0])
+        else:
+            max_format = max(max_format, contents["pack"]["max_format"])
+    if "supported_formats" in contents["pack"]:
+        if isinstance(contents["pack"]["supported_formats"], dict):
+            if "max_inclusive" in contents["pack"]["supported_formats"]:
+                max_format = max(max_format, contents["pack"]["supported_formats"]["max_inclusive"])
+        elif isinstance(contents["pack"]["supported_formats"], list):
+            max_format = max(max_format, contents["pack"]["supported_formats"][0])
+        else:
+            max_format = max(max_format, contents["pack"]["supported_formats"])
+        del contents["pack"]["supported_formats"]
+
+    if max_format == min_format:
+        contents["pack"]["pack_format"] = max_format
+        if "min_format" in contents["pack"]:
+            del contents["pack"]["min_format"]
+        if "max_format" in contents["pack"]:
+            del contents["pack"]["max_format"]
+    else:
+        contents["pack"]["min_format"] = min_format
+        contents["pack"]["max_format"] = max_format
+        if "pack_format" in contents["pack"]:
+            del contents["pack"]["pack_format"]
 
     # Update filters
     if "filter" in contents:
