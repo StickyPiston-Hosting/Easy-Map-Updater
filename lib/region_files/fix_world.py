@@ -126,6 +126,10 @@ def fix(world: Path, source_world: Path, version: int, get_confirmation: bool) -
     # Fix command storage
     log("Fixing command storage")
     fix_command_storage(world)
+
+    # Fix spawn chunks
+    log("Fixing spawn chunks")
+    fix_spawn_chunks(world)
     
     log("World data fixed")
 
@@ -1177,6 +1181,74 @@ def fix_command_storage(world: Path):
 
         file.write_file(file_path)
 
+
+
+def fix_spawn_chunks(world: Path):
+    level_dat_path = world / "level.dat"
+    if not level_dat_path.exists():
+        return
+    level_dat = NBT.NBTFile(level_dat_path)
+    if "Data" not in level_dat:
+        return
+    data = level_dat["Data"]
+    
+    spawn_x = (data["SpawnX"].value if "SpawnX" in data else 0)//16
+    spawn_z = (data["SpawnZ"].value if "SpawnZ" in data else 0)//16
+    spawn_chunk_radius = int(data["GameRules"]["spawnChunkRadius"].value) if "GameRules" in data and "spawnChunkRadius" in data["GameRules"] else (10 if pack_version < 2005 else 2)
+
+    # Prepare chunks.dat file
+    chunks_dat_path = world / "data" / "chunks.dat"
+    if chunks_dat_path.exists():
+        chunks_dat = NBT.NBTFile(chunks_dat_path)
+    else:
+        chunks_dat = NBT.NBTFile()
+
+    chunks_dat["DataVersion"] = NBT.TAG_Int(defaults.DATA_VERSION)
+    if "data" not in chunks_dat:
+        chunks_dat["data"] = NBT.TAG_Compound()
+    if "tickets" not in chunks_dat["data"]:
+        chunks_dat["data"]["tickets"] = NBT.TAG_List(NBT.TAG_Compound)
+    if "Forced" in chunks_dat["data"]:
+        long_size = int(2**64)
+        int_size = int(2**32)
+        for forcedChunk in chunks_dat["data"]["Forced"]:
+            ticket = NBT.TAG_Compound()
+            ticket["level"] = NBT.TAG_Int(31)
+            ticket["type"] = NBT.TAG_String("minecraft:forced")
+            ticket["chunk_pos"] = NBT.TAG_Int_Array()
+            ticket["chunk_pos"].value = [
+                utils.int_range(forcedChunk%int_size),
+                utils.int_range(forcedChunk%long_size//int_size)
+            ]
+            chunks_dat["data"]["tickets"].append(ticket)
+        del chunks_dat["data"]["Forced"]
+
+    # Add new entries to the forceloaded chunks list
+    if spawn_chunk_radius > 0:
+        diameter = (spawn_chunk_radius - 1)*2 + 1
+        start_x = spawn_x - spawn_chunk_radius + 1
+        start_z = spawn_z - spawn_chunk_radius + 1
+
+        for x in range(start_x, start_x + diameter):
+            for z in range(start_z, start_z + diameter):
+                # Make sure the chunk is not already forceloaded
+                already_exists = False
+                for ticket in chunks_dat["data"]["tickets"]:
+                    if ticket["type"].value == "minecraft:forced" and ticket["chunk_pos"][0] == x and ticket["chunk_pos"][1] == z:
+                        already_exists = True
+                        break
+                if already_exists:
+                    continue
+                ticket = NBT.TAG_Compound()
+                ticket["level"] = NBT.TAG_Int(31)
+                ticket["type"] = NBT.TAG_String("minecraft:forced")
+                ticket["chunk_pos"] = NBT.TAG_Int_Array()
+                ticket["chunk_pos"].value = [x, z]
+                chunks_dat["data"]["tickets"].append(ticket)
+
+    # Save file
+    chunks_dat_path.parent.mkdir(exist_ok=True, parents=True)
+    chunks_dat.write_file(chunks_dat_path)
 
 
 
