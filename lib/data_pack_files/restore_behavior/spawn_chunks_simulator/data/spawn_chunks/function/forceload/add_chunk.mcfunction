@@ -1,0 +1,2 @@
+# Add coordinates to the list if it's not in the list already
+$execute unless data storage spawn_chunks:data forceloaded_chunks[{x:$(x),z:$(z)}] run data modify storage spawn_chunks:data forceloaded_chunks append value {x:$(x),z:$(z)}

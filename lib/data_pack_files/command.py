@@ -34,6 +34,7 @@ from lib.data_pack_files.command_helpers import teleport_dismount
 from lib.data_pack_files.command_helpers import custom_model_data_store
 from lib.data_pack_files.restore_behavior import firework_damage_canceler
 from lib.data_pack_files.restore_behavior import effect_overflow
+from lib.data_pack_files.restore_behavior import spawn_chunks_simulator
 from lib.region_files import illegal_chunk
 from lib import defaults
 from lib import utils
@@ -79,7 +80,7 @@ def update(line: str, version: int, function_id: str) -> str:
         macro_prefix = "$"
 
     try:
-        updated_line = command(line, is_macro).strip()
+        updated_line = command(line, is_macro, function_id).strip()
         if is_macro:
             if function_id != "test_command":
                 log(f'Updated a macro command:')
@@ -98,7 +99,7 @@ def update(line: str, version: int, function_id: str) -> str:
             log(f'The above error was from an attempt to update a macro command. This behavior is considered experimental.', True)
         return macro_prefix + line
 
-def command(line: str, is_macro: bool) -> str:
+def command(line: str, is_macro: bool, function_id: str) -> str:
     # Return if blank
     if len(line) == 0:
         return ""
@@ -108,7 +109,7 @@ def command(line: str, is_macro: bool) -> str:
         return "#" + line
 
     # Convert command
-    command = parsed_command(arguments.parse(line, " ", pack_version >= 1400), is_macro, True)
+    command = parsed_command(arguments.parse(line, " ", pack_version >= 1400), is_macro, True, function_id)
     if command.endswith("COMMAND_HELPER"):
         if namespaced_id == "commands.mcfunction":
             command = f'execute store result block ~ ~ ~ SuccessCount int 1 run {command[:-14]}'
@@ -139,7 +140,7 @@ def remove_slash(line: str) -> str:
 def remove_run_execute(line: str) -> str:
     return line.replace("return run", "__RETURN_RUN__").replace(" run execute", "").replace("__RETURN_RUN__", "return run").replace("execute run ", "")
 
-def parsed_command(argument_list: list[str], is_macro: bool, display_command: bool) -> str:
+def parsed_command(argument_list: list[str], is_macro: bool, display_command: bool, function_id: str) -> str:
     # Skip if just whitespace
     if len(argument_list) == 0 or argument_list[0] == "":
         return ""
@@ -158,10 +159,10 @@ def parsed_command(argument_list: list[str], is_macro: bool, display_command: bo
     # Initialize issues list
     issues: list[dict[str, str | int]] = []
 
-    return command_arguments(argument_list, command_tree, issues, is_macro)
+    return command_arguments(argument_list, command_tree, issues, is_macro, function_id)
 
 
-def command_arguments(argument_list: list[str], guide: list | dict[str, Any], issues: list[dict[str, str | int]], is_macro: bool) -> str:
+def command_arguments(argument_list: list[str], guide: list | dict[str, Any], issues: list[dict[str, str | int]], is_macro: bool, function_id: str) -> str:
     # Get guide from array based on certain parameters
     if isinstance(guide, list):
         # Iterate through entries in the guide
@@ -178,7 +179,7 @@ def command_arguments(argument_list: list[str], guide: list | dict[str, Any], is
                     argument_list[entry["is_nbt"]][0] == "{"
                 )
             if boolean:
-                return command_arguments(argument_list, entry, issues, is_macro)
+                return command_arguments(argument_list, entry, issues, is_macro, function_id)
         # Warn if no valid object was found
         if defaults.SEND_WARNINGS:
             log(f'WARNING: No branch found for: {" ".join(argument_list)}')
@@ -186,15 +187,15 @@ def command_arguments(argument_list: list[str], guide: list | dict[str, Any], is
 
     # Manage explicit branches
     if "index" in guide:
-        return guide_branch(argument_list, guide, issues, is_macro)
+        return guide_branch(argument_list, guide, issues, is_macro, function_id)
 
     # Return mapped arguments
     if "mapping" in guide:
-        return guide_mapping(argument_list, guide, issues, is_macro)
+        return guide_mapping(argument_list, guide, issues, is_macro, function_id)
 
     # Sort through array if it is present
     if "array" in guide:
-        return command_arguments(argument_list, guide["array"], issues, is_macro)
+        return command_arguments(argument_list, guide["array"], issues, is_macro, function_id)
 
     log(f'WARNING: Branch is undefined for: {" ".join(argument_list)}')
     if defaults.DEBUG_MODE:
@@ -212,7 +213,7 @@ def test_list_entry(entry: dict[str, int] | int, value: int, boolean: bool) -> b
     return boolean
 
 
-def guide_branch(argument_list: list[str], guide: dict[str, Any], issues: list[dict[str, str | int]], is_macro: bool) -> str:
+def guide_branch(argument_list: list[str], guide: dict[str, Any], issues: list[dict[str, str | int]], is_macro: bool, function_id: str) -> str:
     # Get index
     index: int = guide["index"]
 
@@ -246,10 +247,10 @@ def guide_branch(argument_list: list[str], guide: dict[str, Any], issues: list[d
         lookup_guide = guide["branches"][lookup_guide]
 
     # Explore the branch
-    return command_arguments(argument_list, lookup_guide, issues, is_macro)
+    return command_arguments(argument_list, lookup_guide, issues, is_macro, function_id)
 
 
-def guide_mapping(argument_list: list[str], guide: dict[str, list | dict], issues: list[dict[str, str | int]], is_macro: bool) -> str:
+def guide_mapping(argument_list: list[str], guide: dict[str, list | dict], issues: list[dict[str, str | int]], is_macro: bool, function_id: str) -> str:
     # Get mapping
     mapping: list[str] = cast(list, guide["mapping"])
 
@@ -275,10 +276,10 @@ def guide_mapping(argument_list: list[str], guide: dict[str, list | dict], issue
                 break
 
         # Add argument to list
-        new_argument_list.append(update_argument(source, mapping[index], issues, is_macro))
+        new_argument_list.append(update_argument(source, mapping[index], issues, is_macro, function_id))
 
     # Fix edge cases with helper functions
-    return fix_helper_edge_case(new_argument_list, argument_list, issues, is_macro)
+    return fix_helper_edge_case(new_argument_list, argument_list, issues, is_macro, function_id)
     
 
 def get_legend(mapping: list[str], guide: dict[str, Any]) -> list:
@@ -352,7 +353,7 @@ def get_argument(argument_list: list[str], source: int | str | dict[str, Any]) -
 
 
 
-def update_argument(argument: str | dict[str, Any], argument_type: str, issues: list[dict[str, str | int]], is_macro: bool = False) -> str:
+def update_argument(argument: str | dict[str, Any], argument_type: str, issues: list[dict[str, str | int]], is_macro: bool = False, function_id: str = "unknown") -> str:
     # Return carry arguments
     if argument_type == "carry":
         return cast(str, argument)
@@ -363,7 +364,7 @@ def update_argument(argument: str | dict[str, Any], argument_type: str, issues: 
     
     # Return special case for execute sub commands
     if argument_type == "command":
-        return execute_command(cast(list[str], argument), pack_version, issues, is_macro)
+        return execute_command(cast(list[str], argument), pack_version, issues, is_macro, function_id)
 
     # Return arguments based on type
     if argument_type in ARGUMENT_FUNCTIONS:
@@ -378,7 +379,7 @@ def update_argument(argument: str | dict[str, Any], argument_type: str, issues: 
     return cast(str, argument)
 
 
-def execute_command(argument: dict[str, list[str] | bool] | list[str], version: int, issues: list[dict[str, str | int]], is_macro: bool):
+def execute_command(argument: dict[str, list[str] | bool] | list[str], version: int, issues: list[dict[str, str | int]], is_macro: bool, function_id: str):
     # Initialize parameters
     execute = False
 
@@ -395,14 +396,14 @@ def execute_command(argument: dict[str, list[str] | bool] | list[str], version: 
     # Return command
     if argument == ["execute"]:
         return "execute"
-    return parsed_command(argument, is_macro, False)
+    return parsed_command(argument, is_macro, False, function_id)
 
 def command_string(command: str, version: int, issues: list[dict[str, str | int]]):
     return update(command, version, "NBT")
 
 
 
-def fix_helper_edge_case(argument_list: list[str], old_argument_list: list[str], issues: list[dict[str, str | int]], is_macro: bool) -> str:
+def fix_helper_edge_case(argument_list: list[str], old_argument_list: list[str], issues: list[dict[str, str | int]], is_macro: bool, function_id: str) -> str:
     # Handle special sign text command
     if (
         len(argument_list) == 2 and
@@ -469,6 +470,37 @@ def fix_helper_edge_case(argument_list: list[str], old_argument_list: list[str],
         argument_list[4].split("{")[0].split("[")[0] == "minecraft:comparator"
     ):
         return block_update_mitigator.handle_comparator_setblock(argument_list, is_macro)
+    
+    # Fix pre-1.21.9 bugs
+    if pack_version <= 2108:
+        # Fix spawn chunks being removed in 1.21.9
+        if (option_manager.FIXES["command_helper"]["restore_spawn_chunks"]):
+            if argument_list[0] == "setworldspawn":
+                return spawn_chunks_simulator.change_world_spawn(argument_list, is_macro)
+            
+            if (
+                len(argument_list) >= 3 and
+                argument_list[0] == "gamerule" and
+                argument_list[1] == "spawnChunkRadius"
+            ):
+                return spawn_chunks_simulator.change_spawn_chunks_radius(argument_list, is_macro)
+            
+            if (option_manager.FIXES["command_helper"]["handle_forceload_with_spawn_chunks"] and function_id.split(":")[0] != "spawn_chunks"):
+                if (
+                    len(argument_list) >= 2 and
+                    argument_list[0] == "forceload" and
+                    argument_list[1] == "add"
+                ):
+                    return spawn_chunks_simulator.add_forceloaded_chunks(argument_list, is_macro)
+
+                if (
+                    len(argument_list) >= 3 and
+                    argument_list[0] == "forceload" and
+                    argument_list[1] == "remove"
+                ):
+                    if argument_list[2] == "all":
+                        return spawn_chunks_simulator.remove_all_forceloaded_chunks(argument_list, is_macro)
+                    return spawn_chunks_simulator.remove_forceloaded_chunks(argument_list, is_macro)
     
     # Fix pre-1.21.5 bugs
     if pack_version <= 2104:

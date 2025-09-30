@@ -58,6 +58,8 @@ def get_default_options() -> Options:
                 "mitigate_block_update": True,
                 "custom_model_data_store": True,
                 "removed_default_nbt": True,
+                "restore_spawn_chunks": True,
+                "handle_forceload_with_spawn_chunks": True,
             },
             "no_ai_horse_movement": True,
             "clean_clone": True,

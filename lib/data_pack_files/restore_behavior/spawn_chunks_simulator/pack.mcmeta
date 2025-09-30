@@ -1,0 +1,6 @@
+{
+    "pack": {
+        "pack_format": 88,
+        "description": "Simulates spawn chunks using forceloading after they removed them in 1.21.9."
+    }
+}
