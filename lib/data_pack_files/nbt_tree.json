@@ -752,6 +752,14 @@
                     "edge_case": "power",
                     "path": { "rename": [ "acceleration_power" ] }
                 },
+                "respawn": {
+                    "angle": {
+                        "rename": "yaw",
+                        "data_type": "float"
+                    },
+                    "pitch": { "data_type": "float" },
+                    "yaw": { "data_type": "float" }
+                },
                 "Rotation": { "list": { "data_type": "float" } },
                 "Saddle": {
                     "remove": true,
