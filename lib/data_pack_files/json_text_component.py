@@ -15,6 +15,7 @@ from lib.data_pack_files import nbt_paths
 from lib.data_pack_files import target_selectors
 from lib.data_pack_files import tables
 from lib.data_pack_files import entities
+from lib.resource_pack_files import miscellaneous
 from lib import json_manager
 from lib import defaults
 from lib import option_manager
@@ -245,6 +246,8 @@ def update_compound(component: str | dict, issues: list[dict[str, str | int]]) -
             update_nbt(component, issues)
         if key == "score":
             component[key] = update_score(component[key], issues)
+        if key == "sprite":
+            component[key] = miscellaneous.update_texture_path(component[key] + ".png", pack_version)[:-4]
         if key in ["bold", "italic", "underlined", "strikethrough", "obfuscated"]:
             if component[key] in ["true", "True"]:
                 component[key] = nbt_tags.TypeByte(1)
@@ -264,6 +267,8 @@ def update_compound(component: str | dict, issues: list[dict[str, str | int]]) -
             ("selector", "selector"),
             ("keybind", "keybind"),
             ("nbt", "nbt"),
+            ("atlas", "object"),
+            ("sprite", "object"),
         ]:
             if key_pair[0] in component:
                 component["type"] = key_pair[1]
