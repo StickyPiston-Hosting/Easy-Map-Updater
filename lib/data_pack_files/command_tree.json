@@ -827,6 +827,9 @@
                 }
             }
         ],
+        "fetchprofile": {
+            "mapping": ["carry", "carry", "carry"]
+        },
         "fill": [
             {
                 "version": {"max": 1202},
