@@ -40,8 +40,8 @@ def change_world_spawn(command: list[str], is_macro: bool) -> str:
         f"scoreboard players operation #new_spawn_x spawn_chunks.value = #x spawn_chunks.value\n"
         f"scoreboard players operation #new_spawn_z spawn_chunks.value = #z spawn_chunks.value\n"
         f"execute store result score #new_radius spawn_chunks.value run data get storage spawn_chunks:data spawn.radius\n"
-        f"execute if score #in_overworld spawn_chunks.value matches 1 run function spawn_chunks:spawn/update\n"
-        f"return run {" ".join(command)}",
+        f"execute in minecraft:overworld run function spawn_chunks:spawn/update\n"
+        f"return run execute in minecraft:overworld run {" ".join(command)}",
         is_macro
     )
 
@@ -54,7 +54,7 @@ def change_spawn_chunks_radius(command: list[str], is_macro: bool) -> str:
         f"scoreboard players set #new_radius spawn_chunks.value {radius}\n"
         f"execute store result score #new_spawn_x spawn_chunks.value run data get storage spawn_chunks:data spawn.x\n"
         f"execute store result score #new_spawn_z spawn_chunks.value run data get storage spawn_chunks:data spawn.z\n"
-        f"execute if score #in_overworld spawn_chunks.value matches 1 run function spawn_chunks:spawn/update\n"
+        f"execute in minecraft:overworld run function spawn_chunks:spawn/update\n"
         f"return 1",
         is_macro
     )

@@ -1661,7 +1661,7 @@
             "mapping": ["carry", "carry"]
         },
         "setworldspawn": {
-            "mapping": ["carry", "coordinate", "coordinate", "coordinate", "coordinate"]
+            "mapping": ["carry", "coordinate", "coordinate", "coordinate", "coordinate", "coordinate"]
         },
         "spawnpoint": {
             "mapping": ["carry", "target_selector", "int_coordinate", "int_coordinate", "int_coordinate", "coordinate", "coordinate"]
