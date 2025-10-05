@@ -1080,7 +1080,7 @@
             }
         }
     },
-    "2106": {
+    "2105": {
         "minecraft": {
             "sounds": {
                 "entity": {
@@ -1110,6 +1110,26 @@
                     "squid": {
                         "*": "././mob/squid/*"
                     }
+                }
+            }
+        }
+    },
+    "2108": {
+        "minecraft": {
+            "textures": {
+                "block": {
+                    "chain.png": "iron_chain.png"
+                }
+            },
+            "items": {
+                "chain.json": "iron_chain.json"
+            },
+            "models": {
+                "block": {
+                    "chain.json": "iron_chain.json"
+                },
+                "item": {
+                    "chain.json": "iron_chain.json"
                 }
             }
         }

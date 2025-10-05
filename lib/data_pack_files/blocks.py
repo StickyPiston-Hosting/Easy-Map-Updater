@@ -514,6 +514,13 @@ def update_block_id(block_id: str | nbt_tags.TypeNumeric, data_value: int | str,
         if block_id in id_array:
             block_id = id_array[block_id]
 
+    if pack_version <= 2108 or post_fixes:
+        id_array = {
+            "minecraft:chain": "minecraft:iron_chain"
+        }
+        if block_id in id_array:
+            block_id = id_array[block_id]
+
     return (block_id, block_states, nbt)
 
 

@@ -402,6 +402,13 @@ def update_item_id(item_id: str | nbt_tags.TypeNumeric, components: item_compone
                 easy_map_updater.MINECRAFT_PATH / "saves" / option_manager.get_map_name()
             )
 
+    if pack_version <= 2108 or post_fixes:
+        id_array = {
+            "minecraft:chain": "minecraft:iron_chain"
+        }
+        if item_id in id_array:
+            item_id = id_array[item_id]
+
     return item_id
 
 def extract_riding_id(nbt: dict) -> str:
