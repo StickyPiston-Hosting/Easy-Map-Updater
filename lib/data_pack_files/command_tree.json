@@ -1664,7 +1664,7 @@
             "mapping": ["carry", "coordinate", "coordinate", "coordinate", "coordinate"]
         },
         "spawnpoint": {
-            "mapping": ["carry", "target_selector", "int_coordinate", "int_coordinate", "int_coordinate", "coordinate"]
+            "mapping": ["carry", "target_selector", "int_coordinate", "int_coordinate", "int_coordinate", "coordinate", "coordinate"]
         },
         "spectate": {
             "mapping": ["carry", "target_selector_single", "target_selector_single"]
