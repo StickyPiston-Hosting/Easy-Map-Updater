@@ -486,7 +486,7 @@ def fix_helper_edge_case(argument_list: list[str], old_argument_list: list[str],
             ):
                 return spawn_chunks_simulator.change_spawn_chunks_radius(argument_list, is_macro)
             
-            if (option_manager.FIXES["command_helper"]["handle_forceload_with_spawn_chunks"] and function_id.split(":")[0] != "spawn_chunks"):
+            if (option_manager.FIXES["command_helper"]["handle_forceload_with_spawn_chunks"]):
                 if (
                     len(argument_list) >= 2 and
                     argument_list[0] == "forceload" and
@@ -505,7 +505,7 @@ def fix_helper_edge_case(argument_list: list[str], old_argument_list: list[str],
                 
         # Fix world borders existing in all dimensions in 1.21.9
         if (option_manager.FIXES["command_helper"]["world_border_dimensions"]):
-            if (len(argument_list) > 1 and argument_list[0] == "worldborder" and function_id.split(":")[0] != "help"):
+            if (len(argument_list) > 1 and argument_list[0] == "worldborder"):
                 if argument_list[1] == "get":
                     return "execute in minecraft:overworld run " + " ".join(argument_list)
                 return world_border_dimensions.handle_world_border_commands(argument_list, is_macro)
