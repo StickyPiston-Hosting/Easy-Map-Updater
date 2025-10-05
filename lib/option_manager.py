@@ -60,6 +60,7 @@ def get_default_options() -> Options:
                 "removed_default_nbt": True,
                 "restore_spawn_chunks": True,
                 "handle_forceload_with_spawn_chunks": True,
+                "world_border_dimensions": True,
             },
             "no_ai_horse_movement": True,
             "clean_clone": True,

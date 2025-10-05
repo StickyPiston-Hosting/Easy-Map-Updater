@@ -32,6 +32,7 @@ from lib.data_pack_files.command_helpers import sign_merge_handler
 from lib.data_pack_files.command_helpers import safe_nbt_interpret
 from lib.data_pack_files.command_helpers import teleport_dismount
 from lib.data_pack_files.command_helpers import custom_model_data_store
+from lib.data_pack_files.command_helpers import world_border_dimensions
 from lib.data_pack_files.restore_behavior import firework_damage_canceler
 from lib.data_pack_files.restore_behavior import effect_overflow
 from lib.data_pack_files.restore_behavior import spawn_chunks_simulator
@@ -501,6 +502,13 @@ def fix_helper_edge_case(argument_list: list[str], old_argument_list: list[str],
                     if argument_list[2] == "all":
                         return spawn_chunks_simulator.remove_all_forceloaded_chunks(argument_list, is_macro)
                     return spawn_chunks_simulator.remove_forceloaded_chunks(argument_list, is_macro)
+                
+        # Fix world borders existing in all dimensions in 1.21.9
+        if (option_manager.FIXES["command_helper"]["world_border_dimensions"]):
+            if (len(argument_list) > 1 and argument_list[0] == "worldborder"):
+                if argument_list[1] == "get":
+                    return "execute in minecraft:overworld run " + " ".join(argument_list)
+                return world_border_dimensions.handle_world_border_commands(argument_list, is_macro)
     
     # Fix pre-1.21.5 bugs
     if pack_version <= 2104:
