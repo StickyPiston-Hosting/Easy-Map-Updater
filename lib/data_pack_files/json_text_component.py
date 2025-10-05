@@ -268,6 +268,8 @@ def update_compound(component: str | dict, issues: list[dict[str, str | int]]) -
             ("keybind", "keybind"),
             ("nbt", "nbt"),
             ("atlas", "object"),
+            ("object", "object"),
+            ("player", "object"),
             ("sprite", "object"),
         ]:
             if key_pair[0] in component:
