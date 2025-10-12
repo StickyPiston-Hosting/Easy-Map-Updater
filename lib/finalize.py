@@ -470,6 +470,9 @@ def log_data_packs(world: Path):
 
     # Open file
     file_path = world / "level.dat"
+    if not file_path.exists():
+        log("ERROR: level.dat does not exist!")
+        return
     file = NBT.NBTFile(file_path)
 
     # Create NBT paths if they don't exist
