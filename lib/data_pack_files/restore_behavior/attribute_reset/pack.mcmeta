@@ -1,6 +1,6 @@
 {
     "pack": {
-        "pack_format": 71,
+        "pack_format": 88,
         "description": "Resets attributes when you die and removes effects when you beat the game for pre-1.21 maps."
     }
 }

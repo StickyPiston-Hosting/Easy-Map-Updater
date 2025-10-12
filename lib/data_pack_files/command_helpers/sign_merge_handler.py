@@ -7,7 +7,6 @@
 
 from lib.data_pack_files import command_helper
 from lib.data_pack_files import nbt_tags
-from lib import utils
 
 
 
@@ -18,7 +17,7 @@ def handle_merge(command: list[str], is_macro: bool, block_nbt: dict, old_block_
     for key, i in {"Text1": 0, "Text2": 1, "Text3": 2, "Text4": 3}.items():
         if key not in old_block_nbt:
             continue
-        new_commands.append(f'data modify block {" ".join(command[3:6])} front_text.messages[{i}] set value {utils.pack_string(block_nbt["front_text"]["messages"][i])}')
+        new_commands.append(f'data modify block {" ".join(command[3:6])} front_text.messages[{i}] set value {block_nbt["front_text"]["messages"][i]}')
     del block_nbt["front_text"]
     if block_nbt:
         new_commands.append(f'{" ".join(command[:6])} {nbt_tags.pack(block_nbt)}')

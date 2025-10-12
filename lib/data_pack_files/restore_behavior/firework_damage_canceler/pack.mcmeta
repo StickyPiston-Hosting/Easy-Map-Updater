@@ -1,6 +1,6 @@
 {
     "pack": {
-        "pack_format": 71,
+        "pack_format": 88,
         "description": "Simulates old behavior of fireworks to not damage players."
     }
 }

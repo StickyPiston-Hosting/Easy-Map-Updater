@@ -20,11 +20,10 @@ def handle_interpret(command: list[str], is_macro: bool, issues: list[dict[str, 
         nbt_object = issue["object"]
         nbt_path = issue["path"]
         commands.append(
-            f'data modify storage help:data safe_nbt_interpret.v{index} set value "null"\n'
+            f'data modify storage help:data safe_nbt_interpret.v{index} set value "__EMU_NULL__"\n'
             f'data modify storage help:data safe_nbt_interpret.v{index} set from {nbt_source} {nbt_object} {nbt_path}\n'
-            f'execute if data storage help:data {{safe_nbt_interpret:{{v{index}:"null"}}}} run data modify storage help:data safe_nbt_interpret.v{index} set value \'{{"type":"text","text":""}}\'\n'
-            f'execute if data storage help:data {{safe_nbt_interpret:{{v{index}:[]}}}} run data modify storage help:data safe_nbt_interpret.v{index} set value \'{{"type":"text","text":""}}\'\n'
-            f'execute if data storage help:data {{safe_nbt_interpret:{{v{index}:"[]"}}}} run data modify storage help:data safe_nbt_interpret.v{index} set value \'{{"type":"text","text":""}}\'\n'
+            f'execute if data storage help:data {{safe_nbt_interpret:{{v{index}:"__EMU_NULL__"}}}} run data modify storage help:data safe_nbt_interpret.v{index} set value {{type:"text",text:""}}\n'
+            f'execute if data storage help:data {{safe_nbt_interpret:{{v{index}:[]}}}} run data modify storage help:data safe_nbt_interpret.v{index} set value {{type:"text",text:""}}\n'
         )
 
     return command_helper.create_function(

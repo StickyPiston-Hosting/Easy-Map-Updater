@@ -1,6 +1,6 @@
 {
     "pack": {
-        "pack_format": 71,
+        "pack_format": 88,
         "description": "Forceloads a chunk far away containing hoards of illegal blocks."
     }
 }
