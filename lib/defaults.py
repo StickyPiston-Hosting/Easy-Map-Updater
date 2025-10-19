@@ -7,10 +7,10 @@
 
 DISCORD_INVITE = "https://discord.gg/nrqhv6PcqQ"
 
-PACK_VERSION = 2109
+PACK_VERSION = 2110
 DATA_PACK_FORMAT = 88
 RESOURCE_PACK_FORMAT = 69
-DATA_VERSION = 4550
+DATA_VERSION = 4556
 DEBUG_MODE = False
 SEND_WARNINGS = True
 TEXT_FILE_FORMATS = [".txt", ".json", ".mcmeta", ".fsh", ".vsh", ".glsl"]
@@ -74,5 +74,6 @@ DATA_VERSIONS = {
     4435: 2106,
     4438: 2107,
     4440: 2108,
-    1000000000: 2109,
+    4550: 2109,
+    1000000000: 2110,
 }
