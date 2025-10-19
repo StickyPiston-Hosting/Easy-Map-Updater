@@ -38,7 +38,8 @@ def create_pack(world: Path, spawner_position_list: list[str]):
         json.dumps(
             {
             	"pack": {
-            		"pack_format": PACK_FORMAT,
+            		"min_format": PACK_FORMAT,
+            		"max_format": PACK_FORMAT,
             		"description": "Teleports freshly-spawned mobs to their encoded positions."
             	}
             },

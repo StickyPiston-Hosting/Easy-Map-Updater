@@ -152,17 +152,10 @@ def update_pack_mcmeta(pack: Path, source_pack: Path):
             max_format = max(max_format, contents["pack"]["supported_formats"])
         del contents["pack"]["supported_formats"]
 
-    if max_format == min_format:
-        contents["pack"]["pack_format"] = max_format
-        if "min_format" in contents["pack"]:
-            del contents["pack"]["min_format"]
-        if "max_format" in contents["pack"]:
-            del contents["pack"]["max_format"]
-    else:
-        contents["pack"]["min_format"] = min_format
-        contents["pack"]["max_format"] = max_format
-        if "pack_format" in contents["pack"]:
-            del contents["pack"]["pack_format"]
+    contents["pack"]["min_format"] = min_format
+    contents["pack"]["max_format"] = max_format
+    if "pack_format" in contents["pack"]:
+        del contents["pack"]["pack_format"]
 
     # Update filters
     if "filter" in contents:
@@ -417,7 +410,8 @@ def extract_stored_functions(world: Path, get_confirmation: bool):
         json.dumps(
             {
             	"pack": {
-            		"pack_format": PACK_FORMAT,
+            		"min_format": PACK_FORMAT,
+            		"max_format": PACK_FORMAT,
             		"description": "Stores functions which were originally stored in 1.12 worlds."
             	}
             },
@@ -488,7 +482,8 @@ def extract_stored_advancements(world: Path, get_confirmation: bool):
         json.dumps(
             {
             	"pack": {
-            		"pack_format": PACK_FORMAT,
+            		"min_format": PACK_FORMAT,
+            		"max_format": PACK_FORMAT,
             		"description": "Stores advancements which were originally stored in 1.12 worlds."
             	}
             },
@@ -609,7 +604,8 @@ def fix_disabled_vanilla(world: Path):
         json.dumps(
             {
             	"pack": {
-            		"pack_format": PACK_FORMAT,
+            		"min_format": PACK_FORMAT,
+            		"max_format": PACK_FORMAT,
             		"description": "Disables various vanilla features so that the critical ones can be enabled."
             	},
             	"filter": {

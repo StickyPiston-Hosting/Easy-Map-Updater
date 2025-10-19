@@ -71,7 +71,8 @@ def create_data_pack(world: Path, data_pack_path: Path):
         json.dumps(
             {
         	    "pack": {
-        	    	"pack_format": PACK_FORMAT,
+        	    	"min_format": PACK_FORMAT,
+        	    	"max_format": PACK_FORMAT,
         	    	"description": "Adds scoreboard objectives to handle block and item IDs splitting."
         	    }
             },

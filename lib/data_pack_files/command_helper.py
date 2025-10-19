@@ -114,7 +114,8 @@ def prepare_helper_data_pack() -> Path | None:
         json.dumps(
             {
             	"pack": {
-            		"pack_format": PACK_FORMAT,
+            		"min_format": PACK_FORMAT,
+            		"max_format": PACK_FORMAT,
             		"description": "Adds functions which are useful for emulating old command behavior."
             	}
             },

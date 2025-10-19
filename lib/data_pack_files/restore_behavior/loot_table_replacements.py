@@ -43,7 +43,8 @@ def create_pack(world: Path):
         json.dumps(
             {
             	"pack": {
-            		"pack_format": PACK_FORMAT,
+            		"min_format": PACK_FORMAT,
+            		"max_format": PACK_FORMAT,
             		"description": "Adds loot tables which were removed from the game."
             	}
             },

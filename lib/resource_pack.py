@@ -108,17 +108,10 @@ def update_pack_mcmeta(og_pack: Path, pack: Path):
             max_format = max(max_format, contents["pack"]["supported_formats"])
         del contents["pack"]["supported_formats"]
 
-    if max_format == min_format:
-        contents["pack"]["pack_format"] = max_format
-        if "min_format" in contents["pack"]:
-            del contents["pack"]["min_format"]
-        if "max_format" in contents["pack"]:
-            del contents["pack"]["max_format"]
-    else:
-        contents["pack"]["min_format"] = min_format
-        contents["pack"]["max_format"] = max_format
-        if "pack_format" in contents["pack"]:
-            del contents["pack"]["pack_format"]
+    contents["pack"]["min_format"] = min_format
+    contents["pack"]["max_format"] = max_format
+    if "pack_format" in contents["pack"]:
+        del contents["pack"]["pack_format"]
 
     utils.safe_file_write(pack / "pack.mcmeta", json.dumps(contents, indent=4))
 
