@@ -106,6 +106,17 @@ def process_model(model_path: Path, namespace: str, model_type_folder: Path):
     if "parent" in model_json and miscellaneous.namespace(model_json["parent"]).startswith("minecraft:builtin"):
         builtin_models.append(namespaced_id)
 
+    # Handle spawn eggs changing
+    if "parent" in model_json and miscellaneous.namespace(model_json["parent"]) == "minecraft:item/template_spawn_egg":
+        model_json["parent"] = "minecraft:item/generated"
+        if "textures" not in model_json:
+            model_json["textures"] = {}
+        if namespaced_id in model_tables.SPAWN_EGGS:
+            model_json["textures"]["layer0"] = namespaced_id
+        else:
+            model_json["textures"]["layer0"] = "minecraft:item/pig_spawn_egg"
+        modified = True
+
     if modified:
         utils.safe_file_write(model_path, json.dumps(model_json))
 
@@ -630,7 +641,7 @@ def get_base_model_definition(namespaced_id: str, model_id: str) -> dict:
     if namespaced_id in model_tables.TINT_DATA:
         return {
             "type": "minecraft:model",
-            "model": "minecraft:item/template_spawn_egg" if namespaced_id.endswith("_spawn_egg") else model_id,
+            "model": model_id,
             "tints": model_tables.TINT_DATA[namespaced_id]
         }
 
