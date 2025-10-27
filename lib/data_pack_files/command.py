@@ -516,6 +516,16 @@ def fix_helper_edge_case(argument_list: list[str], old_argument_list: list[str],
                         return spawn_chunks_simulator.remove_all_forceloaded_chunks(argument_list, is_macro)
                     return spawn_chunks_simulator.remove_forceloaded_chunks(argument_list, is_macro)
                 
+        else:
+            if (
+                len(argument_list) >= 3 and
+                argument_list[0] == "gamerule" and
+                argument_list[1] == "spawnChunkRadius"
+            ):
+                log(f'WARNING: Gamerule "spawnChunkRadius" is modified, but the feature "restore_spawn_chunks" is disabled: {" ".join(argument_list)}')
+                argument_list[0] = "#gamerule"
+                return " ".join(argument_list)
+                
         # Fix world borders existing in all dimensions in 1.21.9
         if (option_manager.FIXES["command_helper"]["world_border_dimensions"]):
             if (len(argument_list) > 1 and argument_list[0] == "worldborder"):
