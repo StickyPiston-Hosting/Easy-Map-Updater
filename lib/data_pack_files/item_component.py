@@ -201,6 +201,7 @@ from lib.data_pack_files import json_text_component
 from lib.data_pack_files import arguments
 from lib.data_pack_files import miscellaneous
 from lib.data_pack_files import ids
+from lib.data_pack_files import entities
 
 
 
@@ -423,6 +424,18 @@ def conform_component(component: ItemComponent, version: int):
                     attribute_modifier["display"]["value"] = json_text_component.update(attribute_modifier["display"]["value"], version, [], {"mangled": False, "pack": False})
         component.value = attribute_modifiers
 
+    if component.key == "minecraft:bees":
+        for bee in component.value:
+            if "entity_data" in bee:
+                bee["entity_data"] = nbt_tags.direct_update(bee["entity_data"], version, [], "entity", bee["entity_data"]["id"] if "id" in bee["entity_data"] else "", False)
+
+    if component.key == "minecraft:block_entity_data":
+        component.value = nbt_tags.direct_update(component.value, version, [], "block", component.value["id"] if "id" in component.value else "", False)
+
+    if component.key == "minecraft:bundle_contents":
+        for i in range(len(component.value)):
+            component.value[i] = nbt_tags.direct_update(component.value[i], version, [], "item", component.value[i]["id"] if "id" in component.value else "", False)
+
     if component.key == "minecraft:can_break":
         can_break: dict[str, Any] | nbt_tags.TypeList = component.value
         if isinstance(can_break, dict) and "predicates" in can_break:
@@ -463,6 +476,10 @@ def conform_component(component: ItemComponent, version: int):
             can_place_on = can_place_on[0]
         component.value = can_place_on
 
+    if component.key == "minecraft:charged_projectiles":
+        for i in range(len(component.value)):
+            component.value[i] = nbt_tags.direct_update(component.value[i], version, [], "item", component.value[i]["id"] if "id" in component.value else "", False)
+
     if component.key == "minecraft:consumable":
         consumable: dict[str, Any] = component.value
         if "on_consume_effects" in consumable:
@@ -495,6 +512,20 @@ def conform_component(component: ItemComponent, version: int):
     if component.key == "minecraft:custom_name":
         component.value = json_text_component.update(component.value, version, [], {"mangled": True, "pack": False})
 
+    if component.key == "minecraft:death_protection":
+        if "death_effects" in component.value:
+            for death_effect in component.value["death_effects"]:
+                if "effects" in death_effect:
+                    if isinstance(death_effect["effects"], nbt_tags.TypeList):
+                        for i in range(len(death_effect["effects"])):
+                            if isinstance(death_effect["effects"][i], dict):
+                                if "id" in death_effect["effects"][i]:
+                                    death_effect["effects"][i]["id"] = ids.effect(death_effect["effects"][i]["id"], version, [])
+                            else:
+                                death_effect["effects"][i] = ids.effect(death_effect["effects"][i], version, [])
+                    else:
+                        death_effect["effects"] = ids.effect(death_effect["effects"], version, [])
+
     if component.key == "minecraft:debug_stick_state":
         debug_stick_state: dict[str, str] = component.value
         for block in list(debug_stick_state.keys()):
@@ -522,10 +553,19 @@ def conform_component(component: ItemComponent, version: int):
             enchantments[updated_enchantment] = nbt_tags.TypeInt(min(max(enchantments[updated_enchantment].value, 0), 255))
         component.value = enchantments
 
+    if component.key == "minecraft:entity_data":
+        component.value = nbt_tags.direct_update(component.value, version, [], "entity", component.value["id"] if "id" in component.value else "", False)
+
     if component.key == "minecraft:equippable":
         if "model" in component.value:
             component.value["asset_id"] = component.value["model"]
             del component.value["model"]
+        if "allowed_entities" in component.value:
+            if isinstance(component.value["allowed_entities"], nbt_tags.TypeList):
+                for i in range(len(component.value["allowed_entities"])):
+                    component.value["allowed_entities"][i] = entities.update(component.value["allowed_entities"][i], version, [])
+            else:
+                component.value["allowed_entities"] = entities.update(component.value["allowed_entities"], version, [])
 
     if component.key == "minecraft:fire_resistant":
         component.key = "minecraft:damage_resistant"
@@ -549,16 +589,22 @@ def conform_component(component: ItemComponent, version: int):
         component.value = painting_variant
 
     if component.key == "minecraft:potion_contents":
-        potion_contents = component.value
-        if not isinstance(potion_contents, dict):
-            potion_contents = {"potion": potion_contents}
-        component.value = potion_contents
+        if not isinstance(component.value, dict):
+            component.value = {"potion": component.value}
+        if "custom_effects" in component.value:
+            for custom_effect in component.value["custom_effects"]:
+                if "id" in custom_effect:
+                    custom_effect["id"] = ids.effect(custom_effect["id"], version, [])
 
     if component.key == "minecraft:profile":
         profile = component.value
         if not isinstance(profile, dict):
             profile = {"name": profile}
         component.value = profile
+
+    if component.key == "minecraft:recipes":
+        for i in range(len(component.value)):
+            component.value[i] = items.update_from_command(component.value[i], version, [])
 
     if component.key == "minecraft:repairable":
         repairable: dict[str, str | nbt_tags.TypeList] = component.value
@@ -582,8 +628,23 @@ def conform_component(component: ItemComponent, version: int):
             stored_enchantments[updated_enchantment] = nbt_tags.TypeInt(min(max(stored_enchantments[updated_enchantment].value, 0), 255))
         component.value = stored_enchantments
 
+    if component.key == "minecraft:suspicious_stew_effects":
+        for suspicious_stew_effect in component.value:
+            if "id" in suspicious_stew_effect:
+                suspicious_stew_effect["id"] = ids.effect(suspicious_stew_effect["id"], version, [])
+
+    if component.key == "minecraft:tool":
+        if "rules" in component.value:
+            for rule in component.value["rules"]:
+                if "blocks" in rule:
+                    if isinstance(rule["blocks"], nbt_tags.TypeList):
+                        for i in range(len(rule["blocks"])):
+                            rule["blocks"][i] = blocks.update_from_command(rule["blocks"], version, [])
+                    else:
+                        rule["blocks"] = blocks.update_from_command(rule["blocks"], version, [])
+
     if component.key == "minecraft:use_remainder":
-        component.value = items.update_from_nbt(component.value, version, [])
+        component.value = items.update_from_nbt(cast(items.ItemInputFromNBT, component.value), version, [])
 
     if component.key == "minecraft:weapon":
         weapon = component.value
