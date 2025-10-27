@@ -228,6 +228,12 @@ def update_namespaces(pack: Path, source_pack: Path):
         if source_folder.exists():
             update_tags(folder, source_folder, "item")
 
+        # Update entity tags
+        folder = pack / "data" / namespace.name / "tags" / "entity_type"
+        source_folder = namespace / "tags" / "entity_type"
+        if source_folder.exists():
+            update_tags(folder, source_folder, "entity")
+
         # Update structures
         folder = pack / "data" / namespace.name / "structure"
         source_folder = namespace / "structure"

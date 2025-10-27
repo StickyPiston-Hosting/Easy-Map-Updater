@@ -35,7 +35,6 @@ def update(file_path: Path, source_file_path: Path, version: int, tag_type: str)
     if "values" not in contents or not isinstance(contents["values"], list):
         return
     
-    modified = False
     for i in range(len(contents["values"])):
         entry: str = contents["values"][i] if isinstance(contents["values"][i], str) else contents["values"][i]["id"]
         new_entry = entry
@@ -71,7 +70,5 @@ def update(file_path: Path, source_file_path: Path, version: int, tag_type: str)
                 contents["values"][i] = new_entry
             else:
                 contents["values"][i]["id"] = new_entry
-            modified = True
 
-    if modified:
-        utils.safe_file_write(file_path, json.dumps(contents, indent=4))
+    utils.safe_file_write(file_path, json.dumps(contents, indent=4))
