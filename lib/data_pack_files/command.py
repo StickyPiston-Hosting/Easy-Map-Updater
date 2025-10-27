@@ -462,6 +462,19 @@ def fix_helper_edge_case(argument_list: list[str], old_argument_list: list[str],
         if send_warning:
             log(f"WARNING: You're summoning a text display with no text: {" ".join(old_argument_list)}")
 
+    # Fix spawnpoint commands not having a pitch
+    if (
+        len(argument_list) == 6 and
+        argument_list[0] == "spawnpoint"
+    ):
+        argument_list.append("0")
+
+    if (
+        len(argument_list) == 5 and
+        argument_list[0] == "setworldspawn"
+    ):
+        argument_list.append("0")
+
     # Fix comparator block updates (FIND VERSION WHERE IT IS NECESSARY)
     if (
         option_manager.FIXES["command_helper"]["mitigate_block_update"] and
