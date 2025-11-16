@@ -184,6 +184,28 @@ def color(index: int) -> str:
 def coordinate(coord: str, version: int, issues: list[dict[str, str | int]]) -> str:
     return coord.replace("+", "")
 
+def offset_coordinate(coord: str, offset: int) -> str:
+    if offset == 0:
+        return coord
+    if utils.is_num(coord):
+        numeric_coord = float(coord) + offset
+        if numeric_coord % 1 == 0:
+            numeric_coord = int(numeric_coord)
+        return str(numeric_coord)
+    return coord
+
+def coordinate_x(coord: str, version: int, issues: list[dict[str, str | int]]) -> str:
+    coord = coordinate(coord, version, issues)
+    return offset_coordinate(coord, 0)
+
+def coordinate_y(coord: str, version: int, issues: list[dict[str, str | int]]) -> str:
+    coord = coordinate(coord, version, issues)
+    return offset_coordinate(coord, 0)
+
+def coordinate_z(coord: str, version: int, issues: list[dict[str, str | int]]) -> str:
+    coord = coordinate(coord, version, issues)
+    return offset_coordinate(coord, 0)
+
 def coord_map_to_array(coordinates: dict[str, nbt_tags.TypeInt], version: int, issues: list[dict[str, str | int]]) -> nbt_tags.TypeIntArray:
     new_coordinates = {
         "X": nbt_tags.TypeInt(0),
