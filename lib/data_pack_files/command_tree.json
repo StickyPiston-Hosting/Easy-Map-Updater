@@ -696,6 +696,10 @@
                                 "mapping": ["carry", "carry", "carry", "target_selector", "carry", "command"],
                                 "legend": [0, 1, 2, 3, "run", {"argument": {"min": 4}, "execute": true}]
                             },
+                            "function": {
+                                "mapping": ["carry", "carry", "carry", "function", "carry", "command"],
+                                "legend": [0, 1, 2, 3, "run", {"argument": {"min": 4}, "execute": true}]
+                            },
                             "items": {
                                 "index": 3,
                                 "branches": {
