@@ -250,6 +250,15 @@ def update(particle: str | dict[str, str], version: int, issues: list[dict[str, 
     if particle_data["type"] == "minecraft:trail" and "duration" not in particle_data:
         particle_data["duration"] = nbt_tags.TypeInt(30)
 
+    # Add color to flash
+    if particle_data["type"] == "minecraft:flash" and "color" not in particle_data:
+        particle_data["color"] = nbt_tags.TypeList([
+            nbt_tags.TypeInt(1),
+            nbt_tags.TypeInt(1),
+            nbt_tags.TypeInt(1),
+            nbt_tags.TypeInt(1),
+        ])
+
 
 
     return particle_data
@@ -284,6 +293,22 @@ def update_particle_nbt(particle: dict[str, Any], version: int, issues: list[dic
 
     if "item" in particle:
         particle["item"] = items.update_from_nbt(particle["item"], version, [])
+
+
+    # Add duration to trail
+    if particle_type == "minecraft:trail" and "duration" not in particle:
+        particle["duration"] = nbt_tags.TypeInt(30)
+
+    # Add color to flash
+    if particle_type == "minecraft:flash" and "color" not in particle:
+        particle["color"] = nbt_tags.TypeList([
+            nbt_tags.TypeInt(1),
+            nbt_tags.TypeInt(1),
+            nbt_tags.TypeInt(1),
+            nbt_tags.TypeInt(1),
+        ])
+
+
 
     return particle
 
