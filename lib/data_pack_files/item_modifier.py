@@ -77,7 +77,10 @@ def item_modifier(contents: dict[str, Any] | list, version: int, object_id: str 
                 output.pop(i)
 
             if entry["function"] == "minecraft:set_components" and "minecraft:custom_data" in entry["components"]:
-                custom_data_array.append(nbt_tags.convert_from_json(entry["components"]["minecraft:custom_data"]))
+                if isinstance(entry["components"]["minecraft:custom_data"], str):
+                    custom_data_array.append(nbt_tags.unpack(entry["components"]["minecraft:custom_data"]))
+                else:
+                    custom_data_array.append(nbt_tags.convert_from_json(entry["components"]["minecraft:custom_data"]))
                 del entry["components"]["minecraft:custom_data"]
 
         custom_data = {}
