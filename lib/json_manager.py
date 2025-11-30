@@ -115,8 +115,9 @@ def unpack_compound(string: str) -> dict:
     for tag in arguments.parse_with_quotes(string.strip()[1:], ",", False):
         if ":" not in tag:
             continue
-        name = utils.unpack_string(tag[:tag.find(":")].strip())
-        value = tag[tag.find(":") + 1:].strip()
+        parts = arguments.parse_with_quotes(tag, ":", False)
+        name = utils.unpack_string(parts[0].strip())
+        value = ":".join(parts[1:]).strip()
         compound[name] = unpack(value)
 
     return compound
