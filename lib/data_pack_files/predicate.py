@@ -227,6 +227,10 @@ def predicate_entity(contents: dict, version: int) -> dict:
     if "vehicle" in contents:
         contents["vehicle"] = predicate_entity(contents["vehicle"], version)
 
+    if "slots" in contents:
+        for key in contents["slots"]:
+            contents["slots"][key] = predicate_item(contents["slots"][key], version)
+
     # Apply namespace to entity types
     if "type" in contents:
         if isinstance(contents["type"], str):
