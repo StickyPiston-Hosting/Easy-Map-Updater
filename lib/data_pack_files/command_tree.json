@@ -1974,7 +1974,7 @@
             "index": 1,
             "branches": {
                 "add": {
-                    "mapping": ["carry", "carry", "world_border_diameter", "carry"]
+                    "mapping": ["carry", "carry", "world_border_diameter", "world_border_time"]
                 },
                 "center": {
                     "mapping": ["carry", "carry", "world_border_coordinate", "world_border_coordinate"]
@@ -1987,7 +1987,7 @@
                 },
                 "set": "add",
                 "warning": {
-                    "mapping": ["carry", "carry", "carry", "carry"]
+                    "mapping": ["carry", "carry", "carry", "world_border_time"]
                 }
             }
         },

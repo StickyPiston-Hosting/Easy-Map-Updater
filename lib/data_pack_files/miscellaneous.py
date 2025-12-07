@@ -559,6 +559,11 @@ def world_border_diameter(diameter: str, version: int, issues: list[dict[str, st
         log("WARNING: World border diameter clamped, check if it is used in a time manager")
     return str(new_diameter)
 
+def world_border_time(time: str, version: int, issues: list[dict[str, str | int]]) -> str:
+    if version <= 2110 and time.isnumeric():
+        return str(int(time)*20)
+    return time
+
 def yaw(argument: dict[str, str], version: int, issues: list[dict[str, str | int]]) -> str:
     yaw_str = argument["yaw"]
     if "pitch" in argument:

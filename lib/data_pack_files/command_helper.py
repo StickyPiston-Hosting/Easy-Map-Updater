@@ -140,7 +140,23 @@ def prepare_helper_data_pack() -> Path | None:
     file_path.parent.mkdir(exist_ok=True, parents=True)
     utils.safe_file_write(file_path,
         "# Create scoreboard objectives\n\n"
-        "scoreboard objectives add help.value dummy"
+        "scoreboard objectives add help.value dummy\n\n\n\n"
+        "# Set constants\n\n"
+        "scoreboard players set #50 help.value 50\n"
+        "scoreboard players set #1000 help.value 1000\n\n\n\n"
+        "# Initialize world border stopwatch\n\n"
+        "stopwatch create help:overworld_border\n"
+        "stopwatch create help:the_nether_border\n"
+        "stopwatch create help:the_end_border\n"
+        "execute unless score #overworld_border_before help.value = #overworld_border_before help.value in minecraft:overworld store result score #overworld_border_before help.value run worldborder get\n"
+        "execute unless score #overworld_border_after help.value = #overworld_border_after help.value in minecraft:overworld store result score #overworld_border_after help.value run worldborder get\n"
+        "execute unless score #overworld_border_duration help.value = #overworld_border_duration help.value run scoreboard players set #overworld_border_duration help.value 0\n"
+        "execute unless score #the_nether_border_before help.value = #the_nether_border_before help.value in minecraft:the_nether store result score #the_nether_border_before help.value run worldborder get\n"
+        "execute unless score #the_nether_border_after help.value = #the_nether_border_after help.value in minecraft:the_nether store result score #the_nether_border_after help.value run worldborder get\n"
+        "execute unless score #the_nether_border_duration help.value = #the_nether_border_duration help.value run scoreboard players set #the_nether_border_duration help.value 0\n"
+        "execute unless score #the_end_border_before help.value = #the_end_border_before help.value in minecraft:the_end store result score #the_end_border_before help.value run worldborder get\n"
+        "execute unless score #the_end_border_after help.value = #the_end_border_after help.value in minecraft:the_end store result score #the_end_border_after help.value run worldborder get\n"
+        "execute unless score #the_end_border_duration help.value = #the_end_border_duration help.value run scoreboard players set #the_end_border_duration help.value 0\n"
     )
 
     # Prepare tick function

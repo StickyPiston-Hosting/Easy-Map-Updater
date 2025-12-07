@@ -33,6 +33,7 @@ from lib.data_pack_files.command_helpers import safe_nbt_interpret
 from lib.data_pack_files.command_helpers import teleport_dismount
 from lib.data_pack_files.command_helpers import custom_model_data_store
 from lib.data_pack_files.command_helpers import world_border_dimensions
+from lib.data_pack_files.command_helpers import world_border_stopwatch
 from lib.data_pack_files.restore_behavior import firework_damage_canceler
 from lib.data_pack_files.restore_behavior import effect_overflow
 from lib.data_pack_files.restore_behavior import spawn_chunks_simulator
@@ -485,6 +486,20 @@ def fix_helper_edge_case(argument_list: list[str], old_argument_list: list[str],
     ):
         return block_update_mitigator.handle_comparator_setblock(argument_list, is_macro)
     
+    # Fix pre-1.21.11 bugs
+    if pack_version <= 2110:
+        # Fix world border timers getting replaced with stopwatches in 1.21.11
+        if (option_manager.FIXES["command_helper"]["world_border_stopwatch"]):
+            if len(argument_list) >= 2 and argument_list[0] == "worldborder":
+                if argument_list[1] == "add":
+                    return world_border_stopwatch.handle_world_border_add(argument_list, is_macro, pack_version)
+
+                if argument_list[1] == "set":
+                    return world_border_stopwatch.handle_world_border_set(argument_list, is_macro, pack_version)
+
+                if argument_list[1] == "get":
+                    return world_border_stopwatch.handle_world_border_get(argument_list, is_macro, pack_version)
+
     # Fix pre-1.21.9 bugs
     if pack_version <= 2108:
         # Fix spawn chunks being removed in 1.21.9
@@ -909,5 +924,6 @@ ARGUMENT_FUNCTIONS: dict[str, tuple] = {
     "uuid_from_string": ( miscellaneous.uuid_from_string, None ),
     "world_border_coordinate": ( miscellaneous.world_border_coordinate, None ),
     "world_border_diameter": ( miscellaneous.world_border_diameter, None ),
+    "world_border_time": (  miscellaneous.world_border_time, None ),
     "yaw": ( miscellaneous.yaw, None )
 }
