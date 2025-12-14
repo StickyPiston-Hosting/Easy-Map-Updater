@@ -733,6 +733,10 @@
                                     "mapping": ["carry", "carry", "carry", "target_selector", "carry", "carry", "target_selector", "carry", "carry", "command"],
                                     "legend": [0, 1, 2, 3, 4, 5, 6, 7, "run", {"argument": {"min": 8}, "execute": true}]
                                 }
+                            },
+                            "stopwatch": {
+                                "mapping": ["carry", "carry", "carry", "carry", "carry", "carry", "command"],
+                                "legend": [0, 1, 2, 3, 4, "run", {"argument": {"min": 5}, "execute": true}]
                             }
                         }
                     },
