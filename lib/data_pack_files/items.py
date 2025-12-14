@@ -409,6 +409,13 @@ def update_item_id(item_id: str | nbt_tags.TypeNumeric, components: item_compone
         if item_id in id_array:
             item_id = id_array[item_id]
 
+    if pack_version <= 2110 or post_fixes:
+        id_array = {
+            "#minecraft:enchantable/sword": "#minecraft:enchantable/sweeping"
+        }
+        if item_id in id_array:
+            item_id = id_array[item_id]
+
     return item_id
 
 def extract_riding_id(nbt: dict) -> str:
