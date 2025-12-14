@@ -1694,6 +1694,23 @@
         "stopsound": {
             "mapping": ["carry", "target_selector", "carry", "sound_event"]
         },
+        "stopwatch": {
+            "index": 1,
+            "branches": {
+                "create": {
+                    "mapping": ["carry", "carry", "carry"]
+                },
+                "query": {
+                    "mapping": ["carry", "carry", "carry", "carry"]
+                },
+                "restart": {
+                    "mapping": ["carry", "carry", "carry"]
+                },
+                "remove": {
+                    "mapping": ["carry", "carry", "carry"]
+                }
+            }
+        },
         "summon": {
             "mapping": ["carry", "entity", "coordinate_x", "coordinate_y", "coordinate_z", "entity_nbt"],
             "legend": [0, {"id": 1, "nbt": 5}, 2, 3, 4, {"nbt": 5, "object_id": 1}]
