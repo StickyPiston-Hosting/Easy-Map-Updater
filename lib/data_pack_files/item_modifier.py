@@ -187,7 +187,12 @@ def item_modifier(contents: dict[str, Any] | list, version: int, object_id: str 
         if "item_filter" in contents:
             contents["item_filter"] = predicate.predicate(contents["item_filter"], version)
         if "modifier" in contents:
-            contents["modifier"] = item_modifier(contents["modifier"], version, object_id)
+            contents["on_pass"] = contents["modifier"]
+            del contents["modifier"]
+        if "on_pass" in contents:
+            contents["on_pass"] = item_modifier(contents["on_pass"], version, object_id)
+        if "on_fail" in contents:
+            contents["on_fail"] = item_modifier(contents["on_fail"], version, object_id)
 
     if function_id == "minecraft:limit_count":
         limit = contents["limit"]
