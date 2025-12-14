@@ -361,7 +361,7 @@
                             {"path": "./sprites/hud/effect_background_ambient.png", "slice": [165, 166, 24, 24, 256, 256]},
                             {"path": "./sprites/hud/effect_background.png", "slice": [141, 166, 24, 24, 256, 256]},
                             {"path": "./sprites/container/inventory/effect_background_large.png", "slice": [0, 166, 120, 32, 256, 256]},
-                            {"path": "./sprites/container/inventory/effect_background_small.png", "slice": [0, 198, 32, 32, 256, 256]},
+                            {"path": "./sprites/container/inventory/effect_background.png", "slice": [0, 198, 32, 32, 256, 256]},
                             {"path": "inventory.png", "clip": [[0, 0, 176, 166, 256, 256]]}
                         ],
                         "loom.png": [
@@ -1130,6 +1130,21 @@
                 },
                 "item": {
                     "chain.json": "iron_chain.json"
+                }
+            }
+        }
+    },
+    "2110": {
+        "minecraft": {
+            "textures": {
+                "gui": {
+                    "sprites": {
+                        "container": {
+                            "inventory": {
+                                "effect_background_small.png": "effect_background.png"
+                            }
+                        }
+                    }
                 }
             }
         }
