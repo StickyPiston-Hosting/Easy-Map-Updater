@@ -438,6 +438,10 @@ def predicate_item(contents: dict, version: int) -> dict:
 
     if "predicates" in contents:
         predicates = contents["predicates"]
+        for key in list(predicates.keys()):
+            if key != miscellaneous.namespace(key):
+                predicates[miscellaneous.namespace(key)] = predicates[key]
+                del predicates[key]
         
         if "minecraft:bundle_contents" in predicates:
             bundle_contents = predicates["minecraft:bundle_contents"]
