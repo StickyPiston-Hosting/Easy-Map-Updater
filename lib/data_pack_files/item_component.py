@@ -482,6 +482,8 @@ def conform_component(component: ItemComponent, version: int):
 
     if component.key == "minecraft:consumable":
         consumable: dict[str, Any] = component.value
+        if version <= 2110 and "animation" in consumable and consumable["animation"] == "spear":
+            consumable["animation"] = "trident"
         if "on_consume_effects" in consumable:
             for on_consume_effect in consumable["on_consume_effects"]:
                 if "type" not in on_consume_effect:
