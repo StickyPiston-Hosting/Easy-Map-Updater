@@ -360,6 +360,20 @@
                     "rename": "active_effects",
                     "list": { "source": "effect" }
                 },
+                "AngerTime": {
+                    "rename": "anger_end_time",
+                    "data_type": "long"
+                },
+                "anger_end_time": {
+                    "data_type": "long"
+                },
+                "AngryAt": {
+                    "rename": "angry_at",
+                    "data_type": "int_array"
+                },
+                "angry_at": {
+                    "data_type": "int_array"
+                },
                 "armor": {
                     "rename": "body_armor_item",
                     "source": "item"
