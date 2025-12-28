@@ -226,21 +226,26 @@ def clean_level_dat(world: Path):
     if "WasModded" in file["Data"]:
         file["Data"]["WasModded"] = NBT.TAG_Byte(0)
 
-    # Set spawn chunk radius gamerule, which was added in 1.20.5
     version: int = option_manager.get_version()
-    if version <= 2004:
-        if "GameRules" in file["Data"]:
-            file["Data"]["GameRules"]["spawnChunkRadius"] = NBT.TAG_String("10")
+
+    # Set spawn chunk radius gamerule, which was added in 1.20.5
+    # This gamerule was removed in 1.21.9
+    # if version <= 2004:
+    #     if "GameRules" in file["Data"]:
+    #         file["Data"]["GameRules"]["spawnChunkRadius"] = NBT.TAG_String("10")
 
     # Set allowFireTicksAwayFromPlayer gamerule, which was added in 1.21.5
-    if version <= 2104:
-        if "GameRules" in file["Data"]:
-            file["Data"]["GameRules"]["allowFireTicksAwayFromPlayer"] = NBT.TAG_String("true")
+    # This gamerule was removed in 1.21.11
+    # if version <= 2104:
+    #     if "GameRules" in file["Data"]:
+    #         file["Data"]["GameRules"]["allowFireTicksAwayFromPlayer"] = NBT.TAG_String("true")
 
     # Set locatorBar gamerule, which was added in 1.21.6
     if version <= 2106:
         if "GameRules" in file["Data"]:
             file["Data"]["GameRules"]["locatorBar"] = NBT.TAG_String("false")
+        if "game_rules" in file["Data"]:
+            file["Data"]["game_rules"]["minecraft:locator_bar"] = NBT.TAG_Byte(0)
 
     # Close file
     file.write_file(file_path)

@@ -34,6 +34,7 @@ from lib.data_pack_files.command_helpers import teleport_dismount
 from lib.data_pack_files.command_helpers import custom_model_data_store
 from lib.data_pack_files.command_helpers import world_border_dimensions
 from lib.data_pack_files.command_helpers import world_border_stopwatch
+from lib.data_pack_files.command_helpers import fire_ticker
 from lib.data_pack_files.restore_behavior import firework_damage_canceler
 from lib.data_pack_files.restore_behavior import effect_overflow
 from lib.data_pack_files.restore_behavior import spawn_chunks_simulator
@@ -499,6 +500,19 @@ def fix_helper_edge_case(argument_list: list[str], old_argument_list: list[str],
 
                 if argument_list[1] == "get":
                     return world_border_stopwatch.handle_world_border_get(argument_list, is_macro, pack_version)
+                
+        # Fix fire tick gamerules getting merged
+        if (option_manager.FIXES["command_helper"]["fire_tick_game_rules"]):
+            if len(argument_list) == 2 and argument_list[0] == "gamerule":
+                if miscellaneous.namespace(argument_list[1]) == "minecraft:doFireTick":
+                    return fire_ticker.handle_do_fire_tick_get(argument_list, is_macro)
+                elif miscellaneous.namespace(argument_list[1]) == "minecraft:allowFireTicksAwayFromPlayer":
+                    return fire_ticker.handle_allow_fire_ticks_get(argument_list, is_macro)
+            elif len(argument_list) > 2 and argument_list[0] == "gamerule":
+                if miscellaneous.namespace(argument_list[1]) == "minecraft:doFireTick":
+                    return fire_ticker.handle_do_fire_tick_set(argument_list, is_macro)
+                elif miscellaneous.namespace(argument_list[1]) == "minecraft:allowFireTicksAwayFromPlayer":
+                    return fire_ticker.handle_allow_fire_ticks_set(argument_list, is_macro)
 
     # Fix pre-1.21.9 bugs
     if pack_version <= 2108:
@@ -510,7 +524,7 @@ def fix_helper_edge_case(argument_list: list[str], old_argument_list: list[str],
             if (
                 len(argument_list) >= 3 and
                 argument_list[0] == "gamerule" and
-                argument_list[1] == "spawnChunkRadius"
+                miscellaneous.namespace(argument_list[1]) == "minecraft:spawnChunkRadius"
             ):
                 return spawn_chunks_simulator.change_spawn_chunks_radius(argument_list, is_macro)
             
@@ -535,7 +549,7 @@ def fix_helper_edge_case(argument_list: list[str], old_argument_list: list[str],
             if (
                 len(argument_list) >= 3 and
                 argument_list[0] == "gamerule" and
-                argument_list[1] == "spawnChunkRadius"
+                miscellaneous.namespace(argument_list[1]) == "minecraft:spawnChunkRadius"
             ):
                 log(f'WARNING: Gamerule "spawnChunkRadius" is modified, but the feature "restore_spawn_chunks" is disabled: {" ".join(argument_list)}')
                 argument_list[0] = "#gamerule"
@@ -886,7 +900,8 @@ ARGUMENT_FUNCTIONS: dict[str, tuple] = {
     "fill_mode": ( miscellaneous.fill_mode, None ),
     "function": ( miscellaneous.function_call, None ),
     "gamemode": ( miscellaneous.gamemode, None ),
-    "gamerule": ( miscellaneous.gamerule, None ),
+    "game_rule": ( ids.game_rule, None ),
+    "game_rule_value": ( miscellaneous.game_rule_value, None ),
     "hangable_facing": ( miscellaneous.hangable_facing, None ),
     "int_coordinate": ( miscellaneous.int_coordinate, None ),
     "item": ( items.update_from_command, None ),

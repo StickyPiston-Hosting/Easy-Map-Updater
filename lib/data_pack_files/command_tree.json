@@ -949,7 +949,8 @@
             "mapping": ["carry", "gamemode", "target_selector"]
         },
         "gamerule": {
-            "mapping": ["carry", "gamerule", "carry"]
+            "mapping": ["carry", "game_rule", "game_rule_value"],
+            "legend": [0, 1, {"game_rule": 1, "value": 2}]
         },
         "give": {
             "mapping": ["carry", "target_selector", "item", "carry"],

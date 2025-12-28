@@ -15,6 +15,7 @@ from lib.data_pack_files import nbt_tags
 from lib.data_pack_files import target_selectors
 from lib.data_pack_files import tables
 from lib.data_pack_files import predicate as predicate_lib
+from lib.data_pack_files import ids
 from lib.data_pack_files.restore_behavior import loot_table_replacements
 from lib import option_manager
 from lib import json_manager
@@ -326,8 +327,17 @@ def gamemode(name: str, version: int, issues: list[dict[str, str | int]]) -> str
         name = id_array[name]
     return name
 
-def gamerule(name: str, version: int, issues: list[dict[str, str | int]]) -> str:
-    return name
+def game_rule_value(value: dict[str, str], version: int, issues: list[dict[str, str | int]]) -> str:
+    game_rule = ids.game_rule(value["game_rule"], version, issues)
+    if version <= 2110 and (
+        game_rule == "minecraft:elytra_movement_check" or
+        game_rule == "minecraft:player_movement_check" or
+        game_rule == "minecraft:raids"
+    ):
+        if value["value"] == "true":
+            return "false"
+        return "true"
+    return value["value"]
 
 def hangable_facing(direction: nbt_tags.TypeInt, version: int, issues: list[dict[str, str | int]]) -> nbt_tags.TypeInt:
     if version <= 1202:

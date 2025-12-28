@@ -99,6 +99,8 @@ def create_painting_variant(contents: str) -> str:
 
 
 def prepare_helper_data_pack() -> Path | None:
+    version: int = option_manager.get_version()
+
     # Prepare data pack path
     world = data_pack_path = MINECRAFT_PATH / "saves" / option_manager.get_map_name()
     if not world.exists():
@@ -141,9 +143,11 @@ def prepare_helper_data_pack() -> Path | None:
     utils.safe_file_write(file_path,
         "# Create scoreboard objectives\n\n"
         "scoreboard objectives add help.value dummy\n\n\n\n"
+
         "# Set constants\n\n"
         "scoreboard players set #50 help.value 50\n"
         "scoreboard players set #1000 help.value 1000\n\n\n\n"
+
         "# Initialize world border stopwatch\n\n"
         "stopwatch create help:overworld_border\n"
         "stopwatch create help:the_nether_border\n"
@@ -156,7 +160,12 @@ def prepare_helper_data_pack() -> Path | None:
         "execute unless score #the_nether_border_duration help.value = #the_nether_border_duration help.value run scoreboard players set #the_nether_border_duration help.value 0\n"
         "execute unless score #the_end_border_before help.value = #the_end_border_before help.value in minecraft:the_end store result score #the_end_border_before help.value run worldborder get\n"
         "execute unless score #the_end_border_after help.value = #the_end_border_after help.value in minecraft:the_end store result score #the_end_border_after help.value run worldborder get\n"
-        "execute unless score #the_end_border_duration help.value = #the_end_border_duration help.value run scoreboard players set #the_end_border_duration help.value 0\n"
+        "execute unless score #the_end_border_duration help.value = #the_end_border_duration help.value run scoreboard players set #the_end_border_duration help.value 0\n\n\n\n"
+
+        "# Prepare fire tick gamerule logic\n\n"
+        "execute store result score #fire_spread_radius_around_player help.value run gamerule minecraft:fire_spread_radius_around_player\n"
+        f"execute unless score #allow_fire_ticks_away_from_player help.value = #allow_fire_ticks_away_from_player help.value run scoreboard players set #allow_fire_ticks_away_from_player help.value {"1" if version <= 2104 else "0"}\n"
+        "execute if score #fire_spread_radius_around_player help.value matches -1 run scoreboard players set #allow_fire_ticks_away_from_player help.value 1\n"
     )
 
     # Prepare tick function

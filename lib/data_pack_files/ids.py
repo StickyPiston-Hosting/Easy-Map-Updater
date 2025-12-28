@@ -187,6 +187,78 @@ def enchantment(name: str | int | nbt_tags.TypeNumeric, version: int, issues: li
 
     return name
 
+def game_rule(name: str, version: int, issues: list[dict[str, str | int]]) -> str:
+    global pack_version
+    pack_version = version
+
+    if pack_version <= 2110:
+        id_array = {
+            "allowEnteringNetherUsingPortals": "minecraft:allow_entering_nether_using_portals",
+            "announceAdvancements": "minecraft:show_advancement_messages",
+            "blockExplosionDropDecay": "minecraft:block_explosion_drop_decay",
+            "command_modification_block_limit": "minecraft:max_block_modifications",
+            "commandBlockOutput": "minecraft:command_block_output",
+            "commandBlocksEnabled": "minecraft:command_blocks_work",
+            "disableElytraMovementCheck": "minecraft:elytra_movement_check",
+            "disablePlayerMovementCheck": "minecraft:player_movement_check",
+            "disableRaids": "minecraft:raids",
+            "doDaylightCycle": "minecraft:advance_time",
+            "doEntityDrops": "minecraft:entity_drops",
+            "doImmediateRespawn": "minecraft:immediate_respawn",
+            "doInsomnia": "minecraft:spawn_phantoms",
+            "doLimitedCrafting": "minecraft:limited_crafting",
+            "doMobLoot": "minecraft:mob_drops",
+            "doMobSpawning": "minecraft:spawn_mobs",
+            "doPatrolSpawning": "minecraft:spawn_patrols",
+            "doTileDrops": "minecraft:block_drops",
+            "doTraderSpawning": "minecraft:spawn_wandering_traders",
+            "doVinesSpread": "minecraft:spread_vines",
+            "doWardenSpawning": "minecraft:spawn_wardens",
+            "doWeatherCycle": "minecraft:advance_weather",
+            "drowningDamage": "minecraft:drowning_damage",
+            "enderPearlsVanishOnDeath": "minecraft:ender_pearls_vanish_on_death",
+            "fallDamage": "minecraft:fall_damage",
+            "fireDamage": "minecraft:fire_damage",
+            "fireSpreadRadiusAroundPlayer": "minecraft:fire_spread_radius_around_player",
+            "forgiveDeadPlayers": "minecraft:forgive_dead_players",
+            "freezeDamage": "minecraft:freeze_damage",
+            "globalSoundEvents": "minecraft:global_sound_events",
+            "keepInventory": "minecraft:keep_inventory",
+            "lavaSourceConversion": "minecraft:lava_source_conversion",
+            "locatorBar": "minecraft:locator_bar",
+            "logAdminCommands": "minecraft:log_admin_commands",
+            "maxCommandChainLength": "minecraft:max_command_sequence_length",
+            "maxCommandForkCount": "minecraft:max_command_forks",
+            "maxEntityCramming": "minecraft:max_entity_cramming",
+            "maxMinecartSpeed": "minecraft:max_minecart_speed",
+            "mobExplosionDropDecay": "minecraft:mob_explosion_drop_decay",
+            "mobGriefing": "minecraft:mob_griefing",
+            "naturalRegeneration": "minecraft:natural_health_regeneration",
+            "playersNetherPortalCreativeDelay": "minecraft:players_nether_portal_creative_delay",
+            "playersNetherPortalDefaultDelay": "minecraft:players_nether_portal_default_delay",
+            "playersSleepingPercentage": "minecraft:players_sleeping_percentage",
+            "projectilesCanBreakBlocks": "minecraft:projectiles_can_break_blocks",
+            "pvp": "minecraft:pvp",
+            "randomTickSpeed": "minecraft:random_tick_speed",
+            "reducedDebugInfo": "minecraft:reduced_debug_info",
+            "sendCommandFeedback": "minecraft:send_command_feedback",
+            "showDeathMessages": "minecraft:show_death_messages",
+            "snowAccumulationHeight": "minecraft:max_snow_accumulation_height",
+            "spawnerBlocksEnabled": "minecraft:spawner_blocks_work",
+            "spawnMonsters": "minecraft:spawn_monsters",
+            "spawnRadius": "minecraft:respawn_radius",
+            "spectatorsGenerateChunks": "minecraft:spectators_generate_chunks",
+            "tntExplodes": "minecraft:tnt_explodes",
+            "tntExplosionDropDecay": "minecraft:tnt_explosion_drop_decay",
+            "universalAnger": "minecraft:universal_anger",
+            "waterSourceConversion": "minecraft:water_source_conversion",
+        }
+        if name in id_array:
+            name = id_array[name]
+
+    name = miscellaneous.namespace(name)
+    return name
+
 def poi(name: str, version: int, issues: list[dict[str, str | int]]) -> str:
     global pack_version
     pack_version = version

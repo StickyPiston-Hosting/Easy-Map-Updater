@@ -62,6 +62,7 @@ def get_default_options() -> Options:
                 "handle_forceload_with_spawn_chunks": True,
                 "world_border_dimensions": True,
                 "world_border_stopwatch": True,
+                "fire_tick_game_rules": True,
             },
             "no_ai_horse_movement": True,
             "clean_clone": True,

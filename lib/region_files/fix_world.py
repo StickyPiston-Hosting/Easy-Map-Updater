@@ -129,7 +129,7 @@ def fix(world: Path, source_world: Path, version: int, get_confirmation: bool) -
 
     # Fix spawn chunks
     log("Fixing spawn chunks")
-    fix_spawn_chunks(world)
+    fix_spawn_chunks(world, source_world)
     
     log("World data fixed")
 
@@ -1183,8 +1183,8 @@ def fix_command_storage(world: Path):
 
 
 
-def fix_spawn_chunks(world: Path):
-    level_dat_path = world / "level.dat"
+def fix_spawn_chunks(world: Path, source_world: Path):
+    level_dat_path = source_world / "level.dat"
     if not level_dat_path.exists():
         return
     level_dat = NBT.NBTFile(level_dat_path)
