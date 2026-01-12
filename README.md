@@ -203,6 +203,49 @@ After the map has been updated and finalized, these actions will help package it
 - `debug.structure`: Updates a structure from an NBT file for testing purposes. The output will be created next to the input with `_updated` added to the end of the name.
 
 
+## Options
+
+Within `options.json`, there are several options which can be configured to control which invasive fixes are enabled or disabled.
+
+- `command_helper`: Options regarding the command helper data packs. These replace commands which cannot be replicated with a single command.
+    - `teleport_dismount`: Fixes `/teleport` commands dismounting entities by replacing it with a `/rotate` command.
+    - `effect_overflow`: Restores the old behavior of status effects with amplifiers 127 or greater having special but unintended effects.
+    - `safe_nbt_interpret`: Sanitizes NBT data before it is interpreted in a text component to prevent errors from being thrown for null values.
+    - `sign_nbt_merge`: Fixes `/data merge` commands used to merge old sign data when updating to the new sign NBT format.
+    - `time_0_falling_block`: Fixes `Time:0` falling blocks replacing the blocks that they spawn on top of.
+    - `illegal_block_states`: Reenables using `/setblock` to place blocks with illegal block states by putting a chunk far away in your world with all the illegal block states in it to be cloned from. This will be reworked in the future.
+    - `command_block_testfor`: Modifies command block contents to store the result of old `/testfor` commands into the command block's `SuccessCount`.
+    - `block_nbt_modifier`: Restores old 1.11.2 behavior of `/setblock` commands merging NBT data if the block IDs match.
+    - `cancel_firework_damage`: Restores old firework behavior where they did no damage.
+    - `teleport_motion_cancel`: Restores old behavior of teleports canceling all motion.
+    - `mitigate_block_update`: Restores miscellaneous issues with block updates from `/setblock` commands.
+    - `custom_model_data_store`: Fixes using `/execute store` to modify custom model data after item components were added.
+    - `removed_default_nbt`: Fixes NBT checks which check for tags with default values which are removed. e.g. status effect amplifiers are omitted if they are 0.
+    - `restore_spawn_chunks`: Adds a data pack which simulates the old spawn chunk behavior.
+    - `handle_forceload_with_spawn_chunks`: Handles the interaction between forceloaded chunks with the simulated spawn chunks.
+    - `world_border_dimensions`: Restores the old behavior of `/worldborder` affecting all dimensions.
+    - `world_border_stopwatch`: Restores the old behavior of `/worldborder` being used to track real time.
+    - `fire_tick_game_rules`: Restores old behavior of the fire tick gamerules before they were merged.
+- `no_ai_horse_movement`: Restores old behavior of horses with `NoAI:1b` being immovable.
+- `broken_score_references`: Fixes broken old score arguments in target selectors.
+- `stats`: Adds handling for the old `/stats` command and converting it to the modern equivalent.
+- `old_adventure_mode_items`: Restores old behavior of tools mining their respective block types in adventure mode.
+- `post_fixes`: Updates various IDs even if outside the scope of the source and target versions.
+- `lock_fixer`: Adds a data pack for restoring the old behavior of locked containers before they changed it to use components.
+- `empty_equipment_override`: Restores old behavior of empty armor slot NBT overriding that slot to be empty.
+- `macros`: Adds handling for macros across all systems.
+- `json_text_components_in_storage`: Adds handling for updating text components inside of command storage.
+- `oversized_in_gui`: Adds the flag to item models to be oversized in the GUI.
+- `stats_options`: Various options controlling how command stats are handled. This system is more or less a placeholder and is not fully implemented.
+    - `block_stats_used`: Means that there exist blocks which use stats or there are commands to apply stat usage to blocks.
+    - `block_positions_dynamic`: Means that the locations of blocks that use stats are unpredictable.
+    - `commands_written_to_sensitive_position`: Means that commands are written to command blocks at locations that gather stats.
+    - `commands_written_to_arbitrary_position`: Means that commands are written to unpredictable locations (guarantees the previous one).
+    - `entity_stats_used`: Means that there exist entities which use stats or there are commands to apply stat usage to entities.
+    - `entity_types_dynamic`: Means that the types of entities that use stats are unpredictable.
+    - `complex_stat_usage`: Means that either multiple stats are used or the stat which is used is not the natural output of the modern version.
+
+
 ## Contact and contribution
 
 The Easy Map Updater is a work in progress and is missing a lot of features. Post an issue on this repo or contact us on Discord: https://discord.gg/nrqhv6PcqQ
