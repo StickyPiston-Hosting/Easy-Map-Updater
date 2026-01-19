@@ -2015,7 +2015,7 @@
         },
         "xp": "experience",
         "emu_sign_text": {
-            "mapping": ["carry", "carry"]
+            "mapping": ["carry", "block_nbt"]
         }
     }
 }
